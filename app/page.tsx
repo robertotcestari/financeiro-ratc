@@ -28,18 +28,19 @@ export default function Home() {
             </div>
           </Link>
 
-          <div className="bg-white rounded-lg shadow-md p-6 opacity-50">
-            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
+          <Link href="/transacoes">
+            <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow p-6 cursor-pointer">
+              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Transações</h3>
+              <p className="text-gray-600">
+                Visualize e filtre todas as transações categorizadas do sistema
+              </p>
             </div>
-            <h3 className="text-xl font-semibold text-gray-400 mb-2">Categorias</h3>
-            <p className="text-gray-400">
-              Gerencie categorias e regras de classificação automática
-            </p>
-            <p className="text-xs text-gray-400 mt-2">Em desenvolvimento</p>
-          </div>
+          </Link>
 
           <div className="bg-white rounded-lg shadow-md p-6 opacity-50">
             <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mb-4">

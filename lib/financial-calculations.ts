@@ -61,3 +61,4 @@ export async function getBalanceAtDate(
 
   return result._sum.amount ? result._sum.amount.toNumber() : 0
 }
+

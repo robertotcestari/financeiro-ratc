@@ -15,9 +15,14 @@ Financial management system for automating financial control by importing OFX ba
 
 ### Database Operations
 - `npx prisma generate` - Generate Prisma client (outputs to `app/generated/prisma`)
-- `npx prisma migrate dev` - Create and apply migration
+- `npm run db:migrate` - Create and apply migration (alias for `npx prisma migrate dev`)
+- `npm run db:reset` - Reset database with migrations
+- `npm run db:seed` - Seed database with initial data
 - `npx prisma db push` - Push schema to database without migration
 - `npx prisma studio` - Open Prisma Studio
+
+### Legacy Data Import
+- `npm run import:legacy` - Import legacy CSV data (script in `scripts/import-legacy.js`)
 
 ## Architecture
 
