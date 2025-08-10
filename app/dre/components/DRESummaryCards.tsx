@@ -1,5 +1,5 @@
 import { generateMonthlyDRE } from '../actions';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 
 interface DRESummaryCardsProps {
   year: number;
