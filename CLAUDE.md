@@ -86,3 +86,64 @@ Financial management system for automating financial control by importing OFX ba
 - All monetary values use `Decimal` type with precision 15,2
 - Transactions maintain original bank data integrity
 - Categorization is applied through `UnifiedTransaction` model
+
+- Lembre sempre que devemos, por padrão usar server components. Apenas quando necessário usar client components.
+- Lembre também que não devemos usar api routes (route handlers). Devemos SEMPRE priorizar server functions/actions
+
+## Database Seeding
+
+The project includes comprehensive seed data for initial setup:
+
+### Bank Accounts (`prisma/seeder/bankAccounts.json`)
+- **CC - Sicredi**: Checking account at Sicredi
+- **CC - PJBank**: Checking account at PJBank  
+- **CI - XP**: Investment account at XP
+- **CI - SicrediInvest**: Investment account at Sicredi
+
+### Categories (`prisma/seeder/categories.json`)
+Hierarchical 3-level category structure:
+
+**Income Categories:**
+- Receitas Operacionais (level 1)
+  - Aluguel (level 2)
+  - Aluguel de Terceiros (level 2)
+  - Outras Receitas (level 2)
+
+**Expense Categories:**
+- Despesas Operacionais (level 1)
+  - Despesas Administrativas (level 2)
+    - Tarifas Bancárias, Escritórios e Postagens, Contabilidade, Salários, FGTS, INSS, TI, Documentações e Jurídico (level 3)
+  - Despesas com Imóveis (level 2)
+    - Condomínios, IPTU, Água, Energia, Internet, Aluguel, Manutenção, Seguro (level 3)
+  - Despesas com Vendas (level 2)
+    - Comissões, Marketing (level 3)
+  - Despesas Tributárias (level 2)
+    - IRPJ, Impostos e Taxas, DARF IRPF (level 3)
+
+**Financial Categories:**
+- Despesas Financeiras (level 1)
+  - Juros, IOF, Taxas e Encargos (level 2)
+- Receitas Financeiras (level 1)
+  - Rendimentos (level 2)
+
+**Investment Categories:**
+- Investimentos (level 1)
+  - Aplicações, Resgates (level 2)
+
+**Transfer Category:**
+- Transferências (level 1)
+  - Transferência Entre Contas (level 2)
+
+### Properties (`prisma/seeder/properties.json`)
+Real estate properties for transaction linking:
+- **CAT (Catanduva)**: 13 properties including commercial spaces and land
+- **SJP (São José do Rio Preto)**: 3 properties on Av. Alberto Andaló
+- **RIB (Ribeirão Preto)**: 3 commercial properties
+- **SAO (São Paulo)**: 2 properties on Rua Pamplona
+- **SAL (Sales)**: 3 rural properties (sítio and rancho)
+- **SVC (São Vicente)**: 1 apartment
+
+### Seeding Commands
+- `npm run db:seed` - Run all seeders
+- Seeds are idempotent using `upsert` operations
+- Seed modules located in `prisma/seeder/`

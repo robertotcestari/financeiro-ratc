@@ -1,0 +1,238 @@
+{
+  "rootCategories": [
+    {
+      "name": "Receitas Operacionais",
+      "type": "INCOME",
+      "level": 1,
+      "orderIndex": 10,
+      "isSystem": true,
+      "children": [
+        {
+          "name": "Aluguel",
+          "type": "INCOME",
+          "level": 2,
+          "orderIndex": 11
+        },
+        {
+          "name": "Aluguel de Terceiros",
+          "type": "INCOME",
+          "level": 2,
+          "orderIndex": 12
+        },
+        {
+          "name": "Outras Receitas",
+          "type": "INCOME",
+          "level": 2,
+          "orderIndex": 13
+        }
+      ]
+    },
+    {
+      "name": "Despesas Operacionais",
+      "type": "EXPENSE",
+      "level": 1,
+      "orderIndex": 20,
+      "isSystem": true,
+      "children": [
+        {
+          "name": "Despesas Administrativas",
+          "type": "EXPENSE",
+          "level": 2,
+          "orderIndex": 21,
+          "children": [
+            {
+              "name": "Tarifas Bancárias",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 210
+            },
+            {
+              "name": "Escritórios e Postagens",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 211
+            },
+            {
+              "name": "Contabilidade",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 212
+            },
+            {
+              "name": "Salários",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 213
+            },
+            {
+              "name": "FGTS",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 214
+            },
+            {
+              "name": "INSS",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 215
+            },
+            {
+              "name": "TI",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 216
+            },
+            {
+              "name": "Documentações e Jurídico",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 217
+            }
+          ]
+        },
+        {
+          "name": "Despesas com Imóveis",
+          "type": "EXPENSE",
+          "level": 2,
+          "orderIndex": 22,
+          "children": [
+            {
+              "name": "Condomínios",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 220
+            },
+            {
+              "name": "Energia Elétrica",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 221
+            },
+            {
+              "name": "Água e Esgoto",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 222
+            },
+            {
+              "name": "Telefone e Internet",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 223
+            },
+            {
+              "name": "Manutenção",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 224
+            },
+            {
+              "name": "Benfeitorias",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 225
+            },
+            {
+              "name": "IPTU",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 226
+            },
+            {
+              "name": "Repasse de Aluguel",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 227
+            }
+          ]
+        },
+        {
+          "name": "Despesas com Impostos",
+          "type": "EXPENSE",
+          "level": 2,
+          "orderIndex": 23,
+          "children": [
+            {
+              "name": "IRPJ",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 230
+            },
+            {
+              "name": "CSLL",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 231
+            },
+            {
+              "name": "Taxa de Fiscalização",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 232
+            },
+            {
+              "name": "Outros Impostos",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 233
+            },
+            {
+              "name": "PIS",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 234
+            },
+            {
+              "name": "Cofins",
+              "type": "EXPENSE",
+              "level": 3,
+              "orderIndex": 235
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Controle Interno",
+      "type": "TRANSFER",
+      "level": 1,
+      "orderIndex": 30,
+      "isSystem": true,
+      "children": [
+        {
+          "name": "Transferência entre Contas",
+          "type": "TRANSFER",
+          "level": 2,
+          "orderIndex": 31,
+          "isSystem": true
+        },
+        {
+          "name": "Ajuste de Saldo",
+          "type": "ADJUSTMENT",
+          "level": 2,
+          "orderIndex": 32,
+          "isSystem": true
+        },
+        {
+          "name": "Aplicação/Resgate Investimentos",
+          "type": "TRANSFER",
+          "level": 2,
+          "orderIndex": 33,
+          "isSystem": true
+        }
+      ]
+    },
+    {
+      "name": "Despesas Pessoais Sócios",
+      "type": "EXPENSE",
+      "level": 1,
+      "orderIndex": 40
+    },
+    {
+      "name": "Reformas",
+      "type": "EXPENSE",
+      "level": 1,
+      "orderIndex": 41
+    }
+  ]
+}

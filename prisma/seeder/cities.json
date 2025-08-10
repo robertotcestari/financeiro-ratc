@@ -1,0 +1,32 @@
+{
+  "cities": [
+    {
+      "code": "CAT",
+      "name": "Catanduva"
+    },
+    {
+      "code": "COS",
+      "name": "Cosmorama"
+    },
+    {
+      "code": "SJP",
+      "name": "São José do Rio Preto"
+    },
+    {
+      "code": "RIB",
+      "name": "Ribeirão Preto"
+    },
+    {
+      "code": "SAO",
+      "name": "São Paulo"
+    },
+    {
+      "code": "SAL",
+      "name": "Sales"
+    },
+    {
+      "code": "SVC",
+      "name": "São Vicente"
+    }
+  ]
+}

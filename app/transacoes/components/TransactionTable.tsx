@@ -364,10 +364,10 @@ export default function TransactionTable({
 
       {/* Tabela */}
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full text-xs">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-center">
+              <th className="px-2.5 py-1.5 text-center">
                 <Input
                   type="checkbox"
                   checked={
@@ -378,28 +378,28 @@ export default function TransactionTable({
                   className="rounded border-gray-300 w-4 h-4"
                 />
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-1.5 text-left text-[11px] font-medium text-gray-500 uppercase tracking-wider">
                 Data
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-1.5 text-left text-[11px] font-medium text-gray-500 uppercase tracking-wider">
                 Descrição
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-1.5 text-left text-[11px] font-medium text-gray-500 uppercase tracking-wider">
                 Conta
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-1.5 text-left text-[11px] font-medium text-gray-500 uppercase tracking-wider">
                 Categoria
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-1.5 text-left text-[11px] font-medium text-gray-500 uppercase tracking-wider">
                 Propriedade
               </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-1.5 text-right text-[11px] font-medium text-gray-500 uppercase tracking-wider">
                 Valor
               </th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-1.5 text-center text-[11px] font-medium text-gray-500 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 py-1.5 text-center text-[11px] font-medium text-gray-500 uppercase tracking-wider">
                 Ações
               </th>
             </tr>
@@ -411,7 +411,7 @@ export default function TransactionTable({
                 className="hover:bg-gray-50"
                 ref={editingId === transaction.id ? editingRef : null}
               >
-                <td className="px-6 py-4 text-center">
+                <td className="px-3 py-1.5 text-center">
                   <Input
                     type="checkbox"
                     checked={selectedIds.has(transaction.id)}
@@ -419,10 +419,10 @@ export default function TransactionTable({
                     className="rounded border-gray-300 w-4 h-4"
                   />
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-3 py-1.5 whitespace-nowrap text-xs text-gray-900 leading-tight">
                   {formatDate(transaction.transaction.date)}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-900">
+                <td className="px-3 py-1.5 text-xs text-gray-900 leading-tight">
                   <div
                     className="max-w-xs truncate"
                     title={transaction.transaction.description}
@@ -431,25 +431,25 @@ export default function TransactionTable({
                   </div>
                   {transaction.details && (
                     <div
-                      className="text-xs text-gray-500 mt-1"
+                      className="text-[11px] text-gray-500 mt-0.5"
                       title={transaction.details}
                     >
                       {transaction.details}
                     </div>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-3 py-1.5 whitespace-nowrap text-xs text-gray-900 leading-tight">
                   <div>{transaction.transaction.bankAccount.name}</div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-[11px] text-gray-500">
                     {transaction.transaction.bankAccount.bankName}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <td className="px-3 py-1.5 whitespace-nowrap text-xs leading-tight">
                   {editingId === transaction.id ? (
                     <select
                       value={editingCategory}
                       onChange={(e) => setEditingCategory(e.target.value)}
-                      className="text-sm border border-gray-300 rounded px-2 py-1 w-full"
+                      className="text-xs border border-gray-300 rounded px-1.5 py-0.5 w-full"
                     >
                       {sortedCategories.map((category) => (
                         <option key={category.id} value={category.id}>
@@ -463,24 +463,24 @@ export default function TransactionTable({
                       className="cursor-pointer"
                     >
                       <span
-                        className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(
+                        className={`inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-medium ${getTypeColor(
                           transaction.category.type
                         )}`}
                       >
                         {getTypeLabel(transaction.category.type)}
                       </span>
-                      <div className="text-sm text-gray-900 mt-1">
+                      <div className="text-xs text-gray-900 mt-0.5 leading-tight">
                         {getCategoryDisplay(transaction.category)}
                       </div>
                     </div>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-3 py-1.5 whitespace-nowrap text-xs text-gray-900 leading-tight">
                   {editingId === transaction.id ? (
                     <select
                       value={editingProperty}
                       onChange={(e) => setEditingProperty(e.target.value)}
-                      className="text-sm border border-gray-300 rounded px-2 py-1 w-full"
+                      className="text-xs border border-gray-300 rounded px-1.5 py-0.5 w-full"
                     >
                       <option value="">Nenhuma</option>
                       {properties.map((property) => (
@@ -499,7 +499,7 @@ export default function TransactionTable({
                           <div className="font-medium">
                             {transaction.property.code}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-[11px] text-gray-500">
                             {transaction.property.city}
                           </div>
                         </div>
@@ -509,7 +509,7 @@ export default function TransactionTable({
                     </div>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-right">
+                <td className="px-3 py-1.5 whitespace-nowrap text-xs text-right leading-tight">
                   <div
                     className={`font-medium ${
                       transaction.transaction.amount >= 0
@@ -520,26 +520,26 @@ export default function TransactionTable({
                     {formatCurrency(transaction.transaction.amount)}
                   </div>
                   {transaction.isTransfer && transaction.transfer && (
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-[11px] text-gray-500 mt-0.5">
                       {transaction.transfer.originAccount.name} →{' '}
                       {transaction.transfer.destinationAccount.name}
                     </div>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
-                  <div className="flex flex-col items-center space-y-1">
+                <td className="px-3 py-1.5 whitespace-nowrap text-center">
+                  <div className="flex flex-col items-center space-y-0.5">
                     {transaction.isReviewed ? (
-                      <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-green-100 text-green-800">
                         Revisado
                       </span>
                     ) : (
-                      <span className="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <span className="inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-yellow-100 text-yellow-800">
                         Pendente
                       </span>
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-center">
+                <td className="px-3 py-1.5 whitespace-nowrap text-center">
                   <div className="flex items-center justify-center space-x-2">
                     {editingId === transaction.id ? (
                       <>

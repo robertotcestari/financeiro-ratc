@@ -1,0 +1,127 @@
+[
+  {
+    "code": "CAT - Otica - Casa ao Fundo",
+    "city": "CAT",
+    "address": "Otica - Casa ao Fundo"
+  },
+  {
+    "code": "CAT - Rua Itapema",
+    "city": "CAT",
+    "address": "Rua Itapema"
+  },
+  {
+    "code": "CAT - Rua Brasil",
+    "city": "CAT",
+    "address": "Rua Brasil"
+  },
+  {
+    "code": "CAT - Rua Cuiabá",
+    "city": "CAT",
+    "address": "Rua Cuiabá"
+  },
+  {
+    "code": "CAT - Rua Bahia Sala 1",
+    "city": "CAT",
+    "address": "Rua Bahia - Sala 1"
+  },
+  {
+    "code": "CAT - Rua Bahia Sala 2 e 3",
+    "city": "CAT",
+    "address": "Rua Bahia - Salas 2 e 3"
+  },
+  {
+    "code": "CAT - Rua Bahia Sala 4",
+    "city": "CAT",
+    "address": "Rua Bahia - Sala 4"
+  },
+  {
+    "code": "CAT - Rua Bahia Sala 5",
+    "city": "CAT",
+    "address": "Rua Bahia - Sala 5"
+  },
+  {
+    "code": "CAT - Rua Minas Gerais - 1072",
+    "city": "CAT",
+    "address": "Rua Minas Gerais, 1072"
+  },
+  {
+    "code": "CAT - Rua Fortaleza - 494",
+    "city": "CAT",
+    "address": "Rua Fortaleza, 494"
+  },
+  {
+    "code": "CAT - Rua Said Tuma",
+    "city": "CAT",
+    "address": "Rua Said Tuma"
+  },
+  {
+    "code": "CAT - Terreno Dahma",
+    "city": "CAT",
+    "address": "Terreno Dahma"
+  },
+  {
+    "code": "CAT - Rua Monte Aprazível",
+    "city": "CAT",
+    "address": "Rua Monte Aprazível"
+  },
+  {
+    "code": "SJP - Av. Alberto Andaló - 2964",
+    "city": "SJP",
+    "address": "Av. Alberto Andaló, 2964"
+  },
+  {
+    "code": "SJP - Av. Alberto Andaló - 2964 - 2",
+    "city": "SJP",
+    "address": "Av. Alberto Andaló, 2964 - 2"
+  },
+  {
+    "code": "SJP - Av. Alberto Andaló - 3483",
+    "city": "SJP",
+    "address": "Av. Alberto Andaló, 3483"
+  },
+  {
+    "code": "RIB - Av. Presidente Vargas 1",
+    "city": "RIB",
+    "address": "Av. Presidente Vargas, 1"
+  },
+  {
+    "code": "RIB - Av. Independência 1379",
+    "city": "RIB",
+    "address": "Av. Independência, 1379"
+  },
+  {
+    "code": "RIB - Av. Independência 1591",
+    "city": "RIB",
+    "address": "Av. Independência, 1591"
+  },
+  {
+    "code": "SAO - Rua Pamplona 391 - ap 12",
+    "city": "SAO",
+    "address": "Rua Pamplona, 391 - Apartamento 12"
+  },
+  {
+    "code": "SAO - Rua Pamplona - Garagem",
+    "city": "SAO",
+    "address": "Rua Pamplona - Garagem"
+  },
+  {
+    "code": "SAL - Sítio - Sales",
+    "city": "SAL",
+    "address": "Sítio - Sales"
+  },
+  {
+    "code": "SAL - Rancho - Sales",
+    "city": "SAL",
+    "address": "Rancho - Sales"
+  },
+  {
+    "code": "SAL - Rancho - Sales II",
+    "city": "SAL",
+    "address": "Rancho - Sales II"
+  },
+  {
+    "code": "SVC - São Vicente - Apartamento",
+    "city": "SVC",
+    "address": "São Vicente - Apartamento"
+  }
+]

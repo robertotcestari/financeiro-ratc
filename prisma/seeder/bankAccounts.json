@@ -1,0 +1,22 @@
+[
+  {
+    "name": "CC - Sicredi",
+    "bankName": "Sicredi",
+    "accountType": "CHECKING"
+  },
+  {
+    "name": "CC - PJBank",
+    "bankName": "PJBank",
+    "accountType": "CHECKING"
+  },
+  {
+    "name": "CI - XP",
+    "bankName": "XP",
+    "accountType": "INVESTMENT"
+  },
+  {
+    "name": "CI - SicrediInvest",
+    "bankName": "Sicredi",
+    "accountType": "INVESTMENT"
+  }
+]
