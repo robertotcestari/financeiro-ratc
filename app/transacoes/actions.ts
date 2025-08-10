@@ -4,12 +4,10 @@ import { z } from "zod"
 import { revalidatePath } from "next/cache"
 import { 
   categorizeTransaction, 
-  bulkCategorizeTransactions,
-  suggestCategorization,
-  applyCategoryRules
+  bulkCategorizeTransactions
 } from "@/lib/database/categorization"
 import { findPotentialTransfers } from "@/lib/database/transactions"
-import prisma from "@/lib/database/client"
+import { prisma } from "@/lib/database/client"
 
 const categorizeOneSchema = z.object({
   id: z.string(),
@@ -129,115 +127,7 @@ export async function markReviewedAction(input: z.infer<typeof markReviewedSchem
   }
 }
 
-const reapplyRulesSchema = z.object({
-  id: z.string()
-})
 
-export async function reapplyRulesAction(input: z.infer<typeof reapplyRulesSchema>) {
-  const validated = reapplyRulesSchema.parse(input)
-  
-  try {
-    const unifiedTransaction = await prisma.unifiedTransaction.findUnique({
-      where: { id: validated.id },
-      include: { 
-        transaction: {
-          include: { bankAccount: true }
-        }
-      }
-    })
-    
-    if (!unifiedTransaction) {
-      throw new Error("Unified transaction not found")
-    }
-    
-    const categoryId = await applyCategoryRules(unifiedTransaction.transaction.id)
-    
-    if (categoryId) {
-      await categorizeTransaction(validated.id, categoryId.categoryId, categoryId.propertyId || undefined)
-      
-      await prisma.unifiedTransaction.update({
-        where: { id: validated.id },
-        data: { autoCategorized: true }
-      })
-    }
-    
-    try {
-      revalidatePath("/transacoes")
-    } catch (revalidateError) {
-      // Ignore revalidation errors in test/dev environments
-      console.warn("Revalidation error (non-critical):", revalidateError)
-    }
-    return { success: true, categoryId }
-  } catch (error) {
-    console.error("Error in reapplyRulesAction:", error)
-    return { success: false, error: "Failed to reapply rules" }
-  }
-}
-
-const bulkReapplyRulesSchema = z.object({
-  ids: z.array(z.string())
-})
-
-export async function bulkReapplyRulesAction(input: z.infer<typeof bulkReapplyRulesSchema>) {
-  const validated = bulkReapplyRulesSchema.parse(input)
-  
-  try {
-    const unifiedTransactions = await prisma.unifiedTransaction.findMany({
-      where: { id: { in: validated.ids } },
-      include: { 
-        transaction: {
-          include: { bankAccount: true }
-        }
-      }
-    })
-    
-    const results = await Promise.all(
-      unifiedTransactions.map(async (unifiedTransaction) => {
-        const categoryId = await applyCategoryRules(unifiedTransaction.transaction.id)
-        
-        if (categoryId) {
-          await categorizeTransaction(unifiedTransaction.id, categoryId.categoryId, categoryId.propertyId || undefined)
-          
-          await prisma.unifiedTransaction.update({
-            where: { id: unifiedTransaction.id },
-            data: { autoCategorized: true }
-          })
-          
-          return { id: unifiedTransaction.id, categoryId }
-        }
-        
-        return { id: unifiedTransaction.id, categoryId: null }
-      })
-    )
-    
-    try {
-      revalidatePath("/transacoes")
-    } catch (revalidateError) {
-      // Ignore revalidation errors in test/dev environments
-      console.warn("Revalidation error (non-critical):", revalidateError)
-    }
-    return { success: true, results }
-  } catch (error) {
-    console.error("Error in bulkReapplyRulesAction:", error)
-    return { success: false, error: "Failed to reapply rules" }
-  }
-}
-
-const suggestionsSchema = z.object({
-  id: z.string()
-})
-
-export async function suggestionsAction(input: z.infer<typeof suggestionsSchema>) {
-  const validated = suggestionsSchema.parse(input)
-  
-  try {
-    const suggestions = await suggestCategorization(validated.id)
-    return { success: true, suggestions }
-  } catch (error) {
-    console.error("Error in suggestionsAction:", error)
-    return { success: false, error: "Failed to get suggestions", suggestions: [] }
-  }
-}
 
 const potentialTransfersSchema = z.object({
   start: z.string(),

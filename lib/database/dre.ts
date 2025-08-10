@@ -1,4 +1,4 @@
-import prisma from './client';
+import { prisma } from './client';
 import { CategoryType } from '@/app/generated/prisma';
 import type { Category } from '@/app/generated/prisma';
 

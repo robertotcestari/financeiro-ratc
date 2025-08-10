@@ -15,7 +15,7 @@ Sistema web para automatizar o controle financeiro, importando arquivos OFX de b
 - **Category** - Categorias (Aluguel, Condomínios, IPTU, Salários, etc.)
 - **Property** - Imóveis referenciados nas transações
 - **UnifiedTransaction** - Transações consolidadas e categorizadas
-- **CategoryRule** - Regras de categorização automática
+- (Futuro) Regras de categorização automática
 - **DREConfig** - Configuração das linhas do DRE
 
 ### Fase 2: Sistema de Importação OFX

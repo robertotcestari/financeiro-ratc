@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 
 interface Category {
   id: string
@@ -25,7 +26,6 @@ interface Props {
     mes?: string
     ano?: string
     status?: string
-    origem?: string
     page?: string
   }
 }
@@ -40,7 +40,6 @@ export default function TransactionFilters({ categories, bankAccounts, searchPar
     mes: searchParams.mes || currentMonth.toString(),
     ano: searchParams.ano || new Date().getFullYear().toString(),
     status: searchParams.status || 'pendentes',
-    origem: searchParams.origem || ''
   })
 
   const currentYear = new Date().getFullYear()
@@ -84,8 +83,7 @@ export default function TransactionFilters({ categories, bankAccounts, searchPar
       conta: '',
       mes: '',
       ano: currentYear.toString(),
-      status: '',
-      origem: ''
+      status: ''
     })
     router.push('/transacoes')
   }
@@ -114,7 +112,7 @@ export default function TransactionFilters({ categories, bankAccounts, searchPar
     <div className="p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h3>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {/* Filtro de Categoria */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -205,31 +203,17 @@ export default function TransactionFilters({ categories, bankAccounts, searchPar
           </select>
         </div>
 
-        {/* Filtro de Origem */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Origem
-          </label>
-          <select
-            value={filters.origem}
-            onChange={(e) => updateFilter('origem', e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Todos</option>
-            <option value="auto">Somente auto</option>
-            <option value="manual">Somente manual</option>
-          </select>
-        </div>
       </div>
 
       {/* Botão Limpar Filtros */}
       <div className="mt-4 flex justify-end">
-        <button
+        <Button
           onClick={clearFilters}
-          className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+          variant="outline"
+          size="sm"
         >
           Limpar Filtros
-        </button>
+        </Button>
       </div>
     </div>
   )

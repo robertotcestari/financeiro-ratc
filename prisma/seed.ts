@@ -348,123 +348,6 @@ async function main() {
     })
   }
 
-  // 4. Criar Regras de Categorização Básicas
-  console.log('⚙️  Creating basic categorization rules...')
-
-  // Encontrar IDs das categorias
-  const tarifasCategory = await prisma.category.findUnique({ where: { name: 'Tarifas Bancárias' } })
-  const energiaCategory = await prisma.category.findUnique({ where: { name: 'Energia Elétrica' } })
-  const condominioCategory = await prisma.category.findUnique({ where: { name: 'Condomínios' } })
-  const iptuCategory = await prisma.category.findUnique({ where: { name: 'IPTU' } })
-  const salariosCategory = await prisma.category.findUnique({ where: { name: 'Salários' } })
-  const fgtsCategory = await prisma.category.findUnique({ where: { name: 'FGTS' } })
-
-  if (tarifasCategory) {
-    await prisma.categoryRule.upsert({
-      where: { name: 'Tarifas Bancárias - Débitos Automáticos' },
-      update: {},
-      create: {
-        name: 'Tarifas Bancárias - Débitos Automáticos',
-        categoryId: tarifasCategory.id,
-        descriptionPattern: 'DEBITO CONVENIOS|TARIFA|MANUTENCAO|INTEGR.CAPITAL',
-        priority: 100,
-      }
-    })
-  }
-
-  if (energiaCategory) {
-    await prisma.categoryRule.upsert({
-      where: { name: 'Energia Elétrica - ENERGISA' },
-      update: {},
-      create: {
-        name: 'Energia Elétrica - ENERGISA',
-        categoryId: energiaCategory.id,
-        descriptionPattern: 'ENERGISA',
-        priority: 90,
-      }
-    })
-  }
-
-  if (condominioCategory) {
-    await prisma.categoryRule.upsert({
-      where: { name: 'Condomínios - Administradoras' },
-      update: {},
-      create: {
-        name: 'Condomínios - Administradoras',
-        categoryId: condominioCategory.id,
-        descriptionPattern: 'CONDOMI|OMA ADM',
-        priority: 90,
-      }
-    })
-  }
-
-  if (iptuCategory) {
-    await prisma.categoryRule.upsert({
-      where: { name: 'IPTU - Municípios' },
-      update: {},
-      create: {
-        name: 'IPTU - Municípios',
-        categoryId: iptuCategory.id,
-        descriptionPattern: 'MUNICIPIO|PREFEITURA',
-        priority: 95,
-      }
-    })
-  }
-
-  if (salariosCategory) {
-    await prisma.categoryRule.upsert({
-      where: { name: 'Salários - PIX Funcionários' },
-      update: {},
-      create: {
-        name: 'Salários - PIX Funcionários',
-        categoryId: salariosCategory.id,
-        descriptionPattern: 'BEATRIZ REBELATO|Vagner Bonini',
-        priority: 85,
-      }
-    })
-  }
-
-  if (fgtsCategory) {
-    await prisma.categoryRule.upsert({
-      where: { name: 'FGTS - Débitos Automáticos' },
-      update: {},
-      create: {
-        name: 'FGTS - Débitos Automáticos',
-        categoryId: fgtsCategory.id,
-        descriptionPattern: 'FGTS',
-        priority: 95,
-      }
-    })
-  }
-
-  // Regra para Transferências
-  if (transferencia) {
-    await prisma.categoryRule.upsert({
-      where: { name: 'Transferências - TED' },
-      update: {},
-      create: {
-        name: 'Transferências - TED',
-        categoryId: transferencia.id,
-        descriptionPattern: 'TED|DEBITO TED',
-        priority: 100,
-        isTransferRule: true,
-      }
-    })
-  }
-
-  // Regra para Aluguéis
-  if (aluguelCategory) {
-    await prisma.categoryRule.upsert({
-      where: { name: 'Aluguéis - Recebimentos PIX' },
-      update: {},
-      create: {
-        name: 'Aluguéis - Recebimentos PIX',
-        categoryId: aluguelCategory.id,
-        descriptionPattern: 'RECEBIMENTO PIX.*ISABEL CRISTINA|RECEBIMENTO PIX.*HERBICAT|RECEBIMENTO PIX.*THAIS HELENA|RECEBIMENTO PIX.*LOREN IMOVEIS',
-        priority: 80,
-      }
-    })
-  }
 
   console.log('✅ Seed completed!')
   
@@ -472,13 +355,11 @@ async function main() {
   const accountCount = await prisma.bankAccount.count()
   const categoryCount = await prisma.category.count()
   const propertyCount = await prisma.property.count()
-  const ruleCount = await prisma.categoryRule.count()
   
   console.log(`📊 Summary:`)
   console.log(`   🏦 Bank Accounts: ${accountCount}`)
   console.log(`   📂 Categories: ${categoryCount}`)
   console.log(`   🏠 Properties: ${propertyCount}`)
-  console.log(`   ⚙️  Category Rules: ${ruleCount}`)
 }
 
 main()

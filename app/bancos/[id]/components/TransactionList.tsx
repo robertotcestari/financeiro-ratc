@@ -2,6 +2,7 @@
 
 import { Transaction } from '@/app/generated/prisma'
 import { useState } from 'react'
+import { Input } from '@/components/ui/input'
 
 type SerializedTransaction = Omit<Transaction, 'amount'> & {
   amount: number
@@ -62,12 +63,11 @@ export function TransactionList({ transactions }: TransactionListProps) {
           
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
-            <input
+            <Input
               type="text"
               placeholder="Buscar por descrição..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             
             {/* Filter */}

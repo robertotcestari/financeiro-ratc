@@ -1,11 +1,13 @@
 # Fase 1 - Implementação Completa ✅
 
 ## Resumo
+
 A Fase 1 da estrutura de dados foi implementada com sucesso. O sistema agora possui uma base sólida para gerenciar transações financeiras, categorizações automáticas e geração de DRE.
 
 ## ✅ Itens Concluídos
 
 ### 1. Schema do Prisma
+
 - **Arquivo**: `prisma/schema.prisma`
 - **Modelos criados**: 10 modelos principais
 - **Enums**: 4 enums para tipagem
@@ -13,11 +15,13 @@ A Fase 1 da estrutura de dados foi implementada com sucesso. O sistema agora pos
 - **Índices**: Otimizações para consultas frequentes
 
 ### 2. Banco de Dados MySQL
+
 - **Comando executado**: `npx prisma db push`
 - **Tabelas criadas**: 10 tabelas com relacionamentos
 - **Status**: ✅ Sincronizado
 
 ### 3. Dados Iniciais (Seeds)
+
 - **Arquivo**: `prisma/seed.ts`
 - **Contas Bancárias**: 4 contas cadastradas
 - **Categorias**: 36 categorias organizadas hierarquicamente
@@ -25,11 +29,13 @@ A Fase 1 da estrutura de dados foi implementada com sucesso. O sistema agora pos
 - **Regras**: 8 regras básicas de categorização
 
 ### 4. Cliente Prisma
+
 - **Gerado automaticamente**: ✅
 - **Localização**: `app/generated/prisma`
 - **Singleton**: Implementado em `lib/database/client.ts`
 
 ### 5. Funções Utilitárias
+
 - **`lib/database/transactions.ts`**: Consultas de transações e DRE
 - **`lib/database/categorization.ts`**: Motor de categorização automática
 - **`lib/database/dre.ts`**: Geração de DRE e indicadores
@@ -39,14 +45,14 @@ A Fase 1 da estrutura de dados foi implementada com sucesso. O sistema agora pos
 ```
 🏦 Contas Bancárias: 4
    - CC - Sicredi (Conta Corrente)
-   - CC - PJBank (Conta Corrente)  
+   - CC - PJBank (Conta Corrente)
    - CI - XP (Investimento)
    - CI - SicrediInvest (Investimento)
 
 📂 Categorias: 36
    ├─ Receitas Operacionais (3 subcategorias)
    ├─ Despesas Operacionais (21 subcategorias)
-   ├─ Controle Interno (3 subcategorias)  
+   ├─ Controle Interno (3 subcategorias)
    └─ Outras Categorias (2 categorias)
 
 🏠 Imóveis: 25
@@ -64,33 +70,38 @@ A Fase 1 da estrutura de dados foi implementada com sucesso. O sistema agora pos
    - IPTU (Municípios)
    - Salários (PIX Funcionários)
    - FGTS
-   - Transferências (TED)
+   A Fase 1 da estrutura de dados foi implementada com sucesso. O sistema agora possui uma base sólida para gerenciar transações financeiras, revisão/categorização manual e geração de DRE.
    - Aluguéis (PIX Específicos)
 ```
 
+- Removido: `lib/database/categorization.ts` (categorização automática será reavaliada futuramente)
+
 ## 🔧 Funcionalidades Implementadas
 
-### Categorização Automática
-- Sistema de regras baseado em padrões de texto
-- Suporte a faixas de valores
-- Priorização de regras
-- Identificação automática de transferências
+### Categorização e Revisão
+
+- Identificação de transferências (excluídas do DRE)
+- Revisão manual com marcação `isReviewed`
+- Possível sugestão futura baseada em histórico (fora do escopo atual)
 - Sugestões baseadas em histórico
 
-### Gestão de Transferências
+  ├── transactions.ts (consultas e validações)
+  └── dre.ts (relatórios financeiros)
+
 - Validação de soma zero
 - Identificação de transferências incompletas
-- Busca por pares de transações
+  └── ImportBatch (controle de importações)
 - Exclusão automática do DRE
 
-### Geração de DRE
+  // import { applyCategoryRules } from '@/lib/database/categorization'
+
 - Estrutura hierárquica de categorias
-- Exclusão automática de transferências
-- Cálculo de subtotais e totais
+  // Categorizar uma transação: realizar manualmente via UI/ações do sistema
 - Comparativo entre períodos
 - Indicadores financeiros
 
 ### Consultas Otimizadas
+
 - Transações por período
 - Transações por categoria
 - Saldos por conta
@@ -114,7 +125,7 @@ Data Models
 ├── Category (hierárquica)
 ├── Property (imóveis)
 ├── Transfer (transferências)
-├── CategoryRule (regras automáticas)
+├── (Futuro) Regras automáticas
 └── ImportBatch (controle de importações)
 ```
 
@@ -123,24 +134,28 @@ Data Models
 Com a Fase 1 completa, o sistema está pronto para:
 
 ### Fase 2: Sistema de Importação OFX
+
 - Parser de arquivos OFX
 - Interface de upload
 - Processamento em lote
 - Detecção de duplicatas
 
 ### Fase 3: Motor de Categorização
+
 - Interface de revisão
-- Machine Learning (opcional)  
+- Machine Learning (opcional)
 - Regras avançadas
 - Histórico de alterações
 
 ### Fase 4: Interface Web
+
 - Dashboard principal
 - Editor de transações
 - Filtros e buscas
 - Gestão de categorias
 
 ### Fase 5: DRE Automático
+
 - Interface do DRE
 - Gráficos e visualizações
 - Exportação para Excel/PDF
@@ -160,25 +175,27 @@ O sistema implementa diversas validações:
 ## 🔧 Como Usar
 
 ### 1. Verificar Status do Banco
+
 ```bash
 npx prisma studio  # Interface visual do banco
 ```
 
 ### 2. Executar Seeds Novamente (se necessário)
+
 ```bash
 npx tsx prisma/seed.ts
 ```
 
 ### 3. Usar as Funções Utilitárias
+
 ```typescript
-import { generateDRE } from '@/lib/database/dre'
-import { applyCategoryRules } from '@/lib/database/categorization'
+import { generateDRE } from '@/lib/database/dre';
 
 // Gerar DRE de abril/2023
-const dre = await generateDRE(2023, 4)
+const dre = await generateDRE(2023, 4);
 
 // Aplicar regras a uma transação
-const result = await applyCategoryRules(transactionId)
+// Aplicar regras automaticamente: não disponível nesta fase
 ```
 
 ## 📈 Performance e Escalabilidade

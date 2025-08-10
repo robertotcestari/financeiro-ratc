@@ -8,7 +8,7 @@ Princípios
 
 - Fonte única de verdade: [UnifiedTransaction](prisma/schema.prisma:129).
 - Somente Server Components e Server Actions, sem API routes.
-- Reuso dos serviços existentes: [applyCategoryRules()](lib/database/categorization.ts:23), [categorizeTransaction()](lib/database/categorization.ts:93), [bulkCategorizeTransactions()](lib/database/categorization.ts:180), [suggestCategorization()](lib/database/categorization.ts:217), [findPotentialTransfers()](lib/database/transactions.ts:221).
+- Reuso dos serviços existentes: [categorizeTransaction()](lib/database/categorization.ts:23), [bulkCategorizeTransactions()](lib/database/categorization.ts:52), [findPotentialTransfers()](lib/database/transactions.ts:221).
 - Transferências não afetam DRE.
 
 Fluxo de alto nível
@@ -16,8 +16,8 @@ Fluxo de alto nível
 ```mermaid
 flowchart LR
   A[Importar arquivos] --> B[Transaction]
-  B --> C[applyCategoryRules]
-  C --> D[UnifiedTransaction autoCategorized true]
+  B --> C[Revisão manual]
+  C --> D[UnifiedTransaction isReviewed true]
   D --> E[/transacoes Inbox]
   E -->|Sugestoes e edicoes| F[categorizeTransaction]
   E -->|Selecao em lote| G[bulkCategorizeTransactions]
@@ -30,7 +30,7 @@ flowchart LR
 
 Modelos e consultas relevantes
 
-- Tabela alvo: [UnifiedTransaction](prisma/schema.prisma:129) com campos year, month, categoryId, propertyId, isTransfer, isReviewed, autoCategorized.
+- Tabela alvo: [UnifiedTransaction](prisma/schema.prisma:129) com campos year, month, categoryId, propertyId, isTransfer, isReviewed.
 - Página server-side que lista: [TransacoesPage](app/transacoes/page.tsx:18), construção de filtros [TransacoesPage where](app/transacoes/page.tsx:42), paginação e ordenação [TransacoesPage findMany](app/transacoes/page.tsx:61) e serialização [TransacoesPage safeTransactions](app/transacoes/page.tsx:96).
 - DRE impactado por reclassificação: [getDRETotalsByPeriod()](lib/database/transactions.ts:83).
 
@@ -40,7 +40,7 @@ UX do Inbox em /transacoes
   - Categoria, Conta, Ano, Mês existentes.
   - Novos filtros:
     - Status: Todos, Pendentes, Revisados. Mapeia para isReviewed undefined, false, true.
-    - Origem: Todos, Somente auto, Somente manual. Mapeia para autoCategorized undefined, true, false.
+  - Origem: Removida (auto-categorização descontinuada).
   - Padrão ao entrar: mês atual e Status Pendentes.
 - Tabela [TransactionTable](app/transacoes/components/TransactionTable.tsx:51):
   - Coluna de seleção por linha e contagem de selecionadas.
@@ -73,13 +73,11 @@ Server Actions
     - Comportamento: atualiza isReviewed e anexa note em notes.
   - [reapplyRulesAction()](app/transacoes/actions.ts:1)
     - Input: { id }
-    - Comportamento: [applyCategoryRules()](lib/database/categorization.ts:23) seguido de [categorizeTransaction()](lib/database/categorization.ts:93) com autoCategorized true.
+    - Comportamento: recategorização direta (sem auto-categorização automática).
   - [bulkReapplyRulesAction()](app/transacoes/actions.ts:1)
     - Input: { ids }
     - Comportamento: idem acima para varios ids.
-  - [suggestionsAction()](app/transacoes/actions.ts:1)
-    - Input: { id }
-    - Output: retorno de [suggestCategorization()](lib/database/categorization.ts:217).
+  - suggestionsAction removida por ora.
   - [potentialTransfersAction()](app/transacoes/actions.ts:1)
     - Input: { start, end }
     - Output: retorno de [findPotentialTransfers()](lib/database/transactions.ts:221).
@@ -94,9 +92,8 @@ Passagem de ações para Client Components
 
 Regras de fallback e auditoria
 
-- Fallback para categoria padrão já previsto em [categorizeTransaction()](lib/database/categorization.ts:133) usando Outras Receitas.
+- Fallback para categoria padrão previsto em [categorizeTransaction()] usando Outras Receitas.
 - Definir convenção de notas: prefixar com timestamp e autor quando disponível.
-- autoCategorized true apenas quando regra aplicada; override manual força autoCategorized false.
 
 Taxonomia inicial sugerida
 
@@ -112,18 +109,13 @@ Filtros e query server-side
     - pendentes: isReviewed false
     - revisados: isReviewed true
     - todos: sem filtro
-  - origem
-    - auto: autoCategorized true
-    - manual: autoCategorized false
-    - todos: sem filtro
+  - origem: removida
 - Atualizar where builder em [TransacoesPage where](app/transacoes/page.tsx:42).
 
 Performance e indices
 
 - Manter ordenação estável [TransacoesPage findMany](app/transacoes/page.tsx:84).
-- Avaliar índices adicionais em [UnifiedTransaction](prisma/schema.prisma:155):
-  - Composto year, month, isReviewed, autoCategorized.
-  - Simples isReviewed.
+- Avaliar índices adicionais em [UnifiedTransaction](prisma/schema.prisma:155) conforme necessário.
 
 Atalhos de teclado
 
@@ -137,7 +129,7 @@ Entregas por fase
 Fase 1 MVP
 
 - Criar [actions.ts](app/transacoes/actions.ts:1) com [categorizeOneAction()](app/transacoes/actions.ts:1), [bulkCategorizeAction()](app/transacoes/actions.ts:1), [markReviewedAction()](app/transacoes/actions.ts:1), [suggestionsAction()](app/transacoes/actions.ts:1).
-- Estender filtros com Status e Origem em [TransactionFilters](app/transacoes/components/TransactionFilters.tsx:31) e default para mês atual pendentes.
+- Estender filtros com Status em [TransactionFilters](app/transacoes/components/TransactionFilters.tsx:31) e default para mês atual pendentes.
 - Adicionar seleção de linhas e barra de ações em [TransactionTable](app/transacoes/components/TransactionTable.tsx:51).
 - Edição inline de categoria e propriedade por linha com chamadas às actions.
 

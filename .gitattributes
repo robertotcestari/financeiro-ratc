@@ -1,0 +1,3 @@
+# Normalize line endings for SQL and Prisma files
+*.sql text eol=lf
+*.prisma text eol=lf

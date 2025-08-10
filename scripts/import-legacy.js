@@ -3,10 +3,10 @@
   - Creates ImportBatch per file
   - Inserts Transaction rows (dedup within the same batch by [bankAccountId, date, amount, description, balance])
   - Upserts AccountBalance snapshots per date from CSV "Saldo"
-  - Auto-categorizes into UnifiedTransaction using CategoryRules
+  - Importa e cria UnifiedTransaction com fallback de categoria padrão
 */
 
-/* eslint-disable no-console */
+/* eslint-disable */
 
 const fs = require('fs')
 const path = require('path')
@@ -39,33 +39,9 @@ function inferAccountFromFile(fileName) {
   throw new Error(`Unable to infer bank account from file: ${fileName}`)
 }
 
-async function loadActiveRules() {
-  return prisma.categoryRule.findMany({
-    where: { isActive: true },
-    include: { category: true, property: true },
-    orderBy: { priority: 'desc' }
-  })
-}
+// Category rules were removed from the schema; keep a simple default-only strategy.
 
-function matchRule(rules, descLower, amount, bankAccountId) {
-  for (const rule of rules) {
-    let matches = true
-
-    if (rule.descriptionPattern) {
-      const patterns = rule.descriptionPattern.toLowerCase().split('|')
-      const hasMatch = patterns.some(p => descLower.includes(p.trim()))
-      if (!hasMatch) matches = false
-    }
-    if (rule.minAmount != null && amount < Number(rule.minAmount)) matches = false
-    if (rule.maxAmount != null && amount > Number(rule.maxAmount)) matches = false
-    if (rule.bankAccountId && rule.bankAccountId !== bankAccountId) matches = false
-
-    if (matches) return rule
-  }
-  return null
-}
-
-async function ensureDefaultCategoryId(amount) {
+async function ensureDefaultCategoryId() {
   // Default category: 'Outras Receitas'
   const cat = await prisma.category.findFirst({ where: { name: 'Outras Receitas' } })
   if (!cat) throw new Error('Default category "Outras Receitas" not found')
@@ -86,14 +62,14 @@ async function upsertUnifiedTransaction(tx, transaction, categoryId, propertyId,
       categoryId,
       propertyId: propertyId || null,
       isTransfer: Boolean(isTransfer),
-      autoCategorized: Boolean(details),
+      isReviewed: true,
       details: details || null
     },
     update: {
       categoryId,
       propertyId: propertyId || null,
       isTransfer: Boolean(isTransfer),
-      autoCategorized: Boolean(details),
+      isReviewed: true,
       details: details || null,
       updatedAt: new Date()
     }
@@ -134,7 +110,7 @@ async function importFile(filePath) {
     }
   })
 
-  const rules = await loadActiveRules()
+  // No rules to load; rely on defaults only
 
   let inserted = 0
   for (const row of records) {
@@ -213,21 +189,11 @@ async function importFile(filePath) {
       })
     }
 
-    // Categorization
-    const rule = matchRule(rules, (tx.description || '').toLowerCase(), Number(tx.amount), bankAccount.id)
-    let categoryId = null
-    let propertyId = null
-    let details = null
-    let isTransfer = false
-
-    if (rule) {
-      categoryId = rule.categoryId
-      propertyId = rule.propertyId
-      details = `Regra aplicada: ${rule.name}`
-      isTransfer = Boolean(rule.isTransferRule) || (rule.category && rule.category.type === 'TRANSFER')
-    } else {
-      categoryId = await ensureDefaultCategoryId(Number(tx.amount))
-    }
+  // Categorization: simple fallback for now
+  let categoryId = await ensureDefaultCategoryId()
+  let propertyId = null
+  let details = null
+  let isTransfer = false
 
     await upsertUnifiedTransaction(prisma, tx, categoryId, propertyId, isTransfer, details)
 

@@ -1,83 +1,71 @@
-import { prisma } from '@/lib/database/client'
-import Link from 'next/link'
-import TransactionFilters from './components/TransactionFilters'
-import TransactionTable from './components/TransactionTable'
+import { prisma } from '@/lib/database/client';
+import Link from 'next/link';
+import TransactionFilters from './components/TransactionFilters';
+import TransactionTable from './components/TransactionTable';
 
 interface SearchParams {
-  categoria?: string
-  conta?: string
-  mes?: string
-  ano?: string
-  status?: string
-  origem?: string
-  page?: string
+  categoria?: string;
+  conta?: string;
+  mes?: string;
+  ano?: string;
+  status?: string;
+  page?: string;
 }
 
 interface Props {
-  searchParams: Promise<SearchParams>
+  searchParams: Promise<SearchParams>;
 }
 
 export default async function TransacoesPage({ searchParams }: Props) {
   const resolvedParams = await searchParams;
   // Buscar todas as categorias para o filtro
   const categories = await prisma.category.findMany({
-    orderBy: [
-      { level: 'asc' },
-      { orderIndex: 'asc' },
-      { name: 'asc' }
-    ],
+    orderBy: [{ level: 'asc' }, { orderIndex: 'asc' }, { name: 'asc' }],
     include: {
-      parent: true
-    }
-  })
+      parent: true,
+    },
+  });
 
   // Buscar todas as contas bancárias para o filtro
   const bankAccounts = await prisma.bankAccount.findMany({
     where: { isActive: true },
-    orderBy: { name: 'asc' }
-  })
+    orderBy: { name: 'asc' },
+  });
 
   // Buscar todas as propriedades para o formulário de edição
   const properties = await prisma.property.findMany({
-    orderBy: { code: 'asc' }
-  })
+    orderBy: { code: 'asc' },
+  });
 
   // Construir filtros da query
-  const page = parseInt(resolvedParams.page || '1')
-  const pageSize = 50
-  const skip = (page - 1) * pageSize
+  const page = parseInt(resolvedParams.page || '1');
+  const pageSize = 50;
+  const skip = (page - 1) * pageSize;
 
-  const where: Record<string, unknown> = {}
-  
+  const where: Record<string, unknown> = {};
+
   if (resolvedParams.categoria) {
-    where.categoryId = resolvedParams.categoria
+    where.categoryId = resolvedParams.categoria;
   }
-  
+
   if (resolvedParams.conta) {
     where.transaction = {
-      bankAccountId: resolvedParams.conta
-    }
+      bankAccountId: resolvedParams.conta,
+    };
   }
-  
+
   if (resolvedParams.mes && resolvedParams.ano) {
-    where.year = parseInt(resolvedParams.ano)
-    where.month = parseInt(resolvedParams.mes)
+    where.year = parseInt(resolvedParams.ano);
+    where.month = parseInt(resolvedParams.mes);
   } else if (resolvedParams.ano) {
-    where.year = parseInt(resolvedParams.ano)
+    where.year = parseInt(resolvedParams.ano);
   }
-  
+
   // Filtro de Status
   if (resolvedParams.status === 'pendentes') {
-    where.isReviewed = false
+    where.isReviewed = false;
   } else if (resolvedParams.status === 'revisados') {
-    where.isReviewed = true
-  }
-  
-  // Filtro de Origem
-  if (resolvedParams.origem === 'auto') {
-    where.autoCategorized = true
-  } else if (resolvedParams.origem === 'manual') {
-    where.autoCategorized = false
+    where.isReviewed = true;
   }
 
   // Buscar transações unificadas com paginação
@@ -87,33 +75,33 @@ export default async function TransacoesPage({ searchParams }: Props) {
       include: {
         transaction: {
           include: {
-            bankAccount: true
-          }
+            bankAccount: true,
+          },
         },
         category: {
           include: {
-            parent: true
-          }
+            parent: true,
+          },
         },
         property: true,
         transfer: {
           include: {
             originAccount: true,
-            destinationAccount: true
-          }
-        }
+            destinationAccount: true,
+          },
+        },
       },
       orderBy: [
         { transaction: { date: 'desc' } },
-        { transaction: { id: 'desc' } }
+        { transaction: { id: 'desc' } },
       ],
       skip,
-      take: pageSize
+      take: pageSize,
     }),
-    prisma.unifiedTransaction.count({ where })
-  ])
+    prisma.unifiedTransaction.count({ where }),
+  ]);
 
-  const totalPages = Math.ceil(totalCount / pageSize)
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   // Serialize to plain objects (no Prisma Decimal instances) for client component
   const safeTransactions = transactions.map((t) => ({
@@ -124,7 +112,6 @@ export default async function TransacoesPage({ searchParams }: Props) {
     notes: t.notes,
     isTransfer: t.isTransfer,
     isReviewed: t.isReviewed,
-    autoCategorized: t.autoCategorized,
     transaction: {
       id: t.transaction.id,
       date: t.transaction.date,
@@ -141,7 +128,9 @@ export default async function TransacoesPage({ searchParams }: Props) {
       type: t.category.type,
       parent: t.category.parent ? { name: t.category.parent.name } : null,
     },
-    property: t.property ? { code: t.property.code, city: t.property.city } : null,
+    property: t.property
+      ? { code: t.property.code, city: t.property.city }
+      : null,
     transfer: t.transfer
       ? {
           originAccount: { name: t.transfer.originAccount.name },
@@ -149,7 +138,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
           amount: Number(t.transfer.amount),
         }
       : null,
-  }))
+  }));
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -191,5 +180,5 @@ export default async function TransacoesPage({ searchParams }: Props) {
         </div>
       </div>
     </div>
-  )
+  );
 }
