@@ -17,8 +17,9 @@ export default async function IntegrityPage({ searchParams }: PageProps) {
   const data = await getFinancialIntegrityData(year, month);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           🔍 Integridade Financeira
         </h1>
@@ -56,6 +57,7 @@ export default async function IntegrityPage({ searchParams }: PageProps) {
 
         {/* Transferências */}
         <TransferStatsCard transferStats={data.transferStats} />
+      </div>
       </div>
     </div>
   );
