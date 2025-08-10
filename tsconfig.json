@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2024",
+    "target": "ES2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -27,7 +27,6 @@
     "node_modules",
     "vitest.setup.ts",
     "vitest.config.mts",
-    "tests/**/*",
     "e2e/**/*"
   ]
 }
