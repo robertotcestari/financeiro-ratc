@@ -88,78 +88,44 @@ export async function applyCategoryRules(
 }
 
 /**
- * Categoriza uma transação automaticamente
+ * Categoriza uma transação unificada por ID
  */
 export async function categorizeTransaction(
-  transactionId: string,
-  overrideCategoryId?: string,
+  unifiedTransactionId: string,
+  overrideCategoryId: string,
   overridePropertyId?: string
 ): Promise<UnifiedTransaction> {
-  const transaction = await prisma.transaction.findUnique({
-    where: { id: transactionId },
+  const unifiedTransaction = await prisma.unifiedTransaction.findUnique({
+    where: { id: unifiedTransactionId },
+    include: { transaction: true }
   });
 
-  if (!transaction) {
-    throw new Error('Transaction not found');
+  if (!unifiedTransaction) {
+    throw new Error('Unified transaction not found');
   }
+  
+  // Para categorização manual direta
+  const categoryId = overrideCategoryId;
+  const propertyId = overridePropertyId || null;
 
-  let categoryId: string;
-  let propertyId: string | null = null;
-  let isTransfer = false;
-  let autoCategorized = false;
-  let ruleApplied: { name: string } | null = null;
-
-  if (overrideCategoryId) {
-    // Categorização manual
-    categoryId = overrideCategoryId;
-    propertyId = overridePropertyId || null;
-
-    const category = await prisma.category.findUnique({
-      where: { id: categoryId },
-    });
-    isTransfer = category?.type === CategoryType.TRANSFER;
-  } else {
-    // Categorização automática
-    const result = await applyCategoryRules(transactionId);
-
-    if (result) {
-      categoryId = result.categoryId;
-      propertyId = result.propertyId ?? null;
-      isTransfer = result.isTransfer;
-      autoCategorized = true;
-      ruleApplied = result.ruleApplied;
-    } else {
-      // Se não encontrou regra, usa categoria padrão
-      const defaultCategory = await prisma.category.findFirst({
-        where: { name: 'Outras Receitas' },
-      });
-      if (!defaultCategory) {
-        throw new Error('Default category not found');
-      }
-      categoryId = defaultCategory.id;
-    }
+  const category = await prisma.category.findUnique({
+    where: { id: categoryId },
+  });
+  
+  if (!category) {
+    throw new Error('Category not found');
   }
+  
+  const isTransfer = category.type === CategoryType.TRANSFER;
 
-  // Cria ou atualiza UnifiedTransaction
-  const date = new Date(transaction.date);
-  const unifiedTransaction = await prisma.unifiedTransaction.upsert({
-    where: { transactionId },
-    create: {
-      transactionId,
-      year: date.getFullYear(),
-      month: date.getMonth() + 1,
+  // Atualiza a UnifiedTransaction existente
+  const updatedUnifiedTransaction = await prisma.unifiedTransaction.update({
+    where: { id: unifiedTransactionId },
+    data: {
       categoryId,
       propertyId,
       isTransfer,
-      autoCategorized,
-      details: ruleApplied ? `Regra aplicada: ${ruleApplied.name}` : null,
-    },
-    update: {
-      categoryId,
-      propertyId,
-      isTransfer,
-      autoCategorized,
-      details: ruleApplied ? `Regra aplicada: ${ruleApplied.name}` : null,
+      autoCategorized: false, // É categorização manual
       updatedAt: new Date(),
     },
     include: {
@@ -171,7 +137,7 @@ export async function categorizeTransaction(
     },
   });
 
-  return unifiedTransaction;
+  return updatedUnifiedTransaction;
 }
 
 /**
@@ -214,7 +180,7 @@ export async function bulkCategorizeTransactions(
 /**
  * Sugere categorização baseada em transações similares
  */
-export async function suggestCategorization(transactionId: string): Promise<
+export async function suggestCategorization(unifiedTransactionId: string): Promise<
   Array<{
     category: Category;
     property: Property | null;
@@ -223,13 +189,16 @@ export async function suggestCategorization(transactionId: string): Promise<
     confidence: number;
   }>
 > {
-  const transaction = await prisma.transaction.findUnique({
-    where: { id: transactionId },
+  const unifiedTransaction = await prisma.unifiedTransaction.findUnique({
+    where: { id: unifiedTransactionId },
+    include: { transaction: true }
   });
-
-  if (!transaction) {
-    throw new Error('Transaction not found');
+  
+  if (!unifiedTransaction) {
+    throw new Error('Unified transaction not found');
   }
+  
+  const transaction = unifiedTransaction.transaction;
 
   const description = transaction.description.toLowerCase();
   const amount = Number(transaction.amount);

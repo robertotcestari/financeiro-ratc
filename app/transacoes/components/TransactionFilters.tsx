@@ -24,6 +24,8 @@ interface Props {
     conta?: string
     mes?: string
     ano?: string
+    status?: string
+    origem?: string
     page?: string
   }
 }
@@ -31,11 +33,14 @@ interface Props {
 export default function TransactionFilters({ categories, bankAccounts, searchParams }: Props) {
   const router = useRouter()
   
+  const currentMonth = new Date().getMonth() + 1
   const [filters, setFilters] = useState({
     categoria: searchParams.categoria || '',
     conta: searchParams.conta || '',
-    mes: searchParams.mes || '',
-    ano: searchParams.ano || new Date().getFullYear().toString()
+    mes: searchParams.mes || currentMonth.toString(),
+    ano: searchParams.ano || new Date().getFullYear().toString(),
+    status: searchParams.status || 'pendentes',
+    origem: searchParams.origem || ''
   })
 
   const currentYear = new Date().getFullYear()
@@ -78,7 +83,9 @@ export default function TransactionFilters({ categories, bankAccounts, searchPar
       categoria: '',
       conta: '',
       mes: '',
-      ano: currentYear.toString()
+      ano: currentYear.toString(),
+      status: '',
+      origem: ''
     })
     router.push('/transacoes')
   }
@@ -107,7 +114,7 @@ export default function TransactionFilters({ categories, bankAccounts, searchPar
     <div className="p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Filtros</h3>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         {/* Filtro de Categoria */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -179,6 +186,38 @@ export default function TransactionFilters({ categories, bankAccounts, searchPar
                 {month.label}
               </option>
             ))}
+          </select>
+        </div>
+
+        {/* Filtro de Status */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Status
+          </label>
+          <select
+            value={filters.status}
+            onChange={(e) => updateFilter('status', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Todos</option>
+            <option value="pendentes">Pendentes</option>
+            <option value="revisados">Revisados</option>
+          </select>
+        </div>
+
+        {/* Filtro de Origem */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Origem
+          </label>
+          <select
+            value={filters.origem}
+            onChange={(e) => updateFilter('origem', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Todos</option>
+            <option value="auto">Somente auto</option>
+            <option value="manual">Somente manual</option>
           </select>
         </div>
       </div>

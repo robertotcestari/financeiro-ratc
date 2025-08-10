@@ -8,14 +8,17 @@ interface SearchParams {
   conta?: string
   mes?: string
   ano?: string
+  status?: string
+  origem?: string
   page?: string
 }
 
 interface Props {
-  searchParams: SearchParams
+  searchParams: Promise<SearchParams>
 }
 
 export default async function TransacoesPage({ searchParams }: Props) {
+  const resolvedParams = await searchParams;
   // Buscar todas as categorias para o filtro
   const categories = await prisma.category.findMany({
     orderBy: [
@@ -34,28 +37,47 @@ export default async function TransacoesPage({ searchParams }: Props) {
     orderBy: { name: 'asc' }
   })
 
+  // Buscar todas as propriedades para o formulário de edição
+  const properties = await prisma.property.findMany({
+    orderBy: { code: 'asc' }
+  })
+
   // Construir filtros da query
-  const page = parseInt(searchParams.page || '1')
+  const page = parseInt(resolvedParams.page || '1')
   const pageSize = 50
   const skip = (page - 1) * pageSize
 
   const where: Record<string, unknown> = {}
   
-  if (searchParams.categoria) {
-    where.categoryId = searchParams.categoria
+  if (resolvedParams.categoria) {
+    where.categoryId = resolvedParams.categoria
   }
   
-  if (searchParams.conta) {
+  if (resolvedParams.conta) {
     where.transaction = {
-      bankAccountId: searchParams.conta
+      bankAccountId: resolvedParams.conta
     }
   }
   
-  if (searchParams.mes && searchParams.ano) {
-    where.year = parseInt(searchParams.ano)
-    where.month = parseInt(searchParams.mes)
-  } else if (searchParams.ano) {
-    where.year = parseInt(searchParams.ano)
+  if (resolvedParams.mes && resolvedParams.ano) {
+    where.year = parseInt(resolvedParams.ano)
+    where.month = parseInt(resolvedParams.mes)
+  } else if (resolvedParams.ano) {
+    where.year = parseInt(resolvedParams.ano)
+  }
+  
+  // Filtro de Status
+  if (resolvedParams.status === 'pendentes') {
+    where.isReviewed = false
+  } else if (resolvedParams.status === 'revisados') {
+    where.isReviewed = true
+  }
+  
+  // Filtro de Origem
+  if (resolvedParams.origem === 'auto') {
+    where.autoCategorized = true
+  } else if (resolvedParams.origem === 'manual') {
+    where.autoCategorized = false
   }
 
   // Buscar transações unificadas com paginação
@@ -153,7 +175,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
           <TransactionFilters
             categories={categories}
             bankAccounts={bankAccounts}
-            searchParams={searchParams}
+            searchParams={resolvedParams}
           />
         </div>
 
@@ -163,6 +185,8 @@ export default async function TransacoesPage({ searchParams }: Props) {
             currentPage={page}
             totalPages={totalPages}
             totalCount={totalCount}
+            categories={categories}
+            properties={properties}
           />
         </div>
       </div>
