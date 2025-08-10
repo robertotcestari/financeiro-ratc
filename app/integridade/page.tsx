@@ -6,12 +6,13 @@ import { TransferStatsCard } from './components/TransferStatsCard';
 import { IntegrityFilters } from './components/IntegrityFilters';
 
 interface PageProps {
-  searchParams: { year?: string; month?: string };
+  searchParams: Promise<{ year?: string; month?: string }>;
 }
 
 export default async function IntegrityPage({ searchParams }: PageProps) {
-  const year = searchParams.year ? parseInt(searchParams.year) : undefined;
-  const month = searchParams.month ? parseInt(searchParams.month) : undefined;
+  const params = await searchParams;
+  const year = params.year ? parseInt(params.year) : undefined;
+  const month = params.month ? parseInt(params.month) : undefined;
   
   const data = await getFinancialIntegrityData(year, month);
 

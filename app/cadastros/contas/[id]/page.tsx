@@ -3,11 +3,12 @@ import { getBankAccount } from '../actions';
 import { BankAccountForm } from '../components/BankAccountForm';
 
 interface PageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function EditBankAccountPage({ params }: PageProps) {
-  const account = await getBankAccount(params.id);
+  const { id } = await params;
+  const account = await getBankAccount(id);
 
   if (!account) {
     notFound();

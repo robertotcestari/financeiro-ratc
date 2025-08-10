@@ -1,139 +1,201 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Install importer deps",
-      "type": "shell",
-      "command": "npm install",
-      "args": [],
-      "problemMatcher": ["$tsc"],
-      "group": "build"
-    },
-    {
-      "label": "Prisma migrate dev",
-      "type": "shell",
-      "command": "npx prisma migrate dev --name init --create-only",
-      "args": [],
-      "problemMatcher": ["$tsc"],
-      "group": "build"
-    },
-    {
-      "label": "Prisma migrate reset + seed",
-      "type": "shell",
-      "command": "npx prisma migrate reset --force && npx prisma db seed",
-      "args": [],
-      "problemMatcher": ["$tsc"],
-      "group": "build"
-    },
-    {
-      "label": "Prisma migrate dev init",
-      "type": "shell",
-      "command": "npx prisma migrate dev --name init",
-      "args": [],
-      "problemMatcher": ["$tsc"],
-      "group": "build"
-    },
-    {
-      "label": "Seed DB",
-      "type": "shell",
-      "command": "npx prisma db seed",
-      "args": [],
-      "problemMatcher": ["$tsc"],
-      "group": "build"
-    },
-    {
-      "label": "Import legacy CSVs",
-      "type": "shell",
-      "command": "npm run import:legacy",
-      "args": [],
-      "problemMatcher": ["$tsc"],
-      "group": "build"
-    },
-    {
-      "label": "Run lint",
-      "type": "shell",
-      "command": "npm run lint --silent",
-      "args": [],
-      "problemMatcher": ["$eslint-stylish"],
-      "group": "build"
-    },
-    {
-      "label": "Prisma migrate dev widen-transaction",
-      "type": "shell",
-      "command": "npx prisma migrate dev --name widen-transaction-uniq --create-only",
-      "group": "build"
-    },
-    {
-      "label": "Prisma migrate dev widen-transaction v2",
-      "type": "shell",
-      "command": "npx prisma migrate dev --name widen-transaction-uniq-v2 --create-only",
-      "group": "build"
-    },
-    {
-      "label": "Prisma migrate dev init existing",
-      "type": "shell",
-      "command": "npx prisma migrate dev --name fix-broken-migration-shadow",
-      "group": "build"
-    },
-    {
-      "label": "Prisma migrate dev retry",
-      "type": "shell",
-      "command": "npx prisma migrate dev --name fix-broken-migration-shadow-2",
-      "group": "build"
-    },
-    {
-      "label": "Prisma migrate dev retry 3",
-      "type": "shell",
-      "command": "npx prisma migrate dev --name fix-broken-migration-shadow-3",
-      "group": "build"
-    },
-    {
-      "label": "Prisma migrate reset + seed",
-      "type": "shell",
-      "command": "npx prisma migrate reset --force && npx prisma db seed",
-      "group": "build"
-    },
-    {
-      "label": "Import legacy CSVs",
-      "type": "shell",
-      "command": "npm run import:legacy",
-      "group": "build"
-    },
-    {
-      "label": "Install importer deps",
-      "type": "shell",
-      "command": "npm install",
-      "group": "build"
-    },
-    {
-      "label": "Seed DB",
-      "type": "shell",
-      "command": "npx prisma db seed",
-      "group": "build"
-    },
-    {
-      "label": "Run lint",
-      "type": "shell",
-      "command": "npm run lint --silent",
-      "group": "build"
-    },
-    {
-      "label": "Run lint",
-      "type": "shell",
-      "command": "npm run lint --silent",
-      "group": "build"
-    },
-    {
-      "label": "Run lint",
-      "type": "shell",
-      "command": "npm run lint --silent",
-      "group": "build"
-    },
-    {
-      "label": "Run lint",
-      "type": "shell",
-      "command": "npm run lint --silent",
-      "group": "build"
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Install importer deps",
+			"type": "shell",
+			"command": "npm install",
+			"args": [],
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Prisma migrate dev",
+			"type": "shell",
+			"command": "npx prisma migrate dev --name init --create-only",
+			"args": [],
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Prisma migrate reset + seed",
+			"type": "shell",
+			"command": "npx prisma migrate reset --force && npx prisma db seed",
+			"args": [],
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Prisma migrate dev init",
+			"type": "shell",
+			"command": "npx prisma migrate dev --name init",
+			"args": [],
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Seed DB",
+			"type": "shell",
+			"command": "npx prisma db seed",
+			"args": [],
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Import legacy CSVs",
+			"type": "shell",
+			"command": "npm run import:legacy",
+			"args": [],
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Run lint",
+			"type": "shell",
+			"command": "npm run lint --silent",
+			"args": [],
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Prisma migrate dev widen-transaction",
+			"type": "shell",
+			"command": "npx prisma migrate dev --name widen-transaction-uniq --create-only",
+			"group": "build"
+		},
+		{
+			"label": "Prisma migrate dev widen-transaction v2",
+			"type": "shell",
+			"command": "npx prisma migrate dev --name widen-transaction-uniq-v2 --create-only",
+			"group": "build"
+		},
+		{
+			"label": "Prisma migrate dev init existing",
+			"type": "shell",
+			"command": "npx prisma migrate dev --name fix-broken-migration-shadow",
+			"group": "build"
+		},
+		{
+			"label": "Prisma migrate dev retry",
+			"type": "shell",
+			"command": "npx prisma migrate dev --name fix-broken-migration-shadow-2",
+			"group": "build"
+		},
+		{
+			"label": "Prisma migrate dev retry 3",
+			"type": "shell",
+			"command": "npx prisma migrate dev --name fix-broken-migration-shadow-3",
+			"group": "build"
+		},
+		{
+			"label": "Prisma migrate reset + seed",
+			"type": "shell",
+			"command": "npx prisma migrate reset --force && npx prisma db seed",
+			"group": "build"
+		},
+		{
+			"label": "Import legacy CSVs",
+			"type": "shell",
+			"command": "npm run import:legacy",
+			"group": "build"
+		},
+		{
+			"label": "Install importer deps",
+			"type": "shell",
+			"command": "npm install",
+			"group": "build"
+		},
+		{
+			"label": "Seed DB",
+			"type": "shell",
+			"command": "npx prisma db seed",
+			"group": "build"
+		},
+		{
+			"label": "Run lint",
+			"type": "shell",
+			"command": "npm run lint --silent",
+			"group": "build"
+		},
+		{
+			"label": "Run lint",
+			"type": "shell",
+			"command": "npm run lint --silent",
+			"group": "build"
+		},
+		{
+			"label": "Run lint",
+			"type": "shell",
+			"command": "npm run lint --silent",
+			"group": "build"
+		},
+		{
+			"label": "Run lint",
+			"type": "shell",
+			"command": "npm run lint --silent",
+			"group": "build"
+		},
+		{
+			"label": "Run unit tests (Vitest)",
+			"type": "shell",
+			"command": "npm run test:run",
+			"group": "build"
+		},
+		{
+			"label": "Reinstall deps (no vite-tsconfig-paths)",
+			"type": "shell",
+			"command": "npm install",
+			"group": "build"
+		},
+		{
+			"label": "Run unit tests (Vitest) - retry",
+			"type": "shell",
+			"command": "npm run test:run",
+			"group": "build"
+		},
+		{
+			"label": "Run unit tests (Vitest) - retry 2",
+			"type": "shell",
+			"command": "npm run test:run",
+			"group": "build"
+		},
+		{
+			"label": "Run unit tests (Vitest) - retry 3",
+			"type": "shell",
+			"command": "npm run test:run",
+			"group": "build"
+		},
+		{
+			"label": "Run unit tests (Vitest) - retry 4",
+			"type": "shell",
+			"command": "npm run test:run",
+			"group": "build"
+		},
+		{
+			"label": "Run unit tests (Vitest) - final retry",
+			"type": "shell",
+			"command": "npm run test:run",
+			"group": "build"
+		},
+		{
+			"label": "Run e2e tests (Playwright)",
+			"type": "shell",
+			"command": "npm run test:e2e",
+			"group": "build"
+		}
+	]
 }
