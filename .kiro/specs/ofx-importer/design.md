@@ -14,7 +14,7 @@ The system will support both OFX 1.x (SGML) and OFX 2.x (XML) formats, providing
 2. **Parsing & Extraction**: System parses OFX data and extracts transaction information
 3. **Account Selection**: User manually selects which bank account to associate with the OFX transactions
 4. **Duplicate Detection**: Check for existing transactions to prevent duplicates
-5. **Preview & Review**: Display parsed transactions for user review and modification
+5. **Preview & Review**: Display parsed transactions for user review
 6. **Import Execution**: Save validated transactions to database
 7. **Summary Report**: Provide detailed import results
 
@@ -32,7 +32,7 @@ The system will support both OFX 1.x (SGML) and OFX 2.x (XML) formats, providing
                                 │                       │
                                 ▼                       ▼
                        ┌─────────────────┐    ┌─────────────────┐
-                       │ Categorization  │    │   Database      │
+                       │  Preview UI     │    │   Database      │
                        └─────────────────┘    └─────────────────┘
 ```
 

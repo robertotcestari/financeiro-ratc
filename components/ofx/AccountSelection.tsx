@@ -82,7 +82,7 @@ export function AccountSelection({
     sortAccounts(initialAccounts)
   );
   const [query, setQuery] = React.useState('');
-  const [selectedId, setSelectedId] = React.useState<string | ''>(
+  const [selectedId, setSelectedId] = React.useState<string>(
     defaultSelectedId ?? ''
   );
   const [validating, setValidating] = React.useState(false);
@@ -102,7 +102,7 @@ export function AccountSelection({
   const filtered = React.useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return accounts;
-    return accounts.filter((a) => {
+    return accounts.filter((a: MinimalBankAccount) => {
       return (
         a.name.toLowerCase().includes(q) ||
         a.bankName.toLowerCase().includes(q) ||
@@ -162,7 +162,9 @@ export function AccountSelection({
       }
 
       // Inject new account, keep sorted, select it
-      setAccounts((prev) => sortAccounts([result.account!, ...prev]));
+      setAccounts((prev: MinimalBankAccount[]) =>
+        sortAccounts([result.account as MinimalBankAccount, ...prev])
+      );
       setSelectedId(result.account.id);
       setShowCreate(false);
       // Reset form
@@ -235,7 +237,7 @@ export function AccountSelection({
             onChange={onSelectChange}
           >
             <option value="">-- Selecione --</option>
-            {filtered.map((acc) => (
+            {filtered.map((acc: MinimalBankAccount) => (
               <option key={acc.id} value={acc.id}>
                 {acc.isActive ? '' : '[Inativa] '}
                 {acc.bankName} • {acc.name} ({acc.accountType})

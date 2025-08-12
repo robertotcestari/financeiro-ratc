@@ -24,6 +24,21 @@ Financial management system for automating financial control by importing OFX ba
 - `npx prisma db push` - Push schema to database without migration
 - `npx prisma studio` - Open Prisma Studio
 
+### Testing
+
+- `npm test` - Run unit and integration tests with Vitest
+- `npm run test:run` - Run tests in CI mode (non-watch)
+- `npm run test:coverage` - Run tests with coverage report
+- `npm run test:ui` - Run tests with Vitest UI
+
+#### Test Database Setup
+
+- `npm run test:db:setup` - Set up test database with migrations
+- `npm run test:db:reset` - Reset test database
+- `npm run test:db:seed` - Seed test database with initial data
+
+**Important**: Tests use a separate database (`financeiro-ratc-test`) configured in `.env.test`
+
 ### Legacy Data Import
 
 - `npm run import:legacy` - Import legacy CSV data (script in `prisma/seeder/import-legacy.js`)

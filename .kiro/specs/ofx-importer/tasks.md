@@ -49,9 +49,8 @@
   - Build import preview service that processes OFX data without saving
   - Implement transaction validation and error collection
   - Create preview data structures for UI display
-  - Add automatic categorization integration for preview
   - Write unit tests for preview generation and validation
-  - _Requirements: 1.3, 4.4, 5.1, 5.2_
+  - _Requirements: 1.3, 5.1, 5.2_
 
 - [x] 7. Implement core import service orchestration
 
@@ -80,16 +79,15 @@
   - Write component tests for account selection interface
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-- [ ] 10. Implement import preview and review UI
+- [x] 10. Implement import preview and review UI
 
-  - Create transaction preview table with categorization display
+  - Create transaction preview table
   - Build duplicate detection UI with highlight and skip options
-  - Implement category modification interface in preview
   - Add import confirmation dialog with summary statistics
   - Write component tests for preview and review interfaces
-  - _Requirements: 1.3, 3.2, 3.3, 4.4, 5.1_
+  - _Requirements: 1.3, 3.2, 3.3, 5.1_
 
-- [ ] 11. Build import results and summary UI
+- [x] 11. Build import results and summary UI
 
   - Create import summary display with success/failure statistics
   - Implement error display with detailed error messages and affected transactions
@@ -98,7 +96,7 @@
   - Write component tests for results and summary displays
   - _Requirements: 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 12. Create OFX import page and routing
+- [x] 12. Create OFX import page and routing
 
   - Build main OFX import page with step-by-step wizard interface
   - Implement routing and navigation between import steps
@@ -107,16 +105,7 @@
   - Write end-to-end tests for complete import user journey
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
 
-- [ ] 13. Add automatic categorization integration
-
-  - Integrate existing categorization service with OFX import preview
-  - Implement OFX transaction type to category mapping rules
-  - Add category suggestion based on transaction descriptions and types
-  - Create categorization confidence scoring for preview display
-  - Write unit tests for OFX-specific categorization logic
-  - _Requirements: 4.1, 4.2, 4.3, 4.4_
-
-- [ ] 14. Implement comprehensive error handling and logging
+- [ ] 13. Implement comprehensive error handling and logging
 
   - Add structured error handling throughout import pipeline
   - Implement detailed logging for import operations and errors
@@ -125,7 +114,7 @@
   - Write tests for error scenarios and recovery flows
   - _Requirements: 1.4, 5.4, 5.5, 6.3_
 
-- [ ] 15. Create sample OFX files and comprehensive testing
+- [ ] 14. Create sample OFX files and comprehensive testing
   - Generate sample OFX files for both SGML and XML formats
   - Create test files with various account types and transaction scenarios
   - Build test files with intentional errors for negative testing

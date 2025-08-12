@@ -44,18 +44,6 @@ The OFX Importer feature will enable users to import financial transaction data 
 
 ### Requirement 4
 
-**User Story:** As a user, I want imported transactions to be automatically categorized when possible, so that I can maintain organized financial records with minimal manual work.
-
-#### Acceptance Criteria
-
-1. WHEN importing transactions THEN the system SHALL attempt to categorize them based on existing categorization rules
-2. IF a transaction matches an existing category pattern THEN the system SHALL assign that category
-3. WHEN transactions cannot be automatically categorized THEN the system SHALL leave them uncategorized for manual review
-4. WHEN the import preview is shown THEN the system SHALL display the proposed categories for user review
-5. WHEN the user modifies categories in the preview THEN the system SHALL use the updated categories for import
-
-### Requirement 5
-
 **User Story:** As a user, I want to see a detailed import summary, so that I can verify what data was imported and identify any issues.
 
 #### Acceptance Criteria
@@ -66,7 +54,7 @@ The OFX Importer feature will enable users to import financial transaction data 
 4. WHEN the summary is displayed THEN the system SHALL provide options to view the imported transactions
 5. WHEN errors occur during import THEN the system SHALL log detailed error information for troubleshooting
 
-### Requirement 6
+### Requirement 5
 
 **User Story:** As a user, I want to handle different OFX file versions and formats, so that I can import data from various financial institutions.
 

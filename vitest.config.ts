@@ -1,8 +1,12 @@
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
+import { config } from 'dotenv';
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
+
+// Load test environment variables quietly
+config({ path: resolve(rootDir, '.env.test'), quiet: true });
 
 export default defineConfig({
   resolve: {

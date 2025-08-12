@@ -148,7 +148,7 @@
   },
   {
     "id": "cat-aluguel-pago",
-    "name": "Aluguel",
+    "name": "Aluguel Pago",
     "level": 3,
     "parentId": "cat-despesas-imoveis",
     "type": "EXPENSE"
@@ -295,7 +295,7 @@
   },
   {
     "id": "cat-ajuste-saldo-receita",
-    "name": "Ajuste de Saldo",
+    "name": "Ajuste de Saldo (Receita)",
     "level": 2,
     "parentId": "cat-receitas-nao-operacionais",
     "type": "ADJUSTMENT"
@@ -344,7 +344,7 @@
   },
   {
     "id": "cat-ajuste-saldo-despesa",
-    "name": "Ajuste de Saldo",
+    "name": "Ajuste de Saldo (Despesa)",
     "level": 2,
     "parentId": "cat-despesas-nao-operacionais",
     "type": "ADJUSTMENT"

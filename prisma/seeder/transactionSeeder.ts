@@ -26,8 +26,8 @@ function inferAccountFromFile(fileName: string): string {
 }
 
 async function ensureDefaultCategoryId(prisma: PrismaClient) {
-  const cat = await prisma.category.findFirst({ where: { name: 'Outras Receitas' } })
-  if (!cat) throw new Error('Default category "Outras Receitas" not found')
+  const cat = await prisma.category.findFirst({ where: { name: 'Outras Receitas Operacionais' } })
+  if (!cat) throw new Error('Default category "Outras Receitas Operacionais" not found')
   return cat.id
 }
 
@@ -105,7 +105,6 @@ async function importFile(prisma: PrismaClient, filePath: string) {
     const dateStr = row['Data']
     const desc = row['Descrição'] ?? row['MEMO'] ?? ''
     const valorStr = row['Valor']
-    const saldoStr = row['Saldo']
 
     const date = parseBRDate(dateStr)
     if (!date) continue
@@ -114,41 +113,14 @@ async function importFile(prisma: PrismaClient, filePath: string) {
     if (!endDate || date > endDate) endDate = date
 
     const amount = parseBRLNumber(valorStr)
-    const balance = parseBRLNumber(saldoStr)
 
     const descLower = String(desc || '').toLowerCase()
     if ((descLower.includes('saldo inicial') || descLower.includes('saldo anterior')) && (amount === 0 || amount === null)) {
-      if (balance != null) {
-        await prisma.accountBalance.upsert({
-          where: { bankAccountId_date: { bankAccountId: bankAccount.id, date } },
-          update: { balance },
-          create: { bankAccountId: bankAccount.id, date, balance }
-        })
-      }
+      // Skip initial balance entries without creating transactions
       continue
     }
 
-    const alreadyProcessed = await prisma.transaction.findFirst({
-      where: {
-        bankAccountId: bankAccount.id, 
-        date, 
-        amount,
-        description: desc && desc.length ? String(desc) : '-',
-        importBatchId: batch.id,
-        ...(balance != null ? { balance } : {})
-      }
-    })
-    
-    if (alreadyProcessed) {
-      if (balance != null) {
-        await prisma.accountBalance.upsert({
-          where: { bankAccountId_date: { bankAccountId: bankAccount.id, date } },
-          update: { balance },
-          create: { bankAccountId: bankAccount.id, date, balance }
-        })
-      }
-      continue
-    }
+    // CSV is source of truth - do not filter duplicates
 
     const tx = await prisma.transaction.create({
       data: {
@@ -156,25 +128,12 @@ async function importFile(prisma: PrismaClient, filePath: string) {
         date,
         description: desc && desc.length ? String(desc) : '-',
         amount,
-        balance: balance != null ? balance : null,
+        balance: null, // No balance column in CSVs anymore
         importBatchId: batch.id
       }
     })
 
-    if (balance != null) {
-      await prisma.accountBalance.upsert({
-        where: { bankAccountId_date: { bankAccountId: bankAccount.id, date } },
-        update: { balance },
-        create: { bankAccountId: bankAccount.id, date, balance }
-      })
-    }
-
-    let categoryId = await ensureDefaultCategoryId(prisma)
-    let propertyId = null
-    let details = null
-    let isTransfer = false
-
-    await upsertUnifiedTransaction(prisma, tx, categoryId, propertyId, isTransfer, details)
+    // UnifiedTransactions will be created by the linked seeder instead
 
     inserted += 1
   }
@@ -198,7 +157,7 @@ export async function seedTransactions(prisma: PrismaClient) {
   const seederDir = path.resolve(__dirname)
   const csvFiles = fs.readdirSync(seederDir)
     .filter(f => f.endsWith('.csv'))
-    .filter(f => !f.includes('DRE') && !f.includes('Contas Unificadas'))
+    .filter(f => !f.includes('DRE') && !f.includes('Contas Unificadas') && !f.includes('Linked'))
     .map(f => path.join(seederDir, f))
   
   if (csvFiles.length > 0) {

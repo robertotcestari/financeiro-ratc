@@ -4,7 +4,8 @@ import { seedCategories } from './seeder/categorySeeder';
 import { seedCities } from './seeder/citySeeder';
 import { seedProperties } from './seeder/propertySeeder';
 import { seedTransactions } from './seeder/transactionSeeder';
-import { seedUnifiedTransactions } from './seeder/unifiedTransactionSeeder';
+import { seedCSVTransactions } from './seeder/csvTransactionSeeder';
+import { seedLinkedUnifiedTransactions } from './seeder/linkedUnifiedTransactionSeeder';
 
 const prisma = new PrismaClient();
 
@@ -21,7 +22,9 @@ async function main() {
 
   await seedTransactions(prisma);
 
-  await seedUnifiedTransactions(prisma);
+  await seedCSVTransactions();
+
+  // await seedLinkedUnifiedTransactions(prisma); // Temporarily disabled to avoid duplicates
 
   console.log('✅ Seed completed!');
 
