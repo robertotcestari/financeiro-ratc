@@ -13,7 +13,7 @@ const mockPrismaClient = {
     findMany: vi.fn(),
     findUnique: vi.fn(),
   },
-  unifiedTransaction: {
+  processedTransaction: {
     findMany: vi.fn(),
     count: vi.fn(),
   },

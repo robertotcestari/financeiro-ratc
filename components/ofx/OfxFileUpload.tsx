@@ -205,7 +205,7 @@ export function OfxFileUpload({
   }
 
   return (
-    <div className={cn('w-full max-w-xl space-y-4', className)}>
+    <div className={cn('w-full space-y-4', className)}>
       <div
         data-testid="ofx-dropzone"
         className={cn(

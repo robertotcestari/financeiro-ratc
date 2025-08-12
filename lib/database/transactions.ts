@@ -1,34 +1,51 @@
 import { prisma } from './client';
 import type {
-  AccountBalance,
   Transaction as Tx,
-  UnifiedTransaction as UTx,
+  ProcessedTransaction as PTx,
   Category,
   BankAccount,
-  Transfer as TransferModel,
   Property,
-} from '@/app/generated/prisma';
-import { CategoryType } from '@/app/generated/prisma';
+} from '../../app/generated/prisma';
+import { CategoryType } from '../../app/generated/prisma';
+import type { Prisma } from '../../app/generated/prisma';
+
+export interface AccountBalanceResult {
+  bankAccountId: string;
+  date: Date;
+  balance: number | null;
+  bankAccount: BankAccount;
+}
 
 type CategoryWithParent = Category & { parent?: Category | null };
 
 /**
- * Busca todas as transações unificadas por período
+ * Determina se uma ProcessedTransaction está pendente
+ * Pendentes: isReviewed=false OU categoryId=null OU transactionId=null
  */
-export async function getUnifiedTransactionsByPeriod(
+export function isPendingTransaction(t: {
+  isReviewed: boolean;
+  categoryId: string | null;
+  transactionId: string | null;
+}): boolean {
+  return !t.isReviewed || t.categoryId === null || t.transactionId === null;
+}
+
+/**
+ * Busca todas as transações processadas por período
+ */
+export async function getProcessedTransactionsByPeriod(
   year: number,
   month?: number
 ): Promise<
-  (UTx & {
-    transaction: Tx & { bankAccount: BankAccount };
-    category: Category;
+  (PTx & {
+    transaction: (Tx & { bankAccount: BankAccount }) | null;
+    category: Category | null;
     property: Property | null;
-    transfer: TransferModel | null;
   })[]
 > {
   const where = month ? { year, month } : { year };
 
-  return prisma.unifiedTransaction.findMany({
+  return prisma.processedTransaction.findMany({
     where,
     include: {
       transaction: {
@@ -38,7 +55,6 @@ export async function getUnifiedTransactionsByPeriod(
       },
       category: true,
       property: true,
-      transfer: true,
     },
     orderBy: [{ transaction: { date: 'desc' } }],
   });
@@ -52,8 +68,8 @@ export async function getTransactionsByCategory(
   year: number,
   month?: number
 ): Promise<
-  (UTx & {
-    transaction: Tx & { bankAccount: BankAccount };
+  (PTx & {
+    transaction: (Tx & { bankAccount: BankAccount }) | null;
     property: Property | null;
   })[]
 > {
@@ -63,7 +79,7 @@ export async function getTransactionsByCategory(
     ...(month && { month }),
   };
 
-  return prisma.unifiedTransaction.findMany({
+  return prisma.processedTransaction.findMany({
     where,
     include: {
       transaction: {
@@ -96,7 +112,7 @@ export async function getDRETotalsByPeriod(
     isTransfer: false, // Exclui transferências do DRE
   };
 
-  const transactions = await prisma.unifiedTransaction.findMany({
+  const transactions = await prisma.processedTransaction.findMany({
     where,
     include: {
       transaction: true,
@@ -119,6 +135,10 @@ export async function getDRETotalsByPeriod(
   >();
 
   for (const transaction of transactions) {
+    // Guard against nullable relations
+    if (!transaction.transaction) continue;
+    if (!transaction.category || !transaction.categoryId) continue;
+
     const categoryId = transaction.categoryId;
     const amount = Number(transaction.transaction.amount);
 
@@ -145,24 +165,41 @@ export async function getDRETotalsByPeriod(
  */
 export async function getAccountBalances(
   date?: Date
-): Promise<(AccountBalance & { bankAccount: BankAccount })[]> {
+): Promise<AccountBalanceResult[]> {
   const targetDate = date || new Date();
 
-  return prisma.accountBalance.findMany({
-    where: {
-      date: {
-        lte: targetDate,
-      },
-    },
-    include: {
-      bankAccount: true,
-    },
-    orderBy: [{ bankAccountId: 'asc' }, { date: 'desc' }],
+  // Fetch all active bank accounts
+  const bankAccounts = await prisma.bankAccount.findMany({
+    where: { isActive: true },
+    orderBy: { name: 'asc' },
   });
+
+  // For each account, find the latest transaction with a non-null balance up to the target date
+  const results: AccountBalanceResult[] = [];
+  for (const ba of bankAccounts) {
+    const latestTx = await prisma.transaction.findFirst({
+      where: {
+        bankAccountId: ba.id,
+        date: { lte: targetDate },
+        balance: { not: null },
+      },
+      orderBy: [{ date: 'desc' }, { id: 'desc' }],
+    });
+
+    results.push({
+      bankAccountId: ba.id,
+      date: latestTx?.date ?? targetDate,
+      balance: latestTx?.balance != null ? Number(latestTx.balance) : null,
+      bankAccount: ba,
+    });
+  }
+
+  return results;
 }
 
 /**
  * Valida se transferências somam zero
+ * Observação: o modelo Transfer não existe no schema atual. Esta função retorna stub.
  */
 export async function validateTransferBalance(transferId: string): Promise<{
   isValid: boolean;
@@ -171,47 +208,12 @@ export async function validateTransferBalance(transferId: string): Promise<{
   destinationAmount: number;
   difference: number;
 }> {
-  const transfer = await prisma.transfer.findUnique({
-    where: { id: transferId },
-    include: {
-      originTransaction: true,
-      destinationTransaction: true,
-    },
-  });
-
-  if (!transfer) {
-    throw new Error('Transfer not found');
-  }
-
-  if (!transfer.isComplete || !transfer.destinationTransaction) {
-    const originAmount = transfer.originTransaction
-      ? Number(transfer.originTransaction.amount)
-      : 0;
-    const destinationAmount = transfer.destinationTransaction
-      ? Number(transfer.destinationTransaction.amount)
-      : 0;
-    const sum = originAmount + destinationAmount;
-    return {
-      isValid: false,
-      message: 'Transfer incomplete',
-      originAmount,
-      destinationAmount,
-      difference: sum,
-    };
-  }
-
-  const originAmount = Number(transfer.originTransaction.amount);
-  const destinationAmount = Number(transfer.destinationTransaction.amount);
-  const sum = originAmount + destinationAmount;
-
-  const isValid = Math.abs(sum) < 0.01; // Tolerância para problemas de ponto flutuante
-
   return {
-    isValid,
-    message: isValid ? 'Transfer balanced' : `Transfer unbalanced: ${sum}`,
-    originAmount,
-    destinationAmount,
-    difference: sum,
+    isValid: false,
+    message: 'Transfer model not available in current schema',
+    originAmount: 0,
+    destinationAmount: 0,
+    difference: 0,
   };
 }
 
@@ -221,19 +223,7 @@ export async function validateTransferBalance(transferId: string): Promise<{
 export async function findPotentialTransfers(dateRange: {
   start: Date;
   end: Date;
-}): Promise<
-  Array<{
-    origin: Tx & {
-      bankAccount: BankAccount;
-      unifiedTransaction: (UTx & { category: Category }) | null;
-    };
-    destination?: Tx & {
-      bankAccount: BankAccount;
-      unifiedTransaction: (UTx & { category: Category }) | null;
-    };
-    confidence: number;
-  }>
-> {
+}): Promise<unknown[]> {
   // Busca transações sem categorização ou categorizadas como transferência
   const transactions = await prisma.transaction.findMany({
     where: {
@@ -242,9 +232,9 @@ export async function findPotentialTransfers(dateRange: {
         lte: dateRange.end,
       },
       OR: [
-        { unifiedTransaction: null },
+        { processedTransaction: null },
         {
-          unifiedTransaction: {
+          processedTransaction: {
             category: {
               type: CategoryType.TRANSFER,
             },
@@ -254,7 +244,7 @@ export async function findPotentialTransfers(dateRange: {
     },
     include: {
       bankAccount: true,
-      unifiedTransaction: {
+      processedTransaction: {
         include: { category: true },
       },
     },
@@ -263,14 +253,8 @@ export async function findPotentialTransfers(dateRange: {
 
   // Identifica possíveis pares de transferência
   const potentialPairs: Array<{
-    origin: Tx & {
-      bankAccount: BankAccount;
-      unifiedTransaction: (UTx & { category: Category }) | null;
-    };
-    destination?: Tx & {
-      bankAccount: BankAccount;
-      unifiedTransaction: (UTx & { category: Category }) | null;
-    };
+    origin: unknown;
+    destination?: unknown;
     confidence: number;
   }> = [];
 
@@ -311,5 +295,5 @@ export async function findPotentialTransfers(dateRange: {
     }
   }
 
-  return potentialPairs.sort((a, b) => b.confidence - a.confidence);
+  return potentialPairs.sort((a, b) => b.confidence - a.confidence) as unknown[];
 }

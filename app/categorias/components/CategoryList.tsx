@@ -107,11 +107,6 @@ function CategoryItem({ category, level, onEdit, onDelete }: CategoryItemProps) 
             {category._count.transactions}
           </span>
         </td>
-        <td className="py-3 px-4 text-center">
-          <span className="text-gray-600">
-            {category.children.length}
-          </span>
-        </td>
         <td className="py-3 px-4">
           <div className="flex space-x-2">
             <Button
@@ -162,9 +157,6 @@ export default function CategoryList({ categories, onEdit, onDelete }: CategoryL
             <th className="py-3 px-4 text-center text-sm font-medium text-gray-700">
               Transações
             </th>
-            <th className="py-3 px-4 text-center text-sm font-medium text-gray-700">
-              Subcategorias
-            </th>
             <th className="py-3 px-4 text-left text-sm font-medium text-gray-700">
               Ações
             </th>
@@ -173,7 +165,7 @@ export default function CategoryList({ categories, onEdit, onDelete }: CategoryL
         <tbody>
           {categories.length === 0 ? (
             <tr>
-              <td colSpan={5} className="py-8 px-4 text-center text-gray-500">
+              <td colSpan={4} className="py-8 px-4 text-center text-gray-500">
                 Nenhuma categoria encontrada
               </td>
             </tr>

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/database/client';
 import { OFXParserService } from './parser';
 import { DuplicateDetectionService } from './duplicate-detection';
+import { logger } from '@/lib/logger';
 import type {
   OFXTransaction,
   OFXParseResult,
@@ -113,6 +114,11 @@ export class ImportPreviewService {
         summary,
       };
     } catch (error) {
+      logger.error('ImportPreviewService.generatePreview failed', {
+        event: 'import_preview_error',
+        bankAccountId,
+        error,
+      });
       const bankAccount = await this.getBankAccountSafely(bankAccountId);
 
       return {
@@ -384,11 +390,17 @@ export class ImportPreviewService {
     categories: Category[],
     properties: Property[]
   ): Promise<TransactionCategorization> {
-    // Simple rule-based categorization
-    // In a real implementation, this would be more sophisticated
+    // Enhanced rule-based categorization:
+    // - Use description + memo keywords (pt-BR and en)
+    // - Map OFX transaction type to category with confidence boosts
+    // - Fallback by amount sign
+    // - Property assignment by code/address keywords
 
-    const description = transaction.description.toLowerCase();
+    const baseText = `${transaction.description} ${
+      transaction.memo ?? ''
+    }`.toLowerCase();
     const amount = transaction.amount;
+    const typeStr = (transaction.type ?? '').toString().toUpperCase();
 
     // Default to uncategorized
     let suggestedCategory: Category | null = null;
@@ -396,11 +408,54 @@ export class ImportPreviewService {
     let confidence = 0;
     let reason = 'No matching categorization rules found';
 
-    // Income categorization rules (pt-BR + en)
+    const findByType = (type: 'INCOME' | 'EXPENSE' | 'TRANSFER') =>
+      categories.find((cat) => cat.type === type) || null;
+
+    // 1) OFX type → category hints (raise confidence if consistent with sign)
+    if (typeStr.includes('TRANSFER') || typeStr.includes('XFER')) {
+      const cat = findByType('TRANSFER');
+      if (cat) {
+        suggestedCategory = cat;
+        confidence = Math.max(confidence, 0.85);
+        reason = `OFX type indicates transfer: ${typeStr}`;
+      }
+    } else if (
+      amount > 0 &&
+      (typeStr.includes('CREDIT') ||
+        typeStr.includes('DEP') ||
+        typeStr.includes('DEPOSIT') ||
+        typeStr.includes('CR') ||
+        typeStr.includes('PAYMENT RECEIVED'))
+    ) {
+      const cat = findByType('INCOME');
+      if (cat) {
+        suggestedCategory = cat;
+        confidence = Math.max(confidence, 0.75);
+        reason = `OFX type indicates income: ${typeStr}`;
+      }
+    } else if (
+      amount < 0 &&
+      (typeStr.includes('DEBIT') ||
+        typeStr.includes('DBT') ||
+        typeStr.includes('POS') ||
+        typeStr.includes('ATM') ||
+        typeStr.includes('WITHDRAWAL') ||
+        typeStr.includes('FEE'))
+    ) {
+      const cat = findByType('EXPENSE');
+      if (cat) {
+        suggestedCategory = cat;
+        confidence = Math.max(confidence, 0.7);
+        reason = `OFX type indicates expense: ${typeStr}`;
+      }
+    }
+
+    // 2) Keyword rules (pt-BR + en), using description + memo
     if (amount > 0) {
       const incomeKeywords = [
         // pt-BR
         'deposito',
+        'crédito',
         'credito',
         'salario',
         'receita',
@@ -412,23 +467,26 @@ export class ImportPreviewService {
         'income',
         'payment',
       ];
-      const matchedKeyword = incomeKeywords.find((keyword) =>
-        description.includes(keyword)
-      );
-
+      const matchedKeyword = incomeKeywords.find((kw) => baseText.includes(kw));
       if (matchedKeyword) {
-        suggestedCategory =
-          categories.find((cat) => cat.type === 'INCOME') || null;
-        confidence = 0.7;
-        reason = `Positive amount with income keyword: ${matchedKeyword}`;
+        const cat = findByType('INCOME');
+        if (cat) {
+          suggestedCategory = suggestedCategory ?? cat;
+          // Boost if type mapping already aligned
+          confidence = Math.max(
+            confidence,
+            suggestedCategory === cat ? 0.85 : 0.7
+          );
+          reason += ` | Income keyword: ${matchedKeyword}`;
+        }
       }
     }
 
-    // Expense categorization rules (pt-BR + en)
     if (amount < 0) {
       const expenseKeywords = [
         // pt-BR
         'debito',
+        'débito',
         'saque',
         'pagamento',
         'compra',
@@ -441,19 +499,22 @@ export class ImportPreviewService {
         'charge',
         'payment',
       ];
-      const matchedKeyword = expenseKeywords.find((keyword) =>
-        description.includes(keyword)
+      const matchedKeyword = expenseKeywords.find((kw) =>
+        baseText.includes(kw)
       );
-
       if (matchedKeyword) {
-        suggestedCategory =
-          categories.find((cat) => cat.type === 'EXPENSE') || null;
-        confidence = 0.6;
-        reason = `Negative amount with expense keyword: ${matchedKeyword}`;
+        const cat = findByType('EXPENSE');
+        if (cat) {
+          suggestedCategory = suggestedCategory ?? cat;
+          confidence = Math.max(
+            confidence,
+            suggestedCategory === cat ? 0.8 : 0.6
+          );
+          reason += ` | Expense keyword: ${matchedKeyword}`;
+        }
       }
     }
 
-    // Transfer categorization rules (pt-BR + en)
     const transferKeywords = [
       'transferencia',
       'ted',
@@ -463,30 +524,32 @@ export class ImportPreviewService {
       'wire',
       'bank transfer',
     ];
-    const transferKeyword = transferKeywords.find((keyword) =>
-      description.includes(keyword)
+    const transferKeyword = transferKeywords.find((kw) =>
+      baseText.includes(kw)
     );
-
     if (transferKeyword) {
-      suggestedCategory =
-        categories.find((cat) => cat.type === 'TRANSFER') || null;
-      confidence = 0.8;
-      reason = `Transfer keyword found: ${transferKeyword}`;
+      const cat = findByType('TRANSFER');
+      if (cat) {
+        suggestedCategory = suggestedCategory ?? cat;
+        confidence = Math.max(
+          confidence,
+          suggestedCategory === cat ? 0.9 : 0.8
+        );
+        reason += ` | Transfer keyword: ${transferKeyword}`;
+      }
     }
 
-    // Fallback by amount sign if still uncategorized and categories exist
+    // 3) Fallback by amount sign if still uncategorized and categories exist
     if (!suggestedCategory) {
       if (amount > 0) {
-        const incomeCat =
-          categories.find((cat) => cat.type === 'INCOME') || null;
+        const incomeCat = findByType('INCOME');
         if (incomeCat) {
           suggestedCategory = incomeCat;
           confidence = Math.max(confidence, 0.55);
           reason += ' | Fallback by amount sign: INCOME';
         }
       } else if (amount < 0) {
-        const expenseCat =
-          categories.find((cat) => cat.type === 'EXPENSE') || null;
+        const expenseCat = findByType('EXPENSE');
         if (expenseCat) {
           suggestedCategory = expenseCat;
           confidence = Math.max(confidence, 0.55);
@@ -495,16 +558,15 @@ export class ImportPreviewService {
       }
     }
 
-    // Property assignment based on description
+    // 4) Property assignment based on description + memo
     for (const property of properties) {
       const propertyKeywords = [
         property.code.toLowerCase(),
         property.address.toLowerCase(),
       ];
-      const matchedPropertyKeyword = propertyKeywords.find((keyword) =>
-        description.includes(keyword)
+      const matchedPropertyKeyword = propertyKeywords.find((kw) =>
+        baseText.includes(kw)
       );
-
       if (matchedPropertyKeyword) {
         suggestedProperty = property;
         confidence = Math.max(confidence, 0.6);

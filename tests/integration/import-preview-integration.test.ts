@@ -7,6 +7,7 @@ describe('ImportPreviewService Integration', () => {
   let testBankAccount: BankAccount;
   let testCategories: Category[];
   let testProperties: Property[];
+  let timestamp: number;
 
   beforeEach(async () => {
     // Create test bank account with unique name
@@ -20,10 +21,11 @@ describe('ImportPreviewService Integration', () => {
       },
     });
 
-    // Create test categories
+    // Create test categories with unique names
+    timestamp = Date.now();
     const incomeCategory = await prisma.category.create({
       data: {
-        name: 'Test Income',
+        name: `Test Income ${timestamp}`,
         type: 'INCOME',
         level: 1,
         orderIndex: 1,
@@ -32,7 +34,7 @@ describe('ImportPreviewService Integration', () => {
 
     const expenseCategory = await prisma.category.create({
       data: {
-        name: 'Test Expense',
+        name: `Test Expense ${timestamp}`,
         type: 'EXPENSE',
         level: 1,
         orderIndex: 2,
@@ -41,7 +43,7 @@ describe('ImportPreviewService Integration', () => {
 
     const transferCategory = await prisma.category.create({
       data: {
-        name: 'Test Transfer',
+        name: `Test Transfer ${timestamp}`,
         type: 'TRANSFER',
         level: 1,
         orderIndex: 3,
@@ -77,7 +79,7 @@ describe('ImportPreviewService Integration', () => {
   afterEach(async () => {
     // Clean up test data in correct order to avoid foreign key constraints
     try {
-      await prisma.unifiedTransaction.deleteMany({});
+      await prisma.processedTransaction.deleteMany({});
       await prisma.transaction.deleteMany({});
       await prisma.property.deleteMany({});
       await prisma.city.deleteMany({});
@@ -358,7 +360,7 @@ describe('ImportPreviewService Integration', () => {
       const transaction = result.transactions[0];
       expect(transaction.categorization.suggestedCategory).not.toBeNull();
       expect(transaction.categorization.suggestedCategory?.name).toBe(
-        'Test Income'
+        `Test Income ${timestamp}`
       );
       expect(transaction.categorization.suggestedCategory?.type).toBe('INCOME');
       expect(transaction.categorization.isAutomaticallyCategorized).toBe(true);

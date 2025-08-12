@@ -28,13 +28,6 @@ enum CategoryType {
   ADJUSTMENT // Ajuste de Saldo
 }
 
-enum DRELineType {
-  DETAIL // Linha de detalhe (categoria)
-  SUBTOTAL // Subtotal calculado
-  TOTAL // Total geral
-  SEPARATOR // Linha separadora
-}
-
 enum ImportStatus {
   PENDING // Aguardando processamento
   PROCESSING // Em processamento
@@ -53,10 +46,8 @@ model BankAccount {
   updatedAt   DateTime    @updatedAt
 
   transactions       Transaction[]
-  balances           AccountBalance[]
-  transfersOut       Transfer[]          @relation("TransferOrigin")
-  transfersIn        Transfer[]          @relation("TransferDestination")
   ofxAccountMappings OFXAccountMapping[]
+  accountSnapshots   AccountSnapshot[]
 
   @@map("bank_accounts")
 }
@@ -75,8 +66,7 @@ model Category {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
 
-  transactions UnifiedTransaction[]
-  dreConfigs   DRELineItem[]
+  transactions ProcessedTransaction[]
 
   @@map("categories")
 }
@@ -108,7 +98,7 @@ model Property {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  transactions UnifiedTransaction[]
+  transactions ProcessedTransaction[]
 
   @@map("properties")
 }
@@ -131,9 +121,7 @@ model Transaction {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
-  unifiedTransaction  UnifiedTransaction?
-  transferOrigin      Transfer?           @relation("TransferOriginTransaction")
-  transferDestination Transfer?           @relation("TransferDestinationTransaction")
+  processedTransaction ProcessedTransaction?
 
   // Allow legitimate duplicates: uniqueness includes running balance snapshot
   @@unique([bankAccountId, date, amount, balance])
@@ -159,25 +147,21 @@ model OFXAccountMapping {
   @@map("ofx_account_mappings")
 }
 
-// 5. UnifiedTransaction (Transações Consolidadas)
-model UnifiedTransaction {
-  id            String      @id @default(cuid())
-  transactionId String      @unique
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
+// 5. ProcessedTransaction (Transações Processadas)
+model ProcessedTransaction {
+  id            String       @id @default(cuid())
+  transactionId String?      @unique
+  transaction   Transaction? @relation(fields: [transactionId], references: [id])
 
   year       Int
   month      Int
-  categoryId String
-  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
   propertyId String?
   property   Property? @relation(fields: [propertyId], references: [id])
 
   details String? @db.Text // Detalhes adicionais
   notes   String? @db.Text // Observações do usuário
-
-  isTransfer Boolean   @default(false) // Se é transferência entre contas
-  transferId String? // ID da transferência relacionada
-  transfer   Transfer? @relation(fields: [transferId], references: [id])
 
   isReviewed Boolean @default(false)
 
@@ -187,65 +171,39 @@ model UnifiedTransaction {
   @@index([year, month])
   @@index([categoryId])
   @@index([propertyId])
-  @@index([transferId])
-  @@map("unified_transactions")
+  @@map("processed_transactions")
 }
 
-// 6. Transfer (Transferências entre Contas)
-model Transfer {
-  id String @id @default(cuid())
+// 8. AccountSnapshot (Snapshots Mensais de Saldo)
+model AccountSnapshot {
+  id            String      @id @default(cuid())
+  bankAccountId String
+  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id])
 
-  // Transação de origem (saída)
-  originTransactionId String      @unique
-  originTransaction   Transaction @relation("TransferOriginTransaction", fields: [originTransactionId], references: [id])
-  originAccountId     String
-  originAccount       BankAccount @relation("TransferOrigin", fields: [originAccountId], references: [id])
+  year  Int
+  month Int
 
-  // Transação de destino (entrada)
-  destinationTransactionId String?      @unique
-  destinationTransaction   Transaction? @relation("TransferDestinationTransaction", fields: [destinationTransactionId], references: [id])
-  destinationAccountId     String
-  destinationAccount       BankAccount  @relation("TransferDestination", fields: [destinationAccountId], references: [id])
+  // Saldos do período
+  openingBalance Decimal @db.Decimal(15, 2) // Saldo inicial do mês
+  closingBalance Decimal @db.Decimal(15, 2) // Saldo final do mês
 
-  amount      Decimal  @db.Decimal(15, 2) // Valor positivo
-  date        DateTime
-  description String?
+  // Movimentação do período
+  totalDebits      Decimal @db.Decimal(15, 2) // Total de débitos
+  totalCredits     Decimal @db.Decimal(15, 2) // Total de créditos
+  transactionCount Int // Número de transações
 
-  isComplete Boolean @default(false) // Se ambas as pontas foram identificadas
-  isManual   Boolean @default(false) // Se foi criada manualmente
+  // Metadados
+  isVerified   Boolean  @default(false) // Se foi verificado manualmente
+  lastSyncedAt DateTime // Última vez que foi sincronizado
+  notes        String?  @db.Text // Observações
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  unifiedTransactions UnifiedTransaction[]
-
-  @@index([date])
-  @@index([originAccountId, destinationAccountId])
-  @@map("transfers")
-}
-
-// 8. DRELineItem (Configuração do DRE)
-model DRELineItem {
-  id         String    @id @default(cuid())
-  name       String // Nome da linha no DRE
-  categoryId String?
-  category   Category? @relation(fields: [categoryId], references: [id])
-
-  lineType   DRELineType // DETAIL, SUBTOTAL, TOTAL
-  formula    String?     @db.Text // Para linhas calculadas
-  orderIndex Int
-  level      Int // Nível de indentação
-
-  includeTransfers Boolean @default(false) // Se deve incluir transferências (sempre false para DRE)
-
-  showInReport Boolean @default(true)
-  isBold       Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([orderIndex])
-  @@map("dre_line_items")
+  @@unique([bankAccountId, year, month])
+  @@index([year, month])
+  @@index([bankAccountId])
+  @@map("account_snapshots")
 }
 
 // 9. ImportBatch (Controle de Importações)
@@ -273,20 +231,4 @@ model ImportBatch {
   transactions Transaction[]
 
   @@map("import_batches")
-}
-
-// 10. AccountBalance (Saldos Históricos)
-model AccountBalance {
-  id            String      @id @default(cuid())
-  bankAccountId String
-  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id])
-
-  date    DateTime
-  balance Decimal  @db.Decimal(15, 2)
-
-  createdAt DateTime @default(now())
-
-  @@unique([bankAccountId, date])
-  @@index([date])
-  @@map("account_balances")
 }

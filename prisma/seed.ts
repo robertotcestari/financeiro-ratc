@@ -5,7 +5,8 @@ import { seedCities } from './seeder/citySeeder';
 import { seedProperties } from './seeder/propertySeeder';
 import { seedTransactions } from './seeder/transactionSeeder';
 import { seedCSVTransactions } from './seeder/csvTransactionSeeder';
-import { seedLinkedUnifiedTransactions } from './seeder/linkedUnifiedTransactionSeeder';
+import { seedLinkedProcessedTransactions } from './seeder/linkedProcessedTransactionSeeder';
+import { seedAllProcessedTransactions } from './seeder/allProcessedTransactionSeeder';
 
 const prisma = new PrismaClient();
 
@@ -20,11 +21,18 @@ async function main() {
 
   await seedProperties(prisma);
 
-  await seedTransactions(prisma);
-
+  // Choose one: either seedTransactions OR seedCSVTransactions, not both
+  // seedTransactions imports from both regular and _no_balance CSV files
+  // seedCSVTransactions imports only from _no_balance CSV files with custom IDs
+  
+  // Option 1: Use regular transaction seeder (imports all CSVs)
+  // await seedTransactions(prisma);
+  
+  // Option 2: Use CSV transaction seeder with custom IDs (only _no_balance files)
   await seedCSVTransactions();
 
-  // await seedLinkedUnifiedTransactions(prisma); // Temporarily disabled to avoid duplicates
+  // Import all processed transactions (with and without transactionId)
+  await seedAllProcessedTransactions(prisma);
 
   console.log('✅ Seed completed!');
 
@@ -33,7 +41,7 @@ async function main() {
   const cityCount = await prisma.city.count();
   const propertyCount = await prisma.property.count();
   const transactionCount = await prisma.transaction.count();
-  const unifiedCount = await prisma.unifiedTransaction.count();
+  const processedCount = await prisma.processedTransaction.count();
 
   console.log(`📊 Summary:`);
   console.log(`   🏦 Bank Accounts: ${accountCount}`);
@@ -41,7 +49,7 @@ async function main() {
   console.log(`   🏙️ Cities: ${cityCount}`);
   console.log(`   � 🏠 Properties: ${propertyCount}`);
   console.log(`   💳 Transactions: ${transactionCount}`);
-  console.log(`   🔗 Unified Transactions: ${unifiedCount}`);
+  console.log(`   🔗 Processed Transactions: ${processedCount}`);
 }
 
 main()

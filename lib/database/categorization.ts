@@ -1,45 +1,33 @@
 import { prisma } from './client';
-import type { UnifiedTransaction } from '@/app/generated/prisma';
-import { CategoryType } from '@/app/generated/prisma';
+import type { ProcessedTransaction } from '../../app/generated/prisma';
 
 /**
- * Categoriza uma transação unificada por ID
+ * Categoriza uma transação processada por ID
  */
 export async function categorizeTransaction(
-  unifiedTransactionId: string,
-  overrideCategoryId: string,
-  overridePropertyId?: string
-): Promise<UnifiedTransaction> {
-  const unifiedTransaction = await prisma.unifiedTransaction.findUnique({
-    where: { id: unifiedTransactionId },
+  processedTransactionId: string,
+  overrideCategoryId?: string | null,
+  overridePropertyId?: string | null
+): Promise<ProcessedTransaction> {
+  const processedTransaction = await prisma.processedTransaction.findUnique({
+    where: { id: processedTransactionId },
     include: { transaction: true },
   });
 
-  if (!unifiedTransaction) {
-    throw new Error('Unified transaction not found');
+  if (!processedTransaction) {
+    throw new Error('Processed transaction not found');
   }
 
-  // Para categorização manual direta
-  const categoryId = overrideCategoryId;
-  const propertyId = overridePropertyId || null;
+  // Permitir transações sem categoria (uncategorized)
+  const categoryId = overrideCategoryId ?? null;
+  const propertyId = overridePropertyId ?? null;
 
-  const category = await prisma.category.findUnique({
-    where: { id: categoryId },
-  });
-
-  if (!category) {
-    throw new Error('Category not found');
-  }
-
-  const isTransfer = category.type === CategoryType.TRANSFER;
-
-  // Atualiza a UnifiedTransaction existente
-  const updatedUnifiedTransaction = await prisma.unifiedTransaction.update({
-    where: { id: unifiedTransactionId },
+  // Atualiza a ProcessedTransaction existente
+  const updatedProcessedTransaction = await prisma.processedTransaction.update({
+    where: { id: processedTransactionId },
     data: {
       categoryId,
       propertyId,
-      isTransfer,
       updatedAt: new Date(),
     },
     include: {
@@ -51,7 +39,7 @@ export async function categorizeTransaction(
     },
   });
 
-  return updatedUnifiedTransaction;
+  return updatedProcessedTransaction;
 }
 
 /**
@@ -59,24 +47,29 @@ export async function categorizeTransaction(
  */
 export async function bulkCategorizeTransactions(
   transactionIds: string[],
-  categoryId: string,
-  propertyId?: string
+  categoryId?: string | null,
+  propertyId?: string | null
 ): Promise<
   Array<{
     transactionId: string;
     success: boolean;
-    result?: UnifiedTransaction;
+    result?: ProcessedTransaction;
     error?: string;
   }>
 > {
-  const results = [];
+  const results: Array<{
+    transactionId: string;
+    success: boolean;
+    result?: ProcessedTransaction;
+    error?: string;
+  }> = [];
 
   for (const transactionId of transactionIds) {
     try {
       const result = await categorizeTransaction(
         transactionId,
-        categoryId,
-        propertyId
+        categoryId ?? null,
+        propertyId ?? null
       );
       results.push({ transactionId, success: true, result });
     } catch (error) {

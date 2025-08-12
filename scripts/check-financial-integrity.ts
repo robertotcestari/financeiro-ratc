@@ -97,7 +97,7 @@ async function checkFinancialIntegrity() {
     }
 
     // 6. Verificar transações unificadas
-    const unifiedCount = await prisma.unifiedTransaction.count();
+    const unifiedCount = await prisma.processedTransaction.count();
     const transactionCount = await prisma.transaction.count();
     
     console.log('\n📈 Estatísticas de categorização:');
@@ -130,7 +130,7 @@ async function checkFinancialIntegrity() {
     console.log(`Valor total transferido:         R$ ${totalTransferAmount.toFixed(2)}`);
 
     // 8. Verificar integridade das transações unificadas
-    const allUnified = await prisma.unifiedTransaction.findMany({
+    const allUnified = await prisma.processedTransaction.findMany({
       select: {
         categoryId: true
       }

@@ -56,7 +56,7 @@ Financial management system for automating financial control by importing OFX ba
 
 - **BankAccount**: Bank accounts (Sicredi, PJBank, XP, etc.)
 - **Transaction**: Raw imported OFX transactions
-- **UnifiedTransaction**: Categorized and consolidated transactions
+- **ProcessedTransaction**: Categorized and consolidated transactions
 - **Category**: Hierarchical categorization system (3 levels)
 - **Property**: Real estate properties for transaction linking
 - **Transfer**: Inter-account transfers with matching logic
@@ -100,7 +100,7 @@ Financial management system for automating financial control by importing OFX ba
 
 - All monetary values use `Decimal` type with precision 15,2
 - Transactions maintain original bank data integrity
-- Categorization is applied through `UnifiedTransaction` model
+- Categorization is applied through `ProcessedTransaction` model
 
 - Lembre sempre que devemos, por padrão usar server components. Apenas quando necessário usar client components.
 - Lembre também que não devemos usar api routes (route handlers). Devemos SEMPRE priorizar server functions/actions
@@ -162,3 +162,4 @@ Real estate properties for transaction linking:
 - `npm run db:seed` - Run all seeders
 - Seeds are idempotent using `upsert` operations
 - Seed modules located in `prisma/seeder/`
+- não tem password na base de dados mysql no ambiente dev e o user é root

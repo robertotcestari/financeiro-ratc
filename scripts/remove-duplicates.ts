@@ -37,8 +37,8 @@ async function main() {
     const transactionsToDelete = duplicateTransactions.slice(1)
     
     if (transactionsToDelete.length > 0) {
-      // First, delete any UnifiedTransactions that reference these duplicates
-      await prisma.unifiedTransaction.deleteMany({
+      // First, delete any ProcessedTransactions that reference these duplicates
+      await prisma.processedTransaction.deleteMany({
         where: {
           transactionId: {
             in: transactionsToDelete.map(t => t.id)

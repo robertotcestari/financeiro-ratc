@@ -14,7 +14,7 @@ describe('ImportService Integration Tests', () => {
 
   beforeEach(async () => {
     // Clean up database
-    await prisma.unifiedTransaction.deleteMany();
+    await prisma.processedTransaction.deleteMany();
     await prisma.transaction.deleteMany();
     await prisma.importBatch.deleteMany();
     await prisma.bankAccount.deleteMany();
@@ -70,7 +70,7 @@ describe('ImportService Integration Tests', () => {
 
   afterEach(async () => {
     // Clean up after each test
-    await prisma.unifiedTransaction.deleteMany();
+    await prisma.processedTransaction.deleteMany();
     await prisma.transaction.deleteMany();
     await prisma.importBatch.deleteMany();
     await prisma.bankAccount.deleteMany();
@@ -515,7 +515,7 @@ NEWFILEUID:NONE
       // Then execute import from preview
       const result = await importService.executeImport(preview, {
         bankAccountId: testBankAccount.id,
-        createUnifiedTransactions: true,
+        createProcessedTransactions: true,
         importReviewTransactions: true, // Allow importing transactions that need review
       });
 
@@ -529,8 +529,8 @@ NEWFILEUID:NONE
       const transactions = await prisma.transaction.findMany();
       expect(transactions).toHaveLength(1);
 
-      const unifiedTransactions = await prisma.unifiedTransaction.findMany();
-      expect(unifiedTransactions).toHaveLength(1);
+      const processedTransactions = await prisma.processedTransaction.findMany();
+      expect(processedTransactions).toHaveLength(1);
     });
   });
 

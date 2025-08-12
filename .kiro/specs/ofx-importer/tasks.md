@@ -105,7 +105,7 @@
   - Write end-to-end tests for complete import user journey
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5_
 
-- [ ] 13. Implement comprehensive error handling and logging
+- [x] 13. Implement comprehensive error handling and logging
 
   - Add structured error handling throughout import pipeline
   - Implement detailed logging for import operations and errors
@@ -114,7 +114,7 @@
   - Write tests for error scenarios and recovery flows
   - _Requirements: 1.4, 5.4, 5.5, 6.3_
 
-- [ ] 14. Create sample OFX files and comprehensive testing
+- [x] 14. Create sample OFX files and comprehensive testing
   - Generate sample OFX files for both SGML and XML formats
   - Create test files with various account types and transaction scenarios
   - Build test files with intentional errors for negative testing

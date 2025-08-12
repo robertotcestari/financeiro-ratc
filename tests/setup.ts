@@ -1,20 +1,14 @@
-import '@testing-library/jest-dom/vitest';
-import { afterEach, beforeAll } from 'vitest';
-import { cleanup } from '@testing-library/react';
-import { config } from 'dotenv';
-import { resolve } from 'path';
+import { beforeAll, afterAll } from 'vitest';
+import { prisma } from '../lib/database/client';
 
-// Load test environment variables quietly
-config({ path: resolve(process.cwd(), '.env.test'), quiet: true });
-
-// Ensure we're using test database
-beforeAll(() => {
-  if (!process.env.DATABASE_URL?.includes('test')) {
-    throw new Error('Tests must use a test database. DATABASE_URL should contain "test"');
-  }
+beforeAll(async () => {
+  // Limpa o banco de dados antes de todos os testes
+  await prisma.accountSnapshot.deleteMany({});
+  await prisma.transaction.deleteMany({});
+  await prisma.bankAccount.deleteMany({});
 });
 
-// Reset DOM between tests for jsdom environment
-afterEach(() => {
-  cleanup();
+afterAll(async () => {
+  // Desconecta do banco de dados após todos os testes
+  await prisma.$disconnect();
 });

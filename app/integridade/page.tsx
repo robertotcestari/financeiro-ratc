@@ -1,9 +1,13 @@
+import { redirect } from 'next/navigation';
 import { getFinancialIntegrityData } from './actions';
 import { AccountBalancesTable } from './components/AccountBalancesTable';
 import { IntegrityComparisonCard } from './components/IntegrityComparisonCard';
 import { IntegrityStatsCard } from './components/IntegrityStatsCard';
 import { TransferStatsCard } from './components/TransferStatsCard';
 import { IntegrityFilters } from './components/IntegrityFilters';
+import { UnprocessedTransactionsCard } from './components/UncategorizedTransactionsCard';
+import { AccountBalanceComparisonCard } from './components/AccountBalanceComparisonCard';
+import { CalculateBalancesButton } from './components/CalculateBalancesButton';
 
 interface PageProps {
   searchParams: Promise<{ year?: string; month?: string }>;
@@ -11,6 +15,9 @@ interface PageProps {
 
 export default async function IntegrityPage({ searchParams }: PageProps) {
   const params = await searchParams;
+  
+  // Redirecionamento removido - permite visualizar todos os anos quando não há filtros
+  
   const year = params.year ? parseInt(params.year) : undefined;
   const month = params.month ? parseInt(params.month) : undefined;
   
@@ -28,35 +35,32 @@ export default async function IntegrityPage({ searchParams }: PageProps) {
         </p>
       </div>
 
-      {/* Filtros */}
-      <IntegrityFilters />
+      {/* Filtros e Ações */}
+      <div className="flex justify-between items-center mb-6">
+        <IntegrityFilters />
+        <CalculateBalancesButton />
+      </div>
 
       <div className="space-y-8">
         {/* Comparação de Integridade */}
         <IntegrityComparisonCard
           totalTransactions={data.totalTransactions}
-          totalBalances={data.totalBalances}
-          difference={data.difference}
-          percentDiff={data.percentDiff}
-          hasBalances={data.latestBalances.length > 0}
-        />
-
-        {/* Saldos por Transações */}
-        <AccountBalancesTable
-          balances={data.transactionsByAccount}
-          total={data.totalTransactions}
-          title="📊 Saldos por Conta (baseado em transações)"
-        />
-
-
-        {/* Estatísticas de Categorização */}
-        <IntegrityStatsCard
-          stats={data.integrityStats}
-          unifiedWithoutCategory={data.unifiedWithoutCategory}
+          integrityStats={data.integrityStats}
         />
 
         {/* Transferências */}
         <TransferStatsCard transferStats={data.transferStats} />
+
+        {/* Comparação de Saldos por Conta */}
+        <AccountBalanceComparisonCard 
+          accountBalanceComparisons={data.accountBalanceComparisons}
+        />
+
+        {/* Transações Não Processadas */}
+        <UnprocessedTransactionsCard 
+          unprocessedTransactions={data.unprocessedTransactions}
+          totalUnprocessed={data.integrityStats.unprocessedCount}
+        />
       </div>
       </div>
     </div>

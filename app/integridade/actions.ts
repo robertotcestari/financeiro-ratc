@@ -1,8 +1,28 @@
 'use server';
 
-import { PrismaClient } from '@/app/generated/prisma';
+import { prisma } from '@/lib/database/client';
+import { Decimal } from '@/app/generated/prisma/runtime/library';
+import { generateAllSnapshots } from '@/lib/database/account-snapshots';
+import { revalidatePath } from 'next/cache';
 
-const prisma = new PrismaClient();
+export async function generateAllAccountSnapshots() {
+  try {
+    const snapshots = await generateAllSnapshots();
+    revalidatePath('/integridade');
+    return {
+      success: true,
+      snapshotCount: snapshots.length,
+      message: `${snapshots.length} snapshots gerados com sucesso`
+    };
+  } catch (error) {
+    console.error('Erro ao gerar snapshots:', error);
+    return {
+      success: false,
+      snapshotCount: 0,
+      error: error instanceof Error ? error.message : 'Erro ao gerar snapshots'
+    };
+  }
+}
 
 export interface AccountBalance {
   bankAccountId: string;
@@ -11,24 +31,21 @@ export interface AccountBalance {
   amount: number;
 }
 
-export interface AccountBalanceRecord {
-  bankAccountId: string;
-  accountName: string;
-  balance: number;
-  date: Date;
-}
 
 export interface IntegrityStats {
-  transactionCount: number;
-  unifiedCount: number;
-  uncategorizedCount: number;
+  transactionCount: number; // Total de transações brutas
+  processedCount: number; // Transações que viraram ProcessedTransaction (com ou sem categoria)
+  categorizedCount: number; // ProcessedTransactions que têm categoria
+  unprocessedCount: number; // Transações que ainda não viraram ProcessedTransaction
+  uncategorizedCount: number; // ProcessedTransactions sem categoria
 }
 
 export interface TransferStats {
   totalTransfers: number;
-  completeTransfers: number;
-  incompleteTransfers: number;
-  totalAmount: number;
+  categorizedTransfers: number;
+  uncategorizedTransfers: number;
+  netAmount: number; // Valor líquido (deveria ser 0)
+  volumeAmount: number; // Volume total (valor absoluto)
 }
 
 export interface RecentActivity {
@@ -38,20 +55,78 @@ export interface RecentActivity {
   amount: number;
 }
 
+export interface UnprocessedTransaction {
+  id: string;
+  date: Date;
+  description: string;
+  amount: number;
+  bankAccountName: string;
+  bankName: string;
+}
+
+export interface AccountBalanceComparison {
+  bankAccountId: string;
+  accountName: string;
+  bankName: string;
+  rawTransactionsBalance: number; // Saldo calculado pelas transações brutas
+  processedTransactionsBalance: number; // Saldo calculado pelas transações processadas
+  difference: number; // Diferença entre raw e processadas
+  processedPercentage: number; // % de transações processadas
+}
+
 export interface FinancialIntegrityData {
   transactionsByAccount: AccountBalance[];
   totalTransactions: number;
-  latestBalances: AccountBalanceRecord[];
-  totalBalances: number;
-  difference: number;
-  percentDiff: number;
   integrityStats: IntegrityStats;
   transferStats: TransferStats;
   recentActivity: RecentActivity[];
   unifiedWithoutCategory: number;
+  unprocessedTransactions: UnprocessedTransaction[];
+  accountBalanceComparisons: AccountBalanceComparison[];
 }
 
 type DateWhere = { date?: { gte?: Date; lte?: Date } } | undefined;
+
+export async function processTransactionToUnified(transactionId: string) {
+  try {
+    // 1. Buscar a transação crua
+    const transaction = await prisma.transaction.findUnique({
+      where: { id: transactionId },
+      include: {
+        processedTransaction: true, // Verificar se já foi processada
+      },
+    });
+
+    if (!transaction) {
+      throw new Error('Transação não encontrada');
+    }
+
+    if (transaction.processedTransaction) {
+      throw new Error('Transação já foi processada');
+    }
+
+    // 2. Criar a transação processada
+    const processedTransaction = await prisma.processedTransaction.create({
+      data: {
+        transactionId: transaction.id,
+        year: transaction.date.getFullYear(),
+        month: transaction.date.getMonth() + 1,
+        // categoryId será null inicialmente - usuário precisará categorizar depois
+        categoryId: null,
+        // propertyId será null inicialmente - usuário pode vincular depois
+        propertyId: null,
+      },
+    });
+
+    return { success: true, processedTransactionId: processedTransaction.id };
+  } catch (error) {
+    console.error('Erro ao processar transação:', error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Erro desconhecido' 
+    };
+  }
+}
 
 export async function getFinancialIntegrityData(
   year?: number,
@@ -120,171 +195,288 @@ export async function getFinancialIntegrityData(
       }
     }
 
-    // 5. Calcular "saldos" baseados no mesmo período das transações
-    let totalBalances = 0;
-    const processedBalances: AccountBalanceRecord[] = [];
 
-    if (dateFilter) {
-      // Com filtro de data: usar a mesma soma das transações
-      totalBalances = totalTransactions;
-
-      // Para compatibilidade com a interface, criar registros baseados nas transações do período
-      for (const accountSum of transactionsByAccount) {
-        const account = accountMap.get(accountSum.bankAccountId);
-        const amount = Number(accountSum._sum.amount || 0);
-
-        if (account) {
-          processedBalances.push({
-            bankAccountId: accountSum.bankAccountId,
-            accountName: account.name,
-            balance: amount,
-            date: dateFilter.date!.lte!,
-          });
-        }
-      }
-    } else {
-      // Sem filtro: buscar o saldo mais recente de cada conta
-      const latestBalances = await prisma.$queryRaw<
-        Array<{
-          bankAccountId: string;
-          balance: number;
-          date: Date;
-        }>
-      >`
-        SELECT ab.bankAccountId, ab.balance, ab.date
-        FROM account_balances ab
-        INNER JOIN (
-          SELECT bankAccountId, MAX(date) as maxDate
-          FROM account_balances
-          GROUP BY bankAccountId
-        ) latest ON ab.bankAccountId = latest.bankAccountId AND ab.date = latest.maxDate
-      `;
-
-      for (const balance of latestBalances) {
-        const account = accountMap.get(balance.bankAccountId);
-        const balanceValue = Number(balance.balance);
-        totalBalances += balanceValue;
-
-        if (account) {
-          processedBalances.push({
-            bankAccountId: balance.bankAccountId,
-            accountName: account.name,
-            balance: balanceValue,
-            date: balance.date,
-          });
-        }
-      }
-    }
-
-    // 7. Calcular diferença
-    const difference = Math.abs(totalTransactions - totalBalances);
-    const percentDiff =
-      totalBalances !== 0 ? (difference / Math.abs(totalBalances)) * 100 : 0;
-
-    // 8. Estatísticas de categorização
-    let unifiedCount: number;
-    if (dateFilter && year && month) {
-      unifiedCount = await prisma.unifiedTransaction.count({
-        where: {
-          year: year,
-          month: month,
-        },
-      });
-    } else if (dateFilter && year) {
-      unifiedCount = await prisma.unifiedTransaction.count({
-        where: {
-          year: year,
-        },
-      });
-    } else {
-      unifiedCount = await prisma.unifiedTransaction.count();
-    }
-
+    // 5. Estatísticas detalhadas
     const transactionCount = await prisma.transaction.count({
       where: dateFilter,
     });
 
-    const integrityStats: IntegrityStats = {
-      transactionCount,
-      unifiedCount,
-      uncategorizedCount: transactionCount - unifiedCount,
-    };
-
-    // 9. Verificar transferências
-    const transfers = await prisma.transfer.findMany({
-      where: dateFilter
-        ? {
-            date: dateFilter.date,
-          }
-        : undefined,
-      select: {
-        amount: true,
-        isComplete: true,
-      },
-    });
-
-    const completeTransfers = transfers.filter((t) => t.isComplete);
-    const incompleteTransfers = transfers.filter((t) => !t.isComplete);
-    const totalTransferAmount = transfers.reduce(
-      (sum, t) => sum + Number(t.amount),
-      0
-    );
-
-    const transferStats: TransferStats = {
-      totalTransfers: transfers.length,
-      completeTransfers: completeTransfers.length,
-      incompleteTransfers: incompleteTransfers.length,
-      totalAmount: totalTransferAmount,
-    };
-
-    // 10. Verificar transações unificadas sem categoria
-    let allUnified: Array<{ categoryId: string }>;
+    // Contar transações processadas (que têm ProcessedTransaction)
+    let processedCount: number;
     if (dateFilter && year && month) {
-      allUnified = await prisma.unifiedTransaction.findMany({
+      processedCount = await prisma.processedTransaction.count({
         where: {
           year: year,
           month: month,
         },
+      });
+    } else if (dateFilter && year) {
+      processedCount = await prisma.processedTransaction.count({
+        where: {
+          year: year,
+        },
+      });
+    } else {
+      processedCount = await prisma.processedTransaction.count();
+    }
+
+    // Contar transações categorizadas (ProcessedTransaction com categoryId)
+    let categorizedCount: number;
+    if (dateFilter && year && month) {
+      categorizedCount = await prisma.processedTransaction.count({
+        where: {
+          year: year,
+          month: month,
+          categoryId: { not: null },
+        },
+      });
+    } else if (dateFilter && year) {
+      categorizedCount = await prisma.processedTransaction.count({
+        where: {
+          year: year,
+          categoryId: { not: null },
+        },
+      });
+    } else {
+      categorizedCount = await prisma.processedTransaction.count({
+        where: {
+          categoryId: { not: null },
+        },
+      });
+    }
+
+    const unprocessedCount = transactionCount - processedCount;
+    const uncategorizedCount = processedCount - categorizedCount;
+
+    const integrityStats: IntegrityStats = {
+      transactionCount,
+      processedCount,
+      categorizedCount,
+      unprocessedCount,
+      uncategorizedCount,
+    };
+
+    // 6. Verificar transferências (usando category.type = "TRANSFER")
+    let transferTransactions: Array<{ transaction: { amount: Decimal } | null; categoryId: string | null }>;
+    
+    if (dateFilter && year && month) {
+      transferTransactions = await prisma.processedTransaction.findMany({
+        where: {
+          year: year,
+          month: month,
+          category: {
+            type: 'TRANSFER',
+          },
+        },
         select: {
+          transaction: {
+            select: {
+              amount: true,
+            },
+          },
           categoryId: true,
         },
       });
     } else if (dateFilter && year) {
-      allUnified = await prisma.unifiedTransaction.findMany({
+      transferTransactions = await prisma.processedTransaction.findMany({
         where: {
           year: year,
+          category: {
+            type: 'TRANSFER',
+          },
         },
         select: {
+          transaction: {
+            select: {
+              amount: true,
+            },
+          },
           categoryId: true,
         },
       });
     } else {
-      allUnified = await prisma.unifiedTransaction.findMany({
+      transferTransactions = await prisma.processedTransaction.findMany({
+        where: {
+          category: {
+            type: 'TRANSFER',
+          },
+        },
         select: {
+          transaction: {
+            select: {
+              amount: true,
+            },
+          },
           categoryId: true,
         },
       });
     }
-    const unifiedWithoutCategory = allUnified.filter(
-      (u) => !u.categoryId
-    ).length;
 
-    // 11. Análise por período (para compatibilidade, retornamos array vazio)
+    const categorizedTransfers = transferTransactions.filter((t) => t.categoryId !== null);
+    const uncategorizedTransfers = transferTransactions.filter((t) => t.categoryId === null);
+    
+    // Valor líquido (deveria ser 0 se transferências estão balanceadas)
+    const netTransferAmount = transferTransactions.reduce(
+      (sum, t) => sum + Number(t.transaction?.amount || 0),
+      0
+    );
+    
+    // Volume total (valor absoluto - para fins informativos)
+    const volumeTransferAmount = transferTransactions.reduce(
+      (sum, t) => sum + Math.abs(Number(t.transaction?.amount || 0)),
+      0
+    );
+
+    const transferStats: TransferStats = {
+      totalTransfers: transferTransactions.length,
+      categorizedTransfers: categorizedTransfers.length,
+      uncategorizedTransfers: uncategorizedTransfers.length,
+      netAmount: netTransferAmount,
+      volumeAmount: volumeTransferAmount,
+    };
+
+    // Usar o uncategorizedCount já calculado
+    const unifiedWithoutCategory = uncategorizedCount;
+
+    // 8. Buscar transações não processadas (que não possuem ProcessedTransaction)
+    const unprocessedTransactionsRaw = await prisma.transaction.findMany({
+      where: {
+        ...dateFilter,
+        processedTransaction: null, // Transações sem ProcessedTransaction
+      },
+      include: {
+        bankAccount: {
+          select: {
+            name: true,
+            bankName: true,
+          },
+        },
+      },
+      orderBy: {
+        date: 'desc',
+      },
+      take: 100, // Limitar a 100 transações para performance
+    });
+
+    const unprocessedTransactions: UnprocessedTransaction[] = unprocessedTransactionsRaw.map((t) => ({
+      id: t.id,
+      date: t.date,
+      description: t.description,
+      amount: Number(t.amount),
+      bankAccountName: t.bankAccount.name,
+      bankName: t.bankAccount.bankName,
+    }));
+
+    // 9. Comparação de saldos por conta (raw vs processadas)
+    const accountBalanceComparisons: AccountBalanceComparison[] = [];
+    
+    for (const accountSum of transactionsByAccount) {
+      const account = accountMap.get(accountSum.bankAccountId);
+      if (!account) continue;
+
+      const rawBalance = Number(accountSum._sum.amount || 0);
+
+      // Calcular saldo das transações processadas para esta conta
+      let processedBalance = 0;
+      
+      if (dateFilter && year && month) {
+        // Note: Aggregate não funciona com relações. Usamos findMany e reduce.
+        
+        // Buscar transações processadas desta conta no período
+        const processedTransactions = await prisma.processedTransaction.findMany({
+          where: {
+            year: year,
+            month: month,
+            transaction: {
+              bankAccountId: accountSum.bankAccountId,
+            },
+          },
+          include: {
+            transaction: {
+              select: {
+                amount: true,
+              },
+            },
+          },
+        });
+        
+        processedBalance = processedTransactions.reduce(
+          (sum, ut) => sum + Number(ut.transaction?.amount || 0),
+          0
+        );
+      } else if (dateFilter && year) {
+        const processedTransactions = await prisma.processedTransaction.findMany({
+          where: {
+            year: year,
+            transaction: {
+              bankAccountId: accountSum.bankAccountId,
+            },
+          },
+          include: {
+            transaction: {
+              select: {
+                amount: true,
+              },
+            },
+          },
+        });
+        
+        processedBalance = processedTransactions.reduce(
+          (sum, ut) => sum + Number(ut.transaction?.amount || 0),
+          0
+        );
+      } else {
+        // Sem filtro de data - todas as transações processadas
+        const processedTransactions = await prisma.processedTransaction.findMany({
+          where: {
+            transaction: {
+              bankAccountId: accountSum.bankAccountId,
+            },
+          },
+          include: {
+            transaction: {
+              select: {
+                amount: true,
+              },
+            },
+          },
+        });
+        
+        processedBalance = processedTransactions.reduce(
+          (sum, ut) => sum + Number(ut.transaction?.amount || 0),
+          0
+        );
+      }
+
+      const difference = rawBalance - processedBalance;
+      const processedPercentage = rawBalance !== 0 ? (processedBalance / rawBalance) * 100 : 0;
+
+      accountBalanceComparisons.push({
+        bankAccountId: accountSum.bankAccountId,
+        accountName: account.name,
+        bankName: account.bankName,
+        rawTransactionsBalance: rawBalance,
+        processedTransactionsBalance: processedBalance,
+        difference: Math.abs(difference),
+        processedPercentage,
+      });
+    }
+
+    // 10. Análise por período (para compatibilidade, retornamos array vazio)
     const recentActivity: RecentActivity[] = [];
 
     return {
       transactionsByAccount: processedTransactions,
       totalTransactions,
-      latestBalances: processedBalances,
-      totalBalances,
-      difference,
-      percentDiff,
       integrityStats,
       transferStats,
       recentActivity,
       unifiedWithoutCategory,
+      unprocessedTransactions,
+      accountBalanceComparisons,
     };
-  } finally {
-    await prisma.$disconnect();
+  } catch (error) {
+    console.error('Erro ao buscar dados de integridade:', error);
+    throw error;
   }
 }

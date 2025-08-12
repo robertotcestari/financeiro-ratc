@@ -10,6 +10,7 @@ import {
 } from '../actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 
 interface Category {
   id: string;
@@ -30,7 +31,6 @@ interface Transaction {
   month: number;
   details: string | null;
   notes: string | null;
-  isTransfer: boolean;
   isReviewed: boolean;
   transaction: {
     id: string;
@@ -53,11 +53,6 @@ interface Transaction {
   property: {
     code: string;
     city: string;
-  } | null;
-  transfer: {
-    originAccount: { name: string };
-    destinationAccount: { name: string };
-    amount: number;
   } | null;
 }
 
@@ -281,6 +276,19 @@ export default function TransactionTable({
     .sort((a, b) => parseInt(a) - parseInt(b))
     .flatMap((level) => groupedCategories[parseInt(level)]);
 
+  // Preparar opções para comboboxes
+  const categoryOptions: ComboboxOption[] = sortedCategories.map(category => ({
+    value: category.id,
+    label: '  '.repeat(category.level - 1) + category.displayName,
+    keywords: [category.name, category.parent?.name || ''].filter(Boolean)
+  }));
+
+  const propertyOptions: ComboboxOption[] = properties.map(property => ({
+    value: property.code,
+    label: `${property.code} - ${property.city}`,
+    keywords: [property.code, property.city]
+  }));
+
   return (
     <div className="overflow-hidden">
       {/* Barra de ações em lote */}
@@ -295,31 +303,27 @@ export default function TransactionTable({
                   : 'transações selecionadas'}
               </span>
 
-              <select
+              <Combobox
+                options={categoryOptions}
                 value={bulkCategory}
-                onChange={(e) => setBulkCategory(e.target.value)}
-                className="text-sm border border-blue-300 rounded-md px-3 py-1 bg-white"
-              >
-                <option value="">Selecione categoria...</option>
-                {sortedCategories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.displayName}
-                  </option>
-                ))}
-              </select>
+                onValueChange={setBulkCategory}
+                placeholder="Selecione categoria..."
+                searchPlaceholder="Buscar categoria..."
+                emptyMessage="Nenhuma categoria encontrada."
+                clearLabel="Selecione categoria..."
+                className="w-64 text-sm"
+              />
 
-              <select
+              <Combobox
+                options={propertyOptions}
                 value={bulkProperty}
-                onChange={(e) => setBulkProperty(e.target.value)}
-                className="text-sm border border-blue-300 rounded-md px-3 py-1 bg-white"
-              >
-                <option value="">Propriedade (opcional)</option>
-                {properties.map((property) => (
-                  <option key={property.id} value={property.code}>
-                    {property.code} - {property.city}
-                  </option>
-                ))}
-              </select>
+                onValueChange={setBulkProperty}
+                placeholder="Propriedade (opcional)"
+                searchPlaceholder="Buscar propriedade..."
+                emptyMessage="Nenhuma propriedade encontrada."
+                clearLabel="Propriedade (opcional)"
+                className="w-48 text-sm"
+              />
 
               <Button
                 onClick={handleBulkCategorize}
@@ -446,17 +450,17 @@ export default function TransactionTable({
                 </td>
                 <td className="px-3 py-1.5 whitespace-nowrap text-xs leading-tight">
                   {editingId === transaction.id ? (
-                    <select
+                    <Combobox
+                      options={categoryOptions}
                       value={editingCategory}
-                      onChange={(e) => setEditingCategory(e.target.value)}
-                      className="text-xs border border-gray-300 rounded px-1.5 py-0.5 w-full"
-                    >
-                      {sortedCategories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.displayName}
-                        </option>
-                      ))}
-                    </select>
+                      onValueChange={setEditingCategory}
+                      placeholder="Selecionar categoria"
+                      searchPlaceholder="Buscar categoria..."
+                      emptyMessage="Nenhuma categoria encontrada."
+                      allowClear={false}
+                      compact={true}
+                      className="w-full"
+                    />
                   ) : (
                     <div
                       onDoubleClick={() => startEdit(transaction)}
@@ -477,18 +481,17 @@ export default function TransactionTable({
                 </td>
                 <td className="px-3 py-1.5 whitespace-nowrap text-xs text-gray-900 leading-tight">
                   {editingId === transaction.id ? (
-                    <select
+                    <Combobox
+                      options={propertyOptions}
                       value={editingProperty}
-                      onChange={(e) => setEditingProperty(e.target.value)}
-                      className="text-xs border border-gray-300 rounded px-1.5 py-0.5 w-full"
-                    >
-                      <option value="">Nenhuma</option>
-                      {properties.map((property) => (
-                        <option key={property.id} value={property.code}>
-                          {property.code} - {property.city}
-                        </option>
-                      ))}
-                    </select>
+                      onValueChange={setEditingProperty}
+                      placeholder="Selecionar propriedade"
+                      searchPlaceholder="Buscar propriedade..."
+                      emptyMessage="Nenhuma propriedade encontrada."
+                      clearLabel="Nenhuma"
+                      compact={true}
+                      className="w-full"
+                    />
                   ) : (
                     <div
                       onDoubleClick={() => startEdit(transaction)}
@@ -519,12 +522,6 @@ export default function TransactionTable({
                   >
                     {formatCurrency(transaction.transaction.amount)}
                   </div>
-                  {transaction.isTransfer && transaction.transfer && (
-                    <div className="text-[11px] text-gray-500 mt-0.5">
-                      {transaction.transfer.originAccount.name} →{' '}
-                      {transaction.transfer.destinationAccount.name}
-                    </div>
-                  )}
                 </td>
                 <td className="px-3 py-1.5 whitespace-nowrap text-center">
                   <div className="flex flex-col items-center space-y-0.5">

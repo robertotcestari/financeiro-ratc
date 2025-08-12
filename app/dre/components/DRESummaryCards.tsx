@@ -16,7 +16,8 @@ export async function DRESummaryCards({ year, selectedMonths }: DRESummaryCardsP
   // Calculate totals across all selected months
   const totalReceitas = selectedMonths.reduce((sum, month) => sum + (monthlyTotals[month]?.receitas || 0), 0);
   const totalDespesas = selectedMonths.reduce((sum, month) => sum + (monthlyTotals[month]?.despesas || 0), 0);
-  const totalResultado = totalReceitas + totalDespesas; // Despesas are negative
+  const totalLucroOperacional = selectedMonths.reduce((sum, month) => sum + (monthlyTotals[month]?.lucroOperacional || 0), 0);
+  const totalResultado = selectedMonths.reduce((sum, month) => sum + (monthlyTotals[month]?.resultado || 0), 0);
   
   const margemLiquida = totalReceitas !== 0 ? (totalResultado / totalReceitas) * 100 : 0;
   const indiceDespesas = totalReceitas !== 0 ? (Math.abs(totalDespesas) / totalReceitas) * 100 : 0;
@@ -33,7 +34,7 @@ export async function DRESummaryCards({ year, selectedMonths }: DRESummaryCardsP
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
       <Card>
         <CardContent className="p-4">
           <CardTitle className="text-sm font-medium text-muted-foreground mb-1">Total de Receitas</CardTitle>
@@ -50,7 +51,16 @@ export async function DRESummaryCards({ year, selectedMonths }: DRESummaryCardsP
       
       <Card>
         <CardContent className="p-4">
-          <CardTitle className="text-sm font-medium text-muted-foreground mb-1">Resultado Líquido</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground mb-1">Resultado Operacional</CardTitle>
+          <p className={`text-2xl font-bold ${totalLucroOperacional >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {formatCurrency(totalLucroOperacional)}
+          </p>
+        </CardContent>
+      </Card>
+      
+      <Card>
+        <CardContent className="p-4">
+          <CardTitle className="text-sm font-medium text-muted-foreground mb-1">Resultado de Caixa</CardTitle>
           <p className={`text-2xl font-bold ${totalResultado >= 0 ? 'text-green-600' : 'text-red-600'}`}>
             {formatCurrency(totalResultado)}
           </p>

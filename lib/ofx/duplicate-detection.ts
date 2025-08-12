@@ -10,6 +10,7 @@
 import { prisma } from '@/lib/database/client';
 import type { OFXTransaction } from './types';
 import { Prisma, type Transaction } from '@/app/generated/prisma';
+import { logger } from '@/lib/logger';
 
 export interface DuplicateMatch {
   ofxTransaction: OFXTransaction;
@@ -168,12 +169,23 @@ export class DuplicateDetectionService {
       return null;
     }
 
-    const existingTransaction = await prisma.transaction.findFirst({
-      where: {
+    let existingTransaction: Transaction | null = null;
+    try {
+      existingTransaction = await prisma.transaction.findFirst({
+        where: {
+          bankAccountId,
+          ofxTransId: ofxTransaction.transactionId,
+        },
+      });
+    } catch (error) {
+      logger.error('DuplicateDetectionService.findExactOFXMatch failed', {
+        event: 'duplicate_detection_exact_match_error',
         bankAccountId,
         ofxTransId: ofxTransaction.transactionId,
-      },
-    });
+        error,
+      });
+      return null;
+    }
 
     if (!existingTransaction) {
       return null;
@@ -204,20 +216,29 @@ export class DuplicateDetectionService {
 
     // Find potential matches within date range and same absolute amount
     const ofxAmount = new Prisma.Decimal(ofxTransaction.amount);
-    const potentialMatches = await prisma.transaction.findMany({
-      where: {
-        bankAccountId,
-        date: {
-          gte: startDate,
-          lte: endDate,
+    let potentialMatches: Transaction[] = [];
+    try {
+      potentialMatches = await prisma.transaction.findMany({
+        where: {
+          bankAccountId,
+          date: {
+            gte: startDate,
+            lte: endDate,
+          },
+          // Match by absolute amount equality to handle debit/credit sign normalization
+          OR: [{ amount: ofxAmount }, { amount: ofxAmount.neg().abs() }],
         },
-        // Match by absolute amount equality to handle debit/credit sign normalization
-        OR: [
-          { amount: ofxAmount },
-          { amount: ofxAmount.neg().abs() },
-        ],
-      },
-    });
+      });
+    } catch (error) {
+      logger.error('DuplicateDetectionService.findFuzzyMatches failed', {
+        event: 'duplicate_detection_fuzzy_match_error',
+        bankAccountId,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        error,
+      });
+      return [];
+    }
 
     const matches: DuplicateMatch[] = [];
 

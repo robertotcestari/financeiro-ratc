@@ -5,7 +5,7 @@ import { parse } from 'csv-parse/sync'
 
 const prisma = new PrismaClient()
 
-interface UnifiedCSVRow {
+interface ProcessedCSVRow {
   year: string
   month: string
   propertyRef: string

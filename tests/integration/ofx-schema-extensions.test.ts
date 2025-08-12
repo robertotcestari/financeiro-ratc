@@ -4,10 +4,8 @@ import { prisma } from '@/lib/database/client';
 describe('OFX Schema Extensions', () => {
   beforeEach(async () => {
     // Clean up test data in correct order (respecting foreign key constraints)
-    await prisma.unifiedTransaction.deleteMany();
-    await prisma.transfer.deleteMany();
+    await prisma.processedTransaction.deleteMany();
     await prisma.transaction.deleteMany();
-    await prisma.accountBalance.deleteMany();
     await prisma.oFXAccountMapping.deleteMany();
     await prisma.importBatch.deleteMany();
     await prisma.bankAccount.deleteMany();

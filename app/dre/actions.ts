@@ -1,6 +1,7 @@
 'use server';
 
 import { generateDRE, DRELineData } from '@/lib/database/dre';
+import { prisma } from '@/lib/database/client';
 
 export interface DREMonthlyData {
   [key: string]: DRELineData[];
@@ -10,7 +11,7 @@ export interface DRERowData {
   id: string;
   name: string;
   level: number;
-  lineType: 'DETAIL' | 'SUBTOTAL' | 'TOTAL' | 'SEPARATOR';
+  lineType: 'DETAIL' | 'SUBTOTAL' | 'TOTAL' | 'SEPARATOR' | 'HEADER';
   isBold: boolean;
   monthlyAmounts: { [month: number]: number };
   total?: number;
@@ -18,7 +19,7 @@ export interface DRERowData {
 
 export async function generateMonthlyDRE(year: number, months: number[]): Promise<{
   rows: DRERowData[];
-  monthlyTotals: { [month: number]: { receitas: number; despesas: number; resultado: number } };
+  monthlyTotals: { [month: number]: { receitas: number; despesas: number; resultado: number; lucroOperacional: number } };
 }> {
   // Generate DRE for each month
   const monthlyData: DREMonthlyData = {};
@@ -28,6 +29,31 @@ export async function generateMonthlyDRE(year: number, months: number[]): Promis
     monthlyData[month] = dreLines;
   }
 
+  // Calculate uncategorized transactions for each month
+  const uncategorizedAmounts: { [month: number]: number } = {};
+  for (const month of months) {
+    const uncategorizedTransactions = await prisma.processedTransaction.findMany({
+      where: {
+        year,
+        month,
+        categoryId: null, // Apenas transações não categorizadas
+      },
+      include: {
+        transaction: true,
+      },
+    });
+
+    uncategorizedAmounts[month] = uncategorizedTransactions.reduce((total, transaction) => {
+      if (transaction.transaction) {
+        return total + Number(transaction.transaction.amount);
+      }
+      return total;
+    }, 0);
+  }
+
+  // Check if we have any uncategorized amounts across all months
+  const hasUncategorizedTransactions = Object.values(uncategorizedAmounts).some(amount => amount !== 0);
+
   // Combine all months into a unified structure
   const allLineNames = new Set<string>();
   Object.values(monthlyData).forEach(lines => {
@@ -35,12 +61,38 @@ export async function generateMonthlyDRE(year: number, months: number[]): Promis
   });
 
   const rows: DRERowData[] = [];
-  const monthlyTotals: { [month: number]: { receitas: number; despesas: number; resultado: number } } = {};
+  const monthlyTotals: { [month: number]: { receitas: number; despesas: number; resultado: number; lucroOperacional: number } } = {};
 
   // Initialize monthly totals
   months.forEach(month => {
-    monthlyTotals[month] = { receitas: 0, despesas: 0, resultado: 0 };
+    monthlyTotals[month] = { receitas: 0, despesas: 0, resultado: 0, lucroOperacional: 0 };
   });
+
+  // Add uncategorized line first if there are uncategorized transactions
+  if (hasUncategorizedTransactions) {
+    const uncategorizedTotal = months.reduce((sum, month) => sum + uncategorizedAmounts[month], 0);
+    
+    rows.push({
+      id: 'nao-categorizados',
+      name: 'Não Categorizados',
+      level: 1,
+      lineType: 'DETAIL',
+      isBold: true,
+      monthlyAmounts: uncategorizedAmounts,
+      total: months.length > 1 ? uncategorizedTotal : undefined
+    });
+
+    // Add separator after uncategorized line
+    rows.push({
+      id: 'separator-nao-categorizados',
+      name: '',
+      level: 0,
+      lineType: 'SEPARATOR',
+      isBold: false,
+      monthlyAmounts: months.reduce((acc, month) => ({ ...acc, [month]: 0 }), {}),
+      total: 0
+    });
+  }
 
   // Get the structure from the first month or create a default structure
   const firstMonthLines = monthlyData[months[0]] || [];
@@ -58,11 +110,17 @@ export async function generateMonthlyDRE(year: number, months: number[]): Promis
       total += amount;
       
       // Update monthly totals based on line type and name
-      if (line.name === 'Total de Receitas' || line.lineType === 'SUBTOTAL' && line.name.includes('Receitas')) {
+      if (line.name === 'Total de Receitas Operacionais' || 
+          line.name === 'Total de Receitas não Operacionais' ||
+          (line.lineType === 'SUBTOTAL' && line.name.includes('Receitas'))) {
         monthlyTotals[month].receitas += amount;
-      } else if (line.name === 'Total de Despesas' || line.lineType === 'SUBTOTAL' && line.name.includes('Despesas')) {
+      } else if (line.name === 'Total de Despesas Operacionais' || 
+                 line.name === 'Total de Despesas não Operacionais' ||
+                 (line.lineType === 'SUBTOTAL' && line.name.includes('Despesas'))) {
         monthlyTotals[month].despesas += amount;
-      } else if (line.name === 'Resultado Líquido') {
+      } else if (line.name === 'Lucro Operacional') {
+        monthlyTotals[month].lucroOperacional = amount;
+      } else if (line.name === 'Resultado de Caixa') {
         monthlyTotals[month].resultado = amount;
       }
     }

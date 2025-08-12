@@ -11,7 +11,7 @@ async function showFinalSummary() {
   const cityCount = await prisma.city.count()
   const propertyCount = await prisma.property.count()
   const transactionCount = await prisma.transaction.count()
-  const unifiedCount = await prisma.unifiedTransaction.count()
+  const processedCount = await prisma.processedTransaction.count()
   const balanceCount = await prisma.accountBalance.count()
   
   console.log(`🏦 Bank Accounts: ${accountCount}`)
@@ -19,14 +19,14 @@ async function showFinalSummary() {
   console.log(`🏙️ Cities: ${cityCount}`)
   console.log(`🏠 Properties: ${propertyCount}`)
   console.log(`💳 Transactions: ${transactionCount}`)
-  console.log(`🔗 Unified Transactions: ${unifiedCount}`)
+  console.log(`🔗 Processed Transactions: ${processedCount}`)
   console.log(`💰 Account Balances: ${balanceCount}`)
   
   console.log('\n✅ LINKING ESTATÍSTICAS')
   console.log('========================')
   
-  // Como o transactionId é obrigatório, todas as unified transactions estão linkadas
-  console.log(`🔗 Unified Transactions Linkadas: ${unifiedCount}/${unifiedCount} (100.0%)`)
+  // Como o transactionId é obrigatório, todas as processed transactions estão linkadas
+  console.log(`🔗 Processed Transactions Linkadas: ${processedCount}/${processedCount} (100.0%)`)
   
   // Verificar transações mais recentes
   const latestTransactions = await prisma.transaction.findMany({

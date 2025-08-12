@@ -1,0 +1,129 @@
+'use client'
+
+import * as React from 'react'
+import { Check, ChevronsUpDown } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+
+export interface ComboboxOption {
+  value: string
+  label: string
+  keywords?: string[]
+}
+
+interface ComboboxProps {
+  options: ComboboxOption[]
+  value?: string
+  onValueChange: (value: string) => void
+  placeholder?: string
+  searchPlaceholder?: string
+  emptyMessage?: string
+  className?: string
+  disabled?: boolean
+  allowClear?: boolean
+  clearLabel?: string
+  compact?: boolean
+}
+
+export function Combobox({
+  options,
+  value,
+  onValueChange,
+  placeholder = 'Selecione...',
+  searchPlaceholder = 'Buscar...',
+  emptyMessage = 'Nenhum resultado encontrado.',
+  className,
+  disabled = false,
+  allowClear = true,
+  clearLabel = 'Todos',
+  compact = false
+}: ComboboxProps) {
+  const [open, setOpen] = React.useState(false)
+
+  const selectedOption = options.find((option) => option.value === value)
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn(
+            'justify-between',
+            compact ? 'h-6 px-2 text-xs' : '',
+            className
+          )}
+          disabled={disabled}
+        >
+          <span className={cn('truncate', compact ? 'text-xs' : '')}>
+            {selectedOption ? selectedOption.label : (value === '' && allowClear ? clearLabel : placeholder)}
+          </span>
+          <ChevronsUpDown className={cn(
+            'shrink-0 opacity-50',
+            compact ? 'ml-1 h-3 w-3' : 'ml-2 h-4 w-4'
+          )} />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-0" align="start">
+        <Command>
+          <CommandInput placeholder={searchPlaceholder} />
+          <CommandList>
+            <CommandEmpty>{emptyMessage}</CommandEmpty>
+            <CommandGroup>
+              {allowClear && (
+                <CommandItem
+                  value=""
+                  onSelect={() => {
+                    onValueChange('')
+                    setOpen(false)
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      value === '' ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                  {clearLabel}
+                </CommandItem>
+              )}
+              {options.map((option) => (
+                <CommandItem
+                  key={option.value}
+                  value={option.label.toLowerCase()}
+                  keywords={option.keywords}
+                  onSelect={() => {
+                    onValueChange(option.value)
+                    setOpen(false)
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      value === option.value ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                  {option.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  )
+}

@@ -2,95 +2,107 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Props {
   totalTransactions: number;
-  totalBalances: number;
-  difference: number;
-  percentDiff: number;
-  hasBalances: boolean;
+  integrityStats: {
+    transactionCount: number;
+    processedCount: number;
+    categorizedCount: number;
+    unprocessedCount: number;
+    uncategorizedCount: number;
+  };
 }
 
 export function IntegrityComparisonCard({ 
   totalTransactions, 
-  totalBalances, 
-  difference, 
-  percentDiff, 
-  hasBalances 
+  integrityStats
 }: Props) {
-  const isIntegrityOk = difference < 0.01;
-
-  if (!hasBalances) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
-            🔄 Comparação de Integridade
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">
-            <div className="text-muted-foreground mb-4">
-              <span className="text-4xl">📊</span>
-            </div>
-            <p className="text-muted-foreground">
-              Não há registros de saldos (AccountBalance) para comparação.
-            </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              A comparação de integridade requer dados de saldos das contas bancárias.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const processedPercentage = integrityStats.transactionCount > 0 
+    ? (integrityStats.processedCount / integrityStats.transactionCount) * 100 
+    : 0;
+    
+  const categorizedPercentage = integrityStats.processedCount > 0 
+    ? (integrityStats.categorizedCount / integrityStats.processedCount) * 100 
+    : 0;
+  
+  const isIntegrityOk = integrityStats.unprocessedCount === 0 && integrityStats.uncategorizedCount === 0;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">
-          🔄 Comparação de Integridade
+          🔄 Estatísticas de Integridade
         </CardTitle>
       </CardHeader>
       
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-blue-50 p-4 rounded-lg text-center">
-            <div className="text-xl font-bold text-blue-600">
-              {new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-              }).format(totalTransactions)}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+          {/* Total Transações (Raw) */}
+          <div className="bg-gray-50 p-4 rounded-lg text-center">
+            <div className="text-xl font-bold text-gray-700">
+              {integrityStats.transactionCount.toLocaleString('pt-BR')}
             </div>
-            <div className="text-sm text-blue-600">
+            <div className="text-sm text-gray-600">
               Total Transações
             </div>
+            <div className="text-xs text-gray-500">
+              (raw)
+            </div>
           </div>
 
+          {/* Transações Processadas */}
+          <div className="bg-blue-50 p-4 rounded-lg text-center">
+            <div className="text-xl font-bold text-blue-600">
+              {integrityStats.processedCount.toLocaleString('pt-BR')}
+            </div>
+            <div className="text-sm text-blue-600">
+              Processadas
+            </div>
+            <div className="text-xs text-blue-500">
+              ({processedPercentage.toFixed(1)}%)
+            </div>
+          </div>
+
+          {/* Transações Categorizadas */}
           <div className="bg-green-50 p-4 rounded-lg text-center">
             <div className="text-xl font-bold text-green-600">
-              {new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-              }).format(totalBalances)}
+              {integrityStats.categorizedCount.toLocaleString('pt-BR')}
             </div>
             <div className="text-sm text-green-600">
-              Total Saldos
+              Categorizadas
+            </div>
+            <div className="text-xs text-green-500">
+              ({categorizedPercentage.toFixed(1)}%)
             </div>
           </div>
 
+          {/* Não Processadas */}
           <div className={`p-4 rounded-lg text-center ${
-            isIntegrityOk ? 'bg-green-50' : 'bg-red-50'
+            integrityStats.unprocessedCount === 0 ? 'bg-green-50' : 'bg-red-50'
           }`}>
             <div className={`text-xl font-bold ${
-              isIntegrityOk ? 'text-green-600' : 'text-red-600'
+              integrityStats.unprocessedCount === 0 ? 'text-green-600' : 'text-red-600'
             }`}>
-              {new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-              }).format(difference)}
+              {integrityStats.unprocessedCount.toLocaleString('pt-BR')}
             </div>
             <div className={`text-sm ${
-              isIntegrityOk ? 'text-green-600' : 'text-red-600'
+              integrityStats.unprocessedCount === 0 ? 'text-green-600' : 'text-red-600'
             }`}>
-              Diferença ({percentDiff.toFixed(2)}%)
+              Não Processadas
+            </div>
+          </div>
+
+          {/* Não Categorizadas */}
+          <div className={`p-4 rounded-lg text-center ${
+            integrityStats.uncategorizedCount === 0 ? 'bg-green-50' : 'bg-orange-50'
+          }`}>
+            <div className={`text-xl font-bold ${
+              integrityStats.uncategorizedCount === 0 ? 'text-green-600' : 'text-orange-600'
+            }`}>
+              {integrityStats.uncategorizedCount.toLocaleString('pt-BR')}
+            </div>
+            <div className={`text-sm ${
+              integrityStats.uncategorizedCount === 0 ? 'text-green-600' : 'text-orange-600'
+            }`}>
+              Não Categorizadas
             </div>
           </div>
         </div>
@@ -111,11 +123,11 @@ export function IntegrityComparisonCard({
                 isIntegrityOk ? 'text-green-700' : 'text-red-700'
               }`}>
                 {isIntegrityOk 
-                  ? <strong>Integridade OK:</strong>
+                  ? <strong>Integridade Perfeita:</strong>
                   : <strong>ATENÇÃO:</strong>
                 } {isIntegrityOk 
-                  ? 'Os valores estão balanceados!'
-                  : 'Existe diferença entre transações e saldos!'
+                  ? 'Todas as transações foram processadas e categorizadas!'
+                  : `${integrityStats.unprocessedCount} não processadas, ${integrityStats.uncategorizedCount} sem categoria.`
                 }
               </p>
             </div>
@@ -125,13 +137,17 @@ export function IntegrityComparisonCard({
         {!isIntegrityOk && (
           <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
             <h4 className="text-sm font-medium text-yellow-800 mb-2">
-              Possíveis causas da diferença:
+              Para melhorar a integridade:
             </h4>
             <ul className="text-sm text-yellow-700 list-disc list-inside space-y-1">
-              <li>Transações importadas após o último registro de saldo</li>
-              <li>Diferenças de timing entre importação e saldos</li>
-              <li>Transações manuais não refletidas nos saldos</li>
-              <li>Problemas na sincronização com o banco</li>
+              {integrityStats.unprocessedCount > 0 && (
+                <li>Processe {integrityStats.unprocessedCount} transações no sistema unificado</li>
+              )}
+              {integrityStats.uncategorizedCount > 0 && (
+                <li>Categorize {integrityStats.uncategorizedCount} transações processadas</li>
+              )}
+              <li>Verifique se há transferências não identificadas</li>
+              <li>Configure regras automáticas para processamento futuro</li>
             </ul>
           </div>
         )}

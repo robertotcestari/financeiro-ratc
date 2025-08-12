@@ -234,7 +234,7 @@ export function OfxImportWizard({
   }
 
   return (
-    <div className={cn('mx-auto w-full max-w-5xl space-y-6', className)}>
+    <div className={cn('w-full space-y-6', className)}>
       <Header steps={steps} current={step} onNavigate={goTo} />
 
       <div className="rounded-md border bg-card p-4">

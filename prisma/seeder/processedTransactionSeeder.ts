@@ -2,7 +2,7 @@ import { PrismaClient } from '../../app/generated/prisma'
 import * as fs from 'fs'
 import * as path from 'path'
 
-interface UnifiedTransactionRow {
+interface ProcessedTransactionRow {
   year: string
   month: string
   property: string
@@ -49,13 +49,13 @@ function parseDate(dateStr: string): Date {
   return new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
 }
 
-export async function seedUnifiedTransactions(prisma: PrismaClient) {
-  console.log('🔗 Creating unified transactions...')
+export async function seedProcessedTransactions(prisma: PrismaClient) {
+  console.log('🔗 Creating processed transactions...')
   
   const csvPath = path.join(__dirname, 'Contratos de Locação - Contas Unificadas - New Categories.csv')
   
   if (!fs.existsSync(csvPath)) {
-    console.log('   ⚠️ Unified transactions CSV not found, skipping...')
+    console.log('   ⚠️ Processed transactions CSV not found, skipping...')
     return
   }
   
@@ -63,7 +63,7 @@ export async function seedUnifiedTransactions(prisma: PrismaClient) {
   const lines = data.split('\n').filter(line => line.trim())
   
   if (lines.length === 0) {
-    console.log('   ⚠️ No data in unified transactions CSV')
+    console.log('   ⚠️ No data in processed transactions CSV')
     return
   }
   
@@ -99,7 +99,7 @@ export async function seedUnifiedTransactions(prisma: PrismaClient) {
       const parsedValue = parseValue(value)
       const parsedDate = parseDate(date)
       
-      await prisma.unifiedTransaction.create({
+      await prisma.processedTransaction.create({
         data: {
           bankAccountId: accountMap.get(account)!,
           categoryId: categoryId,
@@ -122,5 +122,5 @@ export async function seedUnifiedTransactions(prisma: PrismaClient) {
     }
   }
   
-  console.log(`   ✅ Created ${created} unified transactions (${skipped} skipped)`)
+  console.log(`   ✅ Created ${created} processed transactions (${skipped} skipped)`)
 }

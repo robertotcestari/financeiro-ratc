@@ -1,9 +1,8 @@
 'use server';
 
-import { PrismaClient, AccountType } from '@/app/generated/prisma';
+import { AccountType } from '@/app/generated/prisma';
+import { prisma } from '@/lib/database/client';
 import { revalidatePath } from 'next/cache';
-
-const prisma = new PrismaClient();
 
 export interface BankAccountFormData {
   name: string;
@@ -26,8 +25,9 @@ export async function getBankAccounts() {
     });
 
     return accounts;
-  } finally {
-    await prisma.$disconnect();
+  } catch (error) {
+    console.error('Erro ao buscar contas bancárias:', error);
+    throw error;
   }
 }
 
@@ -38,8 +38,9 @@ export async function getBankAccount(id: string) {
     });
 
     return account;
-  } finally {
-    await prisma.$disconnect();
+  } catch (error) {
+    console.error('Erro ao buscar conta bancária:', error);
+    throw error;
   }
 }
 
@@ -60,8 +61,6 @@ export async function createBankAccount(data: BankAccountFormData) {
       return { success: false, error: 'Já existe uma conta com esse nome' };
     }
     return { success: false, error: 'Erro ao criar conta bancária' };
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -83,8 +82,6 @@ export async function updateBankAccount(id: string, data: BankAccountFormData) {
       return { success: false, error: 'Já existe uma conta com esse nome' };
     }
     return { success: false, error: 'Erro ao atualizar conta bancária' };
-  } finally {
-    await prisma.$disconnect();
   }
 }
 
@@ -110,7 +107,5 @@ export async function deleteBankAccount(id: string) {
     return { success: true };
   } catch {
     return { success: false, error: 'Erro ao excluir conta bancária' };
-  } finally {
-    await prisma.$disconnect();
   }
 }

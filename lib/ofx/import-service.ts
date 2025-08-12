@@ -2,12 +2,14 @@ import { prisma } from '@/lib/database/client';
 import { OFXParserService } from './parser';
 import { DuplicateDetectionService } from './duplicate-detection';
 import { ImportPreviewService } from './import-preview';
+import { logger } from '@/lib/logger';
 import type {
   OFXTransaction,
   OFXParseResult,
   DuplicateDetectionResult,
   ImportValidationError,
 } from './types';
+import type { PrismaClient } from '@/app/generated/prisma';
 import type {
   ImportPreview,
   TransactionPreview,
@@ -20,7 +22,7 @@ import type {
   ImportBatch,
   Category,
   Property,
-  UnifiedTransaction,
+  ProcessedTransaction,
 } from '@/app/generated/prisma';
 
 /**
@@ -110,6 +112,10 @@ export class ImportService {
           error instanceof Error ? error.message : 'Unknown error occurred'
         );
       }
+      logger.error('ImportService.processImport failed', {
+        event: 'import_service_process_error',
+        error,
+      });
 
       return {
         success: false,
@@ -342,6 +348,12 @@ export class ImportService {
                 recoverable: false,
               },
             };
+            logger.error('ImportService.executeImport transaction failed', {
+              event: 'import_service_tx_error',
+              ofxTransId: transactionPreview.transaction.transactionId,
+              bankAccountId: options.bankAccountId,
+              error,
+            });
 
             failedTransactions.push(failedTransaction);
             errors.push(failedTransaction.error);
@@ -384,7 +396,7 @@ export class ImportService {
    * Import a single transaction with unified transaction creation
    */
   private async importSingleTransaction(
-    tx: any, // Prisma transaction client
+    tx: Omit<PrismaClient, '$disconnect' | '$connect'>, // Prisma transaction client
     transactionPreview: TransactionPreview,
     importBatchId: string,
     options: ImportOptions
@@ -419,10 +431,10 @@ export class ImportService {
       },
     });
 
-    // Create unified transaction if categorization is available
-    if (categorization.suggestedCategory && options.createUnifiedTransactions) {
+    // Create processed transaction if categorization is available
+    if (categorization.suggestedCategory && options.createProcessedTransactions) {
       try {
-        await tx.unifiedTransaction.create({
+        await tx.processedTransaction.create({
           data: {
             transactionId: importedTransaction.id,
             year: transaction.date.getFullYear(),
@@ -434,7 +446,14 @@ export class ImportService {
           },
         });
       } catch (error) {
-        console.error('Failed to create unified transaction:', error);
+        logger.error(
+          'ImportService.importSingleTransaction processed creation failed',
+          {
+            event: 'import_service_processed_create_error',
+            transactionId: importedTransaction.id,
+            error,
+          }
+        );
         throw error;
       }
     }
@@ -551,7 +570,7 @@ export interface ImportOptions {
   importDuplicates?: boolean;
   importInvalidTransactions?: boolean;
   importReviewTransactions?: boolean;
-  createUnifiedTransactions?: boolean;
+  createProcessedTransactions?: boolean;
   strictMode?: boolean;
   transactionActions?: Record<string, TransactionAction>;
 }

@@ -13,7 +13,7 @@ async function checkSpecificTransaction() {
     },
     include: {
       bankAccount: true,
-      unifiedTransaction: true
+      processedTransaction: true
     },
     orderBy: { date: 'desc' }
   })
@@ -27,11 +27,11 @@ async function checkSpecificTransaction() {
     console.log(`   💰 Valor: ${tx.amount}`)
     console.log(`   📊 Saldo: ${tx.balance}`)
     console.log(`   📝 Descrição: ${tx.description}`)
-    console.log(`   🔗 Unified Transaction: ${tx.unifiedTransaction ? 'SIM' : 'NÃO'}`)
+    console.log(`   🔗 Processed Transaction: ${tx.processedTransaction ? 'SIM' : 'NÃO'}`)
     
-    if (tx.unifiedTransaction) {
-      console.log(`      🏷️  Categoria: ${tx.unifiedTransaction.categoryId}`)
-      console.log(`      🏠 Propriedade: ${tx.unifiedTransaction.propertyId || 'N/A'}`)
+    if (tx.processedTransaction) {
+      console.log(`      🏷️  Categoria: ${tx.processedTransaction.categoryId}`)
+      console.log(`      🏠 Propriedade: ${tx.processedTransaction.propertyId || 'N/A'}`)
     }
   }
   
@@ -40,7 +40,7 @@ async function checkSpecificTransaction() {
     where: { id: 'cme8lkb3x0edhzpj6ryzhme77' },
     include: {
       bankAccount: true,
-      unifiedTransaction: true
+      processedTransaction: true
     }
   })
   

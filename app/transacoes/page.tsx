@@ -2,6 +2,17 @@ import { prisma } from '@/lib/database/client';
 import Link from 'next/link';
 import TransactionFilters from './components/TransactionFilters';
 import TransactionTable from './components/TransactionTable';
+import { isPendingTransaction } from '@/lib/database/transactions';
+import type { Prisma } from '@/app/generated/prisma';
+import { redirect } from 'next/navigation';
+
+type PTWithIncludes = Prisma.ProcessedTransactionGetPayload<{
+  include: {
+    transaction: { include: { bankAccount: true } };
+    category: { include: { parent: true } };
+    property: true;
+  };
+}>;
 
 interface SearchParams {
   categoria?: string;
@@ -18,6 +29,53 @@ interface Props {
 
 export default async function TransacoesPage({ searchParams }: Props) {
   const resolvedParams = await searchParams;
+
+  // Aplicar filtros padrão do Inbox (mês atual + "pendentes") quando necessário
+  const filterKeys: Array<keyof SearchParams> = [
+    'categoria',
+    'conta',
+    'mes',
+    'ano',
+    'status',
+  ];
+  
+  // Verifica se há parâmetros de filtro definidos
+  const hasAnyFilterParam = filterKeys.some((k) => {
+    const v = (resolvedParams as Record<string, string | undefined>)[k];
+    return v !== undefined && v !== null && v !== '';
+  });
+
+  // Aplica filtros padrão do inbox quando:
+  // 1. Não há nenhum parâmetro de filtro, OU
+  // 2. Há apenas paginação sem filtros
+  const hasOnlyPagination = !hasAnyFilterParam && resolvedParams.page;
+  
+  if (!hasAnyFilterParam || hasOnlyPagination) {
+    const now = new Date();
+    // Calcular mês anterior
+    const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1);
+    const year = previousMonth.getFullYear();
+    const month = previousMonth.getMonth() + 1;
+    
+    const params = new URLSearchParams();
+    
+    // Preserva paginação caso exista
+    if (resolvedParams.page) params.set('page', resolvedParams.page);
+    
+    // Define filtros padrão do inbox (apenas mês anterior - deixa status desmarcado)
+    params.set('ano', year.toString());
+    params.set('mes', month.toString());
+    
+    redirect(`/transacoes?${params.toString()}`);
+  }
+
+  // Garantir que ano tenha valor padrão se não especificado
+  const currentYear = new Date().getFullYear();
+  const effectiveFilters = {
+    ...resolvedParams,
+    ano: resolvedParams.ano || currentYear.toString(),
+  };
+
   // Buscar todas as categorias para o filtro
   const categories = await prisma.category.findMany({
     orderBy: [{ level: 'asc' }, { orderIndex: 'asc' }, { name: 'asc' }],
@@ -37,40 +95,44 @@ export default async function TransacoesPage({ searchParams }: Props) {
     orderBy: { code: 'asc' },
   });
 
-  // Construir filtros da query
-  const page = parseInt(resolvedParams.page || '1');
-  const pageSize = 50;
+  // Construir filtros da query usando effectiveFilters
+  const page = parseInt(effectiveFilters.page || '1');
+  const pageSize = 200;
   const skip = (page - 1) * pageSize;
 
   const where: Record<string, unknown> = {};
 
-  if (resolvedParams.categoria) {
-    where.categoryId = resolvedParams.categoria;
+  if (effectiveFilters.categoria) {
+    where.categoryId = effectiveFilters.categoria;
   }
 
-  if (resolvedParams.conta) {
+  if (effectiveFilters.conta) {
     where.transaction = {
-      bankAccountId: resolvedParams.conta,
+      bankAccountId: effectiveFilters.conta,
     };
   }
 
-  if (resolvedParams.mes && resolvedParams.ano) {
-    where.year = parseInt(resolvedParams.ano);
-    where.month = parseInt(resolvedParams.mes);
-  } else if (resolvedParams.ano) {
-    where.year = parseInt(resolvedParams.ano);
+  if (effectiveFilters.mes && effectiveFilters.ano) {
+    where.year = parseInt(effectiveFilters.ano);
+    where.month = parseInt(effectiveFilters.mes);
+  } else if (effectiveFilters.ano) {
+    where.year = parseInt(effectiveFilters.ano);
   }
 
-  // Filtro de Status
-  if (resolvedParams.status === 'pendentes') {
-    where.isReviewed = false;
-  } else if (resolvedParams.status === 'revisados') {
+  // Filtro de Status (Pendentes = isReviewed=false OR categoryId IS NULL OR transactionId IS NULL)
+  if (effectiveFilters.status === 'pendentes') {
+    where.OR = [
+      { isReviewed: false },
+      { categoryId: null },
+      { transactionId: null },
+    ];
+  } else if (effectiveFilters.status === 'revisados') {
     where.isReviewed = true;
   }
 
-  // Buscar transações unificadas com paginação
+  // Buscar transações processadas com paginação
   const [transactions, totalCount] = await Promise.all([
-    prisma.unifiedTransaction.findMany({
+    prisma.processedTransaction.findMany({
       where,
       include: {
         transaction: {
@@ -84,12 +146,6 @@ export default async function TransacoesPage({ searchParams }: Props) {
           },
         },
         property: true,
-        transfer: {
-          include: {
-            originAccount: true,
-            destinationAccount: true,
-          },
-        },
       },
       orderBy: [
         { transaction: { date: 'desc' } },
@@ -98,47 +154,70 @@ export default async function TransacoesPage({ searchParams }: Props) {
       skip,
       take: pageSize,
     }),
-    prisma.unifiedTransaction.count({ where }),
+    prisma.processedTransaction.count({ where }),
   ]);
 
   const totalPages = Math.ceil(totalCount / pageSize);
 
   // Serialize to plain objects (no Prisma Decimal instances) for client component
-  const safeTransactions = transactions.map((t) => ({
-    id: t.id,
-    year: t.year,
-    month: t.month,
-    details: t.details,
-    notes: t.notes,
-    isTransfer: t.isTransfer,
-    isReviewed: t.isReviewed,
-    transaction: {
-      id: t.transaction.id,
-      date: t.transaction.date,
-      description: t.transaction.description,
-      amount: Number(t.transaction.amount),
-      bankAccount: {
-        name: t.transaction.bankAccount.name,
-        bankName: t.transaction.bankAccount.bankName,
-      },
-    },
-    category: {
-      id: t.category.id,
-      name: t.category.name,
-      type: t.category.type,
-      parent: t.category.parent ? { name: t.category.parent.name } : null,
-    },
-    property: t.property
-      ? { code: t.property.code, city: t.property.city }
-      : null,
-    transfer: t.transfer
+  const safeTransactions = transactions.map((t: PTWithIncludes) => {
+    const pending = isPendingTransaction({
+      isReviewed: t.isReviewed,
+      categoryId: t.categoryId,
+      transactionId: t.transactionId,
+    });
+
+    const tx = t.transaction
       ? {
-          originAccount: { name: t.transfer.originAccount.name },
-          destinationAccount: { name: t.transfer.destinationAccount.name },
-          amount: Number(t.transfer.amount),
+          id: t.transaction.id,
+          date: t.transaction.date,
+          description: t.transaction.description,
+          amount: Number(t.transaction.amount),
+          bankAccount: {
+            name: t.transaction.bankAccount.name,
+            bankName: t.transaction.bankAccount.bankName,
+          },
         }
-      : null,
-  }));
+      : {
+          id: '—',
+          date: new Date(0),
+          description: '(sem transação bancária)',
+          amount: 0,
+          bankAccount: {
+            name: 'N/D',
+            bankName: 'N/D',
+          },
+        };
+
+    const category = t.category
+      ? {
+          id: t.category.id,
+          name: t.category.name,
+          type: t.category.type,
+          parent: t.category.parent ? { name: t.category.parent.name } : null,
+        }
+      : {
+          id: 'uncategorized',
+          name: 'Sem Categoria',
+          type: 'UNCATEGORIZED' as const,
+          parent: null,
+        };
+
+    return {
+      id: t.id,
+      year: t.year,
+      month: t.month,
+      details: t.details,
+      notes: t.notes,
+      isReviewed: t.isReviewed,
+      isPending: pending,
+      transaction: tx,
+      category,
+      property: t.property
+        ? { code: t.property.code, city: t.property.city }
+        : null,
+    };
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -146,7 +225,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Transações Categorizadas
+              Transações Processadas
             </h1>
             <p className="text-gray-600">
               {totalCount.toLocaleString('pt-BR')} transações encontradas
@@ -164,7 +243,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
           <TransactionFilters
             categories={categories}
             bankAccounts={bankAccounts}
-            searchParams={resolvedParams}
+            searchParams={effectiveFilters}
           />
         </div>
 

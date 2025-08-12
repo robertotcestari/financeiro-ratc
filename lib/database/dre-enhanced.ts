@@ -22,7 +22,7 @@ export async function generateEnhancedDRE(year: number, month?: number): Promise
     isTransfer: false,
   };
 
-  const transactions = await prisma.unifiedTransaction.findMany({
+  const transactions = await prisma.processedTransaction.findMany({
     where,
     include: {
       transaction: true,
@@ -42,8 +42,8 @@ export async function generateEnhancedDRE(year: number, month?: number): Promise
   const categoryTotals = new Map<string, number>();
   
   for (const transaction of transactions) {
-    const amount = Number(transaction.transaction.amount);
-    const categoryName = getCategoryHierarchyName(transaction.category);
+    const amount = Number(transaction.transaction?.amount || 0);
+    const categoryName = transaction.category ? getCategoryHierarchyName(transaction.category) : 'Sem Categoria';
     
     if (categoryTotals.has(categoryName)) {
       categoryTotals.set(categoryName, categoryTotals.get(categoryName)! + amount);

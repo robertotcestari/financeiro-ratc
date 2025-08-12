@@ -31,7 +31,7 @@ async function ensureDefaultCategoryId(prisma: PrismaClient) {
   return cat.id
 }
 
-async function upsertUnifiedTransaction(
+async function upsertProcessedTransaction(
   prisma: PrismaClient,
   transaction: any,
   categoryId: string,
@@ -43,7 +43,7 @@ async function upsertUnifiedTransaction(
   const year = dt.getUTCFullYear()
   const month = dt.getUTCMonth() + 1
 
-  return prisma.unifiedTransaction.upsert({
+  return prisma.processedTransaction.upsert({
     where: { transactionId: transaction.id },
     create: {
       transactionId: transaction.id,
@@ -133,7 +133,7 @@ async function importFile(prisma: PrismaClient, filePath: string) {
       }
     })
 
-    // UnifiedTransactions will be created by the linked seeder instead
+    // ProcessedTransactions will be created by the linked seeder instead
 
     inserted += 1
   }

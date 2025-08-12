@@ -277,7 +277,7 @@ export class AccountSelectionService {
    * Get all OFX account mappings for a specific bank account
    * @param bankAccountId - The bank account ID
    */
-  async getAccountMappings(bankAccountId: string): Promise<any[]> {
+  async getAccountMappings(bankAccountId: string): Promise<{ id: string; ofxAccountId: string; ofxBankId: string | null; bankAccountId: string; createdAt: Date; updatedAt: Date; }[]> {
     try {
       const mappings = await this.prisma.oFXAccountMapping.findMany({
         where: { bankAccountId },

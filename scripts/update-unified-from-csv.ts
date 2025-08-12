@@ -148,7 +148,7 @@ async function updateUnifiedFromCSV() {
     let skipped = 0;
 
     // Buscar todas as transações unificadas com suas transações brutas
-    const allUnified = await prisma.unifiedTransaction.findMany({
+    const allUnified = await prisma.processedTransaction.findMany({
       include: {
         transaction: {
           include: {
@@ -232,7 +232,7 @@ async function updateUnifiedFromCSV() {
 
       if (foundUnified) {
         // Atualizar a transação unificada
-        await prisma.unifiedTransaction.update({
+        await prisma.processedTransaction.update({
           where: { id: foundUnified.id },
           data: {
             year: year,
@@ -278,10 +278,10 @@ async function updateUnifiedFromCSV() {
     // 5. Verificar estatísticas finais
     const totalCategories = await prisma.category.count();
     const totalProperties = await prisma.property.count();
-    const reviewedTransactions = await prisma.unifiedTransaction.count({
+    const reviewedTransactions = await prisma.processedTransaction.count({
       where: { isReviewed: true },
     });
-    const withProperty = await prisma.unifiedTransaction.count({
+    const withProperty = await prisma.processedTransaction.count({
       where: { propertyId: { not: null } },
     });
 
@@ -293,7 +293,7 @@ async function updateUnifiedFromCSV() {
 
     // Listar categorias com contagem
     console.log(`\n📊 Top 10 categorias por quantidade de transações:`);
-    const categoryStats = await prisma.unifiedTransaction.groupBy({
+    const categoryStats = await prisma.processedTransaction.groupBy({
       by: ['categoryId'],
       _count: true,
       orderBy: {

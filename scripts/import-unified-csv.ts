@@ -202,7 +202,7 @@ async function importUnifiedCSV() {
             gte: startDate,
             lte: endDate,
           },
-          unifiedTransaction: null, // Ainda não vinculada
+          processedTransaction: null, // Ainda não vinculada
         },
         orderBy: {
           date: 'asc',
@@ -210,8 +210,8 @@ async function importUnifiedCSV() {
       });
 
       if (matchingTransaction) {
-        // Criar UnifiedTransaction vinculada
-        await prisma.unifiedTransaction.create({
+        // Criar ProcessedTransaction vinculada
+        await prisma.processedTransaction.create({
           data: {
             transactionId: matchingTransaction.id,
             year: year,
@@ -248,7 +248,7 @@ async function importUnifiedCSV() {
 
     // 5. Verificar estatísticas finais
     const totalTransactions = await prisma.transaction.count();
-    const totalUnified = await prisma.unifiedTransaction.count();
+    const totalUnified = await prisma.processedTransaction.count();
     const uncategorized = totalTransactions - totalUnified;
 
     console.log(`\n📈 Estatísticas finais:`);

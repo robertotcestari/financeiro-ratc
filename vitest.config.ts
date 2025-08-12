@@ -17,7 +17,7 @@ export default defineConfig({
   test: {
     // Default to jsdom so React component tests work without per-file directives
     environment: 'jsdom',
-    setupFiles: ['tests/setup.ts'],
+    setupFiles: ['tests/setup.ts', 'vitest.setup.ts'],
 
     // Use a single worker to avoid cross-file DB race conditions (Prisma)
     pool: 'threads',
