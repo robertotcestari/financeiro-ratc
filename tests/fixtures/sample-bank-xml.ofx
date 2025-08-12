@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OFX>
+  <SIGNONMSGSRSV1>
+    <SONRS>
+      <STATUS>
+        <CODE>0</CODE>
+        <SEVERITY>INFO</SEVERITY>
+      </STATUS>
+      <DTSERVER>20240201120000</DTSERVER>
+      <LANGUAGE>ENG</LANGUAGE>
+    </SONRS>
+  </SIGNONMSGSRSV1>
+  <BANKMSGSRSV1>
+    <STMTTRNRS>
+      <TRNUID>1001</TRNUID>
+      <STATUS>
+        <CODE>0</CODE>
+        <SEVERITY>INFO</SEVERITY>
+      </STATUS>
+      <STMTRS>
+        <CURDEF>USD</CURDEF>
+        <BANKACCTFROM>
+          <BANKID>123456789</BANKID>
+          <ACCTID>987654321</ACCTID>
+          <ACCTTYPE>CHECKING</ACCTTYPE>
+        </BANKACCTFROM>
+        <BANKTRANLIST>
+          <DTSTART>20240101</DTSTART>
+          <DTEND>20240131</DTEND>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20240115</DTPOSTED>
+            <TRNAMT>-50.00</TRNAMT>
+            <FITID>TXN001</FITID>
+            <NAME>Coffee Shop Purchase</NAME>
+            <MEMO>Morning coffee and pastry</MEMO>
+            <CHECKNUM>1001</CHECKNUM>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>CREDIT</TRNTYPE>
+            <DTPOSTED>20240120</DTPOSTED>
+            <TRNAMT>1000.00</TRNAMT>
+            <FITID>TXN002</FITID>
+            <NAME>Salary Deposit</NAME>
+            <MEMO>Monthly salary</MEMO>
+          </STMTTRN>
+          <STMTTRN>
+            <TRNTYPE>DEBIT</TRNTYPE>
+            <DTPOSTED>20240125</DTPOSTED>
+            <TRNAMT>-75.50</TRNAMT>
+            <FITID>TXN003</FITID>
+            <NAME>Grocery Store</NAME>
+            <MEMO>Weekly groceries</MEMO>
+          </STMTTRN>
+        </BANKTRANLIST>
+        <LEDGERBAL>
+          <BALAMT>874.50</BALAMT>
+          <DTASOF>20240131</DTASOF>
+        </LEDGERBAL>
+      </STMTRS>
+    </STMTTRNRS>
+  </BANKMSGSRSV1>
+</OFX>

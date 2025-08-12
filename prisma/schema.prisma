@@ -52,10 +52,11 @@ model BankAccount {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
-  transactions Transaction[]
-  balances     AccountBalance[]
-  transfersOut Transfer[]       @relation("TransferOrigin")
-  transfersIn  Transfer[]       @relation("TransferDestination")
+  transactions       Transaction[]
+  balances           AccountBalance[]
+  transfersOut       Transfer[]          @relation("TransferOrigin")
+  transfersIn        Transfer[]          @relation("TransferDestination")
+  ofxAccountMappings OFXAccountMapping[]
 
   @@map("bank_accounts")
 }
@@ -82,12 +83,12 @@ model Category {
 
 // 3. City (Cidades)
 model City {
-  id          String   @id @default(cuid())
-  code        String   @unique // "CAT", "COS", "SJP", etc.
-  name        String   @unique // "Catanduva", "Cosmorama", etc.
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  code      String   @unique // "CAT", "COS", "SJP", etc.
+  name      String   @unique // "Catanduva", "Cosmorama", etc.
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   properties Property[]
 
@@ -98,8 +99,8 @@ model City {
 model Property {
   id          String   @id @default(cuid())
   code        String   @unique // "CAT - Rua Brasil", "SJP - Av. Alberto Andaló"
-  city        String   // CAT, COS, SJP, RIB, SAO, SAL, SVC - Keep for now
-  cityId      String?  // Optional reference to City model
+  city        String // CAT, COS, SJP, RIB, SAO, SAL, SVC - Keep for now
+  cityId      String? // Optional reference to City model
   cityRef     City?    @relation(fields: [cityId], references: [id])
   address     String
   description String?
@@ -123,6 +124,7 @@ model Transaction {
   // Optional running balance snapshot captured from CSVs (when available)
   balance       Decimal?     @db.Decimal(15, 2)
   ofxTransId    String? // ID da transação no arquivo OFX
+  ofxAccountId  String? // ID da conta no arquivo OFX
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id])
   isDuplicate   Boolean      @default(false)
@@ -137,7 +139,24 @@ model Transaction {
   @@unique([bankAccountId, date, amount, balance])
   @@index([date])
   @@index([importBatchId])
+  @@index([ofxTransId])
+  @@index([ofxAccountId])
   @@map("transactions")
+}
+
+// 4.1. OFXAccountMapping (Mapeamento de Contas OFX)
+model OFXAccountMapping {
+  id            String      @id @default(cuid())
+  ofxAccountId  String // ID da conta no arquivo OFX
+  ofxBankId     String? // ID do banco no arquivo OFX
+  bankAccountId String
+  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([ofxAccountId, ofxBankId])
+  @@index([bankAccountId])
+  @@map("ofx_account_mappings")
 }
 
 // 5. UnifiedTransaction (Transações Consolidadas)
@@ -160,7 +179,7 @@ model UnifiedTransaction {
   transferId String? // ID da transferência relacionada
   transfer   Transfer? @relation(fields: [transferId], references: [id])
 
-  isReviewed      Boolean @default(false)
+  isReviewed Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -205,7 +224,6 @@ model Transfer {
   @@map("transfers")
 }
 
-
 // 8. DRELineItem (Configuração do DRE)
 model DRELineItem {
   id         String    @id @default(cuid())
@@ -243,6 +261,11 @@ model ImportBatch {
 
   status       ImportStatus
   errorMessage String?      @db.Text
+
+  // OFX-specific fields
+  fileType   String? @default("CSV") // "CSV" or "OFX"
+  ofxVersion String? // "1.0", "2.0", etc.
+  ofxBankId  String? // Bank ID from OFX file
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
