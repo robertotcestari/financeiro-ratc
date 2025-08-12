@@ -4,6 +4,7 @@ import { seedCategories } from './seeder/categorySeeder';
 import { seedCities } from './seeder/citySeeder';
 import { seedProperties } from './seeder/propertySeeder';
 import { seedTransactions } from './seeder/transactionSeeder';
+import { seedUnifiedTransactions } from './seeder/unifiedTransactionSeeder';
 
 const prisma = new PrismaClient();
 
@@ -19,6 +20,8 @@ async function main() {
   await seedProperties(prisma);
 
   await seedTransactions(prisma);
+
+  await seedUnifiedTransactions(prisma);
 
   console.log('✅ Seed completed!');
 

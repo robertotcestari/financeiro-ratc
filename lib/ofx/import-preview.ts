@@ -396,14 +396,21 @@ export class ImportPreviewService {
     let confidence = 0;
     let reason = 'No matching categorization rules found';
 
-    // Income categorization rules
+    // Income categorization rules (pt-BR + en)
     if (amount > 0) {
       const incomeKeywords = [
+        // pt-BR
         'deposito',
         'credito',
         'salario',
         'receita',
         'pagamento',
+        // en
+        'deposit',
+        'credit',
+        'salary',
+        'income',
+        'payment',
       ];
       const matchedKeyword = incomeKeywords.find((keyword) =>
         description.includes(keyword)
@@ -417,14 +424,22 @@ export class ImportPreviewService {
       }
     }
 
-    // Expense categorization rules
+    // Expense categorization rules (pt-BR + en)
     if (amount < 0) {
       const expenseKeywords = [
+        // pt-BR
         'debito',
         'saque',
         'pagamento',
         'compra',
         'taxa',
+        // en
+        'debit',
+        'withdrawal',
+        'purchase',
+        'fee',
+        'charge',
+        'payment',
       ];
       const matchedKeyword = expenseKeywords.find((keyword) =>
         description.includes(keyword)
@@ -438,8 +453,16 @@ export class ImportPreviewService {
       }
     }
 
-    // Transfer categorization rules
-    const transferKeywords = ['transferencia', 'ted', 'doc', 'pix'];
+    // Transfer categorization rules (pt-BR + en)
+    const transferKeywords = [
+      'transferencia',
+      'ted',
+      'doc',
+      'pix',
+      'transfer',
+      'wire',
+      'bank transfer',
+    ];
     const transferKeyword = transferKeywords.find((keyword) =>
       description.includes(keyword)
     );
@@ -449,6 +472,27 @@ export class ImportPreviewService {
         categories.find((cat) => cat.type === 'TRANSFER') || null;
       confidence = 0.8;
       reason = `Transfer keyword found: ${transferKeyword}`;
+    }
+
+    // Fallback by amount sign if still uncategorized and categories exist
+    if (!suggestedCategory) {
+      if (amount > 0) {
+        const incomeCat =
+          categories.find((cat) => cat.type === 'INCOME') || null;
+        if (incomeCat) {
+          suggestedCategory = incomeCat;
+          confidence = Math.max(confidence, 0.55);
+          reason += ' | Fallback by amount sign: INCOME';
+        }
+      } else if (amount < 0) {
+        const expenseCat =
+          categories.find((cat) => cat.type === 'EXPENSE') || null;
+        if (expenseCat) {
+          suggestedCategory = expenseCat;
+          confidence = Math.max(confidence, 0.55);
+          reason += ' | Fallback by amount sign: EXPENSE';
+        }
+      }
     }
 
     // Property assignment based on description

@@ -539,7 +539,7 @@ describe('ImportPreviewService', () => {
       );
     });
 
-    it('should leave transactions uncategorized when no rules match', async () => {
+    it('should use fallback categorization when no specific rules match', async () => {
       const unknownTransaction: OFXTransaction = {
         transactionId: 'txn-1',
         accountId: 'acc-1',
@@ -561,13 +561,18 @@ describe('ImportPreviewService', () => {
 
       const result = await service.generatePreview(mockFile, 'bank-1');
 
+      // Should use fallback categorization based on positive amount
       expect(
         result.transactions[0].categorization.suggestedCategory
-      ).toBeNull();
-      expect(result.transactions[0].categorization.confidence).toBe(0);
+      ).not.toBeNull();
+      expect(
+        result.transactions[0].categorization.suggestedCategory?.type
+      ).toBe('INCOME');
+      expect(result.transactions[0].categorization.confidence).toBeGreaterThan(0.5);
       expect(
         result.transactions[0].categorization.isAutomaticallyCategorized
-      ).toBe(false);
+      ).toBe(true);
+      expect(result.transactions[0].categorization.reason).toContain('Fallback by amount sign');
     });
   });
 
@@ -700,8 +705,9 @@ describe('ImportPreviewService', () => {
       expect(result.summary.totalTransactions).toBe(3);
       expect(result.summary.validTransactions).toBe(2);
       expect(result.summary.invalidTransactions).toBe(1);
-      expect(result.summary.categorizedTransactions).toBe(1);
-      expect(result.summary.uncategorizedTransactions).toBe(2);
+      // All transactions with positive amounts will be categorized by fallback, including invalid ones
+      expect(result.summary.categorizedTransactions).toBe(3);
+      expect(result.summary.uncategorizedTransactions).toBe(0);
     });
   });
 });
