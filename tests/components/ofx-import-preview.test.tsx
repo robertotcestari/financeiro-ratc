@@ -70,6 +70,30 @@ const properties: PropertyOption[] = [
 ];
 
 describe('OfxImportPreview', () => {
+  it('renders balances card with initial and projected final balance', () => {
+    const rows: PreviewRow[] = [
+      row('T1', 'Compra mercado', -100, false, 'import'),
+      row('T2', 'Depósito', 300, false, 'import'),
+    ];
+
+    render(
+      <OfxImportPreview
+        rows={rows}
+        categories={categories}
+        properties={properties}
+        balances={{ beforeStart: 1000, beforeEnd: 1200 }}
+      />
+    );
+
+    // Initial balance should display beforeStart (1000)
+    expect(screen.getByTestId('saldo-inicial')).toHaveTextContent(
+      /1\.000,00|1,000.00/ // locale dependent
+    );
+
+    // Projected final balance = beforeEnd + sum(imported amounts) = 1200 + 200 = 1400
+    const projected = screen.getByTestId('saldo-final-projetado');
+    expect(projected).toBeInTheDocument();
+  });
   it('renders summary, toolbar and table with rows', () => {
     const rows: PreviewRow[] = [
       row('T1', 'Compra mercado', -150.23, false, 'review'),
@@ -148,9 +172,9 @@ describe('OfxImportPreview', () => {
     ).toBeInTheDocument();
   });
 
-  it('category change promotes action from review to import', async () => {
+  it('valid transactions are recommended for import by default', async () => {
     const rows: PreviewRow[] = [
-      row('T1', 'Conta de Luz', -200, false, 'review'),
+      row('T1', 'Conta de Luz', -200, false, 'import'),
     ];
 
     render(
@@ -161,13 +185,13 @@ describe('OfxImportPreview', () => {
       />
     );
 
+    // Valid transactions should be recommended for import
+    expect(screen.getByTestId('action-cell-T1')).toHaveTextContent(/Importar/i);
+
+    // Change category should maintain import action
     const select = screen.getByTestId(
       'category-select-T1'
     ) as HTMLSelectElement;
-    // Initially action label should be "Revisar"
-    expect(screen.getByTestId('action-cell-T1')).toHaveTextContent(/Revisar/i);
-
-    // Change category
     fireEvent.change(select, { target: { value: 'c2' } });
 
     await waitFor(() => {
@@ -214,7 +238,7 @@ describe('OfxImportPreview', () => {
 
   it('confirm aggregates actions and selected category/property and calls onConfirm', async () => {
     const rows: PreviewRow[] = [
-      row('T1', 'Taxa bancária', -9.9, false, 'review'),
+      row('T1', 'Taxa bancária', -9.9, false, 'import'),
       row('T2', 'Recebimento aluguel IMV-01', 1200, false, 'import'),
     ];
 
@@ -237,10 +261,13 @@ describe('OfxImportPreview', () => {
       target: { value: 'p1' },
     });
 
-    // Wait for the action to change from review to import
-    await waitFor(() => {
-      expect(screen.getByTestId('action-cell-T1')).toHaveTextContent(/Importar/i);
-    });
+    // Both transactions should be recommended for import
+    expect(screen.getByTestId('action-cell-T1')).toHaveTextContent(
+      /Importar/i
+    );
+    expect(screen.getByTestId('action-cell-T2')).toHaveTextContent(
+      /Importar/i
+    );
 
     fireEvent.click(screen.getByTestId('confirm-import'));
 
@@ -248,15 +275,29 @@ describe('OfxImportPreview', () => {
       expect(onConfirm).toHaveBeenCalledTimes(1);
     });
 
-    const [actions, updatedRows] = onConfirm.mock.calls[0] as [Record<string, TransactionAction>, Array<PreviewRow & { selectedCategoryId: string | null; selectedPropertyId: string | null; action: TransactionAction }>];
+    const [actions, updatedRows] = onConfirm.mock.calls[0] as [
+      Record<string, TransactionAction>,
+      Array<
+        PreviewRow & {
+          selectedCategoryId: string | null;
+          selectedPropertyId: string | null;
+          action: TransactionAction;
+        }
+      >
+    ];
 
     // Actions include both T1 and T2
     expect(Object.keys(actions)).toEqual(expect.arrayContaining(['T1', 'T2']));
 
     // T1 should have moved from review to import, and category/property set
     const u1 = updatedRows.find(
-      (r: PreviewRow & { selectedCategoryId: string | null; selectedPropertyId: string | null; action: TransactionAction }) =>
-        r.transactionId === 'T1'
+      (
+        r: PreviewRow & {
+          selectedCategoryId: string | null;
+          selectedPropertyId: string | null;
+          action: TransactionAction;
+        }
+      ) => r.transactionId === 'T1'
     )!;
     expect(u1.action).toBe('import');
     expect(u1.selectedCategoryId).toBe('c2');

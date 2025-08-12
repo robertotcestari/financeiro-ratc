@@ -416,7 +416,7 @@ VERSION:103
       const transaction1 = result.transactions[0];
       expect(transaction1.transactionId).toBe('TXN001');
       expect(transaction1.amount).toBe(-50.0);
-      expect(transaction1.description).toBe('Coffee Shop');
+      expect(transaction1.description).toBe('Coffee Shop - Morning coffee');
       expect(transaction1.memo).toBe('Morning coffee');
       expect(transaction1.type).toBe('DEBIT');
 
@@ -617,7 +617,7 @@ NEWFILEUID:NONE
       const transaction1 = result.transactions[0];
       expect(transaction1.transactionId).toBe('TXN001');
       expect(transaction1.amount).toBe(-50.0);
-      expect(transaction1.description).toBe('Coffee Shop');
+      expect(transaction1.description).toBe('Coffee Shop - Morning coffee');
       expect(transaction1.memo).toBe('Morning coffee');
       expect(transaction1.type).toBe('DEBIT');
 

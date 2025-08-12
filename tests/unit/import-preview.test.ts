@@ -635,19 +635,19 @@ describe('ImportPreviewService', () => {
       expect(result.transactions[0].recommendedAction).toBe('skip');
     });
 
-    it('should recommend import for high-confidence categorization', async () => {
-      const highConfidenceTransaction: OFXTransaction = {
+    it('should recommend import for all valid non-duplicate transactions', async () => {
+      const validTransaction: OFXTransaction = {
         transactionId: 'txn-1',
         accountId: 'acc-1',
         date: new Date('2024-01-15'),
         amount: -100.0,
-        description: 'Transferencia PIX para conta',
-        type: 'TRANSFER',
+        description: 'Any valid transaction',
+        type: 'DEBIT',
       };
 
       const parseResult: OFXParseResult = {
         ...mockParseResult,
-        transactions: [highConfidenceTransaction],
+        transactions: [validTransaction],
       };
 
       mockParser.parseFile = vi.fn().mockResolvedValue(parseResult);

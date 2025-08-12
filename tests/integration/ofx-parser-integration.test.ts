@@ -54,7 +54,7 @@ describe('OFX Parser Integration Tests', () => {
       const transaction1 = result.transactions[0];
       expect(transaction1.transactionId).toBe('TXN001');
       expect(transaction1.amount).toBe(-50.0);
-      expect(transaction1.description).toBe('Coffee Shop Purchase');
+      expect(transaction1.description).toBe('Coffee Shop Purchase - Morning coffee and pastry');
       expect(transaction1.memo).toBe('Morning coffee and pastry');
       expect(transaction1.type).toBe('DEBIT');
       expect(transaction1.checkNumber).toBe('1001');
@@ -63,13 +63,13 @@ describe('OFX Parser Integration Tests', () => {
       const transaction2 = result.transactions[1];
       expect(transaction2.transactionId).toBe('TXN002');
       expect(transaction2.amount).toBe(1000.0);
-      expect(transaction2.description).toBe('Salary Deposit');
+      expect(transaction2.description).toBe('Salary Deposit - Monthly salary');
       expect(transaction2.type).toBe('CREDIT');
 
       const transaction3 = result.transactions[2];
       expect(transaction3.transactionId).toBe('TXN003');
       expect(transaction3.amount).toBe(-75.5);
-      expect(transaction3.description).toBe('Grocery Store');
+      expect(transaction3.description).toBe('Grocery Store - Weekly groceries');
       expect(transaction3.type).toBe('DEBIT');
 
       // Restore original FileReader
@@ -119,7 +119,7 @@ describe('OFX Parser Integration Tests', () => {
       const transaction1 = result.transactions[0];
       expect(transaction1.transactionId).toBe('TXN001');
       expect(transaction1.amount).toBe(-50.0);
-      expect(transaction1.description).toBe('Coffee Shop Purchase');
+      expect(transaction1.description).toBe('Coffee Shop Purchase - Morning coffee and pastry');
       expect(transaction1.memo).toBe('Morning coffee and pastry');
       expect(transaction1.type).toBe('DEBIT');
       expect(transaction1.checkNumber).toBe('1001');
@@ -174,20 +174,20 @@ describe('OFX Parser Integration Tests', () => {
       const transaction1 = result.transactions[0];
       expect(transaction1.transactionId).toBe('CC001');
       expect(transaction1.amount).toBe(-25.99);
-      expect(transaction1.description).toBe('Online Purchase');
+      expect(transaction1.description).toBe('Online Purchase - Amazon.com purchase');
       expect(transaction1.memo).toBe('Amazon.com purchase');
       expect(transaction1.type).toBe('DEBIT');
 
       const transaction2 = result.transactions[1];
       expect(transaction2.transactionId).toBe('CC002');
       expect(transaction2.amount).toBe(-150.0);
-      expect(transaction2.description).toBe('Restaurant');
+      expect(transaction2.description).toBe('Restaurant - Dinner with friends');
       expect(transaction2.type).toBe('DEBIT');
 
       const transaction3 = result.transactions[2];
       expect(transaction3.transactionId).toBe('CC003');
       expect(transaction3.amount).toBe(200.0);
-      expect(transaction3.description).toBe('Payment');
+      expect(transaction3.description).toBe('Payment - Credit card payment');
       expect(transaction3.type).toBe('CREDIT');
 
       // Restore original FileReader

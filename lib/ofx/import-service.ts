@@ -322,10 +322,8 @@ export class ImportService {
               continue;
             }
 
-            if (action === 'review' && !options.importReviewTransactions) {
-              skippedTransactions.push(transactionPreview);
-              continue;
-            }
+            // Import all transactions except those explicitly marked to skip
+            // Review transactions are now imported by default (categorization is optional)
 
             // Import the transaction
             const importedTransaction = await this.importSingleTransaction(
@@ -431,18 +429,18 @@ export class ImportService {
       },
     });
 
-    // Create processed transaction if categorization is available
-    if (categorization.suggestedCategory && options.createProcessedTransactions) {
+    // Create processed transaction (with or without categorization)
+    if (options.createProcessedTransactions !== false) {
       try {
         await tx.processedTransaction.create({
           data: {
             transactionId: importedTransaction.id,
             year: transaction.date.getFullYear(),
             month: transaction.date.getMonth() + 1,
-            categoryId: categorization.suggestedCategory.id,
+            categoryId: categorization.suggestedCategory?.id || null,
             propertyId: categorization.suggestedProperty?.id || null,
             details: categorization.reason,
-            isReviewed: categorization.confidence >= 0.8,
+            isReviewed: categorization.confidence >= 0.8 && categorization.suggestedCategory !== null,
           },
         });
       } catch (error) {
@@ -546,8 +544,8 @@ export class ImportService {
   private generateImportSummary(
     allTransactions: TransactionPreview[],
     imported: Transaction[],
-    skipped: TransactionPreview[],
-    failed: FailedTransaction[]
+    _skipped: TransactionPreview[],
+    _failed: FailedTransaction[]
   ): ImportSummary {
     const categorizedCount = imported.length; // All imported transactions have some categorization attempt
 
@@ -569,7 +567,6 @@ export interface ImportOptions {
   bankAccountId?: string;
   importDuplicates?: boolean;
   importInvalidTransactions?: boolean;
-  importReviewTransactions?: boolean;
   createProcessedTransactions?: boolean;
   strictMode?: boolean;
   transactionActions?: Record<string, TransactionAction>;

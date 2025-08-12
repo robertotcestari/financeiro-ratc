@@ -590,7 +590,7 @@ export class ImportPreviewService {
   private determineRecommendedAction(
     isValid: boolean,
     duplicateMatches: DuplicateMatch[],
-    categorization: TransactionCategorization
+    _categorization: TransactionCategorization
   ): TransactionAction {
     if (!isValid) {
       return 'review';
@@ -603,15 +603,9 @@ export class ImportPreviewService {
       return hasExactMatch ? 'skip' : 'review';
     }
 
-    if (categorization.confidence >= 0.8) {
-      return 'import';
-    }
-
-    if (categorization.confidence >= 0.5) {
-      return 'review';
-    }
-
-    return 'review';
+    // Always recommend import unless it's a duplicate or invalid
+    // Categorization is optional now
+    return 'import';
   }
 
   /**

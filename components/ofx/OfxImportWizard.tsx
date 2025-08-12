@@ -18,7 +18,11 @@ import OfxImportPreview, {
   type PreviewRow,
 } from '@/components/ofx/OfxImportPreview';
 import OfxImportResult from '@/components/ofx/OfxImportResult';
-import { formatDate } from '@/lib/formatters';
+import {
+  validateAccountSelection as validateAccount,
+  createNewBankAccount,
+} from '@/app/actions/account-selection';
+import { getPreviewBalances } from '@/app/ofx-import/actions';
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -37,8 +41,7 @@ export function OfxImportWizard({
 }: OfxImportWizardProps) {
   const [step, setStep] = React.useState<Step>(1);
 
-  // Step 1 - file
-  const [file, setFile] = React.useState<File | null>(null);
+  // Step 1 - file (handled only for validation; no need to store file state here)
   const [parseResult, setParseResult] = React.useState<OFXParseResult | null>(
     null
   );
@@ -48,9 +51,10 @@ export function OfxImportWizard({
 
   // Step 3 - preview
   const [previewRows, setPreviewRows] = React.useState<PreviewRow[]>([]);
-  const [actions, setActions] = React.useState<
-    Record<string, TransactionAction>
-  >({});
+  const [previewBalances, setPreviewBalances] = React.useState<{
+    beforeStart: number;
+    beforeEnd: number;
+  } | null>(null);
 
   // Step 4 - result
   const [resultSummary, setResultSummary] = React.useState<{
@@ -99,10 +103,13 @@ export function OfxImportWizard({
     setStep(target);
   }
 
+  // Helper para obter o nome da conta selecionada
+  const selectedAccount = React.useMemo(() => {
+    return initialAccounts.find((acc) => acc.id === selectedAccountId) || null;
+  }, [selectedAccountId, initialAccounts]);
   // Handlers for Step 1
-  function handleValidated(result: OFXParseResult, selectedFile: File) {
+  function handleValidated(result: OFXParseResult) {
     setParseResult(result);
-    setFile(selectedFile);
     // Auto-advance only if success and at least one account/transaction present
     if (result.success && (result.transactions?.length ?? 0) > 0) {
       setStep(2);
@@ -114,27 +121,31 @@ export function OfxImportWizard({
     bankAccountId: string
   ): Promise<ValidationResult> {
     try {
-      const res = await fetch(
-        `/api/ofx/accounts/validate?id=${encodeURIComponent(bankAccountId)}`
-      );
-      const json = (await res.json()) as ValidationResult;
-      return json;
+      const result = await validateAccount(bankAccountId);
+      return result;
     } catch {
       return { isValid: false, error: 'Falha ao validar conta' };
     }
   }
-
   async function createNewAccount(
     data: CreateBankAccountData
   ): Promise<CreateResult> {
     try {
-      const res = await fetch('/api/ofx/accounts/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      const json = (await res.json()) as CreateResult;
-      return json;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const result = await createNewBankAccount(data as any);
+      if (result.success && result.account) {
+        return {
+          success: true,
+          account: {
+            id: result.account.id,
+            name: result.account.name,
+            bankName: result.account.bankName,
+            accountType: result.account.accountType,
+            isActive: result.account.isActive,
+          },
+        };
+      }
+      return { success: false, error: result.error || 'Falha ao criar conta' };
     } catch {
       return { success: false, error: 'Falha ao criar conta' };
     }
@@ -146,6 +157,28 @@ export function OfxImportWizard({
     if (parseResult?.success) {
       const rows = mapTransactionsToPreviewRows(parseResult.transactions);
       setPreviewRows(rows);
+
+      // Compute date range and fetch balances for info card
+      if (rows.length > 0) {
+        const dates = rows.map((r) =>
+          r.date instanceof Date ? r.date : new Date(r.date)
+        );
+        const start = new Date(Math.min(...dates.map((d) => d.getTime())));
+        const end = new Date(Math.max(...dates.map((d) => d.getTime())));
+        try {
+          const balances = await getPreviewBalances(
+            bankAccountId,
+            start.toISOString(),
+            end.toISOString()
+          );
+          setPreviewBalances({
+            beforeStart: balances.beforeStart,
+            beforeEnd: balances.beforeEnd,
+          });
+        } catch {
+          setPreviewBalances(null);
+        }
+      }
       setStep(3);
     }
   }
@@ -161,8 +194,6 @@ export function OfxImportWizard({
       }
     >
   ) {
-    setActions(confirmedActions);
-
     // Compute a client-side "result" view; in real flow we'd call ImportService on server.
     const importedRows = updatedRows.filter((r) => r.action === 'import');
     const skippedRows = updatedRows.filter((r) => r.action === 'skip');
@@ -216,7 +247,7 @@ export function OfxImportWizard({
     return transactions.map((t) => {
       // Simple, client-only initial recommendations:
       const recommended: TransactionAction =
-        Math.abs(t.amount) > 0 ? 'review' : 'skip';
+        Math.abs(t.amount) > 0 ? 'import' : 'skip';
       return {
         transactionId: t.transactionId,
         accountId: t.accountId,
@@ -321,6 +352,7 @@ export function OfxImportWizard({
               rows={previewRows}
               categories={categories}
               properties={properties}
+              balances={previewBalances ?? undefined}
               summaryHint={{
                 totalTransactions: previewRows.length,
                 duplicateTransactions: previewRows.filter((r) => r.isDuplicate)
@@ -329,6 +361,11 @@ export function OfxImportWizard({
                   previewRows.length -
                   previewRows.filter((r) => r.isDuplicate).length,
               }}
+              accountName={
+                selectedAccount
+                  ? `${selectedAccount.bankName} • ${selectedAccount.name} (${selectedAccount.accountType})`
+                  : undefined
+              }
               onConfirm={handlePreviewConfirm}
             />
             <div className="flex items-center justify-end gap-2 pt-2">
@@ -356,11 +393,9 @@ export function OfxImportWizard({
               errorMessage={errorMessage}
               onDone={() => {
                 // Reset wizard to step 1
-                setFile(null);
                 setParseResult(null);
                 setSelectedAccountId('');
                 setPreviewRows([]);
-                setActions({});
                 setResultSummary(null);
                 setImported([]);
                 setSkipped([]);

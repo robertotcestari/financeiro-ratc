@@ -39,6 +39,10 @@ export interface OfxImportPreviewProps {
   rows: PreviewRow[];
   categories: CategoryOption[];
   properties: PropertyOption[];
+  balances?: {
+    beforeStart: number; // saldo antes do início do período
+    beforeEnd: number; // saldo no fim do período (antes de importar)
+  };
   summaryHint?: {
     totalTransactions: number;
     duplicateTransactions: number;
@@ -63,6 +67,9 @@ export interface OfxImportPreviewProps {
       }
     >
   ) => void | Promise<void>;
+
+  /** Nome da conta associada à importação */
+  accountName?: string;
 }
 
 type RowState = {
@@ -81,6 +88,8 @@ export function OfxImportPreview({
   onChangeProperty,
   onToggleSkip,
   onConfirm,
+  balances,
+  accountName,
 }: OfxImportPreviewProps) {
   const [query, setQuery] = React.useState<string>('');
   const [rowState, setRowState] = React.useState<Record<string, RowState>>(
@@ -140,14 +149,28 @@ export function OfxImportPreview({
     };
   }, [rows, rowState, summaryHint]);
 
-  function fallbackState(id: string): RowState {
-    const r = rows.find((x) => x.transactionId === id)!;
-    return {
-      selectedCategoryId: r.initialCategoryId ?? null,
-      selectedPropertyId: r.initialPropertyId ?? null,
-      action: r.recommendedAction,
-    };
-  }
+  const fallbackState = React.useCallback(
+    (id: string): RowState => {
+      const r = rows.find((x) => x.transactionId === id)!;
+      return {
+        selectedCategoryId: r.initialCategoryId ?? null,
+        selectedPropertyId: r.initialPropertyId ?? null,
+        action: r.recommendedAction,
+      };
+    },
+    [rows]
+  );
+
+  // Projected final balance after import (based on current selection)
+  const projected = React.useMemo(() => {
+    if (!balances) return null;
+    const importSum = rows.reduce((acc, r) => {
+      const s = rowState[r.transactionId] ?? fallbackState(r.transactionId);
+      return s.action === 'import' ? acc + (r.amount || 0) : acc;
+    }, 0);
+    const final = balances.beforeEnd + importSum;
+    return { importSum, final };
+  }, [balances, rows, rowState, fallbackState]);
 
   function setAction(id: string, next: TransactionAction) {
     setRowState((s) => ({
@@ -183,14 +206,8 @@ export function OfxImportPreview({
     value: string
   ): Promise<void> {
     const v = value || null;
-    const currentState = rowState[id] ?? fallbackState(id);
     setCategory(id, v);
     await onChangeCategory?.(id, v);
-    
-    // If the current action is review, promote to import
-    if (currentState.action === 'review') {
-      setAction(id, 'import');
-    }
   }
 
   async function handlePropertyChange(
@@ -219,6 +236,48 @@ export function OfxImportPreview({
 
   return (
     <div className={cn('w-full space-y-4', className)}>
+      {/* Info Card: Saldos + Nome da Conta */}
+      {balances || accountName ? (
+        <div className="rounded-md border bg-card p-3">
+          <div className="space-y-2 text-sm">
+            {accountName && (
+              <div>
+                <span className="text-muted-foreground">Conta:</span>{' '}
+                <strong data-testid="account-name">{accountName}</strong>
+              </div>
+            )}
+            {balances && (
+              <div>
+                <span className="text-muted-foreground">
+                  Saldo inicial (antes da importação):
+                </span>{' '}
+                <strong data-testid="saldo-inicial">
+                  {formatCurrency(balances.beforeStart)}
+                </strong>
+              </div>
+            )}
+            {balances && projected && (
+              <div>
+                <span className="text-muted-foreground">
+                  Total das transações selecionadas:
+                </span>{' '}
+                <strong>{formatCurrency(projected.importSum)}</strong>
+              </div>
+            )}
+            {balances && projected && (
+              <div>
+                <span className="text-muted-foreground">
+                  Saldo final (após importação):
+                </span>{' '}
+                <strong data-testid="saldo-final-projetado">
+                  {formatCurrency(projected.final)}
+                </strong>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : null}
+
       {/* Summary Header */}
       <div className="rounded-md border bg-card p-3">
         <div className="flex flex-wrap items-center justify-between gap-2">

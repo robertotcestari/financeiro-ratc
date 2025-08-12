@@ -691,9 +691,11 @@ export class OFXParserService {
     const transactionId = element.querySelector('FITID')?.textContent?.trim();
     const dateStr = element.querySelector('DTPOSTED')?.textContent?.trim();
     const amountStr = element.querySelector('TRNAMT')?.textContent?.trim();
-    const description = element.querySelector('NAME')?.textContent?.trim();
-    const type = element.querySelector('TRNTYPE')?.textContent?.trim();
+    const name = element.querySelector('NAME')?.textContent?.trim();
     const memo = element.querySelector('MEMO')?.textContent?.trim();
+    const payee = element.querySelector('PAYEE')?.textContent?.trim();
+    const orig = element.querySelector('ORIG')?.textContent?.trim();
+    const type = element.querySelector('TRNTYPE')?.textContent?.trim();
     const checkNumber = element.querySelector('CHECKNUM')?.textContent?.trim();
 
     if (!transactionId || !dateStr || !amountStr) {
@@ -707,12 +709,15 @@ export class OFXParserService {
       return null;
     }
 
+    // Build description from available fields, prioritizing the most descriptive ones
+    const description = this.buildTransactionDescription(name, memo, payee, orig);
+
     return {
       transactionId,
       accountId: '', // Will be set by the calling context
       date,
       amount,
-      description: description || '',
+      description,
       type: type || 'OTHER',
       memo,
       checkNumber,
@@ -728,9 +733,11 @@ export class OFXParserService {
     const transactionId = element.querySelector('FITID')?.textContent?.trim();
     const dateStr = element.querySelector('DTPOSTED')?.textContent?.trim();
     const amountStr = element.querySelector('TRNAMT')?.textContent?.trim();
-    const description = element.querySelector('NAME')?.textContent?.trim();
-    const type = element.querySelector('TRNTYPE')?.textContent?.trim();
+    const name = element.querySelector('NAME')?.textContent?.trim();
     const memo = element.querySelector('MEMO')?.textContent?.trim();
+    const payee = element.querySelector('PAYEE')?.textContent?.trim();
+    const orig = element.querySelector('ORIG')?.textContent?.trim();
+    const type = element.querySelector('TRNTYPE')?.textContent?.trim();
 
     if (!transactionId || !dateStr || !amountStr) {
       return null;
@@ -743,12 +750,15 @@ export class OFXParserService {
       return null;
     }
 
+    // Build description from available fields, prioritizing the most descriptive ones
+    const description = this.buildTransactionDescription(name, memo, payee, orig);
+
     return {
       transactionId,
       accountId: '', // Will be set by the calling context
       date,
       amount,
-      description: description || '',
+      description,
       type: type || 'OTHER',
       memo,
     };
@@ -850,9 +860,11 @@ export class OFXParserService {
     const transactionId = this.extractSGMLValue(data, 'FITID');
     const dateStr = this.extractSGMLValue(data, 'DTPOSTED');
     const amountStr = this.extractSGMLValue(data, 'TRNAMT');
-    const description = this.extractSGMLValue(data, 'NAME');
-    const type = this.extractSGMLValue(data, 'TRNTYPE');
+    const name = this.extractSGMLValue(data, 'NAME');
     const memo = this.extractSGMLValue(data, 'MEMO');
+    const payee = this.extractSGMLValue(data, 'PAYEE');
+    const orig = this.extractSGMLValue(data, 'ORIG');
+    const type = this.extractSGMLValue(data, 'TRNTYPE');
     const checkNumber = this.extractSGMLValue(data, 'CHECKNUM');
 
     if (!transactionId || !dateStr || !amountStr) {
@@ -866,12 +878,15 @@ export class OFXParserService {
       return null;
     }
 
+    // Build description from available fields, prioritizing the most descriptive ones
+    const description = this.buildTransactionDescription(name, memo, payee, orig);
+
     return {
       transactionId,
       accountId: '', // Will be set by the calling context
       date,
       amount,
-      description: description || '',
+      description,
       type: type || 'OTHER',
       memo,
       checkNumber,
@@ -885,9 +900,11 @@ export class OFXParserService {
     const transactionId = this.extractSGMLValue(data, 'FITID');
     const dateStr = this.extractSGMLValue(data, 'DTPOSTED');
     const amountStr = this.extractSGMLValue(data, 'TRNAMT');
-    const description = this.extractSGMLValue(data, 'NAME');
-    const type = this.extractSGMLValue(data, 'TRNTYPE');
+    const name = this.extractSGMLValue(data, 'NAME');
     const memo = this.extractSGMLValue(data, 'MEMO');
+    const payee = this.extractSGMLValue(data, 'PAYEE');
+    const orig = this.extractSGMLValue(data, 'ORIG');
+    const type = this.extractSGMLValue(data, 'TRNTYPE');
 
     if (!transactionId || !dateStr || !amountStr) {
       return null;
@@ -900,15 +917,78 @@ export class OFXParserService {
       return null;
     }
 
+    // Build description from available fields, prioritizing the most descriptive ones
+    const description = this.buildTransactionDescription(name, memo, payee, orig);
+
     return {
       transactionId,
       accountId: '', // Will be set by the calling context
       date,
       amount,
-      description: description || '',
+      description,
       type: type || 'OTHER',
       memo,
     };
+  }
+
+  /**
+   * Build transaction description from available OFX fields
+   * Prioritizes the most descriptive and useful fields
+   */
+  private buildTransactionDescription(
+    name?: string | null,
+    memo?: string | null,
+    payee?: string | null,
+    orig?: string | null
+  ): string {
+    // Clean and filter non-empty values
+    const cleanName = name?.trim();
+    const cleanMemo = memo?.trim();
+    const cleanPayee = payee?.trim();
+    const cleanOrig = orig?.trim();
+
+    const cleanFields = [cleanName, cleanMemo, cleanPayee, cleanOrig]
+      .filter(field => field && field.length > 0);
+
+    if (cleanFields.length === 0) {
+      return '';
+    }
+
+    // Single field - return it
+    if (cleanFields.length === 1) {
+      return cleanFields[0]!;
+    }
+
+    // Remove duplicates (case-insensitive)
+    const uniqueFields = cleanFields.filter((field, index, arr) => 
+      arr.findIndex(f => f?.toLowerCase() === field?.toLowerCase()) === index
+    );
+
+    // If only one unique field after deduplication, return it
+    if (uniqueFields.length === 1) {
+      return uniqueFields[0]!;
+    }
+
+    // Priority logic for multiple unique fields:
+    // 1. If payee is available and different from name, prefer payee
+    if (cleanPayee && cleanName && cleanPayee.toLowerCase() !== cleanName.toLowerCase()) {
+      // Add memo if it's different from both name and payee
+      if (cleanMemo && 
+          cleanMemo.toLowerCase() !== cleanName.toLowerCase() && 
+          cleanMemo.toLowerCase() !== cleanPayee.toLowerCase()) {
+        return `${cleanPayee} - ${cleanMemo}`;
+      }
+      return cleanPayee;
+    }
+
+    // 2. If name and memo are different, combine them
+    if (cleanName && cleanMemo && cleanName.toLowerCase() !== cleanMemo.toLowerCase()) {
+      return `${cleanName} - ${cleanMemo}`;
+    }
+
+    // 3. Return the longest unique field as fallback
+    return uniqueFields.reduce((longest, current) => 
+      current && current.length > longest.length ? current : longest, '');
   }
 
   /**

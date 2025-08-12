@@ -18,7 +18,7 @@ export interface OfxFileUploadProps {
    * Called after parsing/validation completes (success or failure).
    * Consumers can decide how to proceed based on result.success
    */
-  onValidated?: (result: OFXParseResult, file: File) => void;
+  onValidated?: (result: OFXParseResult, file?: File) => void;
 }
 
 export function OfxFileUpload({

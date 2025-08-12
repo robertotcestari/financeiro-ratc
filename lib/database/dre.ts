@@ -21,76 +21,146 @@ interface AccountBalanceForDRE {
 /**
  * Obter saldos bancários para inclusão no DRE
  */
-async function getAccountBalancesForDRE(year: number, month?: number): Promise<AccountBalanceForDRE[]> {
+async function getAccountBalancesForDRE(
+  year: number,
+  month?: number
+): Promise<AccountBalanceForDRE[]> {
   // Busca todas as contas bancárias ativas
   const bankAccounts = await prisma.bankAccount.findMany({
     where: { isActive: true },
     orderBy: { name: 'asc' },
   });
 
-  const balances: AccountBalanceForDRE[] = [];
+  // Prepara datas alvo para cada conta
+  const targetDate = month
+    ? new Date(year, month, 0, 23, 59, 59) // Último dia do mês
+    : new Date(year, 11, 31, 23, 59, 59); // Último dia do ano
 
-  for (const account of bankAccounts) {
-    let balance = 0;
+  // Busca todos os snapshots relevantes em lote
+  const accountIds = bankAccounts.map((acc) => acc.id);
+  let snapshots: {
+    bankAccountId: string;
+    closingBalance: number | null;
+    year: number;
+    month: number;
+  }[] = [];
+  if (month) {
+    // Para mês específico, busca todos snapshots do mês
+    const rawSnapshots = await prisma.accountSnapshot.findMany({
+      where: {
+        bankAccountId: { in: accountIds },
+        year,
+        month,
+      },
+    });
+    snapshots = rawSnapshots.map((snap) => ({
+      bankAccountId: snap.bankAccountId,
+      closingBalance:
+        snap.closingBalance != null ? Number(snap.closingBalance) : null,
+      year: snap.year,
+      month: snap.month,
+    }));
+  } else {
+    // Para o ano todo, busca o último snapshot do ano para cada conta
+    const rawSnapshots = await prisma.accountSnapshot.findMany({
+      where: {
+        bankAccountId: { in: accountIds },
+        year,
+      },
+      orderBy: [{ bankAccountId: 'asc' }, { month: 'desc' }],
+    });
+    snapshots = rawSnapshots.map((snap) => ({
+      bankAccountId: snap.bankAccountId,
+      closingBalance:
+        snap.closingBalance != null ? Number(snap.closingBalance) : null,
+      year: snap.year,
+      month: snap.month,
+    }));
+  }
 
-    if (month) {
-      // Para um mês específico, usa o saldo de fechamento do snapshot
-      const snapshot = await prisma.accountSnapshot.findUnique({
-        where: {
-          bankAccountId_year_month: {
-            bankAccountId: account.id,
-            year,
-            month,
-          },
-        },
-      });
-
-      balance = snapshot?.closingBalance ? Number(snapshot.closingBalance) : 0;
-    } else {
-      // Para o ano todo, usa o último snapshot disponível no ano
-      const latestSnapshot = await prisma.accountSnapshot.findFirst({
-        where: {
-          bankAccountId: account.id,
-          year,
-        },
-        orderBy: [
-          { year: 'desc' },
-          { month: 'desc' },
-        ],
-      });
-
-      balance = latestSnapshot?.closingBalance ? Number(latestSnapshot.closingBalance) : 0;
+  // Indexa snapshots por conta
+  const snapshotMap = new Map<
+    string,
+    {
+      bankAccountId: string;
+      closingBalance: number | null;
+      year: number;
+      month: number;
     }
-
-    // Se não encontrar snapshot, usa o método anterior (transação mais recente)
-    if (balance === 0) {
-      // Determina a data final do período (último dia do mês/ano)
-      let targetDate: Date;
-      if (month) {
-        // Último dia do mês específico
-        targetDate = new Date(year, month, 0, 23, 59, 59); // month é 1-based, Date() espera 0-based
-      } else {
-        // Último dia do ano
-        targetDate = new Date(year, 11, 31, 23, 59, 59); // Dezembro (11) dia 31
+  >();
+  if (month) {
+    for (const snap of snapshots) {
+      snapshotMap.set(snap.bankAccountId, snap);
+    }
+  } else {
+    // Para o ano, pega o snapshot mais recente por conta
+    for (const accId of accountIds) {
+      const snaps = snapshots.filter((s) => s.bankAccountId === accId);
+      if (snaps.length > 0) {
+        // Snapshots já ordenados por mês desc
+        snapshotMap.set(accId, snaps[0]);
       }
-
-      const latestTransaction = await prisma.transaction.findFirst({
-        where: {
-          bankAccountId: account.id,
-          date: { lte: targetDate },
-          balance: { not: null },
-        },
-        orderBy: [{ date: 'desc' }, { id: 'desc' }],
-      });
-
-      balance = latestTransaction?.balance ? Number(latestTransaction.balance) : 0;
     }
+  }
 
-    balances.push({
+  // Busca todas as transações relevantes em lote (para contas sem snapshot)
+  const missingSnapshotIds = bankAccounts
+    .filter((acc) => {
+      const snap = snapshotMap.get(acc.id);
+      return !snap || !snap.closingBalance;
+    })
+    .map((acc) => acc.id);
+
+  let transactions: {
+    bankAccountId: string;
+    balance: number | null;
+    date: Date;
+    id: string;
+  }[] = [];
+  if (missingSnapshotIds.length > 0) {
+    const rawTransactions = await prisma.transaction.findMany({
+      where: {
+        bankAccountId: { in: missingSnapshotIds },
+        date: { lte: targetDate },
+        balance: { not: null },
+      },
+      orderBy: [{ bankAccountId: 'asc' }, { date: 'desc' }, { id: 'desc' }],
+    });
+    transactions = rawTransactions.map((tx) => ({
+      bankAccountId: tx.bankAccountId,
+      balance: tx.balance != null ? Number(tx.balance) : null,
+      date: tx.date,
+      id: tx.id,
+    }));
+  }
+
+  // Indexa transações por conta (pega a mais recente por conta)
+  const transactionMap = new Map<
+    string,
+    { bankAccountId: string; balance: number | null; date: Date; id: string }
+  >();
+  for (const accId of missingSnapshotIds) {
+    const txs = transactions.filter((t) => t.bankAccountId === accId);
+    if (txs.length > 0) {
+      transactionMap.set(accId, txs[0]);
+    }
+  }
+
+  // Monta resultado final
+  const balances: AccountBalanceForDRE[] = bankAccounts.map((account) => {
+    let balance = 0;
+    const snapshot = snapshotMap.get(account.id);
+    if (snapshot && snapshot.closingBalance != null) {
+      balance = Number(snapshot.closingBalance);
+    } else {
+      const tx = transactionMap.get(account.id);
+      balance = tx && tx.balance != null ? Number(tx.balance) : 0;
+    }
+    return {
       bankAccount: account,
       balance,
-    });
-  }
+    };
+  });
 
   return balances;
 }
@@ -130,7 +200,7 @@ export async function generateDRE(year: number, month?: number) {
           },
         },
       },
-    })
+    }),
   ]);
 
   // Inicializa todas as categorias ativas com valor zero
@@ -180,26 +250,32 @@ export async function generateDRE(year: number, month?: number) {
 /**
  * Verifica se uma categoria é não operacional
  */
-function isNonOperationalCategory(category: Category & { parent?: Category | null }): boolean {
+function isNonOperationalCategory(
+  category: Category & { parent?: Category | null }
+): boolean {
   // Verifica se a categoria raiz é "Receitas não Operacionais" ou "Despesas não Operacionais"
   const rootCategory = getRootCategory(category);
-  return rootCategory.name === 'Receitas não Operacionais' || 
-         rootCategory.name === 'Despesas não Operacionais';
+  return (
+    rootCategory.name === 'Receitas não Operacionais' ||
+    rootCategory.name === 'Despesas não Operacionais'
+  );
 }
 
 /**
  * Obtém a categoria raiz (nível 1) de uma categoria
  */
-function getRootCategory(category: Category & { parent?: Category | null }): Category {
+function getRootCategory(
+  category: Category & { parent?: Category | null }
+): Category {
   if (!category.parent) {
     return category;
   }
-  
+
   let current = category;
   while (current.parent) {
     current = current.parent;
   }
-  
+
   return current;
 }
 
@@ -464,8 +540,9 @@ function organizeDREHierarchy(
   }
 
   // 5. LUCRO OPERACIONAL
-  const lucroOperacional = totalReceitasOperacionais + totalDespesasOperacionais; // Despesas são negativas
-  
+  const lucroOperacional =
+    totalReceitasOperacionais + totalDespesasOperacionais; // Despesas são negativas
+
   structure.push({
     id: 'lucro-operacional',
     name: 'Lucro Operacional',
@@ -488,8 +565,10 @@ function organizeDREHierarchy(
   });
 
   // 6. RESULTADO DE CAIXA
-  const totalReceitas = totalReceitasOperacionais + totalReceitasNaoOperacionais;
-  const totalDespesas = totalDespesasOperacionais + totalDespesasNaoOperacionais;
+  const totalReceitas =
+    totalReceitasOperacionais + totalReceitasNaoOperacionais;
+  const totalDespesas =
+    totalDespesasOperacionais + totalDespesasNaoOperacionais;
   const resultadoDeCaixa = totalReceitas + totalDespesas; // Despesas são negativas
 
   structure.push({
@@ -697,13 +776,17 @@ export async function calculateFinancialIndicators(
   const dre = await generateDRE(year, month);
 
   const totalReceitasOperacionais =
-    dre.find((line) => line.id === 'subtotal-receitas-operacionais')?.amount || 0;
+    dre.find((line) => line.id === 'subtotal-receitas-operacionais')?.amount ||
+    0;
   const totalReceitasNaoOperacionais =
-    dre.find((line) => line.id === 'subtotal-receitas-nao-operacionais')?.amount || 0;
+    dre.find((line) => line.id === 'subtotal-receitas-nao-operacionais')
+      ?.amount || 0;
   const totalDespesasOperacionais =
-    dre.find((line) => line.id === 'subtotal-despesas-operacionais')?.amount || 0;
+    dre.find((line) => line.id === 'subtotal-despesas-operacionais')?.amount ||
+    0;
   const totalDespesasNaoOperacionais =
-    dre.find((line) => line.id === 'subtotal-despesas-nao-operacionais')?.amount || 0;
+    dre.find((line) => line.id === 'subtotal-despesas-nao-operacionais')
+      ?.amount || 0;
   const resultadoOperacional =
     dre.find((line) => line.id === 'resultado-operacional')?.amount || 0;
   const lucroOperacional =
@@ -711,8 +794,10 @@ export async function calculateFinancialIndicators(
   const resultadoDeCaixa =
     dre.find((line) => line.id === 'resultado-de-caixa')?.amount || 0;
 
-  const totalReceitas = totalReceitasOperacionais + totalReceitasNaoOperacionais;
-  const totalDespesas = totalDespesasOperacionais + totalDespesasNaoOperacionais;
+  const totalReceitas =
+    totalReceitasOperacionais + totalReceitasNaoOperacionais;
+  const totalDespesas =
+    totalDespesasOperacionais + totalDespesasNaoOperacionais;
 
   // Margem líquida (baseada no resultado de caixa)
   const margemLiquida =
@@ -720,7 +805,9 @@ export async function calculateFinancialIndicators(
 
   // Margem operacional (baseada no lucro operacional)
   const margemOperacional =
-    totalReceitasOperacionais !== 0 ? (lucroOperacional / totalReceitasOperacionais) * 100 : 0;
+    totalReceitasOperacionais !== 0
+      ? (lucroOperacional / totalReceitasOperacionais) * 100
+      : 0;
 
   // Índice de despesas sobre receitas
   const indiceDespesas =
