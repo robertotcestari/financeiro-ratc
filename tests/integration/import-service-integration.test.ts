@@ -197,16 +197,6 @@ NEWFILEUID:NONE
         testBankAccount.id
       );
 
-      // Debug: log the result to understand what's happening
-      console.log('Parsing error test result:', {
-        success: result.success,
-        errors: result.errors.map((e) => ({
-          type: e.type,
-          code: e.code,
-          message: e.message,
-        })),
-        imported: result.transactions.imported.length,
-      });
 
       // Verify the result
       expect(result.success).toBe(false);
@@ -293,19 +283,6 @@ NEWFILEUID:NONE
         }
       );
 
-      // Debug: log the result to understand what's happening
-      console.log('Duplicate test result:', {
-        success: result.success,
-        summary: result.summary,
-        imported: result.transactions.imported.length,
-        skipped: result.transactions.skipped.length,
-        failed: result.transactions.failed.length,
-        errors: result.errors.map((e) => ({
-          type: e.type,
-          code: e.code,
-          message: e.message,
-        })),
-      });
 
       // Verify duplicate was detected and skipped
       expect(result.success).toBe(true);
@@ -542,19 +519,6 @@ NEWFILEUID:NONE
         importReviewTransactions: true, // Allow importing transactions that need review
       });
 
-      // Debug: log the result to understand what's happening
-      console.log('ExecuteImport test result:', {
-        success: result.success,
-        importBatchId: result.importBatchId,
-        imported: result.transactions.imported.length,
-        skipped: result.transactions.skipped.length,
-        failed: result.transactions.failed.length,
-        errors: result.errors.map((e) => ({
-          type: e.type,
-          code: e.code,
-          message: e.message,
-        })),
-      });
 
       // Verify execution
       expect(result.success).toBe(true);
@@ -635,14 +599,6 @@ NEWFILEUID:NONE
         }
       );
 
-      // Debug: log the result to understand what's happening
-      console.log('Import batch test result:', {
-        success: result.success,
-        importBatchId: result.importBatchId,
-        imported: result.transactions.imported.length,
-        skipped: result.transactions.skipped.length,
-        failed: result.transactions.failed.length,
-      });
 
       // Verify import batch was created and updated
       const importBatch = await prisma.importBatch.findUnique({
@@ -650,13 +606,6 @@ NEWFILEUID:NONE
         include: { transactions: true },
       });
 
-      console.log('Import batch details:', {
-        exists: !!importBatch,
-        fileName: importBatch?.fileName,
-        status: importBatch?.status,
-        transactionCount: importBatch?.transactionCount,
-        actualTransactions: importBatch?.transactions.length,
-      });
 
       expect(importBatch).toBeTruthy();
       expect(importBatch!.fileName).toBe('test-batch.ofx');

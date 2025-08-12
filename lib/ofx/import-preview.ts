@@ -610,7 +610,7 @@ export interface ImportValidationError {
   code: string;
   message: string;
   transactionIndex?: number;
-  details?: any;
+  details?: unknown;
   recoverable: boolean;
 }
 

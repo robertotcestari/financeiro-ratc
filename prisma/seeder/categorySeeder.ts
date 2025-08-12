@@ -7,6 +7,7 @@ interface CategoryData {
   type: string
   level: number
   parentId: string | null
+  orderIndex?: number
 }
 
 export async function seedCategories(prisma: PrismaClient) {
@@ -17,7 +18,10 @@ export async function seedCategories(prisma: PrismaClient) {
   // First, create all categories in order (level 1, then 2, then 3)
   const sortedCategories = [...categoriesData].sort((a, b) => a.level - b.level)
   
-  for (const category of sortedCategories) {
+  for (let i = 0; i < sortedCategories.length; i++) {
+    const category = sortedCategories[i]
+    const orderIndex = category.orderIndex ?? i + 1
+    
     await prisma.category.upsert({
       where: { id: category.id },
       update: {
@@ -25,6 +29,7 @@ export async function seedCategories(prisma: PrismaClient) {
         type: category.type as CategoryType,
         level: category.level,
         parentId: category.parentId,
+        orderIndex,
       },
       create: {
         id: category.id,
@@ -32,6 +37,7 @@ export async function seedCategories(prisma: PrismaClient) {
         type: category.type as CategoryType,
         level: category.level,
         parentId: category.parentId,
+        orderIndex,
       }
     })
     

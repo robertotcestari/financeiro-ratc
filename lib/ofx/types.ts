@@ -29,7 +29,7 @@ export interface ParseError {
   code: string;
   message: string;
   line?: number;
-  details?: any;
+  details?: unknown;
 }
 
 export interface OFXParseResult {
@@ -57,7 +57,7 @@ export interface OFXFormatDetectionResult {
 // Duplicate Detection Types
 export interface DuplicateMatch {
   ofxTransaction: OFXTransaction;
-  existingTransaction: any; // Transaction from Prisma
+  existingTransaction: unknown; // Transaction from Prisma
   confidence: number;
   matchCriteria: string[];
   isExactMatch: boolean;

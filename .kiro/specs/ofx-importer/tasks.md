@@ -53,7 +53,7 @@
   - Write unit tests for preview generation and validation
   - _Requirements: 1.3, 4.4, 5.1, 5.2_
 
-- [ ] 7. Implement core import service orchestration
+- [x] 7. Implement core import service orchestration
 
   - Create main import service that coordinates all import steps
   - Implement transaction-based import execution with rollback capability
@@ -62,7 +62,7 @@
   - Write integration tests for complete import flow
   - _Requirements: 1.5, 5.1, 5.2, 5.3, 5.4_
 
-- [ ] 8. Build file upload and validation UI components
+- [x] 8. Build file upload and validation UI components
 
   - Create file upload component with OFX file type validation
   - Implement drag-and-drop file upload functionality
@@ -71,7 +71,7 @@
   - Write component tests for upload functionality
   - _Requirements: 1.1, 1.4, 6.3_
 
-- [ ] 9. Create account selection UI interface
+- [x] 9. Create account selection UI interface
 
   - Build account selection interface with dropdown of all available bank accounts
   - Implement search/filter functionality for easy account finding

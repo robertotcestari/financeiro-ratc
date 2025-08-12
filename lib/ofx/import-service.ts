@@ -437,13 +437,6 @@ export class ImportService {
         console.error('Failed to create unified transaction:', error);
         throw error;
       }
-    } else {
-      console.log('Unified transaction not created:', {
-        hasSuggestedCategory: !!categorization.suggestedCategory,
-        createUnifiedTransactions: options.createUnifiedTransactions,
-        categoryId: categorization.suggestedCategory?.id,
-        confidence: categorization.confidence,
-      });
     }
 
     return importedTransaction;

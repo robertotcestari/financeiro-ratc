@@ -11,7 +11,7 @@
 const fs = require('fs')
 const path = require('path')
 const { parse } = require('csv-parse/sync')
-const { PrismaClient } = require('../app/generated/prisma')
+const { PrismaClient } = require('../../app/generated/prisma')
 
 const prisma = new PrismaClient()
 
@@ -216,7 +216,7 @@ async function importFile(filePath) {
 
 async function main() {
   try {
-    const root = path.resolve(__dirname, '..')
+    const root = path.resolve(__dirname, '../..')
     const legacyDir = path.join(root, 'old_implementation')
     const candidates = fs.readdirSync(legacyDir).filter(f => f.endsWith('.csv'))
 

@@ -26,7 +26,7 @@ Financial management system for automating financial control by importing OFX ba
 
 ### Legacy Data Import
 
-- `npm run import:legacy` - Import legacy CSV data (script in `scripts/import-legacy.js`)
+- `npm run import:legacy` - Import legacy CSV data (script in `prisma/seeder/import-legacy.js`)
 
 ## Architecture
 
