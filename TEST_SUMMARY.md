@@ -62,12 +62,6 @@ Tests server-side operations:
 - ✅ Data validation
 - ✅ Error handling
 
-#### `msw-fetch.test.ts`
-
-Tests API mocking setup:
-
-- ✅ Mock Service Worker integration
-- ✅ HTTP request interception
 
 ## Test Coverage Areas
 
