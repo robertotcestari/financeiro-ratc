@@ -69,9 +69,9 @@
   - Create bulk rule operations (activate/deactivate multiple rules)
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
 
-- [ ] 5. Suggestion Management Backend
+- [x] 5. Suggestion Management Backend
 
-  - [ ] 5.1 Create suggestion services
+  - [x] 5.1 Create suggestion services
 
     - Implement suggestion retrieval for transactions with category and property data
     - Create suggestion application service for both category and property
@@ -79,7 +79,7 @@
     - Implement bulk suggestion operations
     - _Requirements: 8.1, 8.2, 8.4, 8.5_
 
-  - [ ] 5.2 Build suggestion server actions
+  - [x] 5.2 Build suggestion server actions
     - Create actions for applying individual suggestions (category and property)
     - Implement bulk suggestion application
     - Add suggestion dismissal actions

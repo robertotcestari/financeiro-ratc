@@ -15,6 +15,7 @@ import {
   MapPin,
   Plus,
   ChevronDown,
+  Settings,
 } from 'lucide-react';
 
 const navigation = [
@@ -31,6 +32,7 @@ const registrationOptions = [
   { name: 'Cidades', href: '/cidades', icon: MapPin },
   { name: 'Imóveis', href: '/imoveis', icon: Building2 },
   { name: 'Categorias', href: '/categorias', icon: Tag },
+  { name: 'Regras', href: '/regras-categorizacao', icon: Settings },
 ];
 
 // ...existing code...
