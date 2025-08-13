@@ -31,6 +31,7 @@ export default function CategoriesManager({ initialCategories }: CategoriesManag
   const handleEditCategory = (category: CategoryWithDetails) => {
     setEditingCategory(category)
     setShowForm(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleCancelEdit = () => {

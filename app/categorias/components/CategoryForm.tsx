@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Category, CategoryType } from '@/app/generated/prisma'
 import { createCategory, editCategory } from '../actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Combobox, ComboboxOption } from '@/components/ui/combobox'
 
 interface CategoryWithDetails extends Category {
   parent: Category | null
@@ -30,6 +31,13 @@ export default function CategoryForm({ category, categories, onCancel }: Categor
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const nameInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (nameInputRef.current) {
+      nameInputRef.current.focus()
+    }
+  }, [])
 
   const categoryTypes = [
     { value: CategoryType.INCOME, label: 'Receita' },
@@ -109,68 +117,67 @@ export default function CategoryForm({ category, categories, onCancel }: Categor
         </div>
       )}
 
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-          Nome da Categoria
-        </label>
-        <Input
-          type="text"
-          id="name"
-          value={formData.name}
-          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-          required
-        />
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            Nome da Categoria
+          </label>
+          <Input
+            type="text"
+            id="name"
+            ref={nameInputRef}
+            value={formData.name}
+            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Tipo
+          </label>
+          <Combobox
+            options={categoryTypes}
+            value={formData.type}
+            onValueChange={(value) => handleTypeChange(value as CategoryType)}
+            placeholder="Selecione o tipo"
+            allowClear={false}
+            className="w-full"
+          />
+        </div>
       </div>
 
-      <div>
-        <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">
-          Tipo
-        </label>
-        <select
-          id="type"
-          value={formData.type}
-          onChange={(e) => handleTypeChange(e.target.value as CategoryType)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        >
-          {categoryTypes.map(type => (
-            <option key={type.value} value={type.value}>
-              {type.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Categoria Pai (opcional)
+          </label>
+          <Combobox
+            options={getAvailableParents().map(parent => ({
+              value: parent.id,
+              label: `${'  '.repeat(parent.level - 1)}${parent.name}`,
+              keywords: [parent.name]
+            }))}
+            value={formData.parentId}
+            onValueChange={handleParentChange}
+            placeholder="Selecione categoria pai"
+            clearLabel="Nenhuma (categoria raiz)"
+            className="w-full"
+          />
+        </div>
 
-      <div>
-        <label htmlFor="parentId" className="block text-sm font-medium text-gray-700 mb-1">
-          Categoria Pai (opcional)
-        </label>
-        <select
-          id="parentId"
-          value={formData.parentId}
-          onChange={(e) => handleParentChange(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Nenhuma (categoria raiz)</option>
-          {getAvailableParents().map(parent => (
-            <option key={parent.id} value={parent.id}>
-              {'  '.repeat(parent.level - 1)}{parent.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="orderIndex" className="block text-sm font-medium text-gray-700 mb-1">
-          Ordem de Exibição
-        </label>
-        <Input
-          type="number"
-          id="orderIndex"
-          min="0"
-          value={formData.orderIndex}
-          onChange={(e) => setFormData(prev => ({ ...prev, orderIndex: parseInt(e.target.value) || 0 }))}
-        />
+        <div>
+          <label htmlFor="orderIndex" className="block text-sm font-medium text-gray-700 mb-1">
+            Ordem de Exibição
+          </label>
+          <Input
+            type="number"
+            id="orderIndex"
+            min="0"
+            value={formData.orderIndex}
+            onChange={(e) => setFormData(prev => ({ ...prev, orderIndex: parseInt(e.target.value) || 0 }))}
+          />
+        </div>
       </div>
 
       <div className="text-sm text-gray-600">
