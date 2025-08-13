@@ -1,6 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getExpandedRowModel,
+  createColumnHelper,
+  flexRender,
+  type ExpandedState,
+  type ColumnDef,
+} from '@tanstack/react-table';
 import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { Switch } from '@/components/ui/switch';
 
@@ -49,6 +58,9 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
 
   // Estado para controlar se todas as seções estão expandidas
   const [expandAll, setExpandAll] = useState<boolean>(false);
+
+  // TanStack Table expanded state
+  const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => ({
@@ -224,8 +236,105 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
     );
   };
 
-  // Obtém as linhas que devem ser exibidas
-  const visibleRows = getVisibleRows();
+  // Column helper for creating columns
+  const columnHelper = createColumnHelper<DRERow>();
+
+  // Create columns dynamically based on selected months
+  const columns = useMemo<ColumnDef<DRERow>[]>(() => {
+    const cols: ColumnDef<DRERow>[] = [
+      // Name column
+      columnHelper.accessor('name', {
+        id: 'name',
+        header: '',
+        cell: ({ row }) => {
+          const rowData = row.original;
+          if (rowData.lineType === 'SEPARATOR') {
+            return <div className="h-2"></div>;
+          }
+
+          return (
+            <div className="flex items-center">
+              {renderToggleButton(rowData)}
+              <span style={{ paddingLeft: `${Math.max(0, (rowData.lineType === 'SUBTOTAL' ? 1 : rowData.level - 1) * 16)}px` }}>
+                {rowData.name}
+              </span>
+            </div>
+          );
+        },
+        enableSorting: false,
+      }),
+    ];
+
+    // Add month columns
+    selectedMonths.forEach(month => {
+      cols.push(
+        columnHelper.accessor((row) => row.monthlyAmounts[month] || 0, {
+          id: `month-${month}`,
+          header: () => (
+            <div className="flex flex-col">
+              <span>{year}</span>
+              <span className="text-sm">{MONTH_NAMES[month - 1]}</span>
+            </div>
+          ),
+          cell: ({ getValue, row }) => {
+            const value = getValue() as number;
+            const rowData = row.original;
+            if (rowData.lineType === 'SEPARATOR') return '';
+            return (
+              <span className={getValueColor(value, rowData.lineType)}>
+                {formatCurrency(value)}
+              </span>
+            );
+          },
+          enableSorting: false,
+        })
+      );
+    });
+
+    // Add total column if more than one month
+    if (selectedMonths.length > 1) {
+      cols.push(
+        columnHelper.accessor('total', {
+          id: 'total',
+          header: 'Total',
+          cell: ({ getValue, row }) => {
+            const value = getValue() || 0;
+            const rowData = row.original;
+            if (rowData.lineType === 'SEPARATOR') return '';
+            return (
+              <span className={getValueColor(value, rowData.lineType)}>
+                {formatCurrency(value)}
+              </span>
+            );
+          },
+          enableSorting: false,
+        })
+      );
+    }
+
+    return cols;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedMonths, year]);
+
+  // Filter rows based on visibility settings
+  const filteredData = useMemo(() => {
+    return getVisibleRows();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rows, expandedSections, showZeroValues]);
+
+  // Create table instance
+  const table = useReactTable({
+    data: filteredData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
+    state: {
+      expanded,
+    },
+    onExpandedChange: setExpanded,
+    enableSorting: false,
+    manualSorting: true,
+  });
 
   if (selectedMonths.length === 0) {
     return (
@@ -263,55 +372,56 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-3 py-3 text-left font-medium text-gray-900 sticky left-0 bg-gray-50 min-w-[300px]">
-              </th>
-              {selectedMonths.map(month => (
-                <th key={month} className="px-3 py-3 text-center font-medium text-gray-900 min-w-[120px]">
-                  <div className="flex flex-col">
-                    <span>{year}</span>
-                    <span className="text-sm">{MONTH_NAMES[month - 1]}</span>
-                  </div>
-                </th>
-              ))}
-              {selectedMonths.length > 1 && (
-                <th className="px-3 py-3 text-center font-medium text-gray-900 min-w-[120px] bg-blue-50">
-                  Total
-                </th>
-              )}
-            </tr>
+            {table.getHeaderGroups().map(headerGroup => (
+              <tr key={headerGroup.id} className="bg-gray-50 border-b border-gray-200">
+                {headerGroup.headers.map((header, index) => (
+                  <th
+                    key={header.id}
+                    className={`px-3 py-3 font-medium text-gray-900 ${
+                      index === 0
+                        ? 'text-left sticky left-0 bg-gray-50 min-w-[300px]'
+                        : index === headerGroup.headers.length - 1 && selectedMonths.length > 1
+                        ? 'text-center min-w-[120px] bg-blue-50'
+                        : 'text-center min-w-[120px]'
+                    }`}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
           </thead>
           <tbody>
-            {visibleRows.map((row) => (
+            {table.getRowModel().rows.map(row => (
               <tr key={row.id} className="hover:bg-gray-50">
-                <td className={`${getNameCellClass(row.lineType, row.isBold, row.id)} sticky left-0 ${row.id === 'nao-categorizados' ? 'bg-yellow-100' : 'bg-white'}`}>
-                  {row.lineType === 'SEPARATOR' ? (
-                    <div className="h-2"></div>
-                  ) : (
-                    <div className="flex items-center">
-                      {renderToggleButton(row)}
-                      <span style={{ paddingLeft: `${Math.max(0, (row.lineType === 'SUBTOTAL' ? 1 : row.level - 1) * 16)}px` }}>
-                        {row.name}
-                      </span>
-                    </div>
-                  )}
-                </td>
-                {selectedMonths.map(month => {
-                  const value = row.monthlyAmounts[month] || 0;
+                {row.getVisibleCells().map((cell, index) => {
+                  const rowData = row.original;
+                  const isNameCell = index === 0;
+                  const isTotalCell = index === row.getVisibleCells().length - 1 && selectedMonths.length > 1;
+                  
                   return (
-                    <td 
-                      key={month} 
-                      className={`${getCellClass(row.lineType, row.isBold, row.id)} ${getValueColor(value, row.lineType)}`}
+                    <td
+                      key={cell.id}
+                      className={`${
+                        isNameCell
+                          ? `${getNameCellClass(rowData.lineType, rowData.isBold, rowData.id)} sticky left-0 ${
+                              rowData.id === 'nao-categorizados' ? 'bg-yellow-100' : 'bg-white'
+                            }`
+                          : `${getCellClass(rowData.lineType, rowData.isBold, rowData.id)} ${
+                              isTotalCell && rowData.id === 'nao-categorizados'
+                                ? 'bg-yellow-100'
+                                : isTotalCell
+                                ? 'bg-blue-50'
+                                : ''
+                            }`
+                      }`}
                     >
-                      {row.lineType === 'SEPARATOR' ? '' : formatCurrency(value)}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   );
                 })}
-                {selectedMonths.length > 1 && (
-                  <td className={`${getCellClass(row.lineType, row.isBold, row.id)} ${row.id === 'nao-categorizados' ? 'bg-yellow-100' : 'bg-blue-50'} ${getValueColor(row.total || 0, row.lineType)}`}>
-                    {row.lineType === 'SEPARATOR' ? '' : formatCurrency(row.total || 0)}
-                  </td>
-                )}
               </tr>
             ))}
           </tbody>
