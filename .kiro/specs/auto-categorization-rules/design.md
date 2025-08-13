@@ -50,6 +50,8 @@ model CategorizationRule {
   // Target categorization
   categoryId  String
   category    Category @relation(fields: [categoryId], references: [id])
+  propertyId  String?
+  property    Property? @relation(fields: [propertyId], references: [id])
 
   // Rule criteria (JSON type)
   criteria    Json     // { date: {...}, value: {...}, description: {...}, accounts: [...] }
@@ -74,6 +76,8 @@ model TransactionSuggestion {
 
   suggestedCategoryId   String
   suggestedCategory     Category              @relation(fields: [suggestedCategoryId], references: [id])
+  suggestedPropertyId   String?
+  suggestedProperty     Property?             @relation(fields: [suggestedPropertyId], references: [id])
 
   confidence            Float                 @default(1.0) // 0.0 to 1.0
   isApplied             Boolean               @default(false)
@@ -97,6 +101,13 @@ model ProcessedTransaction {
 
 // Add relation to Category
 model Category {
+  // ... existing fields
+  categorizationRules   CategorizationRule[]
+  suggestions           TransactionSuggestion[]
+}
+
+// Add relation to Property
+model Property {
   // ... existing fields
   categorizationRules   CategorizationRule[]
   suggestions           TransactionSuggestion[]
@@ -159,6 +170,7 @@ export interface CreateRuleInput {
   name: string;
   description?: string;
   categoryId: string;
+  propertyId?: string;
   criteria: RuleCriteria;
   priority?: number;
 }
@@ -332,12 +344,14 @@ When multiple rules match a transaction:
 │ ┌─────────────────────────────────────────────────────────┐ │
 │ │ 🟢 Aluguel Mensal                    [Editar] [Testar] │ │
 │ │ Categoria: Receitas > Aluguel                           │ │
+│ │ Propriedade: CAT - Rua Brasil                          │ │
 │ │ Critérios: Dia 1-5, Valor > R$ 1.000, "ALUGUEL"      │ │
 │ │ Prioridade: 10 | Criada: 15/08/2025                   │ │
 │ └─────────────────────────────────────────────────────────┘ │
 │ ┌─────────────────────────────────────────────────────────┐ │
 │ │ 🔴 Despesas Cartão                   [Editar] [Testar] │ │
 │ │ Categoria: Despesas > Cartão de Crédito                │ │
+│ │ Propriedade: (nenhuma)                                 │ │
 │ │ Critérios: Conta "CC - Sicredi", "CARTAO"             │ │
 │ │ Prioridade: 5 | Criada: 14/08/2025                    │ │
 │ └─────────────────────────────────────────────────────────┘ │
@@ -351,7 +365,8 @@ When multiple rules match a transaction:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │ ☐ 15/08/2025 | ALUGUEL CASA CENTRO | CC-Sicredi | R$ 1.200 │
-│   💡 Sugestão: Receitas > Aluguel (Regra: Aluguel Mensal)  │
+│   💡 Sugestão: Receitas > Aluguel | CAT - Rua Brasil       │
+│   📋 Regra: Aluguel Mensal                                 │
 │   [Aplicar] [Descartar] [Editar Manualmente]               │
 └─────────────────────────────────────────────────────────────┘
 ```
