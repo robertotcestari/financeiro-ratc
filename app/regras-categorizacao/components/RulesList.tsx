@@ -5,7 +5,13 @@ import React from 'react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,20 +64,27 @@ interface RulesListProps {
 export default function RulesList({ initialData, formData }: RulesListProps) {
   const [rules, setRules] = useState(initialData.rules);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [ruleToDelete, setRuleToDelete] = useState<RuleWithRelations | null>(null);
+  const [ruleToDelete, setRuleToDelete] = useState<RuleWithRelations | null>(
+    null
+  );
   const [isDeleting, setIsDeleting] = useState(false);
   const { toast } = useToast();
 
-  const handleToggleRule = async (rule: RuleWithRelations, isActive: boolean) => {
+  const handleToggleRule = async (
+    rule: RuleWithRelations,
+    isActive: boolean
+  ) => {
     const result = await toggleRuleStatusAction(rule.id, isActive);
-    
+
     if (result.success) {
-      setRules(prev => prev.map(r => 
-        r.id === rule.id ? { ...r, isActive } : r
-      ));
+      setRules((prev) =>
+        prev.map((r) => (r.id === rule.id ? { ...r, isActive } : r))
+      );
       toast({
         title: 'Status atualizado',
-        description: `Regra ${isActive ? 'ativada' : 'desativada'} com sucesso.`,
+        description: `Regra ${
+          isActive ? 'ativada' : 'desativada'
+        } com sucesso.`,
       });
     } else {
       toast({
@@ -89,7 +102,7 @@ export default function RulesList({ initialData, formData }: RulesListProps) {
     const result = await deleteRuleAction(ruleToDelete.id);
 
     if (result.success) {
-      setRules(prev => prev.filter(r => r.id !== ruleToDelete.id));
+      setRules((prev) => prev.filter((r) => r.id !== ruleToDelete.id));
       toast({
         title: 'Regra excluída',
         description: 'A regra foi excluída com sucesso.',
@@ -107,49 +120,69 @@ export default function RulesList({ initialData, formData }: RulesListProps) {
     setRuleToDelete(null);
   };
 
-  const formatCriteria = (criteria: RuleCriteria): string => {
+  const formatCriteria = (criteria?: RuleCriteria): string => {
+    const c = (criteria || {}) as RuleCriteria;
     const parts: string[] = [];
 
-    if (criteria.date?.dayRange) {
-      const { start, end } = criteria.date.dayRange;
+    if (c.date?.dayRange) {
+      const { start, end } = c.date.dayRange;
       parts.push(`Dia ${start === end ? start : `${start}-${end}`}`);
     }
 
-    if (criteria.date?.months && criteria.date.months.length > 0) {
-      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-      const months = criteria.date.months.map(m => monthNames[m - 1]).join(', ');
+    if (c.date?.months && c.date.months.length > 0) {
+      const monthNames = [
+        'Jan',
+        'Fev',
+        'Mar',
+        'Abr',
+        'Mai',
+        'Jun',
+        'Jul',
+        'Ago',
+        'Set',
+        'Out',
+        'Nov',
+        'Dez',
+      ];
+      const months = c.date.months.map((m) => monthNames[m - 1]).join(', ');
       parts.push(`Meses: ${months}`);
     }
 
-    if (criteria.value) {
-      const { min, max, operator } = criteria.value;
+    if (c.value) {
+      const { min, max, operator } = c.value;
+      // Always format numbers using Brazilian Portuguese locale
+      const fmt = (n: number) => n.toLocaleString('pt-BR');
       if (operator === 'between' && min != null && max != null) {
-        parts.push(`Valor: R$ ${min.toLocaleString()} - R$ ${max.toLocaleString()}`);
+        parts.push(`Valor: R$ ${fmt(min)} - R$ ${fmt(max)}`);
       } else if (min != null) {
-        parts.push(`Valor > R$ ${min.toLocaleString()}`);
+        parts.push(`Valor > R$ ${fmt(min)}`);
       } else if (max != null) {
-        parts.push(`Valor < R$ ${max.toLocaleString()}`);
+        parts.push(`Valor < R$ ${fmt(max)}`);
       }
     }
 
-    if (criteria.description?.keywords && criteria.description.keywords.length > 0) {
-      const keywordText = criteria.description.keywords.map(k => `"${k}"`).join(` ${criteria.description.operator === 'and' ? '&' : '|'} `);
+    if (c.description?.keywords && c.description.keywords.length > 0) {
+      const keywordText = c.description.keywords
+        .map((k) => `"${k}"`)
+        .join(` ${c.description.operator === 'and' ? '&' : '|'} `);
       parts.push(`Palavras: ${keywordText}`);
     }
 
-    if (criteria.accounts && criteria.accounts.length > 0) {
-      parts.push(`${criteria.accounts.length} conta(s)`);
+    if (c.accounts && c.accounts.length > 0) {
+      parts.push(`${c.accounts.length} conta(s)`);
     }
 
     return parts.length > 0 ? parts.join(' • ') : 'Sem critérios definidos';
   };
 
-  const getCriteriaIcons = (criteria: RuleCriteria) => {
+  const getCriteriaIcons = (criteria?: RuleCriteria) => {
+    const c = (criteria || {}) as RuleCriteria;
     const icons = [];
-    if (criteria.date) icons.push(<Calendar key="date" className="h-3 w-3" />);
-    if (criteria.value) icons.push(<DollarSign key="value" className="h-3 w-3" />);
-    if (criteria.description) icons.push(<MessageSquare key="desc" className="h-3 w-3" />);
-    if (criteria.accounts) icons.push(<Building key="acc" className="h-3 w-3" />);
+    if (c.date) icons.push(<Calendar key="date" className="h-3 w-3" />);
+    if (c.value) icons.push(<DollarSign key="value" className="h-3 w-3" />);
+    if (c.description)
+      icons.push(<MessageSquare key="desc" className="h-3 w-3" />);
+    if (c.accounts) icons.push(<Building key="acc" className="h-3 w-3" />);
     return icons;
   };
 
@@ -161,7 +194,8 @@ export default function RulesList({ initialData, formData }: RulesListProps) {
         </div>
         <h3 className="text-lg font-semibold mb-2">Nenhuma regra criada</h3>
         <p className="text-muted-foreground">
-          Crie sua primeira regra para automatizar a categorização de transações.
+          Crie sua primeira regra para automatizar a categorização de
+          transações.
         </p>
       </div>
     );
@@ -171,11 +205,20 @@ export default function RulesList({ initialData, formData }: RulesListProps) {
     <>
       <div className="space-y-4">
         {rules.map((rule) => (
-          <Card key={rule.id} className={`transition-colors ${!rule.isActive ? 'opacity-60' : ''}`}>
+          <Card
+            key={rule.id}
+            className={`transition-colors ${
+              !rule.isActive ? 'opacity-60' : ''
+            }`}
+          >
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className={`w-3 h-3 rounded-full ${rule.isActive ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      rule.isActive ? 'bg-green-500' : 'bg-red-500'
+                    }`}
+                  />
                   <div>
                     <CardTitle className="text-lg">{rule.name}</CardTitle>
                     {rule.description && (
@@ -188,7 +231,9 @@ export default function RulesList({ initialData, formData }: RulesListProps) {
                 <div className="flex items-center space-x-2">
                   <Switch
                     checked={rule.isActive}
-                    onCheckedChange={(checked) => handleToggleRule(rule, checked)}
+                    onCheckedChange={(checked) =>
+                      handleToggleRule(rule, checked)
+                    }
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -197,11 +242,15 @@ export default function RulesList({ initialData, formData }: RulesListProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <EditRuleDialog 
-                        rule={rule} 
+                      <EditRuleDialog
+                        rule={rule}
                         formData={formData}
                         onRuleUpdated={(updatedRule) => {
-                          setRules(prev => prev.map(r => r.id === rule.id ? updatedRule : r));
+                          setRules((prev) =>
+                            prev.map((r) =>
+                              r.id === rule.id ? updatedRule : r
+                            )
+                          );
                         }}
                       >
                         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
@@ -260,9 +309,10 @@ export default function RulesList({ initialData, formData }: RulesListProps) {
                   <div className="flex items-center space-x-4">
                     <span>Prioridade: {rule.priority}</span>
                     <span>
-                      Criada {formatDistanceToNow(rule.createdAt, { 
-                        addSuffix: true, 
-                        locale: ptBR 
+                      Criada{' '}
+                      {formatDistanceToNow(rule.createdAt, {
+                        addSuffix: true,
+                        locale: ptBR,
                       })}
                     </span>
                   </div>
@@ -279,8 +329,9 @@ export default function RulesList({ initialData, formData }: RulesListProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Exclusão</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja excluir a regra &quot;{ruleToDelete?.name}&quot;?
-              Esta ação não pode ser desfeita e todas as sugestões geradas por esta regra serão removidas.
+              Tem certeza que deseja excluir a regra &quot;{ruleToDelete?.name}
+              &quot;? Esta ação não pode ser desfeita e todas as sugestões
+              geradas por esta regra serão removidas.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

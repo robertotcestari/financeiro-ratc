@@ -1,23 +1,8 @@
 [
   {
-    "code": "CAT - Otica - Casa ao Fundo",
+    "code": "CAT - Rua Belo Horizonte",
     "city": "CAT",
-    "address": "Otica - Casa ao Fundo"
-  },
-  {
-    "code": "CAT - Rua Itapema",
-    "city": "CAT",
-    "address": "Rua Itapema"
-  },
-  {
-    "code": "CAT - Rua Brasil",
-    "city": "CAT",
-    "address": "Rua Brasil"
-  },
-  {
-    "code": "CAT - Rua Cuiabá",
-    "city": "CAT",
-    "address": "Rua Cuiabá"
+    "address": "Rua Belo Horizonte"
   },
   {
     "code": "CAT - Rua Bahia Sala 1",
@@ -25,19 +10,34 @@
     "address": "Rua Bahia - Sala 1"
   },
   {
-    "code": "CAT - Rua Bahia Sala 2 e 3",
-    "city": "CAT",
-    "address": "Rua Bahia - Salas 2 e 3"
-  },
-  {
     "code": "CAT - Rua Bahia Sala 4",
     "city": "CAT",
     "address": "Rua Bahia - Sala 4"
   },
   {
+    "code": "CAT - Rua Bahia Sala 2 e 3",
+    "city": "CAT",
+    "address": "Rua Bahia - Salas 2 e 3"
+  },
+  {
     "code": "CAT - Rua Bahia Sala 5",
     "city": "CAT",
     "address": "Rua Bahia - Sala 5"
+  },
+  {
+    "code": "CAT - Rua Cuiabá",
+    "city": "CAT",
+    "address": "Rua Cuiabá"
+  },
+  {
+    "code": "CAT - Otica - Casa ao Fundo",
+    "city": "CAT",
+    "address": "Otica - Casa ao Fundo"
+  },
+  {
+    "code": "CAT - Rua Fortaleza - 504",
+    "city": "CAT",
+    "address": "Rua Fortaleza, 504"
   },
   {
     "code": "CAT - Rua Minas Gerais - 1072",
@@ -50,19 +50,19 @@
     "address": "Rua Fortaleza, 494"
   },
   {
-    "code": "CAT - Rua Said Tuma",
+    "code": "CAT - Rua Itapema",
     "city": "CAT",
-    "address": "Rua Said Tuma"
-  },
-  {
-    "code": "CAT - Terreno Dahma",
-    "city": "CAT",
-    "address": "Terreno Dahma"
+    "address": "Rua Itapema"
   },
   {
     "code": "CAT - Rua Monte Aprazível",
     "city": "CAT",
     "address": "Rua Monte Aprazível"
+  },
+  {
+    "code": "CAT - Rua Brasil",
+    "city": "CAT",
+    "address": "Rua Brasil"
   },
   {
     "code": "SJP - Av. Alberto Andaló - 2964",
@@ -73,11 +73,6 @@
     "code": "SJP - Av. Alberto Andaló - 2964 - 2",
     "city": "SJP",
     "address": "Av. Alberto Andaló, 2964 - 2"
-  },
-  {
-    "code": "SJP - Av. Alberto Andaló - 3483",
-    "city": "SJP",
-    "address": "Av. Alberto Andaló, 3483"
   },
   {
     "code": "RIB - Av. Presidente Vargas 1",
@@ -95,6 +90,16 @@
     "address": "Av. Independência, 1591"
   },
   {
+    "code": "SAL - Sítio - Sales",
+    "city": "SAL",
+    "address": "Sítio - Sales"
+  },
+  {
+    "code": "RIB - Av. Independência 1589",
+    "city": "RIB",
+    "address": "Av. Independência, 1589"
+  },
+  {
     "code": "SAO - Rua Pamplona 391 - ap 12",
     "city": "SAO",
     "address": "Rua Pamplona, 391 - Apartamento 12"
@@ -105,9 +110,62 @@
     "address": "Rua Pamplona - Garagem"
   },
   {
-    "code": "SAL - Sítio - Sales",
-    "city": "SAL",
-    "address": "Sítio - Sales"
+    "code": "CAT - Rua Said Tuma",
+    "city": "CAT",
+    "address": "Rua Said Tuma"
+  },
+  {
+    "code": "CAT - Rua Elisiário 30",
+    "city": "CAT",
+    "address": "Rua Elisiário, 30"
+  },
+  {
+    "code": "CAT - Rua Cervantes Ângulo - ap 202",
+    "city": "CAT",
+    "address": "Rua Cervantes Ângulo - Apartamento 202",
+    "status": "inactive"
+  },
+  {
+    "code": "SVC - São Vicente - Apartamento",
+    "city": "SVC",
+    "address": "São Vicente - Apartamento"
+  },
+  {
+    "code": "SJP - Rua Brasilusa 669",
+    "city": "SJP",
+    "address": "Rua Brasilusa, 669"
+  },
+  {
+    "code": "CAT - Rua Piauí - 317",
+    "city": "CAT",
+    "address": "Rua Piauí, 317"
+  },
+  {
+    "code": "SJP - Av. Alberto Andaló - 3483",
+    "city": "SJP",
+    "address": "Av. Alberto Andaló, 3483"
+  },
+  {
+    "code": "CAT - Rua Elisiário 32",
+    "city": "CAT",
+    "address": "Rua Elisiário, 32"
+  },
+  {
+    "code": "CAT - Rua Cervantes Ângulo - ap 302",
+    "city": "CAT",
+    "address": "Rua Cervantes Ângulo - Apartamento 302",
+    "status": "inactive"
+  },
+  {
+    "code": "BER - Riviera de São Lourenço",
+    "city": "BER",
+    "address": "Riviera de São Lourenço"
+  },
+  {
+    "code": "CAT - Terreno Dahma",
+    "city": "CAT",
+    "address": "Terreno Dahma",
+    "status": "inactive"
   },
   {
     "code": "SAL - Rancho - Sales",
@@ -120,8 +178,99 @@
     "address": "Rancho - Sales II"
   },
   {
-    "code": "SVC - São Vicente - Apartamento",
-    "city": "SVC",
-    "address": "São Vicente - Apartamento"
+    "code": "CAT - Chácara Nova",
+    "city": "CAT",
+    "address": "Chácara Nova"
+  },
+  {
+    "code": "CAT - Rua Icem",
+    "city": "CAT",
+    "address": "Rua Icem",
+    "status": "inactive"
+  },
+  {
+    "code": "CAT - Chácara",
+    "city": "CAT",
+    "address": "Chácara",
+    "status": "inactive"
+  },
+  {
+    "code": "GUA - Apartamento Guarujá",
+    "city": "GUA",
+    "address": "Apartamento Guarujá",
+    "status": "inactive"
+  },
+  {
+    "code": "RIB - Rua Olavo Bilac",
+    "city": "RIB",
+    "address": "Rua Olavo Bilac",
+    "status": "inactive"
+  },
+  {
+    "code": "CAT - Orlando Zancaner - Estacionamento",
+    "city": "CAT",
+    "address": "Orlando Zancaner - Estacionamento",
+    "status": "inactive"
+  },
+  {
+    "code": "CAT - Orlando Zancaner 555 - 2 Andar",
+    "city": "CAT",
+    "address": "Orlando Zancaner, 555 - 2º Andar",
+    "status": "inactive"
+  },
+  {
+    "code": "JAG - Terrenos Jaguaruna",
+    "city": "JAG",
+    "address": "Terrenos Jaguaruna",
+    "status": "inactive"
+  },
+  {
+    "code": "CAT - Orlando Zancaner 545",
+    "city": "CAT",
+    "address": "Orlando Zancaner, 545",
+    "status": "inactive"
+  },
+  {
+    "code": "CAT - Orlando Zancaner 555 - Térreo",
+    "city": "CAT",
+    "address": "Orlando Zancaner, 555 - Térreo",
+    "status": "inactive"
+  },
+  {
+    "code": "RIB - Eugênio Ferrante",
+    "city": "RIB",
+    "address": "Eugênio Ferrante",
+    "status": "inactive"
+  },
+  {
+    "code": "COS - Sítio Cosmorama",
+    "city": "COS",
+    "address": "Sítio Cosmorama",
+    "status": "inactive"
+  },
+  {
+    "code": "SAO - Eduardo Garagem",
+    "city": "SAO",
+    "address": "Eduardo Garagem"
+  },
+  {
+    "code": "COS - Sítio Cosmorama - Pasto",
+    "city": "COS",
+    "address": "Sítio Cosmorama - Pasto"
+  },
+  {
+    "code": "COS - Sítio Cosmorama - Cana",
+    "city": "COS",
+    "address": "Sítio Cosmorama - Cana"
+  },
+  {
+    "code": "COS - Sítio Cosmorama - Casa ao Fundo",
+    "city": "COS",
+    "address": "Sítio Cosmorama - Casa ao Fundo"
+  },
+  {
+    "code": "SAO - Eduardo Apartamento Pamplona",
+    "city": "SAO",
+    "address": "Eduardo Apartamento Pamplona"
   }
 ]

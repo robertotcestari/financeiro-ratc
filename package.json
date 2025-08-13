@@ -49,6 +49,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.1",
     "lucide-react": "^0.539.0",
+    "mysql2": "^3.14.3",
     "nanoid": "^5.1.5",
     "next": "15.4.6",
     "postcss": "^8.5.6",

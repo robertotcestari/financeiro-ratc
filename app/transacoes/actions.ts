@@ -12,6 +12,7 @@ import {
   applySuggestion,
   applySuggestions,
   dismissSuggestion,
+  dismissSuggestions,
   getSuggestionsForTransaction,
 } from '@/lib/database/suggestions';
 import { ruleEngine } from '@/lib/database/rule-engine';
@@ -358,6 +359,42 @@ export async function dismissSuggestionAction(
   } catch (error) {
     console.error('Error in dismissSuggestionAction:', error);
     return { success: false, error: 'Failed to dismiss suggestion' };
+  }
+}
+
+const dismissSuggestionsSchema = z.object({
+  suggestionIds: z.array(z.string()),
+});
+
+export async function dismissSuggestionsAction(
+  input: z.infer<typeof dismissSuggestionsSchema>
+) {
+  const validated = dismissSuggestionsSchema.parse(input);
+
+  try {
+    const results = await dismissSuggestions(validated.suggestionIds);
+    
+    const successCount = results.filter(r => r.success).length;
+    const failureCount = results.filter(r => !r.success).length;
+
+    try {
+      revalidatePath('/transacoes');
+    } catch (revalidateError) {
+      console.warn('Revalidation error (non-critical):', revalidateError);
+    }
+    
+    return { 
+      success: true, 
+      results,
+      summary: {
+        total: validated.suggestionIds.length,
+        successful: successCount,
+        failed: failureCount
+      }
+    };
+  } catch (error) {
+    console.error('Error in dismissSuggestionsAction:', error);
+    return { success: false, error: 'Failed to dismiss suggestions' };
   }
 }
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   FormControl,
   FormDescription,
@@ -36,6 +36,14 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
   const keywords = descriptionCriteria.keywords || [];
   const operator = descriptionCriteria.operator || 'or';
   const caseSensitive = descriptionCriteria.caseSensitive || false;
+
+  // Initialize useDescription state based on existing criteria
+  useEffect(() => {
+    const hasDescriptionCriteria = criteria.description && 
+      criteria.description.keywords && 
+      criteria.description.keywords.length > 0;
+    setUseDescription(!!hasDescriptionCriteria);
+  }, [criteria.description]);
 
   const handleDescriptionToggle = (enabled: boolean) => {
     setUseDescription(enabled);

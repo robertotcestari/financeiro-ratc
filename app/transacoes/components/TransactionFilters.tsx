@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
-import { ChevronLeft, ChevronRight, FileText, CheckCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText, CheckCircle, Lightbulb, Zap } from 'lucide-react';
 
 interface Category {
   id: string;
@@ -28,6 +28,7 @@ interface Props {
     mes?: string;
     ano?: string;
     status?: string;
+    sugestoes?: string;
     page?: string;
   };
 }
@@ -51,6 +52,7 @@ export default function TransactionFilters({
     mes: searchParams.mes || defaultMonth.toString(),
     ano: searchParams.ano || defaultYear.toString(),
     status: searchParams.status || '',
+    sugestoes: searchParams.sugestoes || '',
   });
 
   const currentYear = new Date().getFullYear();
@@ -99,6 +101,7 @@ export default function TransactionFilters({
       mes: '',
       ano: currentYear.toString(),
       status: '',
+      sugestoes: '',
     });
     router.push('/transacoes');
   };
@@ -116,7 +119,8 @@ export default function TransactionFilters({
       filters.conta === '' &&
       filters.mes === inboxMonth.toString() &&
       filters.ano === inboxYear.toString() &&
-      filters.status === ''
+      filters.status === '' &&
+      filters.sugestoes === ''
     );
   };
 
@@ -127,7 +131,8 @@ export default function TransactionFilters({
       filters.conta === '' &&
       filters.mes === '' &&
       filters.ano === currentYear.toString() &&
-      filters.status === ''
+      filters.status === '' &&
+      filters.sugestoes === ''
     );
   };
 
@@ -302,6 +307,46 @@ export default function TransactionFilters({
           >
             <CheckCircle className="h-4 w-4 mr-1" />
             Revisados
+          </Button>
+
+          <Button
+            onClick={() =>
+              updateFilter(
+                'sugestoes',
+                filters.sugestoes === 'com-sugestoes' ? '' : 'com-sugestoes'
+              )
+            }
+            variant={filters.sugestoes === 'com-sugestoes' ? 'default' : 'outline'}
+            size="sm"
+            className={
+              (filters.sugestoes === 'com-sugestoes'
+                ? 'bg-yellow-600 hover:bg-yellow-700 text-white border-yellow-600 '
+                : 'text-yellow-600 border-yellow-200 hover:bg-yellow-50 ') +
+              'rounded-full h-8 px-3'
+            }
+          >
+            <Lightbulb className="h-4 w-4 mr-1" />
+            Com Sugestões
+          </Button>
+
+          <Button
+            onClick={() =>
+              updateFilter(
+                'sugestoes',
+                filters.sugestoes === 'aplicado-via-regra' ? '' : 'aplicado-via-regra'
+              )
+            }
+            variant={filters.sugestoes === 'aplicado-via-regra' ? 'default' : 'outline'}
+            size="sm"
+            className={
+              (filters.sugestoes === 'aplicado-via-regra'
+                ? 'bg-purple-600 hover:bg-purple-700 text-white border-purple-600 '
+                : 'text-purple-600 border-purple-200 hover:bg-purple-50 ') +
+              'rounded-full h-8 px-3'
+            }
+          >
+            <Zap className="h-4 w-4 mr-1" />
+            Aplicado via Regra
           </Button>
 
           <Button

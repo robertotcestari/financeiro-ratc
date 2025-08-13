@@ -635,7 +635,9 @@ describe('AccountCriteriaForm', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Account Without Bank')).toBeInTheDocument();
-        expect(screen.getByText(' • ')).toBeInTheDocument(); // Should show empty bank name and type
+        // Find the account entry and verify it contains the bullet for empty bank/type
+        const accountEntry = screen.getByText('Account Without Bank').closest('div')?.parentElement;
+        expect(accountEntry).toContainHTML('•');
       });
     });
 

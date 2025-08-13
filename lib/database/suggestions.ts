@@ -216,3 +216,32 @@ export async function dismissSuggestion(suggestionId: string): Promise<void> {
     where: { id: suggestionId },
   });
 }
+
+/**
+ * Dismiss multiple suggestions at once.
+ * Continues processing even if some fail; returns per-item results.
+ */
+export async function dismissSuggestions(
+  suggestionIds: string[]
+): Promise<Array<{ suggestionId: string; success: boolean; error?: string }>> {
+  const results: Array<{
+    suggestionId: string;
+    success: boolean;
+    error?: string;
+  }> = [];
+  
+  for (const id of suggestionIds) {
+    try {
+      await dismissSuggestion(id);
+      results.push({ suggestionId: id, success: true });
+    } catch (e) {
+      results.push({
+        suggestionId: id,
+        success: false,
+        error: e instanceof Error ? e.message : 'Unknown error',
+      });
+    }
+  }
+  
+  return results;
+}

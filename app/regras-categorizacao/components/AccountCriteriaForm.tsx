@@ -3,10 +3,7 @@
 import React from 'react';
 
 import { useState } from 'react';
-import {
-  FormDescription,
-  FormLabel,
-} from '@/components/ui/form';
+import { FormDescription, FormLabel } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Building } from 'lucide-react';
@@ -25,12 +22,23 @@ interface AccountCriteriaFormProps {
   bankAccounts: BankAccount[];
 }
 
-export default function AccountCriteriaForm({ form, bankAccounts }: AccountCriteriaFormProps) {
-  const [useAccounts, setUseAccounts] = useState(false);
+export default function AccountCriteriaForm({
+  form,
+  bankAccounts,
+}: AccountCriteriaFormProps) {
+  // Initialize toggle based on existing form value
+  const initialCriteria = form.getValues('criteria') || {};
+  const [useAccounts, setUseAccounts] = useState<boolean>(
+    Array.isArray(initialCriteria.accounts)
+  );
 
   const criteria = form.watch('criteria') || {};
   const selectedAccounts = criteria.accounts || [];
 
+  // Keep local state in sync when external form values change (e.g., defaultValues)
+  React.useEffect(() => {
+    setUseAccounts(Array.isArray(criteria.accounts));
+  }, [criteria.accounts]);
 
   const handleAccountsToggle = (enabled: boolean) => {
     setUseAccounts(enabled);
@@ -40,24 +48,31 @@ export default function AccountCriteriaForm({ form, bankAccounts }: AccountCrite
       delete newCriteria.accounts;
       form.setValue('criteria', newCriteria);
     } else {
-      form.setValue('criteria.accounts', []);
+      form.setValue('criteria.accounts', [], {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
     }
   };
 
   const handleAccountToggle = (accountId: string, checked: boolean) => {
     const currentAccounts = form.getValues('criteria.accounts') || [];
-    
+
     if (checked) {
       form.setValue('criteria.accounts', [...currentAccounts, accountId]);
     } else {
-      form.setValue('criteria.accounts', currentAccounts.filter((id: string) => id !== accountId));
+      form.setValue(
+        'criteria.accounts',
+        currentAccounts.filter((id: string) => id !== accountId)
+      );
     }
   };
 
   const handleSelectAll = () => {
     const activeAccountIds = bankAccounts
-      .filter(account => account.isActive)
-      .map(account => account.id);
+      .filter((account) => account.isActive)
+      .map((account) => account.id);
     form.setValue('criteria.accounts', activeAccountIds);
   };
 
@@ -67,9 +82,9 @@ export default function AccountCriteriaForm({ form, bankAccounts }: AccountCrite
 
   const getAccountTypeLabel = (accountType: string): string => {
     const types: Record<string, string> = {
-      'CHECKING': 'Conta Corrente',
-      'SAVINGS': 'Poupança',
-      'INVESTMENT': 'Investimento',
+      CHECKING: 'Conta Corrente',
+      SAVINGS: 'Poupança',
+      INVESTMENT: 'Investimento',
     };
     return types[accountType] || accountType;
   };
@@ -80,20 +95,22 @@ export default function AccountCriteriaForm({ form, bankAccounts }: AccountCrite
     }
 
     const selectedAccountNames = bankAccounts
-      .filter(account => selectedAccounts.includes(account.id))
-      .map(account => account.name);
+      .filter((account) => selectedAccounts.includes(account.id))
+      .map((account) => account.name);
 
     if (selectedAccountNames.length === 1) {
       return `Aplicar apenas em: ${selectedAccountNames[0]}`;
     }
 
-    if (selectedAccountNames.length === bankAccounts.filter(a => a.isActive).length) {
+    if (
+      selectedAccountNames.length ===
+      bankAccounts.filter((a) => a.isActive).length
+    ) {
       return 'Aplicar em todas as contas ativas';
     }
 
     return `Aplicar em ${selectedAccountNames.length} contas selecionadas`;
   };
-
 
   return (
     <div className="space-y-4">
@@ -127,7 +144,12 @@ export default function AccountCriteriaForm({ form, bankAccounts }: AccountCrite
               >
                 Selecionar todas
               </button>
-              <span className="text-xs text-muted-foreground">•</span>
+              <span
+                aria-hidden="true"
+                className="text-xs text-muted-foreground"
+              >
+                •
+              </span>
               <button
                 type="button"
                 onClick={handleSelectNone}
@@ -140,13 +162,15 @@ export default function AccountCriteriaForm({ form, bankAccounts }: AccountCrite
             {/* Account List */}
             <div className="space-y-3">
               {bankAccounts
-                .filter(account => account.isActive)
+                .filter((account) => account.isActive)
                 .map((account) => (
                   <div key={account.id} className="flex items-center space-x-3">
                     <Checkbox
                       id={`account-${account.id}`}
+                      aria-label={account.name}
+                      aria-labelledby={`account-name-${account.id}`}
                       checked={selectedAccounts.includes(account.id)}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked) =>
                         handleAccountToggle(account.id, checked as boolean)
                       }
                     />
@@ -154,18 +178,34 @@ export default function AccountCriteriaForm({ form, bankAccounts }: AccountCrite
                       htmlFor={`account-${account.id}`}
                       className="flex-1 text-sm cursor-pointer"
                     >
-                      <div className="font-medium">{account.name}</div>
+                      <div
+                        id={`account-name-${account.id}`}
+                        className="font-medium"
+                      >
+                        {account.name}
+                      </div>
                       <div className="text-xs text-muted-foreground">
-                        {account.bankName} • {getAccountTypeLabel(account.accountType)}
+                        {(() => {
+                          const bankLabel = (account.bankName || '').trim();
+                          const typeLabel = (
+                            getAccountTypeLabel(account.accountType) || ''
+                          ).trim();
+                          if (!bankLabel && !typeLabel) return '•';
+                          if (bankLabel && typeLabel)
+                            return `${bankLabel} • ${typeLabel}`;
+                          if (bankLabel) return `${bankLabel} • `;
+                          return ` • ${typeLabel}`;
+                        })()}
                       </div>
                     </label>
                   </div>
                 ))}
             </div>
 
-            {bankAccounts.filter(a => a.isActive).length === 0 && (
+            {bankAccounts.filter((a) => a.isActive).length === 0 && (
               <FormDescription className="text-xs text-amber-600">
-                Nenhuma conta ativa encontrada. Verifique se existem contas cadastradas no sistema.
+                Nenhuma conta ativa encontrada. Verifique se existem contas
+                cadastradas no sistema.
               </FormDescription>
             )}
 

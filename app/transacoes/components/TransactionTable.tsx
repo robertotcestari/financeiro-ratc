@@ -2,15 +2,29 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { useState, useTransition, useEffect, useRef, useCallback } from 'react';
+import { useState, useTransition, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   categorizeOneAction,
   bulkCategorizeAction,
   markReviewedAction,
+  generateSuggestionsAction,
+  applySuggestionsAction,
 } from '../actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  flexRender,
+  createColumnHelper,
+  type ColumnDef,
+  type RowSelectionState,
+} from '@tanstack/react-table';
+import SuggestionIndicator from './SuggestionIndicator';
 
 interface Category {
   id: string;
@@ -23,6 +37,28 @@ interface Property {
   id: string;
   code: string;
   city: string;
+}
+
+interface Suggestion {
+  id: string;
+  confidence: number;
+  createdAt: Date;
+  rule: {
+    id: string;
+    name: string;
+    description?: string;
+  };
+  suggestedCategory: {
+    id: string;
+    name: string;
+    type: string;
+    parent: { name: string } | null;
+  } | null;
+  suggestedProperty: {
+    id: string;
+    code: string;
+    city: string;
+  } | null;
 }
 
 interface Transaction {
@@ -54,6 +90,7 @@ interface Transaction {
     code: string;
     city: string;
   } | null;
+  suggestions: Suggestion[];
 }
 
 interface Props {
@@ -149,9 +186,6 @@ export default function TransactionTable({
   }, [editingId]);
 
   const getCategoryDisplay = (category: Transaction['category']) => {
-    if (category.parent) {
-      return `${category.parent.name} > ${category.name}`;
-    }
     return category.name;
   };
 
@@ -466,15 +500,22 @@ export default function TransactionTable({
                       onDoubleClick={() => startEdit(transaction)}
                       className="cursor-pointer"
                     >
-                      <span
-                        className={`inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-medium ${getTypeColor(
-                          transaction.category.type
-                        )}`}
-                      >
-                        {getTypeLabel(transaction.category.type)}
-                      </span>
-                      <div className="text-xs text-gray-900 mt-0.5 leading-tight">
-                        {getCategoryDisplay(transaction.category)}
+                      {transaction.category.parent && (
+                        <div className="text-[9px] text-gray-400 leading-none mb-0.5">
+                          {transaction.category.parent.name}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-1">
+                        <span
+                          className={`inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-medium ${getTypeColor(
+                            transaction.category.type
+                          )}`}
+                        >
+                          {getTypeLabel(transaction.category.type)}
+                        </span>
+                        <div className="text-xs text-gray-900 font-medium">
+                          {transaction.category.name}
+                        </div>
                       </div>
                     </div>
                   )}

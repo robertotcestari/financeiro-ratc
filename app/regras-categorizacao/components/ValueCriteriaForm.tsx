@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   FormControl,
   FormDescription,
@@ -42,6 +42,16 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
   const criteria = form.watch('criteria') || {};
   const valueCriteria = criteria.value || {};
   const operator = valueCriteria.operator || 'gte';
+
+  // Initialize useValue state based on existing criteria
+  useEffect(() => {
+    const hasValueCriteria = criteria.value && (
+      criteria.value.operator || 
+      criteria.value.min !== undefined || 
+      criteria.value.max !== undefined
+    );
+    setUseValue(!!hasValueCriteria);
+  }, [criteria.value]);
 
   const handleValueToggle = (enabled: boolean) => {
     setUseValue(enabled);

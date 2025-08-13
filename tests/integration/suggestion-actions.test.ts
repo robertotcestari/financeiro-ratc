@@ -10,6 +10,7 @@ vi.mock('../../lib/database/suggestions', () => ({
   applySuggestion: vi.fn(),
   applySuggestions: vi.fn(),
   dismissSuggestion: vi.fn(),
+  dismissSuggestions: vi.fn(),
   getSuggestionsForTransaction: vi.fn(),
 }));
 
@@ -25,6 +26,7 @@ import {
   applySuggestionAction,
   applySuggestionsAction,
   dismissSuggestionAction,
+  dismissSuggestionsAction,
   generateSuggestionsAction,
   getSuggestionsAction,
 } from '../../app/transacoes/actions';
@@ -178,6 +180,110 @@ describe('Suggestion Server Actions', () => {
       expect(result).toEqual({
         success: false,
         error: 'Failed to dismiss suggestion',
+      });
+    });
+  });
+
+  describe('dismissSuggestionsAction', () => {
+    it('should dismiss multiple suggestions successfully', async () => {
+      const mockResults = [
+        { suggestionId: 'sug-1', success: true },
+        { suggestionId: 'sug-2', success: true },
+        { suggestionId: 'sug-3', success: false, error: 'Not found' },
+      ];
+
+      mockedSuggestionServices.dismissSuggestions.mockResolvedValue(mockResults);
+
+      const result = await dismissSuggestionsAction({
+        suggestionIds: ['sug-1', 'sug-2', 'sug-3'],
+      });
+
+      expect(mockedSuggestionServices.dismissSuggestions).toHaveBeenCalledWith([
+        'sug-1',
+        'sug-2',
+        'sug-3',
+      ]);
+      expect(result).toEqual({
+        success: true,
+        results: mockResults,
+        summary: {
+          total: 3,
+          successful: 2,
+          failed: 1,
+        },
+      });
+    });
+
+    it('should handle bulk dismiss errors', async () => {
+      mockedSuggestionServices.dismissSuggestions.mockRejectedValue(
+        new Error('Bulk dismiss operation failed')
+      );
+
+      const result = await dismissSuggestionsAction({
+        suggestionIds: ['sug-1', 'sug-2'],
+      });
+
+      expect(result).toEqual({
+        success: false,
+        error: 'Failed to dismiss suggestions',
+      });
+    });
+
+    it('should handle empty suggestion array', async () => {
+      mockedSuggestionServices.dismissSuggestions.mockResolvedValue([]);
+
+      const result = await dismissSuggestionsAction({
+        suggestionIds: [],
+      });
+
+      expect(mockedSuggestionServices.dismissSuggestions).toHaveBeenCalledWith([]);
+      expect(result).toEqual({
+        success: true,
+        results: [],
+        summary: {
+          total: 0,
+          successful: 0,
+          failed: 0,
+        },
+      });
+    });
+
+    it('should handle all suggestions being successfully dismissed', async () => {
+      const mockResults = [
+        { suggestionId: 'sug-1', success: true },
+        { suggestionId: 'sug-2', success: true },
+        { suggestionId: 'sug-3', success: true },
+      ];
+
+      mockedSuggestionServices.dismissSuggestions.mockResolvedValue(mockResults);
+
+      const result = await dismissSuggestionsAction({
+        suggestionIds: ['sug-1', 'sug-2', 'sug-3'],
+      });
+
+      expect(result.summary).toEqual({
+        total: 3,
+        successful: 3,
+        failed: 0,
+      });
+    });
+
+    it('should handle all suggestions failing to dismiss', async () => {
+      const mockResults = [
+        { suggestionId: 'sug-1', success: false, error: 'Error 1' },
+        { suggestionId: 'sug-2', success: false, error: 'Error 2' },
+      ];
+
+      mockedSuggestionServices.dismissSuggestions.mockResolvedValue(mockResults);
+
+      const result = await dismissSuggestionsAction({
+        suggestionIds: ['sug-1', 'sug-2'],
+      });
+
+      expect(result.summary).toEqual({
+        total: 2,
+        successful: 0,
+        failed: 2,
       });
     });
   });

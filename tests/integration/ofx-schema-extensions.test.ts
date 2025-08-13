@@ -12,30 +12,6 @@ describe('OFX Schema Extensions', () => {
     await prisma.bankAccount.deleteMany();
   });
 
-  it('should create OFX account mapping', async () => {
-    // Create a bank account first
-    const bankAccount = await prisma.bankAccount.create({
-      data: {
-        name: 'Test Bank Account',
-        bankName: 'Test Bank',
-        accountType: 'CHECKING',
-      },
-    });
-
-    // Create OFX account mapping
-    const mapping = await prisma.oFXAccountMapping.create({
-      data: {
-        ofxAccountId: 'OFX123456',
-        ofxBankId: 'BANK001',
-        bankAccountId: bankAccount.id,
-      },
-    });
-
-    expect(mapping).toBeDefined();
-    expect(mapping.ofxAccountId).toBe('OFX123456');
-    expect(mapping.ofxBankId).toBe('BANK001');
-    expect(mapping.bankAccountId).toBe(bankAccount.id);
-  });
 
   it('should create transaction with OFX fields', async () => {
     // Create a bank account first

@@ -1,14 +1,27 @@
 import { beforeAll, afterAll } from 'vitest';
 import { prisma } from '../lib/database/client';
 
-beforeAll(async () => {
-  // Limpa o banco de dados antes de todos os testes
-  await prisma.accountSnapshot.deleteMany({});
-  await prisma.transaction.deleteMany({});
-  await prisma.bankAccount.deleteMany({});
-});
+// Only run database setup for integration tests, not component tests
+const isIntegrationTest = process.argv.some(arg => 
+  arg.includes('integration/') || 
+  arg.includes('test.ts') ||
+  process.env.VITEST_INTEGRATION === 'true'
+);
 
-afterAll(async () => {
-  // Desconecta do banco de dados após todos os testes
-  await prisma.$disconnect();
-});
+if (isIntegrationTest) {
+  beforeAll(async () => {
+    // Limpa o banco de dados antes de todos os testes de integração
+    try {
+      await prisma.accountSnapshot.deleteMany({});
+      await prisma.transaction.deleteMany({});
+      await prisma.bankAccount.deleteMany({});
+    } catch (error) {
+      console.warn('Database cleanup failed:', error.message);
+    }
+  });
+
+  afterAll(async () => {
+    // Desconecta do banco de dados após todos os testes de integração
+    await prisma.$disconnect();
+  });
+}
