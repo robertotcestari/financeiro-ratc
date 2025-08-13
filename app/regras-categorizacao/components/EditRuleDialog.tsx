@@ -65,7 +65,7 @@ export default function EditRuleDialog({ rule, formData, children, onRuleUpdated
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[70vw] !max-w-none max-h-[90vh] overflow-y-auto" style={{ width: '70vw', maxWidth: 'none' }}>
         <DialogHeader>
           <DialogTitle>Editar Regra: {rule.name}</DialogTitle>
           <DialogDescription>

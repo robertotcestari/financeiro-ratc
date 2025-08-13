@@ -154,7 +154,7 @@ export default function TestRuleDialog({ rule, children }: TestRuleDialogProps) 
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[70vw] !max-w-none max-h-[90vh] overflow-y-auto" style={{ width: '70vw', maxWidth: 'none' }}>
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <TestTube className="h-5 w-5" />
