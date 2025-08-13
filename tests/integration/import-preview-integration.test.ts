@@ -3,6 +3,15 @@ import { ImportPreviewService } from '@/lib/ofx/import-preview';
 import { prisma } from '@/lib/database/client';
 import type { BankAccount, Category, Property } from '@/app/generated/prisma';
 
+vi.mock('@/lib/logger', () => ({
+  logger: {
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
+
 describe('ImportPreviewService Integration', () => {
   let testBankAccount: BankAccount;
   let testCategories: Category[];

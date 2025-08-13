@@ -34,6 +34,14 @@ vi.mock('@/lib/database/client', () => ({
 
 vi.mock('@/lib/ofx/parser');
 vi.mock('@/lib/ofx/duplicate-detection');
+vi.mock('@/lib/logger', () => ({
+  logger: {
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
 
 describe('ImportPreviewService', () => {
   let service: ImportPreviewService;
