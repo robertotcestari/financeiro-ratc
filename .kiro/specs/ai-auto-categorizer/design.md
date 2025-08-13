@@ -40,18 +40,24 @@ The AI categorizer integrates with existing systems:
 Core service responsible for generating AI-powered categorization suggestions.
 
 ```typescript
-interface AICategorization Service {
-  generateSuggestion(transaction: ProcessedTransaction): Promise<AISuggestion>
-  generateBulkSuggestions(transactions: ProcessedTransaction[]): Promise<AISuggestion[]>
+interface AICategorizationService {
+  generateSuggestion(
+    transaction: ProcessedTransaction
+  ): Promise<TransactionSuggestion>;
+  generateBulkSuggestions(
+    transactions: ProcessedTransaction[]
+  ): Promise<TransactionSuggestion[]>;
+  createAIRule(): Promise<CategorizationRule>;
 }
 
-interface AISuggestion {
-  id: string
-  transactionId: string
-  suggestedCategoryId: string
-  reasoning: string
-  source: 'ai'
-  createdAt: Date
+interface AISuggestion extends TransactionSuggestion {
+  source: 'AI';
+  reasoning: string;
+  aiMetadata: {
+    modelUsed: string;
+    processingTime: number;
+    tokensUsed?: number;
+  };
 }
 ```
 
@@ -75,10 +81,12 @@ interface TransactionContext {
   date: Date;
   accountType: string;
   availableCategories: Category[];
+  availableProperties: Property[];
 }
 
 interface CategorySuggestion {
   categoryId: string;
+  propertyId: string;
   reasoning: string;
   confidence?: number; // Optional for future use
 }
@@ -93,6 +101,8 @@ The AI must return responses in this specific JSON format:
   "suggestion": {
     "categoryId": "string",
     "categoryName": "string",
+    "propertyId": "string",
+    "propertyName": "string",
     "reasoning": "string"
   },
   "metadata": {
@@ -109,7 +119,9 @@ The AI must return responses in this specific JSON format:
   "suggestion": {
     "categoryId": "cat_123",
     "categoryName": "Alimentação",
-    "reasoning": "Transaction description 'SUPERMERCADO XYZ' indicates a grocery store purchase, which falls under the food/grocery category."
+    "propertyId": "prop_456",
+    "propertyName": "Apartamento Centro",
+    "reasoning": "Transaction description 'SUPERMERCADO XYZ' indicates a grocery store purchase for food/grocery category. Based on transaction amount and location pattern, this appears to be related to the Centro apartment property."
   },
   "metadata": {
     "processingTime": 1250,
@@ -138,24 +150,17 @@ interface EnhancedSuggestion extends Suggestion {
 
 ### Database Schema Extensions
 
-Minimal extensions to existing Prisma schema:
+We'll extend the existing `TransactionSuggestion` table to support AI suggestions:
 
 ```prisma
-model Suggestion {
-  id          String   @id @default(cuid())
-  transactionId String
-  categoryId  String
+// Extend existing TransactionSuggestion model
+model TransactionSuggestion {
+  // ... existing fields ...
+
+  // Add new fields for AI suggestions
   source      SuggestionSource @default(RULE)
   reasoning   String?
-  confidence  Float?
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  transaction ProcessedTransaction @relation(fields: [transactionId], references: [id])
-  category    Category @relation(fields: [categoryId], references: [id])
-
-  @@map("suggestions")
+  aiMetadata  Json? // Store AI-specific metadata like model used, processing time
 }
 
 enum SuggestionSource {
@@ -163,7 +168,25 @@ enum SuggestionSource {
   AI
 }
 
+// Create AI-specific rule for AI suggestions
+model AICategorizationRule {
+  id          String  @id @default(cuid())
+  name        String  @default("AI Categorization")
+  description String? @default("AI-powered categorization suggestions")
+  isActive    Boolean @default(true)
+  priority    Int     @default(-1) // Lower priority than manual rules
 
+  // AI-specific configuration
+  modelName   String  @default("gpt-4")
+  promptVersion String @default("v1")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  suggestions TransactionSuggestion[]
+
+  @@map("ai_categorization_rules")
+}
 ```
 
 ## Error Handling
