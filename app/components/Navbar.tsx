@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import {
   Home,
   CreditCard,
@@ -15,6 +16,7 @@ import {
   MapPin,
   Plus,
   ChevronDown,
+  Settings,
 } from 'lucide-react';
 
 const navigation = [
@@ -26,11 +28,15 @@ const navigation = [
   { name: 'DRE', href: '/dre', icon: BarChart2 },
 ];
 
+const categorizationOptions = [
+  { name: 'Categorias', href: '/categorias', icon: Tag },
+  { name: 'Regras', href: '/regras-categorizacao', icon: Settings },
+];
+
 const registrationOptions = [
   { name: 'Contas Bancárias', href: '/cadastros/contas', icon: CreditCard },
   { name: 'Cidades', href: '/cidades', icon: MapPin },
   { name: 'Imóveis', href: '/imoveis', icon: Building2 },
-  { name: 'Categorias', href: '/categorias', icon: Tag },
 ];
 
 // ...existing code...
@@ -85,8 +91,39 @@ export default function Navbar() {
               </Button>
 
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                   <div className="py-1">
+                    {/* Categorias Section */}
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      Categorias
+                    </div>
+                    {categorizationOptions.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = pathname === item.href;
+
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setIsDropdownOpen(false)}
+                          className={`flex items-center px-4 py-2 text-sm transition-colors ${
+                            isActive
+                              ? 'text-blue-600 bg-blue-50'
+                              : 'text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4 mr-2" />
+                          {item.name}
+                        </Link>
+                      );
+                    })}
+                    
+                    <Separator className="my-2" />
+                    
+                    {/* Cadastro Section */}
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      Cadastro
+                    </div>
                     {registrationOptions.map((item) => {
                       const Icon = item.icon;
                       const isActive = pathname === item.href;
@@ -182,6 +219,42 @@ export default function Navbar() {
 
               {isDropdownOpen && (
                 <div className="mt-2 space-y-1">
+                  {/* Categorias Section */}
+                  <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Categorias
+                  </div>
+                  {categorizationOptions.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
+
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`flex items-center pl-8 pr-4 py-2 text-sm font-medium transition-colors ${
+                          isActive
+                            ? 'text-blue-600 bg-blue-50'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 mr-2" />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+                  
+                  <div className="px-8">
+                    <Separator className="my-2" />
+                  </div>
+                  
+                  {/* Cadastro Section */}
+                  <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Cadastro
+                  </div>
                   {registrationOptions.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;

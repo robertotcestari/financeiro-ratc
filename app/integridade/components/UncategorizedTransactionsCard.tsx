@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { UnprocessedTransaction, processTransactionToUnified } from '../actions';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { CheckCircle, PartyPopper, AlertTriangle, Lightbulb } from 'lucide-react';
 
 interface Props {
   unprocessedTransactions: UnprocessedTransaction[];
@@ -48,13 +49,16 @@ export function UnprocessedTransactionsCard({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            ✅ Transações Não Processadas
+          <CardTitle className="text-lg flex items-center gap-2">
+            <CheckCircle className="h-5 w-5 text-green-600" />
+            Transações Não Processadas
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <div className="text-green-500 text-4xl mb-4">🎉</div>
+            <div className="text-green-500 text-4xl mb-4">
+              <PartyPopper className="h-16 w-16 mx-auto text-green-500" />
+            </div>
             <p className="text-green-700 font-medium">
               Parabéns! Todas as transações foram processadas.
             </p>
@@ -71,7 +75,10 @@ export function UnprocessedTransactionsCard({
     <Card>
       <CardHeader>
         <CardTitle className="text-lg flex items-center justify-between">
-          <span>⚠️ Transações Não Processadas</span>
+          <span className="flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-orange-600" />
+            Transações Não Processadas
+          </span>
           <span className="text-sm font-normal text-muted-foreground">
             {showingCount} de {totalUnprocessed}
             {hasMore && ' (mostrando últimas 100)'}
@@ -139,8 +146,9 @@ export function UnprocessedTransactionsCard({
         )}
 
         <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
-          <h4 className="text-sm font-medium text-yellow-800 mb-2">
-            💡 Como processar essas transações:
+          <h4 className="text-sm font-medium text-yellow-800 mb-2 flex items-center gap-1">
+            <Lightbulb className="h-4 w-4" />
+            Como processar essas transações:
           </h4>
           <ul className="text-sm text-yellow-700 list-disc list-inside space-y-1">
             <li>Clique no botão <strong>&quot;Processar&quot;</strong> ao lado de cada transação</li>

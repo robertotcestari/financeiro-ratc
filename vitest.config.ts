@@ -19,23 +19,23 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['tests/setup.ts', 'vitest.setup.ts'],
 
-    // Use a single worker to avoid cross-file DB race conditions (Prisma)
+    // Use 2 threads for moderate parallelism without race conditions
     pool: 'threads',
     poolOptions: {
       threads: {
         minThreads: 1,
-        maxThreads: 1,
+        maxThreads: 2, // Conservative parallel execution
       },
     },
 
-    // Ensure tests don't attempt to run concurrently within a file
+    // Keep tests sequential within files for stability
     sequence: {
       concurrent: false,
     },
 
-    // Slightly higher timeouts for integration tests
-    hookTimeout: 20000,
-    testTimeout: 20000,
+    // Reasonable timeouts for faster feedback
+    hookTimeout: 10000,  // 10 seconds (was 20s)
+    testTimeout: 10000,  // 10 seconds (was 20s)
 
     // Prevent Vitest from picking up Playwright tests and other non-unit suites
     exclude: ['e2e/**', '**/node_modules/**', '**/dist/**'],

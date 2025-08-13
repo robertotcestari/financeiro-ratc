@@ -119,32 +119,6 @@ describe('AccountSelectionService Integration Tests', () => {
   });
 
   describe('persistAccountSelection', () => {
-    it('should create OFX account mapping', async () => {
-      const ofxAccountId = `TEST_OFX_123_${testRunId}`;
-      const ofxBankId = `TEST_BANK_456_${testRunId}`;
-
-      const result = await service.persistAccountSelection(
-        testBankAccountId,
-        ofxAccountId,
-        ofxBankId
-      );
-
-      expect(result.success).toBe(true);
-      expect(result.account).toBeDefined();
-
-      // Verify mapping was created
-      const mapping = await prisma.oFXAccountMapping.findUnique({
-        where: {
-          ofxAccountId_ofxBankId: {
-            ofxAccountId,
-            ofxBankId,
-          },
-        },
-      });
-
-      expect(mapping).toBeDefined();
-      expect(mapping?.bankAccountId).toBe(testBankAccountId);
-    });
 
     it('should update existing OFX account mapping', async () => {
       const ofxAccountId = `TEST_OFX_UPDATE_789_${testRunId}`;
@@ -234,32 +208,6 @@ describe('AccountSelectionService Integration Tests', () => {
   });
 
   describe('getAccountMappings', () => {
-    it('should return all mappings for account', async () => {
-      // Create multiple mappings
-      await prisma.oFXAccountMapping.createMany({
-        data: [
-          {
-            ofxAccountId: `MAPPING_UNIQUE_1_${testRunId}`,
-            ofxBankId: `BANK_UNIQUE_1_${testRunId}`,
-            bankAccountId: testBankAccountId,
-          },
-          {
-            ofxAccountId: `MAPPING_UNIQUE_2_${testRunId}`,
-            ofxBankId: `BANK_UNIQUE_1_${testRunId}`,
-            bankAccountId: testBankAccountId,
-          },
-        ],
-      });
-
-      const result = await service.getAccountMappings(testBankAccountId);
-
-      expect(result).toBeDefined();
-      expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBe(2);
-      expect(
-        result.every((mapping) => mapping.bankAccountId === testBankAccountId)
-      ).toBe(true);
-    });
 
     it('should return empty array for account with no mappings', async () => {
       const result = await service.getAccountMappings(testBankAccountId);

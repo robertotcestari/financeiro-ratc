@@ -89,6 +89,10 @@ Financial management system for automating financial control by importing OFX ba
 - Always use `npx prisma generate` after schema changes
 - The Prisma client is imported from `@/app/generated/prisma`
 - Use the singleton client from `lib/database/client.ts`
+- **IMPORTANT**: Always import the database client as `prisma` from `@/lib/database/client`:
+  ```typescript
+  import { prisma } from '@/lib/database/client'
+  ```
 
 ### Next.js Patterns
 

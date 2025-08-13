@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { RefreshCw, FileText, CheckCircle, AlertTriangle, Info } from 'lucide-react';
 
 interface TransferStats {
   totalTransfers: number;
@@ -21,13 +22,16 @@ export function TransferStatsCard({ transferStats }: Props) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            🔄 Transferências Entre Contas
+          <CardTitle className="text-lg flex items-center gap-2">
+            <RefreshCw className="h-5 w-5 text-indigo-600" />
+            Transferências Entre Contas
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <div className="text-muted-foreground text-4xl mb-4">📝</div>
+            <div className="text-muted-foreground text-4xl mb-4">
+              <FileText className="h-16 w-16 mx-auto text-gray-400" />
+            </div>
             <p className="text-muted-foreground">
               Nenhuma transferência identificada no período.
             </p>
@@ -43,8 +47,9 @@ export function TransferStatsCard({ transferStats }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">
-          🔄 Transferências Entre Contas
+        <CardTitle className="text-lg flex items-center gap-2">
+          <RefreshCw className="h-5 w-5 text-indigo-600" />
+          Transferências Entre Contas
         </CardTitle>
       </CardHeader>
       
@@ -105,7 +110,13 @@ export function TransferStatsCard({ transferStats }: Props) {
             <div className={`text-sm ${
               Math.abs(transferStats.netAmount) < 1 ? 'text-green-600' : 'text-red-600'
             }`}>
-              Valor Líquido {Math.abs(transferStats.netAmount) < 1 ? '✅' : '⚠️'}
+              <div className="flex items-center gap-1">
+                Valor Líquido 
+                {Math.abs(transferStats.netAmount) < 1 ? 
+                  <CheckCircle className="h-4 w-4 text-green-600" /> : 
+                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                }
+              </div>
             </div>
           </div>
         </div>
@@ -131,7 +142,7 @@ export function TransferStatsCard({ transferStats }: Props) {
           <div className="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
             <div className="flex">
               <div className="flex-shrink-0">
-                <span className="text-yellow-400">⚠️</span>
+                <AlertTriangle className="h-5 w-5 text-yellow-400" />
               </div>
               <div className="ml-3">
                 <p className="text-sm text-yellow-700">
@@ -147,7 +158,7 @@ export function TransferStatsCard({ transferStats }: Props) {
           <div className="mt-4 p-3 bg-green-50 border-l-4 border-green-400 rounded">
             <div className="flex">
               <div className="flex-shrink-0">
-                <span className="text-green-400">✅</span>
+                <CheckCircle className="h-5 w-5 text-green-400" />
               </div>
               <div className="ml-3">
                 <p className="text-sm text-green-700">
@@ -159,8 +170,9 @@ export function TransferStatsCard({ transferStats }: Props) {
         )}
 
         <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded">
-          <h4 className="text-sm font-medium text-blue-800 mb-2">
-            💡 Sobre transferências:
+          <h4 className="text-sm font-medium text-blue-800 mb-2 flex items-center gap-1">
+            <Info className="h-4 w-4" />
+            Sobre transferências:
           </h4>
           <ul className="text-sm text-blue-700 list-disc list-inside space-y-1">
             <li><strong>Valor Líquido</strong>: Deveria ser R$ 0,00 (entrada = saída)</li>

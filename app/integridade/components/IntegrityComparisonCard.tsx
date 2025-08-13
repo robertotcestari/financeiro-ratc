@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { RefreshCw, CheckCircle, AlertTriangle } from 'lucide-react';
 
 interface Props {
   totalTransactions: number;
@@ -28,8 +29,9 @@ export function IntegrityComparisonCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">
-          🔄 Estatísticas de Integridade
+        <CardTitle className="text-lg flex items-center gap-2">
+          <RefreshCw className="h-5 w-5 text-blue-600" />
+          Estatísticas de Integridade
         </CardTitle>
       </CardHeader>
       
@@ -114,9 +116,10 @@ export function IntegrityComparisonCard({
         }`}>
           <div className="flex">
             <div className="flex-shrink-0">
-              <span className={isIntegrityOk ? 'text-green-400' : 'text-red-400'}>
-                {isIntegrityOk ? '✅' : '⚠️'}
-              </span>
+              {isIntegrityOk ? 
+                <CheckCircle className="h-5 w-5 text-green-400" /> : 
+                <AlertTriangle className="h-5 w-5 text-red-400" />
+              }
             </div>
             <div className="ml-3">
               <p className={`text-sm ${

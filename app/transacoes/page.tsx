@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/database/client';
 import Link from 'next/link';
 import TransactionFilters from './components/TransactionFilters';
-import TransactionTable from './components/TransactionTable';
+import TransactionTableV2 from './components/TransactionTableV2';
 import { isPendingTransaction } from '@/lib/database/transactions';
 import type { Prisma } from '@/app/generated/prisma';
 import { redirect } from 'next/navigation';
@@ -11,6 +11,22 @@ type PTWithIncludes = Prisma.ProcessedTransactionGetPayload<{
     transaction: { include: { bankAccount: true } };
     category: { include: { parent: true } };
     property: true;
+    suggestions: {
+      include: {
+        rule: true;
+        suggestedCategory: {
+          select: { 
+            id: true; 
+            name: true; 
+            type: true;
+            parent: { select: { name: true } };
+          };
+        };
+        suggestedProperty: {
+          select: { id: true; code: true; city: true };
+        };
+      };
+    };
   };
 }>;
 
@@ -20,6 +36,7 @@ interface SearchParams {
   mes?: string;
   ano?: string;
   status?: string;
+  sugestoes?: string;
   page?: string;
 }
 
@@ -37,6 +54,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
     'mes',
     'ano',
     'status',
+    'sugestoes',
   ];
   
   // Verifica se há parâmetros de filtro definidos
@@ -130,6 +148,21 @@ export default async function TransacoesPage({ searchParams }: Props) {
     where.isReviewed = true;
   }
 
+  // Filtro de Sugestões
+  if (effectiveFilters.sugestoes === 'com-sugestoes') {
+    where.suggestions = {
+      some: {
+        isApplied: false,
+      },
+    };
+  } else if (effectiveFilters.sugestoes === 'aplicado-via-regra') {
+    where.suggestions = {
+      some: {
+        isApplied: true,
+      },
+    };
+  }
+
   // Buscar transações processadas com paginação
   const [transactions, totalCount] = await Promise.all([
     prisma.processedTransaction.findMany({
@@ -146,6 +179,27 @@ export default async function TransacoesPage({ searchParams }: Props) {
           },
         },
         property: true,
+        suggestions: {
+          include: {
+            rule: true,
+            suggestedCategory: {
+              select: { 
+                id: true, 
+                name: true, 
+                type: true,
+                parent: { select: { name: true } }
+              }
+            },
+            suggestedProperty: {
+              select: { id: true, code: true, city: true }
+            },
+          },
+          where: { isApplied: false },
+          orderBy: [
+            { confidence: 'desc' },
+            { createdAt: 'desc' },
+          ],
+        },
       },
       orderBy: [
         { transaction: { date: 'desc' } },
@@ -216,46 +270,73 @@ export default async function TransacoesPage({ searchParams }: Props) {
       property: t.property
         ? { code: t.property.code, city: t.property.city }
         : null,
+      suggestions: t.suggestions.map(s => ({
+        id: s.id,
+        confidence: s.confidence,
+        createdAt: s.createdAt,
+        rule: {
+          id: s.rule.id,
+          name: s.rule.name,
+          description: s.rule.description,
+        },
+        suggestedCategory: s.suggestedCategory ? {
+          id: s.suggestedCategory.id,
+          name: s.suggestedCategory.name,
+          type: s.suggestedCategory.type,
+          parent: s.suggestedCategory.parent ? { name: s.suggestedCategory.parent.name } : null,
+        } : null,
+        suggestedProperty: s.suggestedProperty ? {
+          id: s.suggestedProperty.id,
+          code: s.suggestedProperty.code,
+          city: s.suggestedProperty.city,
+        } : null,
+      })),
     };
   });
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Transações Processadas
-            </h1>
-            <p className="text-gray-600">
-              {totalCount.toLocaleString('pt-BR')} transações encontradas
-            </p>
+      <div className="py-8">
+        <div className="container mx-auto px-4 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Transações Processadas
+              </h1>
+              <p className="text-gray-600">
+                {totalCount.toLocaleString('pt-BR')} transações encontradas
+              </p>
+            </div>
+            <Link
+              href="/"
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              ← Voltar
+            </Link>
           </div>
-          <Link
-            href="/"
-            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
-          >
-            ← Voltar
-          </Link>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
-          <TransactionFilters
-            categories={categories}
-            bankAccounts={bankAccounts}
-            searchParams={effectiveFilters}
-          />
+        <div className="px-4 mb-6">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+            <TransactionFilters
+              categories={categories}
+              bankAccounts={bankAccounts}
+              searchParams={effectiveFilters}
+            />
+          </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <TransactionTable
-            transactions={safeTransactions}
-            currentPage={page}
-            totalPages={totalPages}
-            totalCount={totalCount}
-            categories={categories}
-            properties={properties}
-          />
+        <div className="px-4">
+          <div className="bg-white shadow-sm border border-gray-200 rounded-lg">
+            <TransactionTableV2
+              transactions={safeTransactions}
+              currentPage={page}
+              totalPages={totalPages}
+              totalCount={totalCount}
+              categories={categories}
+              properties={properties}
+            />
+          </div>
         </div>
       </div>
     </div>

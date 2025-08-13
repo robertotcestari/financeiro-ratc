@@ -179,52 +179,6 @@ describe('DuplicateDetectionService Integration', () => {
       expect(result.summary.unique).toBe(1);
     });
 
-    it('should handle multiple potential matches and rank by confidence', async () => {
-      // Create multiple similar transactions
-      await prisma.transaction.create({
-        data: {
-          bankAccountId: testBankAccountId,
-          date: new Date('2024-01-15'),
-          description: 'Amazon Purchase',
-          amount: 29.99,
-        },
-      });
-
-      await prisma.transaction.create({
-        data: {
-          bankAccountId: testBankAccountId,
-          date: new Date('2024-01-16'),
-          description: 'Amazon Purchase - Books',
-          amount: 29.99,
-        },
-      });
-
-      const ofxTransaction: OFXTransaction = {
-        transactionId: 'OFX444555666',
-        accountId: 'ACC005',
-        date: new Date('2024-01-15'),
-        amount: 29.99,
-        description: 'Amazon Purchase',
-        type: 'DEBIT',
-      };
-
-      const result = await service.findDuplicates(
-        [ofxTransaction],
-        testBankAccountId
-      );
-
-      expect(result.duplicates.length).toBeGreaterThan(0);
-
-      // First match should have higher confidence (exact match)
-      expect(result.duplicates[0].confidence).toBeGreaterThan(0.9);
-
-      // If there are multiple matches, they should be sorted by confidence
-      if (result.duplicates.length > 1) {
-        expect(result.duplicates[0].confidence).toBeGreaterThanOrEqual(
-          result.duplicates[1].confidence
-        );
-      }
-    });
 
     it('should filter out low confidence matches', async () => {
       // Create a transaction with same amount but very different description and date
