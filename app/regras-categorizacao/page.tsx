@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { listRulesAction } from '@/lib/actions/rule-management-actions';
+import { getFormCategories, getFormProperties, getFormBankAccounts } from '@/lib/database/form-data';
+import RulesListClient from './components/RulesListClient';
 
 export const metadata: Metadata = {
   title: 'Regras de Categorização | Financeiro RATC',
@@ -11,13 +13,21 @@ export const metadata: Metadata = {
 };
 
 export default async function RuleManagementPage() {
-  // Load rules data with error handling
+  // Load rules data and form data in parallel with error handling
   let initialData = { rules: [], total: 0 };
+  let formData = { categories: [], properties: [], bankAccounts: [] };
   let errorMessage = '';
 
   try {
-    const rulesResult = await listRulesAction({}, 50, 0);
+    const [rulesResult, categories, properties, bankAccounts] = await Promise.all([
+      listRulesAction({}, 50, 0),
+      getFormCategories(),
+      getFormProperties(),
+      getFormBankAccounts(),
+    ]);
+    
     initialData = rulesResult.success ? rulesResult.data! : { rules: [], total: 0 };
+    formData = { categories, properties, bankAccounts };
   } catch (error) {
     console.error('Error loading rules page:', error);
     errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
@@ -59,52 +69,11 @@ export default async function RuleManagementPage() {
       </div>
 
       {/* Rules List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Regras Ativas ({initialData.total})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {initialData.rules.length > 0 ? (
-            <div className="space-y-4">
-              {initialData.rules.map((rule) => (
-                <div key={rule.id} className="p-4 border rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium">{rule.name}</h3>
-                      {rule.description && (
-                        <p className="text-sm text-gray-600 mt-1">{rule.description}</p>
-                      )}
-                      <div className="flex items-center mt-2 space-x-2 text-xs text-gray-500">
-                        <span>Categoria: {rule.category?.name || 'Não definida'}</span>
-                        {rule.property && (
-                          <span>• Propriedade: {rule.property.code}</span>
-                        )}
-                        <span>• Prioridade: {rule.priority}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${rule.isActive ? 'bg-green-500' : 'bg-red-500'}`} />
-                      <span className="text-xs text-gray-500">
-                        {rule.isActive ? 'Ativa' : 'Inativa'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="text-gray-400 mb-4">
-                🔧
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Nenhuma regra criada</h3>
-              <p className="text-muted-foreground">
-                Crie sua primeira regra para automatizar a categorização de transações.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <RulesListClient 
+        initialRules={initialData.rules} 
+        total={initialData.total}
+        formData={formData}
+      />
 
     </div>
   );
