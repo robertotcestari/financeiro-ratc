@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AccountBalanceComparison } from '../actions';
+import { Scale, BarChart3, CheckCircle, AlertTriangle, Lightbulb, BookOpen } from 'lucide-react';
 
 interface Props {
   accountBalanceComparisons: AccountBalanceComparison[];
@@ -10,13 +11,16 @@ export function AccountBalanceComparisonCard({ accountBalanceComparisons }: Prop
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            ⚖️ Comparação de Saldos por Conta
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Scale className="h-5 w-5 text-blue-600" />
+            Comparação de Saldos por Conta
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
-            <div className="text-muted-foreground text-4xl mb-4">📊</div>
+            <div className="text-muted-foreground text-4xl mb-4">
+              <BarChart3 className="h-16 w-16 mx-auto text-gray-400" />
+            </div>
             <p className="text-muted-foreground">
               Nenhuma transação encontrada para comparação.
             </p>
@@ -34,8 +38,9 @@ export function AccountBalanceComparisonCard({ accountBalanceComparisons }: Prop
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">
-          ⚖️ Comparação de Saldos por Conta
+        <CardTitle className="text-lg flex items-center gap-2">
+          <Scale className="h-5 w-5 text-blue-600" />
+          Comparação de Saldos por Conta
         </CardTitle>
         <p className="text-sm text-muted-foreground">
           Saldos calculados: transações brutas vs transações processadas
@@ -104,9 +109,10 @@ export function AccountBalanceComparisonCard({ accountBalanceComparisons }: Prop
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={isBalanced ? 'text-green-600' : 'text-red-600'}>
-                      {isBalanced ? '✅' : '⚠️'}
-                    </span>
+                    {isBalanced ? 
+                      <CheckCircle className="h-5 w-5 text-green-600" /> : 
+                      <AlertTriangle className="h-5 w-5 text-red-600" />
+                    }
                     <span className="text-sm font-medium">
                       {account.processedPercentage.toFixed(1)}% processado
                     </span>
@@ -148,8 +154,9 @@ export function AccountBalanceComparisonCard({ accountBalanceComparisons }: Prop
                 </div>
 
                 {!isBalanced && (
-                  <div className="mt-3 p-2 bg-yellow-100 border border-yellow-300 rounded text-sm text-yellow-800">
-                    💡 Existem transações desta conta que ainda não foram processadas no sistema unificado.
+                  <div className="mt-3 p-2 bg-yellow-100 border border-yellow-300 rounded text-sm text-yellow-800 flex items-center gap-2">
+                    <Lightbulb className="h-4 w-4" />
+                    Existem transações desta conta que ainda não foram processadas no sistema unificado.
                   </div>
                 )}
               </div>
@@ -159,15 +166,16 @@ export function AccountBalanceComparisonCard({ accountBalanceComparisons }: Prop
 
         {/* Rodapé informativo */}
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded">
-          <h4 className="text-sm font-medium text-blue-800 mb-2">
-            📘 Como interpretar esta comparação:
+          <h4 className="text-sm font-medium text-blue-800 mb-2 flex items-center gap-1">
+            <BookOpen className="h-4 w-4" />
+            Como interpretar esta comparação:
           </h4>
           <ul className="text-sm text-blue-700 list-disc list-inside space-y-1">
             <li><strong>Saldo Bruto:</strong> Soma de todas as transações importadas desta conta</li>
             <li><strong>Saldo Processado:</strong> Soma das transações que já foram processadas no sistema unificado</li>
             <li><strong>Diferença:</strong> Valor das transações que ainda precisam ser processadas</li>
-            <li><strong>✅ Balanceado:</strong> Diferença menor que R$ 1,00</li>
-            <li><strong>⚠️ Desbalanceado:</strong> Há transações não processadas</li>
+            <li className="flex items-center gap-1"><CheckCircle className="h-3 w-3 text-green-600" /><strong>Balanceado:</strong> Diferença menor que R$ 1,00</li>
+            <li className="flex items-center gap-1"><AlertTriangle className="h-3 w-3 text-red-600" /><strong>Desbalanceado:</strong> Há transações não processadas</li>
           </ul>
         </div>
       </CardContent>

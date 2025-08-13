@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText, CheckCircle } from 'lucide-react';
 
 interface Category {
   id: string;
@@ -280,7 +280,8 @@ export default function TransactionFilters({
               'rounded-full h-8 px-3'
             }
           >
-            📝 Pendentes
+            <FileText className="h-4 w-4 mr-1" />
+            Pendentes
           </Button>
 
           <Button
@@ -299,7 +300,8 @@ export default function TransactionFilters({
               'rounded-full h-8 px-3'
             }
           >
-            ✅ Revisados
+            <CheckCircle className="h-4 w-4 mr-1" />
+            Revisados
           </Button>
 
           <Button

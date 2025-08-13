@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TrendingUp, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface IntegrityStats {
   transactionCount: number;
@@ -25,8 +26,9 @@ export function IntegrityStatsCard({ stats, unifiedWithoutCategory }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">
-          📈 Resumo de Processamento
+        <CardTitle className="text-lg flex items-center gap-2">
+          <TrendingUp className="h-5 w-5 text-blue-600" />
+          Resumo de Processamento
         </CardTitle>
       </CardHeader>
       
@@ -73,7 +75,7 @@ export function IntegrityStatsCard({ stats, unifiedWithoutCategory }: Props) {
           <div className="mt-4 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded">
             <div className="flex">
               <div className="flex-shrink-0">
-                <span className="text-yellow-400">⚠️</span>
+                <AlertTriangle className="h-5 w-5 text-yellow-400" />
               </div>
               <div className="ml-3">
                 <div className="text-sm text-yellow-700 space-y-1">
@@ -93,7 +95,7 @@ export function IntegrityStatsCard({ stats, unifiedWithoutCategory }: Props) {
           <div className="mt-4 p-3 bg-green-50 border-l-4 border-green-400 rounded">
             <div className="flex">
               <div className="flex-shrink-0">
-                <span className="text-green-400">✅</span>
+                <CheckCircle className="h-5 w-5 text-green-400" />
               </div>
               <div className="ml-3">
                 <p className="text-sm text-green-700">
