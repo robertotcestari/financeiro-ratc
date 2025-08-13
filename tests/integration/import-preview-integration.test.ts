@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ImportPreviewService } from '@/lib/ofx/import-preview';
 import { prisma } from '@/lib/database/client';
+import { OFXParserService } from '@/lib/ofx/parser';
+import { DuplicateDetectionService } from '@/lib/ofx/duplicate-detection';
+import type { OFXParseResult, DuplicateDetectionResult } from '@/lib/ofx/types';
 import type { BankAccount, Category, Property } from '@/app/generated/prisma';
 
 vi.mock('@/lib/logger', () => ({
@@ -61,11 +64,12 @@ describe('ImportPreviewService Integration', () => {
 
     testCategories = [incomeCategory, expenseCategory, transferCategory];
 
-    // Create test city first
+    // Create test city first (use unique code per run to avoid unique constraint collisions)
+    const cityCode = `TST-${Date.now()}-${Math.random()}`;
     const testCity = await prisma.city.create({
       data: {
-        code: 'TST',
-        name: 'Test City',
+        code: cityCode,
+        name: `Test City ${cityCode}`,
         isActive: true,
       },
     });
@@ -74,7 +78,7 @@ describe('ImportPreviewService Integration', () => {
     const testProperty = await prisma.property.create({
       data: {
         code: 'TST - Test Property',
-        city: 'TST',
+        city: cityCode,
         cityId: testCity.id,
         address: 'Test Address 123',
         description: 'Test Property for Integration',
@@ -88,6 +92,8 @@ describe('ImportPreviewService Integration', () => {
   afterEach(async () => {
     // Clean up test data in correct order to avoid foreign key constraints
     try {
+      // Delete suggestions first due to FK to ProcessedTransaction
+      await prisma.transactionSuggestion.deleteMany({});
       await prisma.processedTransaction.deleteMany({});
       await prisma.transaction.deleteMany({});
       await prisma.property.deleteMany({});
@@ -103,7 +109,7 @@ describe('ImportPreviewService Integration', () => {
   describe('generatePreview with real database', () => {
     it('should generate preview with real database interactions', async () => {
       // Use a mock parser for integration tests to focus on database interactions
-      const mockParser = {
+      const mockParser: Pick<OFXParserService, 'parseFile'> = {
         parseFile: vi.fn().mockResolvedValue({
           success: true,
           version: '1.x',
@@ -139,10 +145,13 @@ describe('ImportPreviewService Integration', () => {
             },
           ],
           errors: [],
-        }),
-      } as any;
+        } as OFXParseResult),
+      };
 
-      const mockDuplicateDetection = {
+      const mockDuplicateDetection: Pick<
+        DuplicateDetectionService,
+        'findDuplicates'
+      > = {
         findDuplicates: vi.fn().mockResolvedValue({
           duplicates: [],
           uniqueTransactions: [],
@@ -153,12 +162,12 @@ describe('ImportPreviewService Integration', () => {
             exactMatches: 0,
             potentialMatches: 0,
           },
-        }),
-      } as any;
+        } as DuplicateDetectionResult),
+      };
 
       const testService = new ImportPreviewService(
-        mockParser,
-        mockDuplicateDetection
+        mockParser as unknown as OFXParserService,
+        mockDuplicateDetection as unknown as DuplicateDetectionService
       );
       const mockFile = new File(['test content'], 'test-integration.ofx', {
         type: 'application/x-ofx',
@@ -225,7 +234,7 @@ describe('ImportPreviewService Integration', () => {
     });
 
     it('should handle non-existent bank account gracefully', async () => {
-      const mockParser = {
+      const mockParser: Pick<OFXParserService, 'parseFile'> = {
         parseFile: vi.fn().mockResolvedValue({
           success: true,
           version: '1.x',
@@ -242,10 +251,12 @@ describe('ImportPreviewService Integration', () => {
             },
           ],
           errors: [],
-        }),
-      } as any;
+        } as OFXParseResult),
+      };
 
-      const testService = new ImportPreviewService(mockParser);
+      const testService = new ImportPreviewService(
+        mockParser as unknown as OFXParserService
+      );
       const mockFile = new File(['test content'], 'test.ofx', {
         type: 'application/x-ofx',
       });
@@ -275,7 +286,7 @@ describe('ImportPreviewService Integration', () => {
         },
       });
 
-      const mockParser = {
+      const mockParser: Pick<OFXParserService, 'parseFile'> = {
         parseFile: vi.fn().mockResolvedValue({
           success: true,
           version: '1.x',
@@ -292,10 +303,12 @@ describe('ImportPreviewService Integration', () => {
             },
           ],
           errors: [],
-        }),
-      } as any;
+        } as OFXParseResult),
+      };
 
-      const testService = new ImportPreviewService(mockParser);
+      const testService = new ImportPreviewService(
+        mockParser as unknown as OFXParserService
+      );
       const mockFile = new File(['test content'], 'test.ofx', {
         type: 'application/x-ofx',
       });
@@ -308,15 +321,13 @@ describe('ImportPreviewService Integration', () => {
       expect(result.success).toBe(false);
       expect(result.validationErrors).toHaveLength(1);
       expect(result.validationErrors[0].code).toBe('PREVIEW_GENERATION_ERROR');
-      expect(result.validationErrors[0].message).toContain(
-        'is not active'
-      );
+      expect(result.validationErrors[0].message).toContain('is not active');
     });
   });
 
   describe('categorization with real categories', () => {
     it('should use actual categories from database for categorization', async () => {
-      const mockParser = {
+      const mockParser: Pick<OFXParserService, 'parseFile'> = {
         parseFile: vi.fn().mockResolvedValue({
           success: true,
           version: '1.x',
@@ -333,10 +344,13 @@ describe('ImportPreviewService Integration', () => {
             },
           ],
           errors: [],
-        }),
-      } as any;
+        } as OFXParseResult),
+      };
 
-      const mockDuplicateDetection = {
+      const mockDuplicateDetection: Pick<
+        DuplicateDetectionService,
+        'findDuplicates'
+      > = {
         findDuplicates: vi.fn().mockResolvedValue({
           duplicates: [],
           uniqueTransactions: [],
@@ -347,12 +361,12 @@ describe('ImportPreviewService Integration', () => {
             exactMatches: 0,
             potentialMatches: 0,
           },
-        }),
-      } as any;
+        } as DuplicateDetectionResult),
+      };
 
       const testService = new ImportPreviewService(
-        mockParser,
-        mockDuplicateDetection
+        mockParser as unknown as OFXParserService,
+        mockDuplicateDetection as unknown as DuplicateDetectionService
       );
       const mockFile = new File(['test content'], 'test-categorization.ofx', {
         type: 'application/x-ofx',

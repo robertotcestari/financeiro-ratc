@@ -1,6 +1,6 @@
 # Implementation Plan
 
-- [ ] 1. Database Schema and Core Infrastructure
+- [x] 1. Database Schema and Core Infrastructure
 
   - Create database migration for new tables (CategorizationRule, TransactionSuggestion)
   - Add JSON type for rule criteria storage
@@ -9,17 +9,27 @@
   - Update Prisma schema and generate new client types
   - _Requirements: 1.1, 2.1, 3.1, 4.1, 5.1_
 
-- [ ] 2. Rule Engine Core Logic
+- [x] 1.1 Install and Configure Date Management Library
 
-  - [ ] 2.1 Implement rule criteria evaluation functions
+  - Install date-fns library for robust date manipulation (`npm install date-fns`)
+  - Install date-fns types if needed (`npm install --save-dev @types/date-fns`)
+  - Create date utility functions using date-fns for rule evaluation (`lib/utils/date-helpers.ts`)
+  - Implement functions: isDateInDayRange, isDateInMonths, formatTransactionDate, isDateInRange
+  - Update existing date handling code to use date-fns consistently
+  - Add unit tests for date utility functions
+  - _Requirements: 1.1, 2.1_
 
-    - Create date criteria evaluation (day ranges, month patterns)
+- [x] 2. Rule Engine Core Logic
+
+  - [x] 2.1 Implement rule criteria evaluation functions
+
+    - Create date criteria evaluation using date-fns (day ranges, month patterns, date comparisons)
     - Create value criteria evaluation (min, max, ranges, operators)
     - Create description criteria evaluation (keyword matching, AND/OR logic)
     - Create account criteria evaluation
     - _Requirements: 1.1, 2.1, 3.1, 4.1_
 
-  - [ ] 2.2 Build rule engine service
+  - [x] 2.2 Build rule engine service
 
     - Implement transaction evaluation against multiple rules
     - Add rule priority resolution logic
@@ -27,7 +37,7 @@
     - Add batch processing capabilities for performance
     - _Requirements: 4.4, 4.5_
 
-  - [ ] 2.3 Create suggestion generation system
+  - [x] 2.3 Create suggestion generation system
     - Implement suggestion creation and storage for both category and property
     - Add duplicate prevention logic
     - Create batch suggestion generation for multiple transactions
@@ -88,7 +98,7 @@
 
   - [ ] 6.2 Build rule criteria form components
 
-    - Create date criteria input (day ranges, month selection)
+    - Create date criteria input using date-fns for validation (day ranges, month selection)
     - Build value criteria form (min/max, operators, ranges)
     - Implement description criteria builder (keywords, AND/OR logic)
     - Add account selection component
@@ -165,9 +175,10 @@
   - [ ] 11.1 Create unit tests for rule engine
 
     - Test individual criteria evaluation functions
+    - Test date-fns utility functions with various date scenarios and edge cases
     - Test rule priority resolution logic
     - Test confidence scoring calculations
-    - Test edge cases and error conditions
+    - Test edge cases and error conditions (timezone handling, invalid dates)
     - _Requirements: All rule evaluation requirements_
 
   - [ ] 11.2 Build integration tests

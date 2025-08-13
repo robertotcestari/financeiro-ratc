@@ -66,7 +66,9 @@ model Category {
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
 
-  transactions ProcessedTransaction[]
+  transactions        ProcessedTransaction[]
+  categorizationRules CategorizationRule[]
+  suggestions         TransactionSuggestion[]
 
   @@map("categories")
 }
@@ -98,7 +100,9 @@ model Property {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  transactions ProcessedTransaction[]
+  transactions          ProcessedTransaction[]
+  CategorizationRule    CategorizationRule[]
+  TransactionSuggestion TransactionSuggestion[]
 
   @@map("properties")
 }
@@ -168,10 +172,62 @@ model ProcessedTransaction {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  suggestions TransactionSuggestion[]
+
   @@index([year, month])
   @@index([categoryId])
   @@index([propertyId])
   @@map("processed_transactions")
+}
+
+model CategorizationRule {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean @default(true)
+  priority    Int     @default(0)
+
+  // Target categorization (category OR property)
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  propertyId String?
+  property   Property? @relation(fields: [propertyId], references: [id])
+
+  // Rule criteria (JSON)
+  criteria Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  suggestions TransactionSuggestion[]
+
+  @@map("categorization_rules")
+}
+
+model TransactionSuggestion {
+  id                     String               @id @default(cuid())
+  processedTransactionId String
+  processedTransaction   ProcessedTransaction @relation(fields: [processedTransactionId], references: [id])
+
+  ruleId String
+  rule   CategorizationRule @relation(fields: [ruleId], references: [id])
+
+  // Suggested targets (category and/or property)
+  suggestedCategoryId String?
+  suggestedCategory   Category? @relation(fields: [suggestedCategoryId], references: [id])
+
+  suggestedPropertyId String?
+  suggestedProperty   Property? @relation(fields: [suggestedPropertyId], references: [id])
+
+  confidence Float     @default(1.0)
+  isApplied  Boolean   @default(false)
+  appliedAt  DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@unique([processedTransactionId, ruleId])
+  @@map("transaction_suggestions")
 }
 
 // 8. AccountSnapshot (Snapshots Mensais de Saldo)

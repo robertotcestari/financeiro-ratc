@@ -138,6 +138,52 @@ interface RuleCriteria {
 }
 ```
 
+### Date Management with date-fns
+
+The system will use the `date-fns` library for all date-related operations to ensure consistency and reliability:
+
+```typescript
+// lib/utils/date-helpers.ts
+import {
+  getDate,
+  getMonth,
+  isWithinInterval,
+  startOfDay,
+  endOfDay,
+  parseISO,
+  format,
+} from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+export function isDateInDayRange(
+  date: Date,
+  dayRange: { start: number; end: number }
+): boolean {
+  const dayOfMonth = getDate(date);
+  return dayOfMonth >= dayRange.start && dayOfMonth <= dayRange.end;
+}
+
+export function isDateInMonths(date: Date, months: number[]): boolean {
+  const month = getMonth(date) + 1; // date-fns months are 0-indexed
+  return months.includes(month);
+}
+
+export function formatTransactionDate(date: Date): string {
+  return format(date, 'dd/MM/yyyy', { locale: ptBR });
+}
+
+export function isDateInRange(
+  date: Date,
+  startDate: Date,
+  endDate: Date
+): boolean {
+  return isWithinInterval(date, {
+    start: startOfDay(startDate),
+    end: endOfDay(endDate),
+  });
+}
+```
+
 ### Core Services
 
 #### Rule Engine Service
@@ -238,11 +284,36 @@ export async function dismissSuggestionAction(suggestionId: string);
 The rule engine will evaluate transactions using the following priority:
 
 1. **Account Filter**: If rule specifies accounts, transaction must be from one of those accounts
-2. **Date Criteria**: Check if transaction date matches day range and/or month criteria
+2. **Date Criteria**: Check if transaction date matches day range and/or month criteria using date-fns functions
 3. **Value Criteria**: Check if transaction amount matches value conditions
 4. **Description Criteria**: Check if transaction description contains specified keywords
 
 All criteria must match (AND logic) for a rule to generate a suggestion.
+
+#### Date Criteria Evaluation Example
+
+```typescript
+// lib/database/rule-engine.ts
+import { isDateInDayRange, isDateInMonths } from '@/lib/utils/date-helpers';
+
+function evaluateDateCriteria(
+  transactionDate: Date,
+  dateCriteria: DateCriteria
+): boolean {
+  let matches = true;
+
+  if (dateCriteria.dayRange) {
+    matches =
+      matches && isDateInDayRange(transactionDate, dateCriteria.dayRange);
+  }
+
+  if (dateCriteria.months) {
+    matches = matches && isDateInMonths(transactionDate, dateCriteria.months);
+  }
+
+  return matches;
+}
+```
 
 ### Suggestion Confidence
 
@@ -290,10 +361,11 @@ When multiple rules match a transaction:
 
 1. **Rule Engine Tests**
 
-   - Test individual criteria evaluation (date, value, description)
+   - Test individual criteria evaluation (date using date-fns, value, description)
+   - Test date-fns helper functions with various date scenarios
    - Test rule priority resolution
    - Test confidence scoring
-   - Test edge cases (null values, invalid data)
+   - Test edge cases (null values, invalid data, timezone handling)
 
 2. **Rule Management Tests**
 

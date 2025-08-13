@@ -13,13 +13,15 @@ describe('ImportService Integration Tests', () => {
   let testProperty: Property;
 
   beforeEach(async () => {
-    // Clean up database
+    // Clean up database (respect FK constraints)
+    await prisma.transactionSuggestion.deleteMany();
     await prisma.processedTransaction.deleteMany();
     await prisma.transaction.deleteMany();
+    await prisma.oFXAccountMapping.deleteMany();
     await prisma.importBatch.deleteMany();
-    await prisma.bankAccount.deleteMany();
-    await prisma.category.deleteMany();
     await prisma.property.deleteMany();
+    await prisma.category.deleteMany();
+    await prisma.bankAccount.deleteMany();
     await prisma.city.deleteMany();
 
     // Create test city
@@ -69,13 +71,15 @@ describe('ImportService Integration Tests', () => {
   });
 
   afterEach(async () => {
-    // Clean up after each test
+    // Clean up after each test (respect FK constraints)
+    await prisma.transactionSuggestion.deleteMany();
     await prisma.processedTransaction.deleteMany();
     await prisma.transaction.deleteMany();
+    await prisma.oFXAccountMapping.deleteMany();
     await prisma.importBatch.deleteMany();
-    await prisma.bankAccount.deleteMany();
-    await prisma.category.deleteMany();
     await prisma.property.deleteMany();
+    await prisma.category.deleteMany();
+    await prisma.bankAccount.deleteMany();
     await prisma.city.deleteMany();
   });
 
@@ -197,7 +201,6 @@ NEWFILEUID:NONE
         testBankAccount.id
       );
 
-
       // Verify the result
       expect(result.success).toBe(false);
       expect(result.errors.length).toBeGreaterThan(0);
@@ -282,7 +285,6 @@ NEWFILEUID:NONE
           importDuplicates: false,
         }
       );
-
 
       // Verify duplicate was detected and skipped
       expect(result.success).toBe(true);
@@ -519,7 +521,6 @@ NEWFILEUID:NONE
         importReviewTransactions: true, // Allow importing transactions that need review
       });
 
-
       // Verify execution
       expect(result.success).toBe(true);
       expect(result.importBatchId).toBeTruthy();
@@ -529,7 +530,8 @@ NEWFILEUID:NONE
       const transactions = await prisma.transaction.findMany();
       expect(transactions).toHaveLength(1);
 
-      const processedTransactions = await prisma.processedTransaction.findMany();
+      const processedTransactions =
+        await prisma.processedTransaction.findMany();
       expect(processedTransactions).toHaveLength(1);
     });
   });
@@ -599,13 +601,11 @@ NEWFILEUID:NONE
         }
       );
 
-
       // Verify import batch was created and updated
       const importBatch = await prisma.importBatch.findUnique({
         where: { id: result.importBatchId! },
         include: { transactions: true },
       });
-
 
       expect(importBatch).toBeTruthy();
       expect(importBatch!.fileName).toBe('test-batch.ofx');

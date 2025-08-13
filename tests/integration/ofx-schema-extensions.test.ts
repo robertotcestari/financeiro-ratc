@@ -4,6 +4,7 @@ import { prisma } from '@/lib/database/client';
 describe('OFX Schema Extensions', () => {
   beforeEach(async () => {
     // Clean up test data in correct order (respecting foreign key constraints)
+    await prisma.transactionSuggestion.deleteMany();
     await prisma.processedTransaction.deleteMany();
     await prisma.transaction.deleteMany();
     await prisma.oFXAccountMapping.deleteMany();

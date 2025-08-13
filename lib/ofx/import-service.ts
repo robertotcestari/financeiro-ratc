@@ -7,14 +7,14 @@ import type {
   OFXTransaction,
   OFXParseResult,
   DuplicateDetectionResult,
-  ImportValidationError,
 } from './types';
-import type { PrismaClient } from '@/app/generated/prisma';
+import type { Prisma } from '@/app/generated/prisma';
 import type {
   ImportPreview,
   TransactionPreview,
   ImportSummary,
   TransactionAction,
+  ImportValidationError,
 } from './import-preview';
 import type {
   BankAccount,
@@ -394,7 +394,7 @@ export class ImportService {
    * Import a single transaction with unified transaction creation
    */
   private async importSingleTransaction(
-    tx: Omit<PrismaClient, '$disconnect' | '$connect'>, // Prisma transaction client
+    tx: Prisma.TransactionClient, // Prisma transaction client
     transactionPreview: TransactionPreview,
     importBatchId: string,
     options: ImportOptions
@@ -430,29 +430,42 @@ export class ImportService {
     });
 
     // Create processed transaction (with or without categorization)
-    if (options.createProcessedTransactions !== false) {
-      try {
-        await tx.processedTransaction.create({
-          data: {
-            transactionId: importedTransaction.id,
-            year: transaction.date.getFullYear(),
-            month: transaction.date.getMonth() + 1,
-            categoryId: categorization.suggestedCategory?.id || null,
-            propertyId: categorization.suggestedProperty?.id || null,
-            details: categorization.reason,
-            isReviewed: categorization.confidence >= 0.8 && categorization.suggestedCategory !== null,
-          },
-        });
-      } catch (error) {
-        logger.error(
-          'ImportService.importSingleTransaction processed creation failed',
-          {
-            event: 'import_service_processed_create_error',
-            transactionId: importedTransaction.id,
-            error,
-          }
-        );
-        throw error;
+    // Backward-compat flags:
+    // - createProcessedTransactions (preferred)
+    // - createUnifiedTransactions (legacy alias)
+    {
+      let shouldCreateProcessed = true;
+      if (options.createProcessedTransactions === false)
+        shouldCreateProcessed = false;
+      if (options.createUnifiedTransactions === false)
+        shouldCreateProcessed = false;
+
+      if (shouldCreateProcessed) {
+        try {
+          await tx.processedTransaction.create({
+            data: {
+              transactionId: importedTransaction.id,
+              year: transaction.date.getFullYear(),
+              month: transaction.date.getMonth() + 1,
+              categoryId: categorization.suggestedCategory?.id || null,
+              propertyId: categorization.suggestedProperty?.id || null,
+              details: categorization.reason,
+              isReviewed:
+                categorization.confidence >= 0.8 &&
+                categorization.suggestedCategory !== null,
+            },
+          });
+        } catch (error) {
+          logger.error(
+            'ImportService.importSingleTransaction processed creation failed',
+            {
+              event: 'import_service_processed_create_error',
+              transactionId: importedTransaction.id,
+              error,
+            }
+          );
+          throw error;
+        }
       }
     }
 
@@ -570,6 +583,12 @@ export interface ImportOptions {
   createProcessedTransactions?: boolean;
   strictMode?: boolean;
   transactionActions?: Record<string, TransactionAction>;
+
+  // Legacy/compatibility aliases used by tests
+  // - createUnifiedTransactions: alias for createProcessedTransactions
+  // - importReviewTransactions: accepted but not used (kept for compatibility)
+  createUnifiedTransactions?: boolean;
+  importReviewTransactions?: boolean;
 }
 
 export interface ImportResult {
