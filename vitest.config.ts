@@ -23,8 +23,8 @@ export default defineConfig({
     pool: 'threads',
     poolOptions: {
       threads: {
-        minThreads: 1,
-        maxThreads: 2, // Conservative parallel execution
+        minThreads: 3,
+        maxThreads: 3, // Conservative parallel execution
       },
     },
 
@@ -34,8 +34,8 @@ export default defineConfig({
     },
 
     // Reasonable timeouts for faster feedback
-    hookTimeout: 10000,  // 10 seconds (was 20s)
-    testTimeout: 10000,  // 10 seconds (was 20s)
+    hookTimeout: 10000, // 10 seconds (was 20s)
+    testTimeout: 10000, // 10 seconds (was 20s)
 
     // Prevent Vitest from picking up Playwright tests and other non-unit suites
     exclude: ['e2e/**', '**/node_modules/**', '**/dist/**'],

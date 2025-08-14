@@ -14,7 +14,7 @@ interface Props {
   unifiedWithoutCategory: number;
 }
 
-export function IntegrityStatsCard({ stats, unifiedWithoutCategory }: Props) {
+export function IntegrityStatsCard({ stats }: Props) {
   const processingPercent = stats.transactionCount > 0 
     ? ((stats.processedCount / stats.transactionCount) * 100)
     : 0;

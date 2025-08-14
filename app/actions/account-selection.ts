@@ -2,7 +2,6 @@
 
 import { accountSelectionService } from '@/lib/ofx/account-selection';
 import type { CreateBankAccountData } from '@/lib/ofx/account-selection';
-import type { AccountType } from '@/app/generated/prisma';
 
 export async function validateAccountSelection(bankAccountId: string) {
   const result = await accountSelectionService.validateAccountSelection(bankAccountId);

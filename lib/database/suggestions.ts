@@ -273,7 +273,7 @@ export async function createAISuggestion(
       suggestedPropertyId: aiSuggestion.suggestedPropertyId || null,
       confidence: aiSuggestion.confidence,
       reasoning: aiSuggestion.reasoning,
-      aiMetadata: aiSuggestion.metadata as any, // Store metadata as JSON
+      aiMetadata: aiSuggestion.metadata as Prisma.JsonValue, // Store metadata as JSON
     },
     include: {
       suggestedCategory: true,
@@ -310,7 +310,7 @@ export async function createAISuggestions(
             suggestedPropertyId: aiSuggestion.suggestedPropertyId || null,
             confidence: aiSuggestion.confidence,
             reasoning: aiSuggestion.reasoning,
-            aiMetadata: aiSuggestion.metadata as any,
+            aiMetadata: aiSuggestion.metadata as Prisma.JsonValue,
           },
           include: {
             suggestedCategory: true,
@@ -329,7 +329,7 @@ export async function createAISuggestions(
             suggestedPropertyId: aiSuggestion.suggestedPropertyId || null,
             confidence: aiSuggestion.confidence,
             reasoning: aiSuggestion.reasoning,
-            aiMetadata: aiSuggestion.metadata as any,
+            aiMetadata: aiSuggestion.metadata as Prisma.JsonValue,
           },
           include: {
             suggestedCategory: true,

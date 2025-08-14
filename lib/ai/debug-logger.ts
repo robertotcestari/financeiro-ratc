@@ -25,7 +25,7 @@ export class OpenAIDebugLogger {
   /**
    * Salva o request completo em arquivo
    */
-  saveRequest(transactionId: string, request: any): string | null {
+  saveRequest(transactionId: string, request: unknown): string | null {
     if (!this.enabled) return null;
     
     try {
@@ -50,7 +50,7 @@ export class OpenAIDebugLogger {
   /**
    * Salva o response completo em arquivo
    */
-  saveResponse(transactionId: string, response: any): string | null {
+  saveResponse(transactionId: string, response: unknown): string | null {
     if (!this.enabled) return null;
     
     try {
@@ -75,7 +75,7 @@ export class OpenAIDebugLogger {
   /**
    * Salva request e response de batch
    */
-  saveBatch(batchId: string, request: any, response: any): void {
+  saveBatch(batchId: string, request: unknown, response: unknown): void {
     if (!this.enabled) return;
     
     try {

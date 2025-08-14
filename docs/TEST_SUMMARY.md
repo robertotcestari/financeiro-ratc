@@ -9,7 +9,9 @@ The test suite includes multiple types of tests covering different aspects of th
 ### 1. Unit Tests (`tests/unit/`)
 
 #### `formatters.test.ts`
+
 Tests the currency and date formatting utilities:
+
 - ✅ Currency formatting with BRL currency
 - ✅ Handling positive/negative values
 - ✅ Thousands separator formatting
@@ -17,7 +19,9 @@ Tests the currency and date formatting utilities:
 - ✅ Edge cases (zero values, leap years)
 
 #### `financial-calculations.test.ts`
+
 Tests financial calculation functions:
+
 - ✅ Running balance calculations
 - ✅ Transaction sorting by date
 - ✅ Decimal precision handling
@@ -28,12 +32,16 @@ Tests financial calculation functions:
 ### 2. Component Tests (`tests/components/`)
 
 #### `button.test.tsx`
+
 Tests the UI Button component:
+
 - ✅ Basic rendering functionality
 - ✅ Accessibility compliance
 
 #### `category-form.test.tsx`
+
 Tests category form functionality:
+
 - ✅ Form field rendering
 - ✅ Initial data handling for editing
 - ✅ Category type options (RECEITA, DESPESA, CONTROLE)
@@ -44,7 +52,9 @@ Tests category form functionality:
 ### 3. Integration Tests (`tests/integration/`)
 
 #### `server-actions.test.ts`
+
 Tests server-side operations:
+
 - ✅ Category CRUD operations (Create, Read, Update, Delete)
 - ✅ Transaction management
 - ✅ Bank account operations
@@ -56,24 +66,28 @@ Tests server-side operations:
 ## Test Coverage Areas
 
 ### Financial Operations
+
 - Currency formatting (Brazilian Real)
 - Balance calculations
 - Transaction processing
 - Financial integrity checks
 
 ### Database Operations
+
 - Category management
 - Transaction CRUD operations
 - Bank account management
 - Data aggregation and reporting
 
 ### User Interface
+
 - Form components
 - Data display components
 - User interactions
 - Accessibility features
 
 ### Business Logic
+
 - DRE (Demonstrativo de Resultado do Exercício) calculations
 - Financial indicators
 - Transaction categorization
@@ -82,18 +96,21 @@ Tests server-side operations:
 ## Key Features Tested
 
 ### Brazilian Financial Context
+
 - BRL currency formatting with proper locale
 - Brazilian date format (DD/MM/YYYY)
 - Real estate rental management
 - Brazilian accounting standards (DRE)
 
 ### Data Integrity
+
 - Transaction balance verification
 - Account reconciliation
 - Financial statement accuracy
 - Category consistency
 
 ### User Experience
+
 - Form validation
 - Error handling
 - Responsive design elements
@@ -126,6 +143,7 @@ npm run test:e2e
 ## Test Configuration
 
 The test setup includes:
+
 - JSDoc environment for React component tests
 - Mock implementations for Prisma database client
 - Next.js specific mocking (cache, server functions)
@@ -134,11 +152,13 @@ The test setup includes:
 ## Mock Strategy
 
 ### Database Mocking
+
 - Prisma client operations are mocked
 - CRUD operations return realistic data structures
 - Error scenarios are properly simulated
 
 ### External Dependencies
+
 - Next.js cache functions
 - File system operations
 - Currency/date formatting libraries
@@ -146,6 +166,7 @@ The test setup includes:
 ## Quality Assurance
 
 The test suite ensures:
+
 - **Functionality**: All core features work as expected
 - **Reliability**: Edge cases and error scenarios are handled
 - **Maintainability**: Tests are well-structured and documented
@@ -155,6 +176,7 @@ The test suite ensures:
 ## Future Test Enhancements
 
 Potential areas for expanded test coverage:
+
 - E2E tests for complete user workflows
 - Performance testing for large datasets
 - Visual regression testing

@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { useState, useTransition, useMemo } from 'react';
+import { useState, useTransition, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import {
   categorizeOneAction,
@@ -476,7 +476,7 @@ export default function TransactionTableV2({
       enableSorting: false,
       size: 120,
     }),
-  ], [categories, properties, editingId, editingCategory, editingProperty, isPending]);
+  ], [editingId, editingCategory, editingProperty, isPending, categoryOptions, propertyOptions, saveEdit, cancelEdit]);
 
   // Table configuration
   const table = useReactTable({
@@ -507,13 +507,13 @@ export default function TransactionTableV2({
     setEditingProperty(transaction.property?.code || '');
   };
 
-  const cancelEdit = () => {
+  const cancelEdit = useCallback(() => {
     setEditingId(null);
     setEditingCategory('');
     setEditingProperty('');
-  };
+  }, []);
 
-  const saveEdit = async () => {
+  const saveEdit = useCallback(async () => {
     if (!editingId || !editingCategory) return;
 
     startTransition(async () => {
@@ -525,7 +525,7 @@ export default function TransactionTableV2({
       });
       cancelEdit();
     });
-  };
+  }, [editingId, editingCategory, editingProperty, properties, cancelEdit]);
 
   const handleMarkReviewed = async (id: string, reviewed: boolean) => {
     startTransition(async () => {

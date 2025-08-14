@@ -1,6 +1,6 @@
 import { prisma } from './client';
 import { Decimal } from '@prisma/client/runtime/library';
-import type { AccountSnapshot, BankAccount } from '../../app/generated/prisma';
+import type { AccountSnapshot } from '../../app/generated/prisma';
 
 /**
  * Interface para resultado de cálculo de snapshot

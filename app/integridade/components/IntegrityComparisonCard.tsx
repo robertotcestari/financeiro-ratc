@@ -13,7 +13,6 @@ interface Props {
 }
 
 export function IntegrityComparisonCard({ 
-  totalTransactions, 
   integrityStats
 }: Props) {
   const processedPercentage = integrityStats.transactionCount > 0 

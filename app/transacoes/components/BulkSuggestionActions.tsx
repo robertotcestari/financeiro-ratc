@@ -65,7 +65,6 @@ export default function BulkSuggestionActions({
   const [showConfirmation, setShowConfirmation] = useState<'apply' | 'dismiss' | null>(null);
 
   // Calculate suggestion statistics
-  const transactionsWithSuggestions = selectedTransactions.filter(t => t.suggestions.length > 0);
   const transactionsWithoutSuggestions = selectedTransactions.filter(t => t.suggestions.length === 0);
   const totalSuggestions = selectedTransactions.reduce((acc, t) => acc + t.suggestions.length, 0);
   const allSuggestionIds = selectedTransactions.flatMap(t => t.suggestions.map(s => s.id));

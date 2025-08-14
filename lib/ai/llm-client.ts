@@ -3,13 +3,7 @@ import { generateObject } from 'ai';
 import { z } from 'zod';
 import { logger, createActionLogger } from '../logger';
 import { openAIDebugLogger } from './debug-logger';
-import type {
-  TransactionContext,
-  CategorySuggestion,
-  AIError,
-  AIResponse,
-  BatchAIResponse,
-} from './types';
+import type { TransactionContext, CategorySuggestion, AIError } from './types';
 
 // Zod schema for AI response validation
 const AIResponseSchema = z.object({
@@ -36,7 +30,7 @@ export interface LLMClient {
     context: TransactionContext,
     systemPrompt: string
   ): Promise<CategorySuggestion>;
-  
+
   categorizeTransactionsBatch(
     contexts: TransactionContext[],
     systemPrompt: string
@@ -56,7 +50,7 @@ export class OpenAILLMClient implements LLMClient {
     this.model = model;
     this.temperature = temperature;
     this.maxRetries = maxRetries;
-    
+
     if (!process.env.OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY environment variable is not set');
     }
@@ -71,17 +65,20 @@ export class OpenAILLMClient implements LLMClient {
       transactionId: context.transactionId,
       model: this.model,
     });
-    
+
     try {
       const userPrompt = this.buildUserPrompt([context]);
-      
-      aiLogger.info('OpenAI request initiated', {
-        model: this.model,
-        temperature: this.temperature,
-        systemPromptLength: systemPrompt.length,
-        userPrompt: userPrompt,
-      });
-      
+
+      aiLogger.info(
+        {
+          model: this.model,
+          temperature: this.temperature,
+          systemPromptLength: systemPrompt.length,
+          userPrompt: userPrompt,
+        },
+        'OpenAI request initiated'
+      );
+
       const result = await this.callLLMWithRetry(async () => {
         const requestPayload = {
           model: openai(this.model),
@@ -90,7 +87,7 @@ export class OpenAILLMClient implements LLMClient {
           prompt: userPrompt,
           schema: AIResponseSchema,
         };
-        
+
         // Salvar request completo para debug
         const fullRequest = {
           model: this.model,
@@ -98,35 +95,41 @@ export class OpenAILLMClient implements LLMClient {
           systemPrompt: systemPrompt,
           userPrompt: userPrompt,
         };
-        
+
         // Salvar em arquivo se debug habilitado
         openAIDebugLogger.saveRequest(context.transactionId, fullRequest);
-        
-        aiLogger.info('📤 OpenAI Request', {
-          model: this.model,
-          temperature: this.temperature,
-          transactionId: context.transactionId,
-          promptSizes: {
-            system: systemPrompt.length,
-            user: userPrompt.length,
+
+        aiLogger.info(
+          {
+            model: this.model,
+            temperature: this.temperature,
+            transactionId: context.transactionId,
+            promptSizes: {
+              system: systemPrompt.length,
+              user: userPrompt.length,
+            },
           },
-        });
-        
+          '📤 OpenAI Request'
+        );
+
         return await generateObject(requestPayload);
       }, aiLogger);
 
       const processingTime = Date.now() - startTime;
-      
+
       // Salvar response completo para debug
       openAIDebugLogger.saveResponse(context.transactionId, result.object);
-      
-      aiLogger.info('📥 OpenAI Response', {
-        processingTime,
-        categoryId: result.object.suggestion.categoryId,
-        categoryName: result.object.suggestion.categoryName,
-        hasProperty: !!result.object.suggestion.propertyId,
-      });
-      
+
+      aiLogger.info(
+        {
+          processingTime,
+          categoryId: result.object.suggestion.categoryId,
+          categoryName: result.object.suggestion.categoryName,
+          hasProperty: !!result.object.suggestion.propertyId,
+        },
+        '📥 OpenAI Response'
+      );
+
       return {
         transactionId: result.object.suggestion.transactionId,
         categoryId: result.object.suggestion.categoryId,
@@ -150,22 +153,28 @@ export class OpenAILLMClient implements LLMClient {
       transactionCount: contexts.length,
       model: this.model,
     });
-    
+
     try {
       const userPrompt = this.buildUserPrompt(contexts);
-      
-      aiLogger.info('OpenAI batch request initiated', {
-        model: this.model,
-        temperature: this.temperature,
-        systemPromptLength: systemPrompt.length,
-        transactionCount: contexts.length,
-      });
-      
-      aiLogger.debug('Request details', {
-        userPrompt,
-        transactionIds: contexts.map(c => c.transactionId),
-      });
-      
+
+      aiLogger.info(
+        {
+          model: this.model,
+          temperature: this.temperature,
+          systemPromptLength: systemPrompt.length,
+          transactionCount: contexts.length,
+        },
+        'OpenAI batch request initiated'
+      );
+
+      aiLogger.debug(
+        {
+          userPrompt,
+          transactionIds: contexts.map((c) => c.transactionId),
+        },
+        'Request details'
+      );
+
       const result = await this.callLLMWithRetry(async () => {
         const requestPayload = {
           model: openai(this.model),
@@ -174,7 +183,7 @@ export class OpenAILLMClient implements LLMClient {
           prompt: userPrompt,
           schema: BatchAIResponseSchema,
         };
-        
+
         // Salvar request batch completo para debug
         const fullBatchRequest = {
           model: this.model,
@@ -183,40 +192,46 @@ export class OpenAILLMClient implements LLMClient {
           userPrompt: userPrompt,
           transactionCount: contexts.length,
         };
-        
+
         // Gerar ID único para o batch
         const batchId = `batch_${Date.now()}`;
-        
-        aiLogger.info('📤 OpenAI Batch Request', {
-          batchId,
-          model: this.model,
-          transactionCount: contexts.length,
-          promptSizes: {
-            system: systemPrompt.length,
-            user: userPrompt.length,
+
+        aiLogger.info(
+          {
+            batchId,
+            model: this.model,
+            transactionCount: contexts.length,
+            promptSizes: {
+              system: systemPrompt.length,
+              user: userPrompt.length,
+            },
           },
-        });
-        
+          '📤 OpenAI Batch Request'
+        );
+
         // Salvar request/response batch para debug
         openAIDebugLogger.saveBatch(batchId, fullBatchRequest, null);
-        
+
         const response = await generateObject(requestPayload);
-        
+
         // Salvar response batch
         openAIDebugLogger.saveBatch(batchId, fullBatchRequest, response.object);
-        
+
         return response;
       }, aiLogger);
-      
+
       const processingTime = Date.now() - startTime;
-      
-      aiLogger.info('📥 OpenAI Batch Response', {
-        batchId: `batch_${Date.now() - processingTime}`, // Mesmo batchId
-        processingTime,
-        suggestionsCount: result.object.suggestions.length,
-        averageTimePerTransaction: processingTime / contexts.length,
-      });
-      
+
+      aiLogger.info(
+        {
+          batchId: `batch_${Date.now() - processingTime}`, // Mesmo batchId
+          processingTime,
+          suggestionsCount: result.object.suggestions.length,
+          averageTimePerTransaction: processingTime / contexts.length,
+        },
+        '📥 OpenAI Batch Response'
+      );
+
       return result.object.suggestions.map((suggestion) => ({
         transactionId: suggestion.suggestion.transactionId,
         categoryId: suggestion.suggestion.categoryId,
@@ -253,39 +268,60 @@ Conta Bancária: ${context.bankAccountName} (${context.bankAccountType})
     aiLogger?: ReturnType<typeof createActionLogger>,
     retryCount: number = 0
   ): Promise<T> {
-    const loggerInstance = aiLogger || logger;
-    
     try {
       return await fn();
-    } catch (error: any) {
-      loggerInstance.error('OpenAI API error', {
+    } catch (error: unknown) {
+      const meta = {
         attempt: retryCount + 1,
         maxRetries: this.maxRetries + 1,
-        errorCode: error?.code,
-        errorMessage: error?.message,
+        errorCode: extractProp<string>(error, 'code'),
+        errorMessage: extractProp<string>(error, 'message'),
         error,
-      });
-      
+      } as const;
+
+      if (aiLogger) {
+        // aiLogger (pino child) accepts (meta, message)
+        aiLogger.error(meta, 'OpenAI API error');
+      } else {
+        // global logger wrapper expects (message, meta)
+        logger.error('OpenAI API error', meta);
+      }
+
       if (retryCount >= this.maxRetries) {
         throw error;
       }
 
       const delay = this.getRetryDelay(retryCount, error);
-      loggerInstance.warn(`Retrying after ${delay}ms delay`, {
+      const warnMeta = {
         retryCount: retryCount + 1,
         delay,
-      });
-      
+      };
+
+      if (aiLogger) {
+        aiLogger.warn(warnMeta, `Retrying after ${delay}ms delay`);
+      } else {
+        logger.warn(`Retrying after ${delay}ms delay`, warnMeta);
+      }
+
       await this.sleep(delay);
-      
+
       return this.callLLMWithRetry(fn, aiLogger, retryCount + 1);
     }
   }
 
-  private getRetryDelay(retryCount: number, error: any): number {
+  private getRetryDelay(retryCount: number, error: unknown): number {
     // Check if error has a specific retry-after header
-    if (error?.headers?.['retry-after']) {
-      return parseInt(error.headers['retry-after']) * 1000;
+    const retryAfter = extractProp<string | number | undefined>(
+      error,
+      'headers'
+    )
+      ? extractNestedProp<string | number | undefined>(error, [
+          'headers',
+          'retry-after',
+        ])
+      : undefined;
+    if (retryAfter) {
+      return parseInt(String(retryAfter)) * 1000;
     }
 
     // Exponential backoff: 1s, 2s, 4s, 8s...
@@ -296,29 +332,38 @@ Conta Bancária: ${context.bankAccountName} (${context.bankAccountType})
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  private handleError(error: any): AIError {
+  private handleError(error: unknown): AIError {
     logger.error('LLM Client Error', { error });
 
-    if (error?.code === 'rate_limit_exceeded') {
+    const code = extractProp<string | undefined>(error, 'code');
+    const message = extractProp<string | undefined>(error, 'message');
+    const retryAfter = extractNestedProp<string | number | undefined>(error, [
+      'headers',
+      'retry-after',
+    ]);
+    const responseStatus = extractNestedProp<number | undefined>(error, [
+      'response',
+      'status',
+    ]);
+
+    if (code === 'rate_limit_exceeded') {
       return {
         code: 'RATE_LIMIT',
         message: 'Rate limit exceeded. Please try again later.',
         retryable: true,
-        retryAfter: error?.headers?.['retry-after'] 
-          ? parseInt(error.headers['retry-after']) 
-          : 60,
+        retryAfter: retryAfter ? parseInt(String(retryAfter)) : 60,
       };
     }
 
-    if (error?.code === 'invalid_request_error') {
+    if (code === 'invalid_request_error') {
       return {
         code: 'VALIDATION_ERROR',
-        message: error.message || 'Invalid request to OpenAI API',
+        message: message || 'Invalid request to OpenAI API',
         retryable: false,
       };
     }
 
-    if (error?.response?.status >= 500) {
+    if ((responseStatus ?? 0) >= 500) {
       return {
         code: 'API_ERROR',
         message: 'OpenAI API error. Please try again later.',
@@ -328,8 +373,32 @@ Conta Bancária: ${context.bankAccountName} (${context.bankAccountType})
 
     return {
       code: 'API_ERROR',
-      message: error.message || 'Unknown error occurred',
+      message: message || 'Unknown error occurred',
       retryable: false,
     };
   }
+}
+
+// Helper: safely extract a top-level property from unknown
+function extractProp<T>(obj: unknown, prop: string): T | undefined {
+  if (
+    obj &&
+    typeof obj === 'object' &&
+    prop in (obj as Record<string, unknown>)
+  ) {
+    return (obj as Record<string, unknown>)[prop] as T;
+  }
+  return undefined;
+}
+
+// Helper: safely extract nested property
+function extractNestedProp<T>(obj: unknown, path: string[]): T | undefined {
+  let current: unknown = obj;
+  for (const key of path) {
+    if (!current || typeof current !== 'object') return undefined;
+    const record = current as Record<string, unknown>;
+    if (!(key in record)) return undefined;
+    current = record[key];
+  }
+  return current as T | undefined;
 }

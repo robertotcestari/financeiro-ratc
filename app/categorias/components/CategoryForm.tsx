@@ -5,7 +5,7 @@ import { Category, CategoryType } from '@/app/generated/prisma'
 import { createCategory, editCategory } from '../actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Combobox, ComboboxOption } from '@/components/ui/combobox'
+import { Combobox } from '@/components/ui/combobox'
 
 interface CategoryWithDetails extends Category {
   parent: Category | null

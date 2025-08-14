@@ -31,10 +31,10 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
   const [newKeyword, setNewKeyword] = useState('');
 
   const criteria = form.watch('criteria') || {};
-  const descriptionCriteria = criteria.description || {};
-  const keywords = descriptionCriteria.keywords || [];
-  const operator = descriptionCriteria.operator || 'or';
-  const caseSensitive = descriptionCriteria.caseSensitive || false;
+  const descriptionCriteria = criteria.description || {} as any;
+  const keywords = (descriptionCriteria.keywords || []) as string[];
+  const operator = (descriptionCriteria.operator || 'or') as 'and' | 'or';
+  const caseSensitive = (descriptionCriteria.caseSensitive || false) as boolean;
   
   // Derive useDescription from the actual form state
   const useDescription = !!(criteria.description && 

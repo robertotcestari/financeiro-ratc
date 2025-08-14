@@ -1,4 +1,4 @@
-import type { Category, Property, ProcessedTransaction } from '@/app/generated/prisma';
+import type { ProcessedTransaction } from '@/app/generated/prisma';
 
 // Transaction context to be sent to LLM
 export interface TransactionContext {

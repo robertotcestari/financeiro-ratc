@@ -40,7 +40,7 @@ export default function DateCriteriaForm({ form }: DateCriteriaFormProps) {
     const newDateCriteria = newCriteria.date || {};
     setUseDayRange(Boolean(newDateCriteria.dayRange));
     setUseMonths(Boolean(newDateCriteria.months && newDateCriteria.months.length > 0));
-  }, [form, criteria]);
+  }, [form]);
 
   const handleDayRangeToggle = (enabled: boolean) => {
     setUseDayRange(enabled);
@@ -153,7 +153,7 @@ export default function DateCriteriaForm({ form }: DateCriteriaFormProps) {
               </div>
               <FormDescription className="text-xs">
                 {dateCriteria.dayRange?.start === dateCriteria.dayRange?.end
-                  ? `Aplicar apenas no dia ${dateCriteria.dayRange.start} de cada mês`
+                  ? `Aplicar apenas no dia ${dateCriteria.dayRange?.start} de cada mês`
                   : `Aplicar do dia ${dateCriteria.dayRange?.start || 1} até o dia ${dateCriteria.dayRange?.end || 31} de cada mês`
                 }
               </FormDescription>

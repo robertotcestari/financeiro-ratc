@@ -6,7 +6,6 @@ import { logger } from '@/lib/logger';
 import type {
   OFXTransaction,
   OFXParseResult,
-  DuplicateDetectionResult,
 } from './types';
 import type { Prisma } from '@/app/generated/prisma';
 import type {
@@ -17,12 +16,8 @@ import type {
   ImportValidationError,
 } from './import-preview';
 import type {
-  BankAccount,
   Transaction,
   ImportBatch,
-  Category,
-  Property,
-  ProcessedTransaction,
 } from '@/app/generated/prisma';
 
 /**
@@ -378,9 +373,7 @@ export class ImportService {
         // Generate final summary
         const summary = this.generateImportSummary(
           preview.transactions,
-          importedTransactions,
-          skippedTransactions,
-          failedTransactions
+          importedTransactions
         );
 
         return {
@@ -576,9 +569,7 @@ export class ImportService {
    */
   private generateImportSummary(
     allTransactions: TransactionPreview[],
-    imported: Transaction[],
-    _skipped: TransactionPreview[],
-    _failed: FailedTransaction[]
+    imported: Transaction[]
   ): ImportSummary {
     const categorizedCount = imported.length; // All imported transactions have some categorization attempt
 

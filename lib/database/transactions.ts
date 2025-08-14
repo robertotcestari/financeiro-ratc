@@ -7,7 +7,6 @@ import type {
   Property,
 } from '../../app/generated/prisma';
 import { CategoryType } from '../../app/generated/prisma';
-import type { Prisma } from '../../app/generated/prisma';
 
 export interface AccountBalanceResult {
   bankAccountId: string;
@@ -201,7 +200,7 @@ export async function getAccountBalances(
  * Valida se transferências somam zero
  * Observação: o modelo Transfer não existe no schema atual. Esta função retorna stub.
  */
-export async function validateTransferBalance(transferId: string): Promise<{
+export async function validateTransferBalance(): Promise<{
   isValid: boolean;
   message: string;
   originAmount: number;

@@ -105,7 +105,7 @@ export class AccountSelectionService {
         isValid: true,
         account,
       };
-    } catch (error) {
+    } catch {
       return {
         isValid: false,
         error: 'Erro ao validar conta bancária',
@@ -166,7 +166,7 @@ export class AccountSelectionService {
         success: true,
         account,
       };
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Erro ao criar nova conta bancária',
@@ -237,7 +237,7 @@ export class AccountSelectionService {
         success: true,
         account: validation.account,
       };
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Erro ao persistir seleção de conta',

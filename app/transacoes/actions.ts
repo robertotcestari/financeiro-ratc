@@ -17,6 +17,7 @@ import {
 } from '@/lib/database/suggestions';
 import { ruleEngine } from '@/lib/database/rule-engine';
 import { AICategorizationService } from '@/lib/ai/categorization-service';
+import { InputJsonValue } from '@prisma/client/runtime/library';
 
 const categorizeOneSchema = z.object({
   id: z.string(),
@@ -314,24 +315,24 @@ export async function applySuggestionsAction(
 
   try {
     const results = await applySuggestions(validated.suggestionIds);
-    
-    const successCount = results.filter(r => r.success).length;
-    const failureCount = results.filter(r => !r.success).length;
+
+    const successCount = results.filter((r) => r.success).length;
+    const failureCount = results.filter((r) => !r.success).length;
 
     try {
       revalidatePath('/transacoes');
     } catch (revalidateError) {
       console.warn('Revalidation error (non-critical):', revalidateError);
     }
-    
-    return { 
-      success: true, 
+
+    return {
+      success: true,
       results,
       summary: {
         total: validated.suggestionIds.length,
         successful: successCount,
-        failed: failureCount
-      }
+        failed: failureCount,
+      },
     };
   } catch (error) {
     console.error('Error in applySuggestionsAction:', error);
@@ -374,24 +375,24 @@ export async function dismissSuggestionsAction(
 
   try {
     const results = await dismissSuggestions(validated.suggestionIds);
-    
-    const successCount = results.filter(r => r.success).length;
-    const failureCount = results.filter(r => !r.success).length;
+
+    const successCount = results.filter((r) => r.success).length;
+    const failureCount = results.filter((r) => !r.success).length;
 
     try {
       revalidatePath('/transacoes');
     } catch (revalidateError) {
       console.warn('Revalidation error (non-critical):', revalidateError);
     }
-    
-    return { 
-      success: true, 
+
+    return {
+      success: true,
       results,
       summary: {
         total: validated.suggestionIds.length,
         successful: successCount,
-        failed: failureCount
-      }
+        failed: failureCount,
+      },
     };
   } catch (error) {
     console.error('Error in dismissSuggestionsAction:', error);
@@ -420,11 +421,11 @@ export async function generateSuggestionsAction(
     } catch (revalidateError) {
       console.warn('Revalidation error (non-critical):', revalidateError);
     }
-    
-    return { 
-      success: true, 
+
+    return {
+      success: true,
       processed: result.processed,
-      suggested: result.suggested
+      suggested: result.suggested,
     };
   } catch (error) {
     console.error('Error in generateSuggestionsAction:', error);
@@ -442,11 +443,17 @@ export async function getSuggestionsAction(
   const validated = getSuggestionsSchema.parse(input);
 
   try {
-    const suggestions = await getSuggestionsForTransaction(validated.transactionId);
+    const suggestions = await getSuggestionsForTransaction(
+      validated.transactionId
+    );
     return { success: true, suggestions };
   } catch (error) {
     console.error('Error in getSuggestionsAction:', error);
-    return { success: false, error: 'Failed to get suggestions', suggestions: [] };
+    return {
+      success: false,
+      error: 'Failed to get suggestions',
+      suggestions: [],
+    };
   }
 }
 
@@ -527,29 +534,50 @@ export async function generateBulkAISuggestionsAction(
     let aiSuggestions;
     try {
       aiSuggestions = await aiService.generateBulkSuggestions(transactions);
-    } catch (aiError: any) {
+    } catch (aiError: unknown) {
       console.error('Error generating AI suggestions:', aiError);
-      
+
       // Check for specific error types
-      if (aiError?.code === 'API_ERROR' || aiError?.message?.includes('API key')) {
-        return { 
-          success: false, 
-          error: 'Erro de configuração: Chave de API do OpenAI inválida ou não configurada. Configure a variável OPENAI_API_KEY no arquivo .env' 
+      const errorMessage =
+        aiError instanceof Error ? aiError.message : String(aiError);
+
+      // Safely extract an optional "code" property without using `any`
+      let errorCode: string | undefined;
+      if (
+        typeof aiError === 'object' &&
+        aiError !== null &&
+        'code' in aiError
+      ) {
+        const possibleCode = (aiError as { code?: unknown }).code;
+        if (typeof possibleCode === 'string') {
+          errorCode = possibleCode;
+        }
+      }
+
+      if (errorCode === 'API_ERROR' || errorMessage.includes('API key')) {
+        return {
+          success: false,
+          error:
+            'Erro de configuração: Chave de API do OpenAI inválida ou não configurada. Configure a variável OPENAI_API_KEY no arquivo .env',
         };
       }
-      
-      return { 
-        success: false, 
-        error: aiError?.message || 'Falha ao gerar sugestões de IA' 
+
+      return {
+        success: false,
+        error:
+          aiError instanceof Error
+            ? aiError.message
+            : 'Falha ao gerar sugestões de IA',
       };
     }
 
     // Check if we got any suggestions
     if (!aiSuggestions || aiSuggestions.length === 0) {
       console.warn('No AI suggestions generated for transactions');
-      return { 
-        success: false, 
-        error: 'Nenhuma sugestão foi gerada. Verifique se a API está configurada corretamente.' 
+      return {
+        success: false,
+        error:
+          'Nenhuma sugestão foi gerada. Verifique se a API está configurada corretamente.',
       };
     }
 
@@ -558,12 +586,13 @@ export async function generateBulkAISuggestionsAction(
       aiSuggestions.map(async (aiSuggestion) => {
         try {
           // Check if a suggestion already exists for this transaction (avoid duplicates)
-          const existingSuggestion = await prisma.transactionSuggestion.findFirst({
-            where: {
-              processedTransactionId: aiSuggestion.processedTransactionId,
-              source: 'AI',
-            },
-          });
+          const existingSuggestion =
+            await prisma.transactionSuggestion.findFirst({
+              where: {
+                processedTransactionId: aiSuggestion.processedTransactionId,
+                source: 'AI',
+              },
+            });
 
           if (existingSuggestion) {
             // Update existing AI suggestion
@@ -574,7 +603,7 @@ export async function generateBulkAISuggestionsAction(
                 suggestedPropertyId: aiSuggestion.suggestedPropertyId,
                 confidence: aiSuggestion.confidence,
                 reasoning: aiSuggestion.reasoning,
-                aiMetadata: aiSuggestion.metadata as any,
+                aiMetadata: aiSuggestion.metadata as InputJsonValue,
               },
             });
           } else {
@@ -587,8 +616,7 @@ export async function generateBulkAISuggestionsAction(
                 suggestedCategoryId: aiSuggestion.suggestedCategoryId,
                 suggestedPropertyId: aiSuggestion.suggestedPropertyId,
                 confidence: aiSuggestion.confidence,
-                reasoning: aiSuggestion.reasoning,
-                aiMetadata: aiSuggestion.metadata as any,
+                aiMetadata: aiSuggestion.metadata as InputJsonValue,
               },
             });
           }
@@ -599,7 +627,7 @@ export async function generateBulkAISuggestionsAction(
       })
     );
 
-    const successfulSuggestions = createdSuggestions.filter(s => s !== null);
+    const successfulSuggestions = createdSuggestions.filter((s) => s !== null);
 
     try {
       revalidatePath('/transacoes');

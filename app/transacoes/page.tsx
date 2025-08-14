@@ -37,6 +37,7 @@ interface SearchParams {
   ano?: string;
   status?: string;
   sugestoes?: string;
+  busca?: string;
   page?: string;
 }
 
@@ -55,6 +56,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
     'ano',
     'status',
     'sugestoes',
+    'busca',
   ];
   
   // Verifica se há parâmetros de filtro definidos
@@ -137,30 +139,83 @@ export default async function TransacoesPage({ searchParams }: Props) {
     where.year = parseInt(effectiveFilters.ano);
   }
 
+  // Construir filtros AND e OR separadamente
+  const andConditions: Prisma.ProcessedTransactionWhereInput[] = [];
+  const orConditions: Prisma.ProcessedTransactionWhereInput[] = [];
+
   // Filtro de Status (Pendentes = isReviewed=false OR categoryId IS NULL OR transactionId IS NULL)
   if (effectiveFilters.status === 'pendentes') {
-    where.OR = [
+    orConditions.push(
       { isReviewed: false },
       { categoryId: null },
-      { transactionId: null },
-    ];
+      { transactionId: null }
+    );
   } else if (effectiveFilters.status === 'revisados') {
-    where.isReviewed = true;
+    andConditions.push({ isReviewed: true });
   }
 
   // Filtro de Sugestões
   if (effectiveFilters.sugestoes === 'com-sugestoes') {
-    where.suggestions = {
-      some: {
-        isApplied: false,
+    andConditions.push({
+      suggestions: {
+        some: {
+          isApplied: false,
+        },
       },
-    };
+    });
   } else if (effectiveFilters.sugestoes === 'aplicado-via-regra') {
-    where.suggestions = {
-      some: {
-        isApplied: true,
+    andConditions.push({
+      suggestions: {
+        some: {
+          isApplied: true,
+        },
       },
+    });
+  }
+
+  // Filtro de Busca Textual
+  if (effectiveFilters.busca) {
+    const searchTerm = effectiveFilters.busca.trim();
+    const searchConditions = {
+      OR: [
+        { 
+          transaction: { 
+            description: { 
+              contains: searchTerm
+            } 
+          } 
+        },
+        { 
+          details: { 
+            contains: searchTerm
+          } 
+        },
+        { 
+          notes: { 
+            contains: searchTerm
+          } 
+        }
+      ]
     };
+
+    // Se houver filtro de status pendentes, combinar com AND
+    if (effectiveFilters.status === 'pendentes') {
+      where.AND = [
+        { OR: orConditions },
+        searchConditions
+      ];
+    } else {
+      andConditions.push(searchConditions);
+    }
+  } else if (orConditions.length > 0) {
+    where.OR = orConditions;
+  }
+
+  // Aplicar condições AND se não houver conflito com busca e status pendentes
+  if (andConditions.length > 0 && !effectiveFilters.busca) {
+    where.AND = andConditions;
+  } else if (andConditions.length > 0 && effectiveFilters.busca && effectiveFilters.status !== 'pendentes') {
+    where.AND = andConditions;
   }
 
   // Buscar transações processadas com paginação

@@ -27,6 +27,10 @@
     "node_modules",
     "vitest.setup.ts",
     "vitest.config.mts",
-    "e2e/**/*"
+    "e2e/**/*",
+    "tests/**/*",
+    "scripts/**/*",
+    "prisma/seed.ts",
+    "prisma/seeder"
   ]
 }

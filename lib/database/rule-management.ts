@@ -3,7 +3,6 @@ import type {
   CategorizationRule, 
   Category,
   Property,
-  BankAccount,
   Prisma
 } from '../../app/generated/prisma';
 import { RuleCriteria, validateRuleCriteria } from './rule-types';

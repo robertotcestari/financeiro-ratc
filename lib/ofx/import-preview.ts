@@ -719,8 +719,7 @@ export class ImportPreviewService {
    */
   private determineRecommendedAction(
     isValid: boolean,
-    duplicateMatches: DuplicateMatch[],
-    _categorization: TransactionCategorization
+    duplicateMatches: DuplicateMatch[]
   ): TransactionAction {
     if (!isValid) {
       return 'review';

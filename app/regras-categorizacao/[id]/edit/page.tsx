@@ -4,7 +4,7 @@ import { prisma } from '@/lib/database/client';
 import RuleEditPage from './components/RuleEditPage';
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 async function getFormData() {
@@ -46,7 +46,8 @@ async function getFormData() {
 }
 
 export default async function EditRulePage({ params }: Props) {
-  const ruleResult = await getRuleAction(params.id);
+  const { id } = await params;
+  const ruleResult = await getRuleAction(id);
   
   if (!ruleResult.success || !ruleResult.data) {
     notFound();

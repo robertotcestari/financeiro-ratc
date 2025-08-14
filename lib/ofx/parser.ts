@@ -3,7 +3,6 @@ import {
   OFXValidationResult,
   OFXFormatDetectionResult,
   OFXVersion,
-  OFXFormat,
   ParseError,
   OFXAccount,
   OFXTransaction,
@@ -64,8 +63,7 @@ export class OFXParserService {
       // Associate transactions with their accounts
       this.associateTransactionsWithAccounts(
         result.accounts,
-        result.transactions,
-        content
+        result.transactions
       );
 
       return result;
@@ -227,7 +225,6 @@ export class OFXParserService {
   private isValidXML(content: string): boolean {
     try {
       // Check for basic XML structure
-      const hasXMLDeclaration = content.trim().startsWith('<?xml');
       const hasMatchingTags = this.hasMatchingXMLTags(content);
       const hasValidCharacters = !/[<>&](?![a-zA-Z0-9#])/g.test(
         content.replace(/<[^>]*>/g, '')
@@ -1114,8 +1111,7 @@ export class OFXParserService {
    */
   private associateTransactionsWithAccounts(
     accounts: OFXAccount[],
-    transactions: OFXTransaction[],
-    content: string
+    transactions: OFXTransaction[]
   ): void {
     // For each account, find its associated transactions
     accounts.forEach((account) => {

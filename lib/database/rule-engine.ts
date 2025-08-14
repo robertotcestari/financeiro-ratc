@@ -340,10 +340,9 @@ export class RuleEngine {
           });
 
           if (created) suggested += 1;
-        } catch (e) {
+        } catch {
           // Partial failure: continue with others
           // Optional: log error
-          // console.warn('Suggestion generation failed for tx', tx.id, e);
         }
       }
     }

@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
-import { ChevronLeft, ChevronRight, FileText, CheckCircle, Lightbulb, Zap } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText, CheckCircle, Lightbulb, Zap, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 interface Category {
   id: string;
@@ -29,6 +30,7 @@ interface Props {
     ano?: string;
     status?: string;
     sugestoes?: string;
+    busca?: string;
     page?: string;
   };
 }
@@ -53,6 +55,7 @@ export default function TransactionFilters({
     ano: searchParams.ano || defaultYear.toString(),
     status: searchParams.status || '',
     sugestoes: searchParams.sugestoes || '',
+    busca: searchParams.busca || '',
   });
 
   const currentYear = new Date().getFullYear();
@@ -102,6 +105,7 @@ export default function TransactionFilters({
       ano: currentYear.toString(),
       status: '',
       sugestoes: '',
+      busca: '',
     });
     router.push('/transacoes');
   };
@@ -120,7 +124,8 @@ export default function TransactionFilters({
       filters.mes === inboxMonth.toString() &&
       filters.ano === inboxYear.toString() &&
       filters.status === '' &&
-      filters.sugestoes === ''
+      filters.sugestoes === '' &&
+      filters.busca === ''
     );
   };
 
@@ -132,7 +137,8 @@ export default function TransactionFilters({
       filters.mes === '' &&
       filters.ano === currentYear.toString() &&
       filters.status === '' &&
-      filters.sugestoes === ''
+      filters.sugestoes === '' &&
+      filters.busca === ''
     );
   };
 
@@ -361,8 +367,22 @@ export default function TransactionFilters({
         </div>
       </div>
 
+      {/* Campo de busca */}
+      <div className="mt-4 mb-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            type="text"
+            value={filters.busca}
+            onChange={(e) => updateFilter('busca', e.target.value)}
+            placeholder="Buscar por descrição, detalhes ou notas..."
+            className="pl-10 pr-4 h-10 w-full"
+          />
+        </div>
+      </div>
+
       {/* Grid de filtros */}
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {/* Filtro de Categoria */}
         <div>
           <label className="block text-xs font-medium text-gray-600 mb-2">

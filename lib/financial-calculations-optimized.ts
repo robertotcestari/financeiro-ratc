@@ -1,7 +1,6 @@
 import { prisma } from './database/client';
 import { Decimal } from '@prisma/client/runtime/library';
 import {
-  getLatestSnapshot,
   createOrUpdateSnapshot,
 } from './database/account-snapshots';
 import type { BankAccount } from '../app/generated/prisma';

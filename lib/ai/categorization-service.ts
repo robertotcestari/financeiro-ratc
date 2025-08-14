@@ -10,9 +10,7 @@ import type {
   AISuggestionData,
   ProcessedTransactionWithContext,
   CategorySuggestion,
-  AIMetadata,
 } from './types';
-import type { ProcessedTransaction, SuggestionSource } from '@/app/generated/prisma';
 
 export class AICategorizationService {
   private llmClient: OpenAILLMClient;
@@ -33,10 +31,12 @@ export class AICategorizationService {
       const startTime = Date.now();
 
       // Prepare context for LLM
-      const context = await this.prepareTransactionContext(processedTransaction);
+      const context = await this.prepareTransactionContext(
+        processedTransaction
+      );
       if (!context) {
-        logger.error('Could not prepare transaction context', { 
-          transactionId: processedTransaction.id 
+        logger.error('Could not prepare transaction context', {
+          transactionId: processedTransaction.id,
         });
         return null;
       }
@@ -64,9 +64,9 @@ export class AICategorizationService {
       // Validate suggestion
       const validatedSuggestion = await this.validateSuggestion(suggestion);
       if (!validatedSuggestion) {
-        logger.error('Invalid suggestion from LLM', { 
+        logger.error('Invalid suggestion from LLM', {
           transactionId: processedTransaction.id,
-          suggestion 
+          suggestion,
         });
         return null;
       }
@@ -89,9 +89,9 @@ export class AICategorizationService {
 
       return aiSuggestion;
     } catch (error) {
-      logger.error('Error generating AI suggestion', { 
+      logger.error('Error generating AI suggestion', {
         transactionId: processedTransaction.id,
-        error 
+        error,
       });
       return null;
     }
@@ -103,103 +103,119 @@ export class AICategorizationService {
   async generateBulkSuggestions(
     processedTransactions: ProcessedTransactionWithContext[]
   ): Promise<AISuggestionData[]> {
-      const bulkLogger = createActionLogger('ai-bulk-categorization', {
-        totalTransactions: processedTransactions.length,
-        model: this.modelName,
-      });
-      
-      bulkLogger.info('Starting bulk AI suggestions generation');
-      
-      const startTime = Date.now();
-      const suggestions: AISuggestionData[] = [];
+    const bulkLogger = createActionLogger('ai-bulk-categorization', {
+      totalTransactions: processedTransactions.length,
+      model: this.modelName,
+    });
 
-      // Process in batches of 500 to optimize API calls
-      const batchSize = 500;
-      for (let i = 0; i < processedTransactions.length; i += batchSize) {
-        const batch = processedTransactions.slice(i, i + batchSize);
-        
-        // Prepare contexts for batch
-        const batchNumber = Math.floor(i / batchSize) + 1;
-        const totalBatches = Math.ceil(processedTransactions.length / batchSize);
-        
-        bulkLogger.info(`Processing batch ${batchNumber}/${totalBatches}`, {
+    bulkLogger.info('Starting bulk AI suggestions generation');
+
+    const startTime = Date.now();
+    const suggestions: AISuggestionData[] = [];
+
+    // Process in batches of 500 to optimize API calls
+    const batchSize = 500;
+    for (let i = 0; i < processedTransactions.length; i += batchSize) {
+      const batch = processedTransactions.slice(i, i + batchSize);
+
+      // Prepare contexts for batch
+      const batchNumber = Math.floor(i / batchSize) + 1;
+      const totalBatches = Math.ceil(processedTransactions.length / batchSize);
+
+      bulkLogger.info(
+        {
           batchSize: batch.length,
           startIndex: i,
-        });
-        
-        const contexts = await Promise.all(
-          batch.map(t => this.prepareTransactionContext(t))
+        },
+        `Processing batch ${batchNumber}/${totalBatches}`
+      );
+
+      const contexts = await Promise.all(
+        batch.map((t) => this.prepareTransactionContext(t))
+      );
+
+      const validContexts = contexts.filter(
+        (c) => c !== null
+      ) as TransactionContext[];
+      if (validContexts.length === 0) {
+        bulkLogger.warn(
+          {
+            batchNumber,
+          },
+          'No valid contexts in batch, skipping'
         );
-        
-        const validContexts = contexts.filter(c => c !== null) as TransactionContext[];
-        if (validContexts.length === 0) {
-          bulkLogger.warn('No valid contexts in batch, skipping', { 
-            batchNumber 
-          });
-          continue;
-        }
-        
-        bulkLogger.debug('Batch contexts prepared', {
+        continue;
+      }
+
+      bulkLogger.debug(
+        {
           batchNumber,
           validContexts: validContexts.length,
           invalidContexts: batch.length - validContexts.length,
-        });
+        },
+        'Batch contexts prepared'
+      );
 
-        // Get categories and properties (once per batch)
-        const categories = await this.getCategories();
-        const properties = await this.getProperties();
-        
-        // Get historical patterns for each transaction
-        const historicalPatterns = await this.getAggregatedHistoricalPatterns(
-          validContexts.map(c => c.description)
+      // Get categories and properties (once per batch)
+      const categories = await this.getCategories();
+      const properties = await this.getProperties();
+
+      // Get historical patterns for each transaction
+      const historicalPatterns = await this.getAggregatedHistoricalPatterns(
+        validContexts.map((c) => c.description)
+      );
+
+      // Build batch prompt
+      const systemPrompt = PromptBuilder.buildBatchPrompt(
+        categories,
+        properties,
+        historicalPatterns,
+        validContexts.length
+      );
+
+      // Call LLM for batch
+      const batchSuggestions = await this.llmClient.categorizeTransactionsBatch(
+        validContexts,
+        systemPrompt
+      );
+
+      const processingTime = Date.now() - startTime;
+
+      // Process and validate each suggestion
+      for (const suggestion of batchSuggestions) {
+        // Find the matching transaction by ID
+        const matchingTransaction = batch.find(
+          (t) => t.id === suggestion.transactionId
         );
-
-        // Build batch prompt
-        const systemPrompt = PromptBuilder.buildBatchPrompt(
-          categories,
-          properties,
-          historicalPatterns,
-          validContexts.length
-        );
-
-        // Call LLM for batch
-        const batchSuggestions = await this.llmClient.categorizeTransactionsBatch(
-          validContexts,
-          systemPrompt
-        );
-
-        const processingTime = Date.now() - startTime;
-
-        // Process and validate each suggestion
-        for (const suggestion of batchSuggestions) {
-          // Find the matching transaction by ID
-          const matchingTransaction = batch.find(t => t.id === suggestion.transactionId);
-          if (!matchingTransaction) {
-            bulkLogger.error('No matching transaction found', { 
-              suggestionTransactionId: suggestion.transactionId 
-            });
-            continue;
-          }
-
-          const validatedSuggestion = await this.validateSuggestion(suggestion);
-          if (!validatedSuggestion) continue;
-
-          suggestions.push({
-            processedTransactionId: matchingTransaction.id,
-            suggestedCategoryId: validatedSuggestion.categoryId,
-            suggestedPropertyId: validatedSuggestion.propertyId,
-            confidence: validatedSuggestion.confidence || 0.8,
-            reasoning: validatedSuggestion.reasoning,
-            metadata: {
-              modelUsed: this.modelName,
-              processingTime: processingTime / batch.length, // Average per transaction
-              timestamp: new Date(),
+        if (!matchingTransaction) {
+          bulkLogger.error(
+            {
+              suggestionTransactionId: suggestion.transactionId,
             },
-          });
+            'No matching transaction found'
+          );
+          continue;
         }
-      }
 
-      return suggestions;
+        const validatedSuggestion = await this.validateSuggestion(suggestion);
+        if (!validatedSuggestion) continue;
+
+        suggestions.push({
+          processedTransactionId: matchingTransaction.id,
+          suggestedCategoryId: validatedSuggestion.categoryId,
+          suggestedPropertyId: validatedSuggestion.propertyId,
+          confidence: validatedSuggestion.confidence || 0.8,
+          reasoning: validatedSuggestion.reasoning,
+          metadata: {
+            modelUsed: this.modelName,
+            processingTime: processingTime / batch.length, // Average per transaction
+            timestamp: new Date(),
+          },
+        });
+      }
+    }
+
+    return suggestions;
   }
 
   /**
@@ -211,7 +227,7 @@ export class AICategorizationService {
     try {
       // Get transaction details if not already loaded
       let transaction = processedTransaction.transaction;
-      
+
       if (!transaction) {
         const fullTransaction = await prisma.processedTransaction.findUnique({
           where: { id: processedTransaction.id },
@@ -253,9 +269,9 @@ export class AICategorizationService {
         availableProperties: properties,
       };
     } catch (error) {
-      logger.error('Error preparing transaction context', { 
+      logger.error('Error preparing transaction context', {
         transactionId: processedTransaction.id,
-        error 
+        error,
       });
       return null;
     }
@@ -269,14 +285,10 @@ export class AICategorizationService {
       include: {
         parent: true,
       },
-      orderBy: [
-        { level: 'asc' },
-        { orderIndex: 'asc' },
-        { name: 'asc' },
-      ],
+      orderBy: [{ level: 'asc' }, { orderIndex: 'asc' }, { name: 'asc' }],
     });
 
-    return categories.map(cat => ({
+    return categories.map((cat) => ({
       id: cat.id,
       name: cat.name,
       type: cat.type,
@@ -291,13 +303,10 @@ export class AICategorizationService {
   private async getProperties(): Promise<PropertyInfo[]> {
     const properties = await prisma.property.findMany({
       where: { isActive: true },
-      orderBy: [
-        { city: 'asc' },
-        { code: 'asc' },
-      ],
+      orderBy: [{ city: 'asc' }, { code: 'asc' }],
     });
 
-    return properties.map(prop => ({
+    return properties.map((prop) => ({
       id: prop.id,
       code: prop.code,
       city: prop.city,
@@ -312,34 +321,51 @@ export class AICategorizationService {
     description: string
   ): Promise<HistoricalPattern[]> {
     // Extract meaningful keywords from description (ignoring common words)
-    const stopWords = ['de', 'da', 'do', 'para', 'com', 'em', 'no', 'na', 'por', 'ref', 'ltda', 'ltd', 's.a', 'sa', 'me', 'epp'];
-    
+    const stopWords = [
+      'de',
+      'da',
+      'do',
+      'para',
+      'com',
+      'em',
+      'no',
+      'na',
+      'por',
+      'ref',
+      'ltda',
+      'ltd',
+      's.a',
+      'sa',
+      'me',
+      'epp',
+    ];
+
     // Normalizar descrição
     const normalizedDesc = description
       .toLowerCase()
       .replace(/[^a-z0-9\s\-]/g, ' ') // Remove caracteres especiais
       .replace(/\s+/g, ' ') // Normaliza espaços
       .trim();
-    
+
     // Extrair diferentes tipos de palavras-chave
     const words = normalizedDesc.split(/[\s\-\/]+/);
-    
+
     // 1. CNPJ (14 dígitos)
-    const cnpjPattern = words.find(w => /^\d{14}$/.test(w));
-    
+    const cnpjPattern = words.find((w) => /^\d{14}$/.test(w));
+
     // 2. Palavras significativas (excluindo stopwords e números muito longos)
     const significantWords = words
-      .filter(w => w.length > 3 && !stopWords.includes(w) && !/^\d+$/.test(w))
+      .filter((w) => w.length > 3 && !stopWords.includes(w) && !/^\d+$/.test(w))
       .slice(0, 5); // Pegar até 5 palavras importantes
-    
+
     // 3. Primeira palavra significativa (geralmente indica o tipo de transação)
     const firstKeyword = significantWords[0];
-    
+
     if (significantWords.length === 0 && !cnpjPattern) return [];
 
     // Construir condições de busca mais inteligentes
     const conditions = [];
-    
+
     // Prioridade 1: CNPJ exato (se existir)
     if (cnpjPattern) {
       conditions.push({
@@ -350,7 +376,7 @@ export class AICategorizationService {
         },
       });
     }
-    
+
     // Prioridade 2: Primeira palavra-chave (tipo de transação)
     if (firstKeyword) {
       conditions.push({
@@ -361,7 +387,7 @@ export class AICategorizationService {
         },
       });
     }
-    
+
     // Prioridade 3: Outras palavras significativas
     for (const keyword of significantWords.slice(1, 4)) {
       conditions.push({
@@ -396,12 +422,14 @@ export class AICategorizationService {
 
     // Group by pattern
     const patternMap = new Map<string, HistoricalPattern>();
-    
-    similarTransactions.forEach(trans => {
+
+    similarTransactions.forEach((trans) => {
       if (!trans.transaction || !trans.category) return;
-      
-      const key = `${trans.transaction.description}_${trans.category.name}_${trans.property?.code || ''}`;
-      
+
+      const key = `${trans.transaction.description}_${trans.category.name}_${
+        trans.property?.code || ''
+      }`;
+
       if (patternMap.has(key)) {
         const pattern = patternMap.get(key)!;
         pattern.frequency++;
@@ -427,7 +455,7 @@ export class AICategorizationService {
     descriptions: string[]
   ): Promise<HistoricalPattern[]> {
     const allPatterns: HistoricalPattern[] = [];
-    
+
     for (const description of descriptions) {
       const patterns = await this.getHistoricalPatterns(description);
       allPatterns.push(...patterns);
@@ -435,10 +463,12 @@ export class AICategorizationService {
 
     // Aggregate and deduplicate
     const patternMap = new Map<string, HistoricalPattern>();
-    
-    allPatterns.forEach(pattern => {
-      const key = `${pattern.description}_${pattern.categoryName}_${pattern.propertyCode || ''}`;
-      
+
+    allPatterns.forEach((pattern) => {
+      const key = `${pattern.description}_${pattern.categoryName}_${
+        pattern.propertyCode || ''
+      }`;
+
       if (patternMap.has(key)) {
         const existing = patternMap.get(key)!;
         existing.frequency += pattern.frequency;
@@ -466,13 +496,13 @@ export class AICategorizationService {
 
       if (!category) {
         const sampleCategories = await prisma.category.findMany({ take: 5 });
-        
-        logger.error('Invalid category ID from AI', { 
+
+        logger.error('Invalid category ID from AI', {
           invalidCategoryId: suggestion.categoryId,
-          sampleValidIds: sampleCategories.map(c => c.id),
+          sampleValidIds: sampleCategories.map((c) => c.id),
           transactionId: suggestion.transactionId,
         });
-        
+
         return null;
       }
 
@@ -483,10 +513,13 @@ export class AICategorizationService {
         });
 
         if (!property) {
-          logger.warn('Invalid property ID from AI, continuing without property', { 
-            invalidPropertyId: suggestion.propertyId,
-            transactionId: suggestion.transactionId,
-          });
+          logger.warn(
+            'Invalid property ID from AI, continuing without property',
+            {
+              invalidPropertyId: suggestion.propertyId,
+              transactionId: suggestion.transactionId,
+            }
+          );
           // Continue without property instead of failing
           suggestion.propertyId = undefined;
           suggestion.propertyCode = undefined;
@@ -495,9 +528,9 @@ export class AICategorizationService {
 
       return suggestion;
     } catch (error) {
-      logger.error('Error validating suggestion', { 
+      logger.error('Error validating suggestion', {
         suggestion,
-        error 
+        error,
       });
       return null;
     }
