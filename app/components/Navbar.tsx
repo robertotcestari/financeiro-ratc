@@ -29,11 +29,11 @@ const navigation = [
 ];
 
 const categorizationOptions = [
-  { name: 'Categorias', href: '/categorias', icon: Tag },
   { name: 'Regras', href: '/regras-categorizacao', icon: Settings },
 ];
 
 const registrationOptions = [
+  { name: 'Categorias', href: '/categorias', icon: Tag },
   { name: 'Contas Bancárias', href: '/cadastros/contas', icon: CreditCard },
   { name: 'Cidades', href: '/cidades', icon: MapPin },
   { name: 'Imóveis', href: '/imoveis', icon: Building2 },
@@ -93,9 +93,9 @@ export default function Navbar() {
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                   <div className="py-1">
-                    {/* Categorias Section */}
+                    {/* Categorização Section */}
                     <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Categorias
+                      Categorização
                     </div>
                     {categorizationOptions.map((item) => {
                       const Icon = item.icon;
@@ -117,9 +117,9 @@ export default function Navbar() {
                         </Link>
                       );
                     })}
-                    
+
                     <Separator className="my-2" />
-                    
+
                     {/* Cadastro Section */}
                     <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                       Cadastro
@@ -219,9 +219,9 @@ export default function Navbar() {
 
               {isDropdownOpen && (
                 <div className="mt-2 space-y-1">
-                  {/* Categorias Section */}
+                  {/* Categorização Section */}
                   <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Categorias
+                    Categorização
                   </div>
                   {categorizationOptions.map((item) => {
                     const Icon = item.icon;
@@ -246,11 +246,11 @@ export default function Navbar() {
                       </Link>
                     );
                   })}
-                  
+
                   <div className="px-8">
                     <Separator className="my-2" />
                   </div>
-                  
+
                   {/* Cadastro Section */}
                   <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Cadastro

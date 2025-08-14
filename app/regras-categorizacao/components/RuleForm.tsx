@@ -16,16 +16,24 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Button as UIButton } from '@/components/ui/button';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Loader2 } from 'lucide-react';
+import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import type { CreateRuleRequest, UpdateRuleRequest, RuleWithRelations } from '@/lib/database/rule-management';
 import type { RuleCriteria } from '@/lib/database/rule-types';
 import type { FormData } from './CreateRuleDialog';
@@ -176,22 +184,59 @@ export default function RuleForm({ rule, formData, onSubmit, isSubmitting, onCan
               control={form.control}
               name="categoryId"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Categoria *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma categoria" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {'  '.repeat(category.level - 1)}{category.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <UIButton
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "justify-between",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? categories.find(
+                                (category) => category.id === field.value
+                              )?.name
+                            : "Selecione uma categoria"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </UIButton>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Buscar categoria..." />
+                        <CommandList>
+                          <CommandEmpty>Nenhuma categoria encontrada.</CommandEmpty>
+                          <CommandGroup>
+                            {categories.map((category) => (
+                              <CommandItem
+                                key={category.id}
+                                value={category.name}
+                                onSelect={() => {
+                                  form.setValue("categoryId", category.id);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    category.id === field.value
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {'  '.repeat(category.level - 1)}{category.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   <FormMessage />
                 </FormItem>
               )}
@@ -201,24 +246,77 @@ export default function RuleForm({ rule, formData, onSubmit, isSubmitting, onCan
               control={form.control}
               name="propertyId"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Propriedade</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma propriedade (opcional)" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="none">Nenhuma propriedade</SelectItem>
-                      {properties.map((property) => (
-                        <SelectItem key={property.id} value={property.id}>
-                          {property.code}
-                          {property.description && ` - ${property.description}`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <UIButton
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "justify-between",
+                            !field.value || field.value === "none" ? "text-muted-foreground" : ""
+                          )}
+                        >
+                          {field.value && field.value !== "none"
+                            ? (() => {
+                                const property = properties.find(p => p.id === field.value);
+                                return property ? `${property.code}${property.description ? ` - ${property.description}` : ''}` : "Nenhuma propriedade";
+                              })()
+                            : "Nenhuma propriedade"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </UIButton>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Buscar propriedade..." />
+                        <CommandList>
+                          <CommandEmpty>Nenhuma propriedade encontrada.</CommandEmpty>
+                          <CommandGroup>
+                            <CommandItem
+                              value="none"
+                              onSelect={() => {
+                                form.setValue("propertyId", "none");
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  field.value === "none" || !field.value
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              Nenhuma propriedade
+                            </CommandItem>
+                            {properties.map((property) => (
+                              <CommandItem
+                                key={property.id}
+                                value={`${property.code} ${property.description || ''}`}
+                                onSelect={() => {
+                                  form.setValue("propertyId", property.id);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    property.id === field.value
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {property.code}
+                                {property.description && ` - ${property.description}`}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   <FormDescription>
                     Propriedade opcional a ser associada às transações que atendem esta regra.
                   </FormDescription>

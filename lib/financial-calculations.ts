@@ -4,9 +4,12 @@ import { Decimal } from '@prisma/client/runtime/library'
 /**
  * Calculate running balance for transactions
  * Returns transactions with calculated balance field
+ * @param transactions - Array of transactions to calculate balance for
+ * @param initialBalance - Optional initial balance to start from (default: 0)
  */
 export function calculateRunningBalance<T extends { date: Date; amount: Decimal }>(
-  transactions: T[]
+  transactions: T[],
+  initialBalance: number = 0
 ): (T & { balance: number })[] {
   if (transactions.length === 0) return []
 
@@ -15,7 +18,7 @@ export function calculateRunningBalance<T extends { date: Date; amount: Decimal 
     a.date.getTime() - b.date.getTime()
   )
 
-  let runningBalance = new Decimal(0)
+  let runningBalance = new Decimal(initialBalance)
   
   return sortedTransactions.map((transaction) => {
     runningBalance = runningBalance.plus(transaction.amount)

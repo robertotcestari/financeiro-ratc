@@ -36,6 +36,7 @@ interface ComboboxProps {
   allowClear?: boolean
   clearLabel?: string
   compact?: boolean
+  'data-testid'?: string
 }
 
 export function Combobox({
@@ -49,7 +50,8 @@ export function Combobox({
   disabled = false,
   allowClear = true,
   clearLabel = 'Todos',
-  compact = false
+  compact = false,
+  'data-testid': dataTestId
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
 
@@ -68,6 +70,7 @@ export function Combobox({
             className
           )}
           disabled={disabled}
+          data-testid={dataTestId}
         >
           <span className={cn('truncate', compact ? 'text-xs' : '')}>
             {selectedOption ? selectedOption.label : (value === '' && allowClear ? clearLabel : placeholder)}

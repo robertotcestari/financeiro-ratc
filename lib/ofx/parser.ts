@@ -16,6 +16,32 @@ export class OFXParserService {
   async parseFile(file: File): Promise<OFXParseResult> {
     try {
       const content = await this.readFileContent(file);
+      return this.parseOfxString(content);
+    } catch (error) {
+      return {
+        success: false,
+        version: '1.x',
+        format: 'SGML',
+        accounts: [],
+        transactions: [],
+        errors: [
+          {
+            type: 'FILE_FORMAT',
+            code: 'FILE_READ_ERROR',
+            message: `Failed to read file: ${
+              error instanceof Error ? error.message : 'Unknown error'
+            }`,
+          },
+        ],
+      };
+    }
+  }
+
+  /**
+   * Parse OFX content from a string
+   */
+  async parseOfxString(content: string): Promise<OFXParseResult> {
+    try {
       const validation = this.validateFormat(content);
 
       if (!validation.isValid) {
@@ -53,8 +79,8 @@ export class OFXParserService {
         errors: [
           {
             type: 'FILE_FORMAT',
-            code: 'FILE_READ_ERROR',
-            message: `Failed to read file: ${
+            code: 'PARSE_ERROR',
+            message: `Failed to parse OFX content: ${
               error instanceof Error ? error.message : 'Unknown error'
             }`,
           },

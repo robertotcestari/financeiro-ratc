@@ -2,7 +2,9 @@ import { prisma } from './client';
 import type {
   TransactionSuggestion,
   CategorizationRule,
+  SuggestionSource,
 } from '../../app/generated/prisma';
+import type { AISuggestionData } from '../ai/types';
 
 /**
  * Return all suggestions for a given processed transaction, including related info.
@@ -61,7 +63,11 @@ export async function setBestSuggestionForTransaction(params: {
     // If there is already an applied suggestion for this rule/transaction, do not create a duplicate
     const existingApplied = await tx.transactionSuggestion.findUnique({
       where: {
-        processedTransactionId_ruleId: { processedTransactionId, ruleId },
+        processedTransactionId_ruleId_source: { 
+          processedTransactionId, 
+          ruleId,
+          source: 'RULE' 
+        },
       },
     });
 
@@ -72,7 +78,11 @@ export async function setBestSuggestionForTransaction(params: {
     // Create or update (in case a not-yet-deleted unique record exists)
     const created = await tx.transactionSuggestion.upsert({
       where: {
-        processedTransactionId_ruleId: { processedTransactionId, ruleId },
+        processedTransactionId_ruleId_source: { 
+          processedTransactionId, 
+          ruleId,
+          source: 'RULE'
+        },
       },
       create: {
         processedTransactionId,
@@ -80,6 +90,7 @@ export async function setBestSuggestionForTransaction(params: {
         suggestedCategoryId: suggestedCategoryId ?? null,
         suggestedPropertyId: suggestedPropertyId ?? null,
         confidence,
+        source: 'RULE',
       },
       update: {
         suggestedCategoryId: suggestedCategoryId ?? null,
@@ -244,4 +255,123 @@ export async function dismissSuggestions(
   }
   
   return results;
+}
+
+/**
+ * Create an AI-generated suggestion
+ * Since AI suggestions don't have a rule, we handle them specially
+ */
+export async function createAISuggestion(
+  aiSuggestion: AISuggestionData
+): Promise<TransactionSuggestion> {
+  return prisma.transactionSuggestion.create({
+    data: {
+      processedTransactionId: aiSuggestion.processedTransactionId,
+      source: 'AI' as SuggestionSource,
+      ruleId: null, // AI suggestions don't have rules
+      suggestedCategoryId: aiSuggestion.suggestedCategoryId,
+      suggestedPropertyId: aiSuggestion.suggestedPropertyId || null,
+      confidence: aiSuggestion.confidence,
+      reasoning: aiSuggestion.reasoning,
+      aiMetadata: aiSuggestion.metadata as any, // Store metadata as JSON
+    },
+    include: {
+      suggestedCategory: true,
+      suggestedProperty: true,
+    },
+  });
+}
+
+/**
+ * Create multiple AI suggestions in batch
+ */
+export async function createAISuggestions(
+  aiSuggestions: AISuggestionData[]
+): Promise<TransactionSuggestion[]> {
+  const createdSuggestions: TransactionSuggestion[] = [];
+
+  // Use transaction for batch creation
+  await prisma.$transaction(async (tx) => {
+    for (const aiSuggestion of aiSuggestions) {
+      // Check if there's already an AI suggestion for this transaction
+      const existing = await tx.transactionSuggestion.findFirst({
+        where: {
+          processedTransactionId: aiSuggestion.processedTransactionId,
+          source: 'AI' as SuggestionSource,
+        },
+      });
+
+      if (existing) {
+        // Update existing AI suggestion
+        const updated = await tx.transactionSuggestion.update({
+          where: { id: existing.id },
+          data: {
+            suggestedCategoryId: aiSuggestion.suggestedCategoryId,
+            suggestedPropertyId: aiSuggestion.suggestedPropertyId || null,
+            confidence: aiSuggestion.confidence,
+            reasoning: aiSuggestion.reasoning,
+            aiMetadata: aiSuggestion.metadata as any,
+          },
+          include: {
+            suggestedCategory: true,
+            suggestedProperty: true,
+          },
+        });
+        createdSuggestions.push(updated);
+      } else {
+        // Create new AI suggestion
+        const created = await tx.transactionSuggestion.create({
+          data: {
+            processedTransactionId: aiSuggestion.processedTransactionId,
+            source: 'AI' as SuggestionSource,
+            ruleId: null,
+            suggestedCategoryId: aiSuggestion.suggestedCategoryId,
+            suggestedPropertyId: aiSuggestion.suggestedPropertyId || null,
+            confidence: aiSuggestion.confidence,
+            reasoning: aiSuggestion.reasoning,
+            aiMetadata: aiSuggestion.metadata as any,
+          },
+          include: {
+            suggestedCategory: true,
+            suggestedProperty: true,
+          },
+        });
+        createdSuggestions.push(created);
+      }
+    }
+  });
+
+  return createdSuggestions;
+}
+
+/**
+ * Get all suggestions (both rule-based and AI) for a transaction
+ */
+export async function getAllSuggestionsForTransaction(
+  processedTransactionId: string
+): Promise<{
+  ruleSuggestions: TransactionSuggestion[];
+  aiSuggestions: TransactionSuggestion[];
+}> {
+  const allSuggestions = await prisma.transactionSuggestion.findMany({
+    where: { processedTransactionId },
+    include: {
+      rule: true,
+      suggestedCategory: true,
+      suggestedProperty: true,
+    },
+    orderBy: [
+      { source: 'asc' }, // AI first, then RULE
+      { confidence: 'desc' },
+      { createdAt: 'desc' },
+    ],
+  });
+
+  const ruleSuggestions = allSuggestions.filter(s => s.source === 'RULE');
+  const aiSuggestions = allSuggestions.filter(s => s.source === 'AI');
+
+  return {
+    ruleSuggestions,
+    aiSuggestions,
+  };
 }

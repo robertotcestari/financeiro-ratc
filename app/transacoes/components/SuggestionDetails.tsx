@@ -4,18 +4,19 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Lightbulb, Calendar, User, Building, TrendingUp } from 'lucide-react';
+import { Lightbulb, Calendar, User, Building, TrendingUp, Bot } from 'lucide-react';
 import { formatDate } from '@/lib/formatters';
 
 interface Suggestion {
   id: string;
   confidence: number;
   createdAt: Date;
-  rule: {
+  source?: 'RULE' | 'AI';
+  rule?: {
     id: string;
     name: string;
     description?: string;
-  };
+  } | null;
   suggestedCategory: {
     id: string;
     name: string;
@@ -85,25 +86,39 @@ export default function SuggestionDetails({ suggestion }: Props) {
     <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-base">
-          <Lightbulb className="h-4 w-4 text-yellow-500" />
-          Detalhes da Sugestão
+          {suggestion.source === 'AI' ? (
+            <Bot className="h-4 w-4 text-blue-500" />
+          ) : (
+            <Lightbulb className="h-4 w-4 text-yellow-500" />
+          )}
+          {suggestion.source === 'AI' ? 'Sugestão IA' : 'Detalhes da Sugestão'}
         </CardTitle>
       </CardHeader>
       
       <CardContent className="space-y-4">
-        {/* Rule Information */}
+        {/* Rule or Source Information */}
         <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <User className="h-4 w-4 text-gray-500" />
-            <span className="text-sm font-medium">Regra:</span>
-            <span className="text-sm">{suggestion.rule.name}</span>
-          </div>
-          
-          {suggestion.rule.description && (
-            <p className="text-sm text-gray-600 ml-6">
-              {suggestion.rule.description}
-            </p>
-          )}
+          {suggestion.source === 'AI' ? (
+            <div className="flex items-center gap-2">
+              <Bot className="h-4 w-4 text-gray-500" />
+              <span className="text-sm font-medium">Fonte:</span>
+              <span className="text-sm">Inteligência Artificial</span>
+            </div>
+          ) : suggestion.rule ? (
+            <>
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4 text-gray-500" />
+                <span className="text-sm font-medium">Regra:</span>
+                <span className="text-sm">{suggestion.rule.name}</span>
+              </div>
+              
+              {suggestion.rule.description && (
+                <p className="text-sm text-gray-600 ml-6">
+                  {suggestion.rule.description}
+                </p>
+              )}
+            </>
+          ) : null}
         </div>
 
         {/* Confidence Score */}

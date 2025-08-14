@@ -107,7 +107,7 @@ export default function BancosError({ error, reset }: ErrorProps) {
               Alternativas disponíveis:
             </h4>
             <ul className="text-sm text-green-700 space-y-1">
-              <li>• Acesse transações diretamente pela seção "Transações"</li>
+              <li>• Acesse transações diretamente pela seção &quot;Transações&quot;</li>
               <li>• Use a importação OFX para adicionar novas transações</li>
               <li>• Verifique a integridade dos dados</li>
               <li>• Consulte o DRE para visão consolidada</li>

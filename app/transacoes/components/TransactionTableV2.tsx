@@ -3,16 +3,19 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { useState, useTransition, useMemo } from 'react';
+import { toast } from 'sonner';
 import {
   categorizeOneAction,
   bulkCategorizeAction,
   markReviewedAction,
   generateSuggestionsAction,
   applySuggestionsAction,
+  generateBulkAISuggestionsAction,
 } from '../actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
+import { Loader2 } from 'lucide-react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -116,6 +119,7 @@ export default function TransactionTableV2({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingCategory, setEditingCategory] = useState<string>('');
@@ -572,6 +576,38 @@ export default function TransactionTableV2({
     });
   };
 
+  const handleGenerateAISuggestions = async () => {
+    const selectedIds = Object.keys(rowSelection);
+    if (selectedIds.length === 0) return;
+
+    setIsGeneratingAI(true);
+    toast.info(`Enviando ${selectedIds.length} transações para análise de IA...`, {
+      duration: 10000,
+      id: 'ai-generating',
+    });
+
+    try {
+      const result = await generateBulkAISuggestionsAction({ transactionIds: selectedIds });
+      if (result.success) {
+        toast.success(result.message || `${result.suggested} sugestões criadas para ${result.processed} transações`, {
+          id: 'ai-generating',
+        });
+        setRowSelection({});
+      } else {
+        toast.error(result.error || "Ocorreu um erro ao gerar as sugestões de IA", {
+          id: 'ai-generating',
+        });
+      }
+    } catch (error) {
+      console.error('Error generating AI suggestions:', error);
+      toast.error("Ocorreu um erro inesperado. Verifique o console para mais detalhes.", {
+        id: 'ai-generating',
+      });
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
+
   const handleApplySuggestions = async () => {
     const selectedRows = table.getSelectedRowModel().rows;
     const suggestionIds = selectedRows
@@ -613,17 +649,34 @@ export default function TransactionTableV2({
 
               <Button
                 onClick={handleGenerateSuggestions}
-                disabled={isPending}
+                disabled={isPending || isGeneratingAI}
                 variant="default"
                 size="sm"
               >
                 Gerar Sugestões ({Object.keys(rowSelection).length})
               </Button>
 
+              <Button
+                onClick={handleGenerateAISuggestions}
+                disabled={isPending || isGeneratingAI}
+                variant="default"
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+              >
+                {isGeneratingAI ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    Processando...
+                  </>
+                ) : (
+                  <>Gerar Sugestões IA ({Object.keys(rowSelection).length})</>
+                )}
+              </Button>
+
               {selectedWithSuggestions.length > 0 && (
                 <Button
                   onClick={handleApplySuggestions}
-                  disabled={isPending}
+                  disabled={isPending || isGeneratingAI}
                   variant="default"
                   size="sm"
                   className="bg-yellow-600 hover:bg-yellow-700"
@@ -656,7 +709,7 @@ export default function TransactionTableV2({
 
               <Button
                 onClick={handleBulkCategorize}
-                disabled={!bulkCategory || isPending}
+                disabled={!bulkCategory || isPending || isGeneratingAI}
                 variant="default"
                 size="sm"
               >
@@ -665,7 +718,7 @@ export default function TransactionTableV2({
 
               <Button
                 onClick={handleBulkMarkReviewed}
-                disabled={isPending}
+                disabled={isPending || isGeneratingAI}
                 variant="default"
                 size="sm"
                 className="bg-green-600 hover:bg-green-700"

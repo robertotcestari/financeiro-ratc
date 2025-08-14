@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import { Category, CategoryType } from '@/app/generated/prisma'
 import { createCategory, editCategory } from '../actions'
 import { Button } from '@/components/ui/button'
@@ -31,13 +31,6 @@ export default function CategoryForm({ category, categories, onCancel }: Categor
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const nameInputRef = useRef<HTMLInputElement>(null)
-
-  useEffect(() => {
-    if (nameInputRef.current) {
-      nameInputRef.current.focus()
-    }
-  }, [])
 
   const categoryTypes = [
     { value: CategoryType.INCOME, label: 'Receita' },
@@ -125,7 +118,7 @@ export default function CategoryForm({ category, categories, onCancel }: Categor
           <Input
             type="text"
             id="name"
-            ref={nameInputRef}
+            ref={(input) => input?.focus()}
             value={formData.name}
             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
             required

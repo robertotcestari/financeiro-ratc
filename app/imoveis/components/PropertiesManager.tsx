@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Property, City } from '@/app/generated/prisma';
 import PropertyForm from './PropertyForm';
 import PropertyList from './PropertyList';
@@ -17,15 +17,9 @@ export default function PropertiesManager({
   initialCities,
 }: PropertiesManagerProps) {
   const [properties, setProperties] = useState<Property[]>(initialProperties);
-  const [cities, setCities] = useState<City[]>(initialCities);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setProperties(initialProperties);
-    setCities(initialCities);
-  }, [initialProperties, initialCities]);
 
   const handleCreateProperty = async (
     propertyData: Omit<Property, 'id' | 'createdAt' | 'updatedAt'>
@@ -108,7 +102,7 @@ export default function PropertiesManager({
           <div className="mb-8">
             <PropertyForm
               property={editingProperty}
-              cities={cities}
+              cities={initialCities}
               onSubmit={
                 editingProperty
                   ? (data) => handleUpdateProperty(editingProperty.id, data)

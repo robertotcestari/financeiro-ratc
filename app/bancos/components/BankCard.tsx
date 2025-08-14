@@ -81,47 +81,22 @@ export function BankCard({ bank }: BankCardProps) {
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Total de transações:</span>
+            <span className="text-sm text-muted-foreground">
+              Total de transações:
+            </span>
             <span className="text-sm font-medium">
               {bank.totalTransactions}
             </span>
           </div>
 
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Última transação:</span>
+            <span className="text-sm text-muted-foreground">
+              Última transação:
+            </span>
             <span className="text-sm">
               {formatLastDate(bank.lastTransactionDate)}
             </span>
           </div>
-
-          {bank.transactions.length > 0 && (
-            <div className="mt-4 pt-4 border-t">
-              <h4 className="text-sm font-medium mb-2">
-                Transações recentes:
-              </h4>
-              <div className="space-y-1">
-                {bank.transactions.slice(0, 3).map((transaction) => (
-                  <div
-                    key={transaction.id}
-                    className="flex justify-between items-center text-xs"
-                  >
-                    <span className="text-muted-foreground truncate max-w-[150px]">
-                      {transaction.description}
-                    </span>
-                    <span
-                      className={
-                        transaction.amount >= 0
-                          ? 'text-green-600'
-                          : 'text-red-600'
-                      }
-                    >
-                      {formatCurrency(transaction.amount)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
     </Link>

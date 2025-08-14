@@ -33,52 +33,51 @@ function makeAccount(
 
 describe('AccountSelection UI', () => {
   const accounts: MinimalBankAccount[] = [
-    // Intentionally unsorted to verify sorting (active desc, bank asc, name asc)
     makeAccount('3', 'Conta B', 'Banco B', 'SAVINGS', true),
     makeAccount('1', 'Conta A Inativa', 'Banco A', 'CHECKING', false),
     makeAccount('2', 'Conta A', 'Banco A', 'CHECKING', true),
     makeAccount('4', 'Conta C', 'Banco A', 'INVESTMENT', true),
   ];
 
-  it('renders dropdown with sorted accounts and confirms selection', async () => {
+  it('renders combobox and confirms selection', async () => {
     const onConfirm = vi.fn();
     render(
       <AccountSelection
         initialAccounts={accounts}
         onConfirm={onConfirm}
-        onCreateNewAccount={async () => ({ success: false, error: 'noop' })}
       />
     );
 
-    // Select element present
-    const select = screen.getByTestId('account-select') as HTMLSelectElement;
-    expect(select).toBeInTheDocument();
+    // Combobox trigger button present
+    const trigger = screen.getByTestId('account-select');
+    expect(trigger).toBeInTheDocument();
+    expect(trigger).toHaveRole('combobox');
+    
+    // Should show placeholder initially
+    expect(trigger).toHaveTextContent('Selecione uma conta...');
 
-    // First option is placeholder
-    const options = within(select).getAllByRole('option');
-    expect(options[0]).toHaveTextContent('-- Selecione --');
-
-    // Verify sorting and labels (inactive marked, bank • name (type))
-    const labels = options.slice(1).map((o) => o.textContent?.trim());
-    expect(labels).toEqual([
-      // Active first: Banco A (name asc), then Banco B
-      'Banco A • Conta A (CHECKING)',
-      'Banco A • Conta C (INVESTMENT)',
-      'Banco B • Conta B (SAVINGS)',
-      // Inactive last with [Inativa]
-      '[Inativa] Banco A • Conta A Inativa (CHECKING)',
-    ]);
-
-    // Confirm without selection shows error
     const confirmBtn = screen.getByTestId('confirm-selection');
-    fireEvent.click(confirmBtn);
-    expect(await screen.findByTestId('selection-error')).toHaveTextContent(
-      /selecione uma conta/i
-    );
-    expect(onConfirm).not.toHaveBeenCalled();
+    
+    // Initially button should be disabled when no selection
+    expect(confirmBtn).toBeDisabled();
 
-    // Select a valid account and confirm
-    fireEvent.change(select, { target: { value: '2' } });
+    // Open the combobox
+    fireEvent.click(trigger);
+    
+    // Wait for the popover to appear and select an account
+    // Note: Only active accounts are shown
+    const option = await screen.findByText('Banco A • Conta A (CHECKING)');
+    fireEvent.click(option);
+
+    // Verify the selection was made
+    await waitFor(() => {
+      expect(trigger).toHaveTextContent('Banco A • Conta A (CHECKING)');
+    });
+    
+    // Button should now be enabled
+    expect(confirmBtn).not.toBeDisabled();
+
+    // Confirm the selection
     fireEvent.click(confirmBtn);
 
     await waitFor(() => {
@@ -87,23 +86,35 @@ describe('AccountSelection UI', () => {
     });
   });
 
-  it('filters accounts with search input', () => {
+  it('filters accounts with search in combobox', async () => {
     render(
       <AccountSelection
         initialAccounts={accounts}
-        onCreateNewAccount={async () => ({ success: false, error: 'noop' })}
       />
     );
 
-    const search = screen.getByTestId('account-search') as HTMLInputElement;
-    fireEvent.change(search, { target: { value: 'Banco B' } });
+    const trigger = screen.getByTestId('account-select');
+    
+    // Open the combobox
+    fireEvent.click(trigger);
+    
+    // Initially all active accounts should be visible
+    expect(await screen.findByText('Banco A • Conta A (CHECKING)')).toBeInTheDocument();
+    expect(screen.queryByText('Banco A • Conta C (INVESTMENT)')).toBeInTheDocument();
+    expect(screen.queryByText('Banco B • Conta B (SAVINGS)')).toBeInTheDocument();
+    
+    // Find the search input inside the popover and search for "SAVINGS"
+    const searchInput = screen.getByPlaceholderText('Buscar conta...');
+    fireEvent.change(searchInput, { target: { value: 'SAVINGS' } });
 
-    const select = screen.getByTestId('account-select');
-    const options = within(select).getAllByRole('option');
-
-    // Placeholder + 1 filtered option
-    expect(options.length).toBe(2);
-    expect(options[1]).toHaveTextContent('Banco B • Conta B (SAVINGS)');
+    // Wait for filtering to take effect
+    await waitFor(() => {
+      // Should show only the SAVINGS account
+      expect(screen.queryByText('Banco B • Conta B (SAVINGS)')).toBeInTheDocument();
+      // These should be filtered out
+      expect(screen.queryByText('Banco A • Conta A (CHECKING)')).not.toBeInTheDocument();
+      expect(screen.queryByText('Banco A • Conta C (INVESTMENT)')).not.toBeInTheDocument();
+    });
   });
 
   it('validates selection using onValidateSelection and shows error on invalid', async () => {
@@ -118,13 +129,17 @@ describe('AccountSelection UI', () => {
         initialAccounts={accounts}
         onConfirm={onConfirm}
         onValidateSelection={onValidateSelection}
-        onCreateNewAccount={async () => ({ success: false, error: 'noop' })}
       />
     );
 
-    const select = screen.getByTestId('account-select') as HTMLSelectElement;
-    fireEvent.change(select, { target: { value: '2' } });
+    const trigger = screen.getByTestId('account-select');
+    
+    // Open combobox and select an account
+    fireEvent.click(trigger);
+    const option = await screen.findByText('Banco A • Conta A (CHECKING)');
+    fireEvent.click(option);
 
+    // Try to confirm
     fireEvent.click(screen.getByTestId('confirm-selection'));
 
     expect(await screen.findByTestId('selection-error')).toHaveTextContent(
@@ -134,107 +149,19 @@ describe('AccountSelection UI', () => {
     expect(onConfirm).not.toHaveBeenCalled();
   });
 
-  it('prefills defaultSelectedId when provided', () => {
+  it('prefills defaultSelectedId when provided', async () => {
     render(
       <AccountSelection
         initialAccounts={accounts}
         defaultSelectedId="3"
-        onCreateNewAccount={async () => ({ success: false, error: 'noop' })}
       />
     );
 
-    const select = screen.getByTestId('account-select') as HTMLSelectElement;
-    expect(select.value).toBe('3');
-  });
-
-  it('toggles and submits "Create New Account" inline form successfully', async () => {
-    const newAccount = makeAccount(
-      '10',
-      'Nova Conta',
-      'Banco Z',
-      'CHECKING',
-      true
-    );
-
-    const onCreateNewAccount = vi.fn().mockResolvedValue({
-      success: true,
-      account: newAccount,
-    });
-
-    render(
-      <AccountSelection
-        initialAccounts={accounts}
-        onCreateNewAccount={onCreateNewAccount}
-      />
-    );
-
-    // Open create form
-    const toggle = screen.getByTestId('toggle-create');
-    fireEvent.click(toggle);
-    expect(screen.getByTestId('create-form')).toBeInTheDocument();
-
-    // Fill fields
-    fireEvent.change(screen.getByTestId('create-name'), {
-      target: { value: 'Nova Conta' },
-    });
-    fireEvent.change(screen.getByTestId('create-bank'), {
-      target: { value: 'Banco Z' },
-    });
-    fireEvent.change(screen.getByTestId('create-type'), {
-      target: { value: 'CHECKING' },
-    });
-    // leave active checked
-
-    // Submit
-    fireEvent.click(screen.getByTestId('create-submit'));
-
+    const trigger = screen.getByTestId('account-select');
+    
+    // Should show the pre-selected account
     await waitFor(() => {
-      expect(onCreateNewAccount).toHaveBeenCalledTimes(1);
+      expect(trigger).toHaveTextContent('Banco B • Conta B (SAVINGS)');
     });
-
-    // After creation, form closes and the new account is selected in the dropdown
-    await waitFor(() => {
-      const select = screen.getByTestId('account-select') as HTMLSelectElement;
-      expect(select.value).toBe('10');
-    });
-  });
-
-  it('shows error when creating new account fails', async () => {
-    const onCreateNewAccount = vi
-      .fn()
-      .mockResolvedValue({ success: false, error: 'Já existe uma conta' });
-
-    render(
-      <AccountSelection
-        initialAccounts={accounts}
-        onCreateNewAccount={onCreateNewAccount}
-      />
-    );
-
-    // Open create form
-    fireEvent.click(screen.getByTestId('toggle-create'));
-
-    // Submit with missing fields to trigger client validation
-    fireEvent.click(screen.getByTestId('create-submit'));
-    expect(await screen.findByTestId('create-error')).toHaveTextContent(
-      /nome e banco são obrigatórios/i
-    );
-
-    // Fill minimal valid data then submit to trigger server error
-    fireEvent.change(screen.getByTestId('create-name'), {
-      target: { value: 'Nova Conta' },
-    });
-    fireEvent.change(screen.getByTestId('create-bank'), {
-      target: { value: 'Banco Z' },
-    });
-    fireEvent.change(screen.getByTestId('create-type'), {
-      target: { value: 'CHECKING' },
-    });
-
-    fireEvent.click(screen.getByTestId('create-submit'));
-
-    expect(await screen.findByTestId('create-error')).toHaveTextContent(
-      /já existe uma conta/i
-    );
   });
 });

@@ -45,14 +45,6 @@ interface AICategorization Service {
   generateBulkSuggestions(transactions: ProcessedTransaction[]): Promise<AISuggestion[]>
 }
 
-interface AISuggestion {
-  id: string
-  transactionId: string
-  suggestedCategoryId: string
-  reasoning: string
-  source: 'ai'
-  createdAt: Date
-}
 ```
 
 ### 2. LLM Integration Layer (`lib/ai/llm-client.ts`)
@@ -75,10 +67,12 @@ interface TransactionContext {
   date: Date;
   accountType: string;
   availableCategories: Category[];
+  availableProperties: Property[];
 }
 
 interface CategorySuggestion {
   categoryId: string;
+  propertyId?: string;
   reasoning: string;
   confidence?: number; // Optional for future use
 }
@@ -93,6 +87,8 @@ The AI must return responses in this specific JSON format:
   "suggestion": {
     "categoryId": "string",
     "categoryName": "string",
+    "propertyId": "string", // Optional - property ID if applicable
+    "propertyCode": "string", // Optional - property code if applicable
     "reasoning": "string"
   },
   "metadata": {
@@ -108,62 +104,68 @@ The AI must return responses in this specific JSON format:
 {
   "suggestion": {
     "categoryId": "cat_123",
-    "categoryName": "Alimentação",
-    "reasoning": "Transaction description 'SUPERMERCADO XYZ' indicates a grocery store purchase, which falls under the food/grocery category."
+    "categoryName": "Condomínios",
+    "propertyId": "prop_456",
+    "propertyCode": "CAT - Rua Brasil 123",
+    "reasoning": "Transaction description 'CONDOMINIO ED BRASIL' indicates a condominium payment for the property at Rua Brasil, categorized under property expenses."
   },
   "metadata": {
     "processingTime": 1250,
-    "modelUsed": "gpt-4"
+    "modelUsed": "gpt-5-mini"
   }
 }
 ```
 
 ### 3. Enhanced Suggestion Interface
 
-Extends existing suggestion components to handle AI suggestions.
+The existing `TransactionSuggestion` model will be extended to support AI suggestions alongside rule-based suggestions.
 
 ```typescript
-interface EnhancedSuggestion extends Suggestion {
-  source: 'rule' | 'ai';
-  reasoning?: string;
-  aiMetadata?: {
+// AI suggestions will be differentiated from rule-based suggestions
+// We'll track the source and metadata separately
+interface AISuggestionData {
+  processedTransactionId: string;
+  suggestedCategoryId: string;
+  suggestedPropertyId?: string;
+  confidence: number;
+  reasoning: string;
+  metadata: {
     modelUsed: string;
     processingTime: number;
-    tokensUsed: number;
+    tokensUsed?: number;
   };
 }
 ```
 
 ## Data Models
 
-### Database Schema Extensions
+### Database Integration Approach
 
-Minimal extensions to existing Prisma schema:
+The AI categorizer will use the existing `TransactionSuggestion` model. Since AI suggestions don't have a rule, we'll need to handle them separately:
 
-```prisma
-model Suggestion {
-  id          String   @id @default(cuid())
-  transactionId String
-  categoryId  String
-  source      SuggestionSource @default(RULE)
-  reasoning   String?
-  confidence  Float?
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+1. **TransactionSuggestion Table**:
 
-  transaction ProcessedTransaction @relation(fields: [transactionId], references: [id])
-  category    Category @relation(fields: [categoryId], references: [id])
+   - AI suggestions will be stored alongside rule-based suggestions
+   - The `ruleId` field will be handled differently for AI suggestions
+   - Both `suggestedCategoryId` and `suggestedPropertyId` are supported
+   - The `confidence` field stores AI confidence scores
 
-  @@map("suggestions")
-}
+2. **Separate AI Suggestion Tracking**:
+   - Store AI metadata (model, reasoning, processing time) in a separate service layer
+   - Track AI suggestions vs rule-based suggestions through application logic
+   - Display different icons in UI based on suggestion source
 
-enum SuggestionSource {
-  RULE
-  AI
-}
-
-
+```typescript
+// Example: Creating an AI suggestion
+// Since TransactionSuggestion requires a ruleId, we'll need to
+// either create a placeholder rule or modify the handling
+const aiSuggestion = {
+  processedTransactionId: transaction.id,
+  suggestedCategoryId: aiResponse.categoryId,
+  suggestedPropertyId: aiResponse.propertyId, // Optional
+  confidence: aiResponse.confidence || 0.8,
+  // Handle ruleId requirement - to be determined based on schema constraints
+};
 ```
 
 ## Error Handling
@@ -200,77 +202,67 @@ interface ErrorHandling {
 1. Set up AI SDK with OpenAI provider
 2. Implement basic LLM client for single transaction categorization
 3. Create AI categorization service with simple prompting
-4. Extend suggestion model to support AI source
+4. Implement AI suggestion storage strategy alongside existing TransactionSuggestion model
 
 ### Phase 2: User Interface Integration
 
 1. Modify existing suggestion components to display AI suggestions
-2. Add reasoning display for AI suggestions
-3. Implement approval/rejection tracking
-4. Create combined view for rule + AI suggestions
-
-### Phase 3: Learning System
-
-1. Implement historical pattern storage
-2. Add learning from user interactions
-3. Enhance prompts with historical context
-4. Create batch processing for improved efficiency
-
-### Phase 4: Optimization and Monitoring
-
-1. Add performance monitoring and metrics
-2. Implement caching for similar transactions
-3. Add configuration options for different LLM providers
-4. Create admin interface for AI system insights
-
-## Security Considerations
-
-### Data Privacy
-
-- **Transaction Data**: Ensure transaction descriptions are sanitized before sending to external LLM providers
-- **PII Handling**: Implement detection and masking of personally identifiable information
-- **Data Retention**: Follow data retention policies for AI learning data
-
-### API Security
-
-- **API Keys**: Secure storage and rotation of LLM provider API keys
-- **Rate Limiting**: Implement client-side rate limiting to prevent abuse
-- **Request Logging**: Log AI requests for audit and debugging purposes
-
-### Access Control
-
-- **Feature Flags**: Implement feature flags to enable/disable AI suggestions
-- **User Permissions**: Respect existing user permissions for category access
-- **Audit Trail**: Maintain audit trail of AI suggestions and user interactions
-
-## Performance Considerations
+2. AI Suggestions must have a different icon from regular suggestions.
+3. Add reasoning display for AI suggestions
+4. Implement approval/rejection tracking
+5. Create combined view for rule + AI suggestions
 
 ### Optimization Strategies
 
 - **Batch Processing**: Process multiple transactions in single LLM calls when possible
-- **Caching**: Cache suggestions for identical transaction descriptions
-- **Async Processing**: Process AI suggestions asynchronously to avoid blocking imports
-- **Smart Queuing**: Prioritize recent transactions for faster user feedback
 
-### Resource Management
+# Prompt
 
-- **Token Usage**: Monitor and optimize LLM token consumption
-- **Memory Management**: Efficient handling of large transaction batches
-- **Database Optimization**: Index suggestions table for fast retrieval
-- **Background Processing**: Use background jobs for learning system updates
+```
+const systemPrompt = `Você é um assistente especializado em categorizar transações financeiras de uma imobiliária.
 
-## Monitoring and Analytics
+CATEGORIAS DISPONÍVEIS:
+${categorias.map(c => `- ${c.id}: ${c.name}`).join('\n')}
 
-### Key Metrics
+PROPRIEDADES DISPONÍVEIS:
+${propriedades.map(p => `- ID: ${p.id} | Código: ${p.code} | ${p.address}`).join('\n')}
 
-- **Suggestion Accuracy**: Track approval/rejection rates for AI suggestions
-- **Processing Time**: Monitor time taken for suggestion generation
-- **Token Usage**: Track LLM API usage and costs
-- **User Adoption**: Measure usage of AI vs rule-based suggestions
+TRANSAÇÕES ANTERIORES SIMILARES:
+${historico.slice(-10).map(h =>
+ `- "${h.description}" → Categoria: ${h.categoryName}${h.propertyCode ? `, Propriedade: ${h.propertyCode}` : ''}`
+).join('\n')}
 
-### Alerting
+TRANSAÇÕES PARA CATEGORIZAR:
+${transacoes.map((t, index) => `
+[${index + 1}]
+Descrição: ${t.description}
+Valor: R$ ${t.amount}
+Data: ${t.date}
+Conta Bancária: ${t.bankAccount}
+`).join('\n')}
 
-- **High Error Rates**: Alert when AI suggestion generation fails frequently
-- **Performance Degradation**: Monitor response times and alert on slowdowns
-- **Cost Monitoring**: Alert when LLM usage exceeds budget thresholds
-- **Data Quality**: Monitor for unusual patterns in suggestions or approvals
+INSTRUÇÕES:
+
+1. Identifique a categoria mais apropriada baseando-se na descrição
+2. Se a transação se refere a uma propriedade específica, identifique-a pelo código ou endereço mencionado
+3. Transações de aluguel, condomínio e IPTU DEVEM OBRIGATORIAMENTE ter uma propriedade associada
+4. Despesas administrativas gerais podem não ter propriedade específica
+5. Use o histórico como referência para padrões similares
+
+Retorne APENAS um JSON válido com um array contendo a categorização de CADA transação na mesma ordem:
+[
+{
+"suggestion": {
+"categoryId": "id_da_categoria",
+"categoryName": "nome_da_categoria",
+"propertyId": "id_da_propriedade_ou_null",
+"propertyCode": "codigo_da_propriedade_ou_null",
+"reasoning": "breve explicação da categorização"
+},
+"metadata": {
+"processingTime": 0,
+"modelUsed": "gpt-5-mini"
+}
+}
+]`;
+```

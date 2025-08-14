@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Property, City } from '@/app/generated/prisma'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -13,28 +13,24 @@ interface PropertyFormProps {
 }
 
 export default function PropertyForm({ property, cities, onSubmit, onCancel }: PropertyFormProps) {
-  const [formData, setFormData] = useState({
+  const initialFormData = property ? {
+    code: property.code,
+    city: property.city,
+    cityId: property.cityId || '',
+    address: property.address,
+    description: property.description || '',
+    isActive: property.isActive
+  } : {
     code: '',
     city: '',
     cityId: '',
     address: '',
     description: '',
     isActive: true
-  })
+  }
+  
+  const [formData, setFormData] = useState(initialFormData)
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (property) {
-      setFormData({
-        code: property.code,
-        city: property.city,
-        cityId: property.cityId || '',
-        address: property.address,
-        description: property.description || '',
-        isActive: property.isActive
-      })
-    }
-  }, [property])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

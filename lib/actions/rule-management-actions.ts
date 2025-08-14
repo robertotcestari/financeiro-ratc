@@ -16,18 +16,26 @@ import {
 } from '../database/rule-testing';
 import { ruleEngine } from '../database/rule-engine';
 import type { RuleCriteria } from '../database/rule-types';
+import { createActionLogger } from '../logger';
 
 // =============== Rule CRUD Actions ===============
 
 export async function createRuleAction(
   params: CreateRuleRequest
 ): Promise<{ success: boolean; data?: RuleWithRelations; error?: string }> {
+  const actionLogger = createActionLogger('createRule', { 
+    ruleName: params.name,
+    priority: params.priority 
+  });
+  
   try {
+    actionLogger.info('Creating new categorization rule');
     const rule = await ruleManagementService.createRule(params);
+    actionLogger.info('Rule created successfully', { ruleId: rule.id });
     revalidatePath('/regras-categorizacao');
     return { success: true, data: rule };
   } catch (error) {
-    console.error('Failed to create rule:', error);
+    actionLogger.error('Failed to create rule', { error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create rule',
@@ -39,12 +47,19 @@ export async function updateRuleAction(
   ruleId: string,
   params: UpdateRuleRequest
 ): Promise<{ success: boolean; data?: RuleWithRelations; error?: string }> {
+  const actionLogger = createActionLogger('updateRule', { 
+    ruleId,
+    updates: Object.keys(params) 
+  });
+  
   try {
+    actionLogger.info('Updating categorization rule');
     const rule = await ruleManagementService.updateRule(ruleId, params);
+    actionLogger.info('Rule updated successfully');
     revalidatePath('/regras-categorizacao');
     return { success: true, data: rule };
   } catch (error) {
-    console.error('Failed to update rule:', error);
+    actionLogger.error('Failed to update rule', { error });
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update rule',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { City } from '@/app/generated/prisma';
 import CityForm from './CityForm';
 import CityList from './CityList';
@@ -18,10 +18,6 @@ export default function CitiesManager({ initialCities }: CitiesManagerProps) {
   const [editingCity, setEditingCity] = useState<City | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setCities(initialCities);
-  }, [initialCities]);
 
   const handleCreateCity = async (
     cityData: Omit<City, 'id' | 'createdAt' | 'updatedAt'>

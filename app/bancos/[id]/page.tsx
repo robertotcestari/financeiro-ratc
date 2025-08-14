@@ -1,23 +1,95 @@
 import { prisma } from '@/lib/database/client'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { TransactionList } from './components/TransactionList'
-import { BankStats } from './components/BankStats'
 import Link from 'next/link'
 import { calculateRunningBalance } from '@/lib/financial-calculations'
 
-interface BankPageProps {
-  params: Promise<{ id: string }>
+interface SearchParams {
+  mes?: string
+  ano?: string
 }
 
-export default async function BankPage({ params }: BankPageProps) {
+interface BankPageProps {
+  params: Promise<{ id: string }>
+  searchParams: Promise<SearchParams>
+}
+
+export default async function BankPage({ params, searchParams }: BankPageProps) {
   const { id } = await params
+  const resolvedSearchParams = await searchParams
+
+  // Check if we need to apply default filters (previous month)
+  const hasFilters = resolvedSearchParams.mes || resolvedSearchParams.ano
+  
+  if (!hasFilters) {
+    // Calculate previous month as default
+    const now = new Date()
+    const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1)
+    const year = previousMonth.getFullYear()
+    const month = previousMonth.getMonth() + 1
+    
+    const params = new URLSearchParams()
+    params.set('ano', year.toString())
+    params.set('mes', month.toString())
+    
+    redirect(`/bancos/${id}?${params.toString()}`)
+  }
+
+  // Parse month and year from search params
+  const currentYear = new Date().getFullYear()
+  const month = resolvedSearchParams.mes ? parseInt(resolvedSearchParams.mes) : null
+  const year = resolvedSearchParams.ano ? parseInt(resolvedSearchParams.ano) : currentYear
+
+  // Build date filter for transactions
+  let dateFilter = {}
+  if (month && year) {
+    const startDate = new Date(year, month - 1, 1)
+    const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+    dateFilter = {
+      date: {
+        gte: startDate,
+        lte: endDate
+      }
+    }
+  } else if (year && !month) {
+    const startDate = new Date(year, 0, 1)
+    const endDate = new Date(year, 11, 31, 23, 59, 59, 999)
+    dateFilter = {
+      date: {
+        gte: startDate,
+        lte: endDate
+      }
+    }
+  }
+
+  // Calculate initial balance (sum of all transactions before the filtered period)
+  let initialBalance = 0
+  if (month && year) {
+    const startDate = new Date(year, month - 1, 1)
+    const balanceResult = await prisma.transaction.aggregate({
+      where: {
+        bankAccountId: id,
+        date: {
+          lt: startDate
+        }
+      },
+      _sum: {
+        amount: true
+      }
+    })
+    initialBalance = balanceResult._sum.amount ? Number(balanceResult._sum.amount) : 0
+  }
 
   const bankAccountRaw = await prisma.bankAccount.findUnique({
     where: { id },
     include: {
       transactions: {
+        where: dateFilter,
         orderBy: {
           date: 'asc'
+        },
+        include: {
+          processedTransaction: true
         }
       }
     }
@@ -27,77 +99,43 @@ export default async function BankPage({ params }: BankPageProps) {
     notFound()
   }
 
-  // Calculate running balances for transactions
-  const transactionsWithBalance = calculateRunningBalance(bankAccountRaw.transactions)
+  // Calculate running balances for transactions with initial balance
+  const transactionsWithBalance = calculateRunningBalance(bankAccountRaw.transactions, initialBalance)
 
   const bankAccount = {
     ...bankAccountRaw,
     transactions: transactionsWithBalance.map(transaction => ({
       ...transaction,
       amount: transaction.amount.toNumber(),
-      balance: transaction.balance
+      balance: transaction.balance,
+      isProcessed: !!transaction.processedTransaction
     }))
   }
 
-
-  const stats = await prisma.transaction.aggregate({
-    where: { bankAccountId: id },
-    _sum: {
-      amount: true
-    },
-    _count: true
-  })
-
-  const monthlyStatsRaw = await prisma.$queryRaw`
-    SELECT 
-      YEAR(date) as year,
-      MONTH(date) as month,
-      SUM(amount) as total,
-      COUNT(*) as count
-    FROM transactions 
-    WHERE bankAccountId = ${id}
-    GROUP BY YEAR(date), MONTH(date)
-    ORDER BY year DESC, month DESC
-    LIMIT 12
-  ` as Array<{
-    year: bigint | number
-    month: bigint | number
-    total: string | number
-    count: bigint
-  }>
-
-  const monthlyStats = monthlyStatsRaw.map(stat => ({
-    year: Number(stat.year),
-    month: Number(stat.month),
-    total: typeof stat.total === 'string' ? parseFloat(stat.total) : Number(stat.total),
-    count: Number(stat.count)
-  }))
-
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <Link 
-          href="/bancos" 
-          className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center"
-        >
-          ← Voltar para Bancos
-        </Link>
-        <h1 className="text-3xl font-bold text-gray-900">
-          {bankAccount.name}
-        </h1>
-        <p className="text-gray-600">{bankAccount.bankName}</p>
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-6">
+          <Link 
+            href="/bancos" 
+            className="text-blue-600 hover:text-blue-800 mb-4 inline-flex items-center"
+          >
+            ← Voltar para Bancos
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {bankAccount.name}
+          </h1>
+          <p className="text-gray-600">{bankAccount.bankName}</p>
+        </div>
 
-      <BankStats 
-        bankAccount={bankAccount}
-        totalBalance={stats._sum.amount ? Number(stats._sum.amount) : 0}
-        totalTransactions={stats._count}
-        monthlyStats={monthlyStats}
-      />
-
-      <div className="mt-8">
         <TransactionList 
           transactions={bankAccount.transactions}
+          bankAccountId={id}
+          searchParams={{
+            mes: resolvedSearchParams.mes,
+            ano: resolvedSearchParams.ano
+          }}
+          initialBalance={initialBalance}
         />
       </div>
     </div>

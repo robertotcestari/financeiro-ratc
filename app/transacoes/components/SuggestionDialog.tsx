@@ -15,7 +15,8 @@ import {
   Lightbulb, 
   Building, 
   Target,
-  MapPin 
+  MapPin,
+  Bot 
 } from 'lucide-react';
 import { formatDate } from '@/lib/formatters';
 import SuggestionDetails from './SuggestionDetails';
@@ -24,11 +25,12 @@ interface Suggestion {
   id: string;
   confidence: number;
   createdAt: Date;
-  rule: {
+  source?: 'RULE' | 'AI';
+  rule?: {
     id: string;
     name: string;
     description?: string;
-  };
+  } | null;
   suggestedCategory: {
     id: string;
     name: string;
@@ -232,12 +234,19 @@ export default function SuggestionDialog({
                       }`}
                     >
                       <div className="flex items-center justify-between">
-                        <div>
-                          <div className="font-medium text-sm">
-                            Sugestão #{index + 1}
-                          </div>
-                          <div className="text-xs text-gray-600">
-                            {suggestion.rule.name}
+                        <div className="flex items-center gap-2">
+                          {suggestion.source === 'AI' ? (
+                            <Bot className="h-4 w-4 text-blue-500" />
+                          ) : (
+                            <Lightbulb className="h-4 w-4 text-yellow-500" />
+                          )}
+                          <div>
+                            <div className="font-medium text-sm">
+                              {suggestion.source === 'AI' ? 'Sugestão IA' : `Sugestão #${index + 1}`}
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {suggestion.source === 'AI' ? 'Inteligência Artificial' : suggestion.rule?.name || 'Regra'}
+                            </div>
                           </div>
                         </div>
                         <Badge 

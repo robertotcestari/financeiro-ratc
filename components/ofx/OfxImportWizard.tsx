@@ -7,8 +7,6 @@ import OfxFileUpload from '@/components/ofx/OfxFileUpload';
 import type { OFXParseResult, OFXTransaction } from '@/lib/ofx/types';
 import AccountSelection, {
   type MinimalBankAccount,
-  type CreateBankAccountData,
-  type CreateResult,
   type ValidationResult,
 } from '@/components/ofx/AccountSelection';
 import OfxImportPreview, {
@@ -20,9 +18,8 @@ import OfxImportPreview, {
 import OfxImportResult from '@/components/ofx/OfxImportResult';
 import {
   validateAccountSelection as validateAccount,
-  createNewBankAccount,
 } from '@/app/actions/account-selection';
-import { getPreviewBalances } from '@/app/ofx-import/actions';
+import { getPreviewBalances, confirmImportTransactions } from '@/app/ofx-import/actions';
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -45,6 +42,8 @@ export function OfxImportWizard({
   const [parseResult, setParseResult] = React.useState<OFXParseResult | null>(
     null
   );
+  const [fileContent, setFileContent] = React.useState<string | null>(null);
+  const [isImporting, setIsImporting] = React.useState(false);
 
   // Step 2 - account
   const [selectedAccountId, setSelectedAccountId] = React.useState<string>('');
@@ -108,8 +107,13 @@ export function OfxImportWizard({
     return initialAccounts.find((acc) => acc.id === selectedAccountId) || null;
   }, [selectedAccountId, initialAccounts]);
   // Handlers for Step 1
-  function handleValidated(result: OFXParseResult) {
+  async function handleValidated(result: OFXParseResult, file?: File) {
     setParseResult(result);
+    // Read and store file content for later use
+    if (file) {
+      const content = await file.text();
+      setFileContent(content);
+    }
     // Auto-advance only if success and at least one account/transaction present
     if (result.success && (result.transactions?.length ?? 0) > 0) {
       setStep(2);
@@ -125,29 +129,6 @@ export function OfxImportWizard({
       return result;
     } catch {
       return { isValid: false, error: 'Falha ao validar conta' };
-    }
-  }
-  async function createNewAccount(
-    data: CreateBankAccountData
-  ): Promise<CreateResult> {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const result = await createNewBankAccount(data as any);
-      if (result.success && result.account) {
-        return {
-          success: true,
-          account: {
-            id: result.account.id,
-            name: result.account.name,
-            bankName: result.account.bankName,
-            accountType: result.account.accountType,
-            isActive: result.account.isActive,
-          },
-        };
-      }
-      return { success: false, error: result.error || 'Falha ao criar conta' };
-    } catch {
-      return { success: false, error: 'Falha ao criar conta' };
     }
   }
 
@@ -194,50 +175,64 @@ export function OfxImportWizard({
       }
     >
   ) {
-    // Compute a client-side "result" view; in real flow we'd call ImportService on server.
-    const importedRows = updatedRows.filter((r) => r.action === 'import');
-    const skippedRows = updatedRows.filter((r) => r.action === 'skip');
-    // For UI-only path, we won't create "failed" rows here.
-    const failedRows: typeof failed = [];
+    if (!fileContent || !selectedAccountId) {
+      setErrorMessage('Missing file content or account selection');
+      return;
+    }
 
-    setImported(
-      importedRows.map((r) => ({
-        id: r.transactionId,
-        date: r.date,
-        description: r.description,
-        amount: r.amount,
-      }))
-    );
-    setSkipped(
-      skippedRows.map((r) => ({
-        id: r.transactionId,
-        date: r.date,
-        description: r.description,
-        amount: r.amount,
-      }))
-    );
-    setFailed(failedRows);
+    setIsImporting(true);
     setErrorMessage(null);
 
-    // Quick summary derivation
-    const total = updatedRows.length;
-    const duplicates = updatedRows.filter((r) => r.isDuplicate).length;
-    const unique = total - duplicates;
-    const categorized = updatedRows.filter(
-      (r) => !!r.selectedCategoryId
-    ).length;
+    try {
+      // Build transaction categories and properties maps
+      const transactionCategories: Record<string, string | null> = {};
+      const transactionProperties: Record<string, string | null> = {};
+      
+      for (const row of updatedRows) {
+        if (row.selectedCategoryId) {
+          transactionCategories[row.transactionId] = row.selectedCategoryId;
+        }
+        if (row.selectedPropertyId) {
+          transactionProperties[row.transactionId] = row.selectedPropertyId;
+        }
+      }
 
-    setResultSummary({
-      totalTransactions: total,
-      validTransactions: total,
-      invalidTransactions: 0,
-      duplicateTransactions: duplicates,
-      uniqueTransactions: unique,
-      categorizedTransactions: categorized,
-      uncategorizedTransactions: total - categorized,
-    });
+      // Call the server action to import transactions
+      const result = await confirmImportTransactions(
+        fileContent,
+        selectedAccountId,
+        confirmedActions,
+        transactionCategories,
+        transactionProperties
+      );
 
-    setStep(4);
+      if (result.success) {
+        setImported(result.imported || []);
+        setSkipped(result.skipped || []);
+        setFailed(result.failed || []);
+        setResultSummary(result.summary || {
+          totalTransactions: updatedRows.length,
+          validTransactions: updatedRows.length,
+          invalidTransactions: 0,
+          duplicateTransactions: updatedRows.filter((r) => r.isDuplicate).length,
+          uniqueTransactions: updatedRows.filter((r) => !r.isDuplicate).length,
+          categorizedTransactions: updatedRows.filter((r) => !!r.selectedCategoryId).length,
+          uncategorizedTransactions: updatedRows.filter((r) => !r.selectedCategoryId).length,
+        });
+        setStep(4);
+      } else {
+        setErrorMessage(result.error || 'Failed to import transactions');
+      }
+    } catch (error) {
+      console.error('Import error:', error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred during import'
+      );
+    } finally {
+      setIsImporting(false);
+    }
   }
 
   // Helpers
@@ -275,6 +270,9 @@ export function OfxImportWizard({
               Envie o arquivo .ofx para iniciar a importação.
             </div>
             <OfxFileUpload onValidated={handleValidated} />
+            {errorMessage && (
+              <div className="text-sm text-destructive">{errorMessage}</div>
+            )}
             <div className="flex items-center justify-end gap-2 pt-2">
               <Button
                 type="button"
@@ -307,7 +305,6 @@ export function OfxImportWizard({
               initialAccounts={initialAccounts}
               defaultSelectedId={selectedAccountId || undefined}
               onValidateSelection={validateAccountSelection}
-              onCreateNewAccount={createNewAccount}
               onConfirm={handleConfirmAccount}
             />
             <div className="flex items-center justify-end gap-2 pt-2">
@@ -368,6 +365,14 @@ export function OfxImportWizard({
               }
               onConfirm={handlePreviewConfirm}
             />
+            {isImporting && (
+              <div className="text-sm text-muted-foreground">
+                Importando transações...
+              </div>
+            )}
+            {errorMessage && (
+              <div className="text-sm text-destructive">{errorMessage}</div>
+            )}
             <div className="flex items-center justify-end gap-2 pt-2">
               <Button
                 type="button"
@@ -394,6 +399,7 @@ export function OfxImportWizard({
               onDone={() => {
                 // Reset wizard to step 1
                 setParseResult(null);
+                setFileContent(null);
                 setSelectedAccountId('');
                 setPreviewRows([]);
                 setResultSummary(null);
@@ -401,6 +407,7 @@ export function OfxImportWizard({
                 setSkipped([]);
                 setFailed([]);
                 setErrorMessage(null);
+                setIsImporting(false);
                 setStep(1);
               }}
               onViewTransactions={() => {

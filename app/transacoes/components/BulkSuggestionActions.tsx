@@ -4,13 +4,16 @@ import React, { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { toast } from 'sonner';
 import { 
   Lightbulb, 
   Zap, 
   X, 
   CheckCircle, 
   AlertTriangle,
-  BarChart3 
+  BarChart3,
+  Bot,
+  Loader2
 } from 'lucide-react';
 
 interface Suggestion {
@@ -45,6 +48,7 @@ interface Props {
   onApplyBulkSuggestions?: (suggestionIds: string[]) => Promise<void>;
   onDismissBulkSuggestions?: (suggestionIds: string[]) => Promise<void>;
   onGenerateSuggestions?: (transactionIds: string[]) => Promise<void>;
+  onGenerateAISuggestions?: (transactionIds: string[]) => Promise<void>;
   className?: string;
 }
 
@@ -53,9 +57,11 @@ export default function BulkSuggestionActions({
   onApplyBulkSuggestions,
   onDismissBulkSuggestions,
   onGenerateSuggestions,
+  onGenerateAISuggestions,
   className = '',
 }: Props) {
   const [isPending, startTransition] = useTransition();
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState<'apply' | 'dismiss' | null>(null);
 
   // Calculate suggestion statistics
@@ -81,6 +87,30 @@ export default function BulkSuggestionActions({
     startTransition(async () => {
       await onGenerateSuggestions(transactionsWithoutSuggestions.map(t => t.id));
     });
+  };
+
+  const handleGenerateAISuggestions = async () => {
+    if (!onGenerateAISuggestions || selectedTransactions.length === 0) return;
+    
+    setIsGeneratingAI(true);
+    toast.info(`Enviando ${selectedTransactions.length} transações para análise de IA...`, {
+      duration: 10000,
+      id: 'ai-generating',
+    });
+    
+    try {
+      await onGenerateAISuggestions(selectedTransactions.map(t => t.id));
+      toast.success(`Sugestões de IA geradas com sucesso para ${selectedTransactions.length} transações!`, {
+        id: 'ai-generating',
+      });
+    } catch (error) {
+      console.error('Error generating AI suggestions:', error);
+      toast.error("Ocorreu um erro ao processar as sugestões de IA. Por favor, tente novamente.", {
+        id: 'ai-generating',
+      });
+    } finally {
+      setIsGeneratingAI(false);
+    }
   };
 
   const handleApplyAll = () => {
@@ -124,7 +154,18 @@ export default function BulkSuggestionActions({
   }
 
   return (
-    <Card className={`border-blue-200 bg-blue-50 ${className}`}>
+    <Card className={`border-blue-200 bg-blue-50 relative ${className}`}>
+      {/* Loading overlay */}
+      {isGeneratingAI && (
+        <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center rounded-lg">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600 mx-auto mb-2" />
+            <p className="text-sm font-medium text-gray-700">Analisando transações com IA...</p>
+            <p className="text-xs text-gray-500 mt-1">Isso pode levar alguns segundos</p>
+          </div>
+        </div>
+      )}
+      
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-blue-900">
           <Lightbulb className="h-5 w-5" />
@@ -161,7 +202,7 @@ export default function BulkSuggestionActions({
 
         {/* Actions */}
         <div className="space-y-3">
-          {/* Generate Suggestions */}
+          {/* Generate Rule-based Suggestions */}
           {transactionsWithoutSuggestions.length > 0 && (
             <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
               <div className="flex items-center gap-2">
@@ -173,7 +214,7 @@ export default function BulkSuggestionActions({
               
               <Button
                 onClick={handleGenerateSuggestions}
-                disabled={isPending}
+                disabled={isPending || isGeneratingAI}
                 size="sm"
                 variant="outline"
               >
@@ -182,6 +223,43 @@ export default function BulkSuggestionActions({
               </Button>
             </div>
           )}
+
+          {/* Generate AI Suggestions */}
+          <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+            <div className="flex items-center gap-2">
+              <Bot className="h-4 w-4 text-blue-500" />
+              <span className="text-sm font-medium">
+                {isGeneratingAI 
+                  ? `Processando ${selectedTransactions.length} transações com IA...`
+                  : `Gerar sugestões com IA para ${selectedTransactions.length} transação(ões)`
+                }
+              </span>
+              {isGeneratingAI && (
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800 text-xs animate-pulse">
+                  Analisando...
+                </Badge>
+              )}
+            </div>
+            
+            <Button
+              onClick={handleGenerateAISuggestions}
+              disabled={isPending || isGeneratingAI}
+              size="sm"
+              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
+            >
+              {isGeneratingAI ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                  Processando...
+                </>
+              ) : (
+                <>
+                  <Bot className="h-4 w-4 mr-1" />
+                  Gerar Sugestões IA
+                </>
+              )}
+            </Button>
+          </div>
 
           {/* Apply Actions */}
           {totalSuggestions > 0 && (
@@ -200,7 +278,7 @@ export default function BulkSuggestionActions({
                   
                   <Button
                     onClick={handleApplyHighConfidence}
-                    disabled={isPending}
+                    disabled={isPending || isGeneratingAI}
                     size="sm"
                     className="bg-green-600 hover:bg-green-700"
                   >
@@ -223,7 +301,7 @@ export default function BulkSuggestionActions({
                 
                 <Button
                   onClick={() => setShowConfirmation('apply')}
-                  disabled={isPending}
+                  disabled={isPending || isGeneratingAI}
                   size="sm"
                   className="bg-blue-600 hover:bg-blue-700"
                 >
@@ -251,7 +329,7 @@ export default function BulkSuggestionActions({
                   
                   <Button
                     onClick={handleDismissLowConfidence}
-                    disabled={isPending}
+                    disabled={isPending || isGeneratingAI}
                     size="sm"
                     variant="outline"
                     className="text-red-600 border-red-200 hover:bg-red-50"
@@ -272,7 +350,7 @@ export default function BulkSuggestionActions({
                 
                 <Button
                   onClick={() => setShowConfirmation('dismiss')}
-                  disabled={isPending}
+                  disabled={isPending || isGeneratingAI}
                   size="sm"
                   variant="outline"
                   className="text-red-600 border-red-200 hover:bg-red-50"
@@ -304,7 +382,7 @@ export default function BulkSuggestionActions({
                 <div className="flex items-center gap-2">
                   <Button
                     onClick={showConfirmation === 'apply' ? handleApplyAll : handleDismissAll}
-                    disabled={isPending}
+                    disabled={isPending || isGeneratingAI}
                     size="sm"
                     variant={showConfirmation === 'apply' ? 'default' : 'destructive'}
                   >
@@ -313,7 +391,7 @@ export default function BulkSuggestionActions({
                   
                   <Button
                     onClick={() => setShowConfirmation(null)}
-                    disabled={isPending}
+                    disabled={isPending || isGeneratingAI}
                     size="sm"
                     variant="outline"
                   >

@@ -1,8 +1,6 @@
 'use client';
 
 import React from 'react';
-
-import { useState } from 'react';
 import { FormDescription, FormLabel } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -26,22 +24,13 @@ export default function AccountCriteriaForm({
   form,
   bankAccounts,
 }: AccountCriteriaFormProps) {
-  // Initialize toggle based on existing form value
-  const initialCriteria = form.getValues('criteria') || {};
-  const [useAccounts, setUseAccounts] = useState<boolean>(
-    Array.isArray(initialCriteria.accounts)
-  );
-
   const criteria = form.watch('criteria') || {};
   const selectedAccounts = criteria.accounts || [];
-
-  // Keep local state in sync when external form values change (e.g., defaultValues)
-  React.useEffect(() => {
-    setUseAccounts(Array.isArray(criteria.accounts));
-  }, [criteria.accounts]);
+  
+  // Derive useAccounts directly from form state
+  const useAccounts = Array.isArray(criteria.accounts);
 
   const handleAccountsToggle = (enabled: boolean) => {
-    setUseAccounts(enabled);
     if (!enabled) {
       const currentCriteria = form.getValues('criteria');
       const newCriteria = { ...currentCriteria };

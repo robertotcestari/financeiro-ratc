@@ -159,6 +159,16 @@ export class ImportService {
   }
 
   /**
+   * Generate import preview from parsed OFX result
+   */
+  async previewImportFromParsedResult(
+    parseResult: OFXParseResult,
+    bankAccountId: string
+  ): Promise<ImportPreview> {
+    return this.previewService.generatePreviewFromParsedResult(parseResult, bankAccountId);
+  }
+
+  /**
    * Execute import from existing preview
    */
   async executeImport(
@@ -399,7 +409,7 @@ export class ImportService {
     importBatchId: string,
     options: ImportOptions
   ): Promise<Transaction> {
-    const { transaction, categorization } = transactionPreview;
+    const { transaction } = transactionPreview;
 
     // Get bank account ID from options or from the preview
     const bankAccountId =
@@ -442,17 +452,27 @@ export class ImportService {
 
       if (shouldCreateProcessed) {
         try {
+          // Get user-selected category and property if provided
+          let userCategoryId: string | null = null;
+          let userPropertyId: string | null = null;
+          
+          if (options.transactionCategories && options.transactionCategories[transaction.transactionId]) {
+            userCategoryId = options.transactionCategories[transaction.transactionId];
+          }
+          
+          if (options.transactionProperties && options.transactionProperties[transaction.transactionId]) {
+            userPropertyId = options.transactionProperties[transaction.transactionId];
+          }
+
           await tx.processedTransaction.create({
             data: {
               transactionId: importedTransaction.id,
               year: transaction.date.getFullYear(),
               month: transaction.date.getMonth() + 1,
-              categoryId: categorization.suggestedCategory?.id || null,
-              propertyId: categorization.suggestedProperty?.id || null,
-              details: categorization.reason,
-              isReviewed:
-                categorization.confidence >= 0.8 &&
-                categorization.suggestedCategory !== null,
+              categoryId: userCategoryId, // Use user-selected category or null
+              propertyId: userPropertyId, // Use user-selected property or null
+              details: null,
+              isReviewed: !!userCategoryId, // Mark as reviewed if user categorized
             },
           });
         } catch (error) {
@@ -583,6 +603,8 @@ export interface ImportOptions {
   createProcessedTransactions?: boolean;
   strictMode?: boolean;
   transactionActions?: Record<string, TransactionAction>;
+  transactionCategories?: Record<string, string | null>;
+  transactionProperties?: Record<string, string | null>;
 
   // Legacy/compatibility aliases used by tests
   // - createUnifiedTransactions: alias for createProcessedTransactions

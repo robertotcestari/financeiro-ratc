@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
 import type { RuleWithRelations } from '@/lib/database/rule-management';
@@ -34,7 +33,7 @@ export default function RulesListClient({ initialRules, total, formData }: Rules
     };
 
     activeRules.forEach(rule => {
-      const criteria = rule.criteria as any;
+      const criteria = rule.criteria as Record<string, unknown>;
       
       if (criteria?.description?.keywords) {
         summary.withDescription++;
@@ -128,78 +127,78 @@ export default function RulesListClient({ initialRules, total, formData }: Rules
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="space-y-3">
-          <CardTitle>Regras Cadastradas ({total})</CardTitle>
-          {summary.totalActive > 0 && (
-            <div className="text-sm text-muted-foreground space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{summary.totalActive} regras ativas</span>
-                {summary.totalActive < total && (
-                  <span className="text-xs">({total - summary.totalActive} inativas)</span>
-                )}
-              </div>
-              
-              <div className="flex flex-wrap gap-3 text-xs">
-                {summary.withDescription > 0 && (
-                  <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded">
-                    {summary.withDescription} com palavras-chave
-                  </span>
-                )}
-                {summary.withValue > 0 && (
-                  <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
-                    {summary.withValue} com critério de valor
-                  </span>
-                )}
-                {summary.withDate > 0 && (
-                  <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded">
-                    {summary.withDate} com critério de data
-                  </span>
-                )}
-                {summary.withAccount > 0 && (
-                  <span className="bg-orange-50 text-orange-700 px-2 py-1 rounded">
-                    {summary.withAccount} com conta específica
-                  </span>
-                )}
-              </div>
-
-              {summary.keywords.size > 0 && (
-                <div className="pt-2 border-t">
-                  <div className="text-xs text-gray-600 mb-1">Palavras-chave monitoradas:</div>
-                  <div className="flex flex-wrap gap-1">
-                    {Array.from(summary.keywords).slice(0, 10).map(keyword => (
-                      <span key={keyword} className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs">
-                        {keyword}
-                      </span>
-                    ))}
-                    {summary.keywords.size > 10 && (
-                      <span className="text-xs text-gray-500">
-                        +{summary.keywords.size - 10} mais
-                      </span>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {summary.categories.size > 0 && (
-                <div className="text-xs text-gray-600">
-                  <span>Categorias alvo: </span>
-                  <span className="text-gray-800">
-                    {Array.from(summary.categories).slice(0, 3).join(', ')}
-                    {summary.categories.size > 3 && ` +${summary.categories.size - 3} mais`}
-                  </span>
-                </div>
+    <div>
+      {/* Summary Section */}
+      {summary.totalActive > 0 && (
+        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <h3 className="font-semibold text-lg mb-3">Cadastradas ({total})</h3>
+          <div className="text-sm text-muted-foreground space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="font-medium">{summary.totalActive} regras ativas</span>
+              {summary.totalActive < total && (
+                <span className="text-xs">({total - summary.totalActive} inativas)</span>
               )}
             </div>
-          )}
+            
+            <div className="flex flex-wrap gap-3 text-xs">
+              {summary.withDescription > 0 && (
+                <span className="bg-blue-50 text-blue-700 px-2 py-1 rounded">
+                  {summary.withDescription} com palavras-chave
+                </span>
+              )}
+              {summary.withValue > 0 && (
+                <span className="bg-green-50 text-green-700 px-2 py-1 rounded">
+                  {summary.withValue} com critério de valor
+                </span>
+              )}
+              {summary.withDate > 0 && (
+                <span className="bg-purple-50 text-purple-700 px-2 py-1 rounded">
+                  {summary.withDate} com critério de data
+                </span>
+              )}
+              {summary.withAccount > 0 && (
+                <span className="bg-orange-50 text-orange-700 px-2 py-1 rounded">
+                  {summary.withAccount} com conta específica
+                </span>
+              )}
+            </div>
+
+            {summary.keywords.size > 0 && (
+              <div className="pt-2 border-t">
+                <div className="text-xs text-gray-600 mb-1">Palavras-chave monitoradas:</div>
+                <div className="flex flex-wrap gap-1">
+                  {Array.from(summary.keywords).slice(0, 10).map(keyword => (
+                    <span key={keyword} className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs">
+                      {keyword}
+                    </span>
+                  ))}
+                  {summary.keywords.size > 10 && (
+                    <span className="text-xs text-gray-500">
+                      +{summary.keywords.size - 10} mais
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {summary.categories.size > 0 && (
+              <div className="text-xs text-gray-600">
+                <span>Categorias alvo: </span>
+                <span className="text-gray-800">
+                  {Array.from(summary.categories).slice(0, 3).join(', ')}
+                  {summary.categories.size > 3 && ` +${summary.categories.size - 3} mais`}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        {rules.length > 0 ? (
-          <div className="space-y-4">
-            {rules.map((rule) => {
-              const criteria = rule.criteria as any;
+      )}
+      
+      {/* Rules List */}
+      {rules.length > 0 ? (
+        <div className="space-y-4">
+          {rules.map((rule) => {
+              const criteria = rule.criteria as Record<string, unknown>;
               const getCriteriaDetails = () => {
                 const details = [];
                 
@@ -287,106 +286,145 @@ export default function RulesListClient({ initialRules, total, formData }: Rules
               const criteriaDetails = getCriteriaDetails();
               
               return (
-              <div key={rule.id} className="p-4 border rounded-lg">
-                <div className="flex items-center justify-between">
+              <div key={rule.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <h3 className="font-medium">{rule.name}</h3>
-                    {rule.description && (
-                      <p className="text-sm text-gray-600 mt-1">{rule.description}</p>
-                    )}
+                    {/* Header with name and status */}
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg">{rule.name}</h3>
+                        {rule.description && (
+                          <p className="text-sm text-gray-600 mt-1">{rule.description}</p>
+                        )}
+                      </div>
+                      {/* Status badge */}
+                      <div className={`
+                        flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium
+                        ${rule.isActive 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-gray-100 text-gray-500'
+                        }
+                      `}>
+                        <div className={`w-2 h-2 rounded-full ${rule.isActive ? 'bg-green-500' : 'bg-gray-400'}`} />
+                        {rule.isActive ? 'Ativa' : 'Inativa'}
+                      </div>
+                    </div>
                     
-                    {/* Criteria details */}
+                    {/* Category and Property - Primary Info with strong visual emphasis */}
+                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-3 mb-3 border border-blue-100">
+                      <div className="flex flex-col gap-2">
+                        {/* Category - Most prominent */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Categoria:</span>
+                          <span className="font-bold text-base text-blue-900">
+                            {rule.category?.name || 'Não definida'}
+                          </span>
+                        </div>
+                        
+                        {/* Property - Secondary prominence */}
+                        {rule.property && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Propriedade:</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-sm text-indigo-900">
+                                {rule.property.code}
+                              </span>
+                              {rule.property.name && (
+                                <span className="text-sm text-gray-600">
+                                  - {rule.property.name}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Priority - Less prominent */}
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-gray-500">Prioridade:</span>
+                          <span className="bg-white px-2 py-0.5 rounded text-xs font-medium text-gray-700">
+                            {rule.priority}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Criteria details - Secondary information */}
                     {criteriaDetails.length > 0 && (
-                      <div className="mt-3 space-y-1">
+                      <div className="space-y-1.5 bg-gray-50 rounded-lg p-3">
+                        <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                          Critérios de Aplicação:
+                        </div>
                         {criteriaDetails.map((detail, idx) => (
-                          <div key={idx} className="flex items-start gap-2 text-xs">
+                          <div key={idx} className="flex items-start gap-2">
                             <span className={`
-                              px-1.5 py-0.5 rounded font-medium whitespace-nowrap
-                              ${detail.color === 'blue' ? 'bg-blue-50 text-blue-700' : ''}
-                              ${detail.color === 'green' ? 'bg-green-50 text-green-700' : ''}
-                              ${detail.color === 'purple' ? 'bg-purple-50 text-purple-700' : ''}
-                              ${detail.color === 'orange' ? 'bg-orange-50 text-orange-700' : ''}
+                              px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap
+                              ${detail.color === 'blue' ? 'bg-blue-100 text-blue-700' : ''}
+                              ${detail.color === 'green' ? 'bg-green-100 text-green-700' : ''}
+                              ${detail.color === 'purple' ? 'bg-purple-100 text-purple-700' : ''}
+                              ${detail.color === 'orange' ? 'bg-orange-100 text-orange-700' : ''}
                             `}>
-                              {detail.type}:
+                              {detail.type}
                             </span>
-                            <span className="text-gray-700 flex-1">{detail.value}</span>
+                            <span className="text-sm text-gray-700 flex-1">{detail.value}</span>
                           </div>
                         ))}
                       </div>
                     )}
-                    
-                    <div className="flex items-center mt-3 space-x-2 text-xs text-gray-500 pt-2 border-t">
-                      <span>Categoria: {rule.category?.name || 'Não definida'}</span>
-                      {rule.property && (
-                        <span>• Propriedade: {rule.property.code}</span>
-                      )}
-                      <span>• Prioridade: {rule.priority}</span>
-                    </div>
                   </div>
                   
-                  <div className="flex items-center space-x-3">
-                    {/* Status indicator */}
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${rule.isActive ? 'bg-green-500' : 'bg-red-500'}`} />
-                      <span className="text-xs text-gray-500">
-                        {rule.isActive ? 'Ativa' : 'Inativa'}
-                      </span>
-                    </div>
-                    
-                    {/* Action buttons */}
-                    <div className="flex items-center space-x-1">
-                      {/* Edit button */}
-                      <EditRuleDialog 
-                        rule={rule} 
-                        formData={formData}
-                        onRuleUpdated={handleRuleUpdated}
-                      >
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </EditRuleDialog>
-
-                      {/* Toggle status button */}
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleToggleStatus(rule.id, rule.isActive)}
-                      >
-                        {rule.isActive ? (
-                          <ToggleRight className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <ToggleLeft className="h-4 w-4 text-gray-400" />
-                        )}
+                  {/* Action buttons - Vertical layout for better organization */}
+                  <div className="flex flex-col gap-1">
+                    {/* Edit button */}
+                    <EditRuleDialog 
+                      rule={rule} 
+                      formData={formData}
+                      onRuleUpdated={handleRuleUpdated}
+                    >
+                      <Button variant="outline" size="sm" className="w-full justify-center">
+                        <Edit className="h-4 w-4" />
                       </Button>
+                    </EditRuleDialog>
 
-                      {/* Delete button */}
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => handleDeleteRule(rule.id, rule.name)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+                    {/* Toggle status button */}
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleToggleStatus(rule.id, rule.isActive)}
+                      className="w-full justify-center"
+                    >
+                      {rule.isActive ? (
+                        <ToggleRight className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <ToggleLeft className="h-4 w-4 text-gray-400" />
+                      )}
+                    </Button>
+
+                    {/* Delete button */}
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleDeleteRule(rule.id, rule.name)}
+                      className="w-full justify-center text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
               </div>
             );
             })}
+        </div>
+      ) : (
+        <div className="text-center py-12 border rounded-lg bg-gray-50">
+          <div className="text-gray-400 mb-4">
+            🔧
           </div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="text-gray-400 mb-4">
-              🔧
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Nenhuma regra criada</h3>
-            <p className="text-muted-foreground">
-              Crie sua primeira regra para automatizar a categorização de transações.
-            </p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          <h3 className="text-lg font-semibold mb-2">Nenhuma regra criada</h3>
+          <p className="text-muted-foreground">
+            Crie sua primeira regra para automatizar a categorização de transações.
+          </p>
+        </div>
+      )}
+    </div>
   );
 }

@@ -16,6 +16,7 @@ import {
   getSuggestionsForTransaction,
 } from '@/lib/database/suggestions';
 import { ruleEngine } from '@/lib/database/rule-engine';
+import { AICategorizationService } from '@/lib/ai/categorization-service';
 
 const categorizeOneSchema = z.object({
   id: z.string(),
@@ -446,5 +447,174 @@ export async function getSuggestionsAction(
   } catch (error) {
     console.error('Error in getSuggestionsAction:', error);
     return { success: false, error: 'Failed to get suggestions', suggestions: [] };
+  }
+}
+
+// ================== Bulk Delete Actions ==================
+
+const bulkDeleteTransactionsSchema = z.object({
+  ids: z.array(z.string()),
+});
+
+export async function bulkDeleteTransactionsAction(
+  input: z.infer<typeof bulkDeleteTransactionsSchema>
+) {
+  const validated = bulkDeleteTransactionsSchema.parse(input);
+
+  try {
+    // Delete ProcessedTransaction records (cascade will handle suggestions)
+    const deleteResult = await prisma.processedTransaction.deleteMany({
+      where: {
+        id: { in: validated.ids },
+      },
+    });
+
+    try {
+      revalidatePath('/transacoes');
+    } catch (revalidateError) {
+      console.warn('Revalidation error (non-critical):', revalidateError);
+    }
+
+    return {
+      success: true,
+      deletedCount: deleteResult.count,
+      message: `Successfully deleted ${deleteResult.count} transactions`,
+    };
+  } catch (error) {
+    console.error('Error in bulkDeleteTransactionsAction:', error);
+    return {
+      success: false,
+      error: 'Failed to delete transactions',
+      deletedCount: 0,
+    };
+  }
+}
+
+// ================== AI Suggestion Actions ==================
+
+const generateBulkAISuggestionsSchema = z.object({
+  transactionIds: z.array(z.string()),
+});
+
+export async function generateBulkAISuggestionsAction(
+  input: z.infer<typeof generateBulkAISuggestionsSchema>
+) {
+  const validated = generateBulkAISuggestionsSchema.parse(input);
+
+  try {
+    // Get the transactions with their details
+    const transactions = await prisma.processedTransaction.findMany({
+      where: {
+        id: { in: validated.transactionIds },
+      },
+      include: {
+        transaction: {
+          include: {
+            bankAccount: true,
+          },
+        },
+      },
+    });
+
+    if (transactions.length === 0) {
+      return { success: false, error: 'No transactions found' };
+    }
+
+    // Initialize AI service
+    const aiService = new AICategorizationService();
+
+    // Generate AI suggestions
+    let aiSuggestions;
+    try {
+      aiSuggestions = await aiService.generateBulkSuggestions(transactions);
+    } catch (aiError: any) {
+      console.error('Error generating AI suggestions:', aiError);
+      
+      // Check for specific error types
+      if (aiError?.code === 'API_ERROR' || aiError?.message?.includes('API key')) {
+        return { 
+          success: false, 
+          error: 'Erro de configuração: Chave de API do OpenAI inválida ou não configurada. Configure a variável OPENAI_API_KEY no arquivo .env' 
+        };
+      }
+      
+      return { 
+        success: false, 
+        error: aiError?.message || 'Falha ao gerar sugestões de IA' 
+      };
+    }
+
+    // Check if we got any suggestions
+    if (!aiSuggestions || aiSuggestions.length === 0) {
+      console.warn('No AI suggestions generated for transactions');
+      return { 
+        success: false, 
+        error: 'Nenhuma sugestão foi gerada. Verifique se a API está configurada corretamente.' 
+      };
+    }
+
+    // Store AI suggestions in the database
+    const createdSuggestions = await Promise.all(
+      aiSuggestions.map(async (aiSuggestion) => {
+        try {
+          // Check if a suggestion already exists for this transaction (avoid duplicates)
+          const existingSuggestion = await prisma.transactionSuggestion.findFirst({
+            where: {
+              processedTransactionId: aiSuggestion.processedTransactionId,
+              source: 'AI',
+            },
+          });
+
+          if (existingSuggestion) {
+            // Update existing AI suggestion
+            return await prisma.transactionSuggestion.update({
+              where: { id: existingSuggestion.id },
+              data: {
+                suggestedCategoryId: aiSuggestion.suggestedCategoryId,
+                suggestedPropertyId: aiSuggestion.suggestedPropertyId,
+                confidence: aiSuggestion.confidence,
+                reasoning: aiSuggestion.reasoning,
+                aiMetadata: aiSuggestion.metadata as any,
+              },
+            });
+          } else {
+            // Create new AI suggestion
+            return await prisma.transactionSuggestion.create({
+              data: {
+                processedTransactionId: aiSuggestion.processedTransactionId,
+                source: 'AI',
+                ruleId: null, // AI suggestions don't have a rule
+                suggestedCategoryId: aiSuggestion.suggestedCategoryId,
+                suggestedPropertyId: aiSuggestion.suggestedPropertyId,
+                confidence: aiSuggestion.confidence,
+                reasoning: aiSuggestion.reasoning,
+                aiMetadata: aiSuggestion.metadata as any,
+              },
+            });
+          }
+        } catch (error) {
+          console.error('Error creating AI suggestion:', error);
+          return null;
+        }
+      })
+    );
+
+    const successfulSuggestions = createdSuggestions.filter(s => s !== null);
+
+    try {
+      revalidatePath('/transacoes');
+    } catch (revalidateError) {
+      console.warn('Revalidation error (non-critical):', revalidateError);
+    }
+
+    return {
+      success: true,
+      processed: transactions.length,
+      suggested: successfulSuggestions.length,
+      message: `Generated ${successfulSuggestions.length} AI suggestions for ${transactions.length} transactions`,
+    };
+  } catch (error) {
+    console.error('Error in generateBulkAISuggestionsAction:', error);
+    return { success: false, error: 'Failed to generate AI suggestions' };
   }
 }

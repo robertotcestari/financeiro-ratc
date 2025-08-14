@@ -29,6 +29,29 @@ export default function EditRuleDialog({ rule, formData, children, onRuleUpdated
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
+  // Handle keyboard shortcut for form submission
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Check for Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
+      if ((event.metaKey || event.ctrlKey) && event.key === 'Enter' && open) {
+        event.preventDefault();
+        // Trigger form submission by finding and clicking the submit button
+        const submitButton = document.querySelector('button[type="submit"]') as HTMLButtonElement;
+        if (submitButton && !isSubmitting) {
+          submitButton.click();
+        }
+      }
+    };
+
+    if (open) {
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open, isSubmitting]);
+
   const handleSubmit = async (data: UpdateRuleRequest) => {
     setIsSubmitting(true);
 

@@ -21,9 +21,11 @@
     "db:seed": "prisma db seed",
     "db:backup": "node scripts/backup-database.js",
     "import:legacy": "node prisma/seeder/import-legacy.js",
-    "snapshots:generate": "tsx scripts/generate-snapshots.ts"
+    "snapshots:generate": "tsx scripts/generate-snapshots.ts",
+    "test:ai": "tsx scripts/test-ai-categorization.ts"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.12",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.1",
     "@paralleldrive/cuid2": "^2.2.2",
@@ -40,6 +42,7 @@
     "@radix-ui/react-switch": "^1.2.5",
     "@tailwindcss/postcss": "^4.1.11",
     "@tanstack/react-table": "^8.21.3",
+    "ai": "^5.0.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -52,6 +55,9 @@
     "mysql2": "^3.14.3",
     "nanoid": "^5.1.5",
     "next": "15.4.6",
+    "next-themes": "^0.4.6",
+    "pino": "^9.9.0",
+    "pino-pretty": "^13.1.1",
     "postcss": "^8.5.6",
     "prisma": "^6.13.0",
     "react": "19.1.0",

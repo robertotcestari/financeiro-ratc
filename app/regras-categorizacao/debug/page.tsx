@@ -17,7 +17,7 @@ export default function DebugPage() {
       
       <div className="bg-gray-100 p-4 rounded">
         <p>If you can see this test button above, the issue is with the CreateRuleDialog component.</p>
-        <p>If you can't see the test button, the issue is with basic component rendering.</p>
+        <p>If you can&apos;t see the test button, the issue is with basic component rendering.</p>
       </div>
     </div>
   );

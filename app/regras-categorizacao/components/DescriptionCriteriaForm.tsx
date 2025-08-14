@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   FormControl,
   FormDescription,
@@ -28,7 +28,6 @@ interface DescriptionCriteriaFormProps {
 }
 
 export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFormProps) {
-  const [useDescription, setUseDescription] = useState(false);
   const [newKeyword, setNewKeyword] = useState('');
 
   const criteria = form.watch('criteria') || {};
@@ -36,27 +35,28 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
   const keywords = descriptionCriteria.keywords || [];
   const operator = descriptionCriteria.operator || 'or';
   const caseSensitive = descriptionCriteria.caseSensitive || false;
-
-  // Initialize useDescription state based on existing criteria
-  useEffect(() => {
-    const hasDescriptionCriteria = criteria.description && 
-      criteria.description.keywords && 
-      criteria.description.keywords.length > 0;
-    setUseDescription(!!hasDescriptionCriteria);
-  }, [criteria.description]);
+  
+  // Derive useDescription from the actual form state
+  const useDescription = !!(criteria.description && 
+    (criteria.description.keywords?.length > 0 || 
+     criteria.description.operator || 
+     criteria.description.caseSensitive !== undefined));
 
   const handleDescriptionToggle = (enabled: boolean) => {
-    setUseDescription(enabled);
     if (!enabled) {
-      const currentCriteria = form.getValues('criteria');
+      const currentCriteria = form.getValues('criteria') || {};
       const newCriteria = { ...currentCriteria };
       delete newCriteria.description;
       form.setValue('criteria', newCriteria);
     } else {
-      form.setValue('criteria.description', {
-        keywords: [],
-        operator: 'or',
-        caseSensitive: false,
+      const currentCriteria = form.getValues('criteria') || {};
+      form.setValue('criteria', {
+        ...currentCriteria,
+        description: {
+          keywords: [],
+          operator: 'or',
+          caseSensitive: false,
+        }
       });
     }
   };
@@ -64,22 +64,36 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
   const handleAddKeyword = () => {
     if (!newKeyword.trim()) return;
 
-    const currentKeywords = form.getValues('criteria.description.keywords') || [];
+    const currentCriteria = form.getValues('criteria') || {};
+    const currentDescription = currentCriteria.description || { keywords: [], operator: 'or', caseSensitive: false };
+    const currentKeywords = currentDescription.keywords || [];
     const trimmedKeyword = newKeyword.trim();
     
     if (!currentKeywords.includes(trimmedKeyword)) {
-      form.setValue('criteria.description.keywords', [...currentKeywords, trimmedKeyword]);
+      form.setValue('criteria', {
+        ...currentCriteria,
+        description: {
+          ...currentDescription,
+          keywords: [...currentKeywords, trimmedKeyword]
+        }
+      });
     }
     
     setNewKeyword('');
   };
 
   const handleRemoveKeyword = (keywordToRemove: string) => {
-    const currentKeywords = form.getValues('criteria.description.keywords') || [];
-    form.setValue(
-      'criteria.description.keywords',
-      currentKeywords.filter((k: string) => k !== keywordToRemove)
-    );
+    const currentCriteria = form.getValues('criteria') || {};
+    const currentDescription = currentCriteria.description || { keywords: [], operator: 'or', caseSensitive: false };
+    const currentKeywords = currentDescription.keywords || [];
+    
+    form.setValue('criteria', {
+      ...currentCriteria,
+      description: {
+        ...currentDescription,
+        keywords: currentKeywords.filter((k: string) => k !== keywordToRemove)
+      }
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -90,11 +104,29 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
   };
 
   const handleOperatorChange = (newOperator: 'and' | 'or') => {
-    form.setValue('criteria.description.operator', newOperator);
+    const currentCriteria = form.getValues('criteria') || {};
+    const currentDescription = currentCriteria.description || { keywords: [], operator: 'or', caseSensitive: false };
+    
+    form.setValue('criteria', {
+      ...currentCriteria,
+      description: {
+        ...currentDescription,
+        operator: newOperator
+      }
+    });
   };
 
   const handleCaseSensitiveChange = (enabled: boolean) => {
-    form.setValue('criteria.description.caseSensitive', enabled);
+    const currentCriteria = form.getValues('criteria') || {};
+    const currentDescription = currentCriteria.description || { keywords: [], operator: 'or', caseSensitive: false };
+    
+    form.setValue('criteria', {
+      ...currentCriteria,
+      description: {
+        ...currentDescription,
+        caseSensitive: enabled
+      }
+    });
   };
 
   const getDescription = (): string => {

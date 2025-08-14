@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/database/client';
 import Link from 'next/link';
 import TransactionFilters from './components/TransactionFilters';
-import TransactionTableV2 from './components/TransactionTableV2';
+import TransactionTable from './components/transaction-table';
 import { isPendingTransaction } from '@/lib/database/transactions';
 import type { Prisma } from '@/app/generated/prisma';
 import { redirect } from 'next/navigation';
@@ -180,7 +180,12 @@ export default async function TransacoesPage({ searchParams }: Props) {
         },
         property: true,
         suggestions: {
-          include: {
+          select: {
+            id: true,
+            confidence: true,
+            createdAt: true,
+            source: true,
+            reasoning: true,
             rule: true,
             suggestedCategory: {
               select: { 
@@ -274,11 +279,13 @@ export default async function TransacoesPage({ searchParams }: Props) {
         id: s.id,
         confidence: s.confidence,
         createdAt: s.createdAt,
-        rule: {
+        source: s.source,
+        reasoning: s.reasoning,
+        rule: s.rule ? {
           id: s.rule.id,
           name: s.rule.name,
           description: s.rule.description,
-        },
+        } : null,
         suggestedCategory: s.suggestedCategory ? {
           id: s.suggestedCategory.id,
           name: s.suggestedCategory.name,
@@ -328,7 +335,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
 
         <div className="px-4">
           <div className="bg-white shadow-sm border border-gray-200 rounded-lg">
-            <TransactionTableV2
+            <TransactionTable
               transactions={safeTransactions}
               currentPage={page}
               totalPages={totalPages}

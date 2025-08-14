@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { City } from '@/app/generated/prisma'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,22 +12,18 @@ interface CityFormProps {
 }
 
 export default function CityForm({ city, onSubmit, onCancel }: CityFormProps) {
-  const [formData, setFormData] = useState({
+  const initialFormData = city ? {
+    code: city.code,
+    name: city.name,
+    isActive: city.isActive
+  } : {
     code: '',
     name: '',
     isActive: true
-  })
+  }
+  
+  const [formData, setFormData] = useState(initialFormData)
   const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (city) {
-      setFormData({
-        code: city.code,
-        name: city.name,
-        isActive: city.isActive
-      })
-    }
-  }, [city])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

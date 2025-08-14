@@ -28,6 +28,136 @@ export class ImportPreviewService {
   }
 
   /**
+   * Generate import preview from parsed OFX result
+   */
+  async generatePreviewFromParsedResult(
+    parseResult: OFXParseResult,
+    bankAccountId: string
+  ): Promise<ImportPreview> {
+    try {
+      // Validate bank account exists
+      const bankAccount = await this.validateBankAccount(bankAccountId);
+
+      if (!parseResult.success) {
+        return {
+          success: false,
+          bankAccount,
+          parseResult,
+          transactions: [],
+          duplicates: {
+            duplicates: [],
+            uniqueTransactions: [],
+            summary: {
+              total: 0,
+              duplicates: 0,
+              unique: 0,
+              exactMatches: 0,
+              potentialMatches: 0,
+            },
+          },
+          validationErrors: parseResult.errors.map((error) => ({
+            type: 'PARSING',
+            code: error.code,
+            message: error.message,
+            transactionIndex: error.line,
+            details: error.details,
+            recoverable: false,
+          })),
+          summary: {
+            totalTransactions: 0,
+            validTransactions: 0,
+            invalidTransactions: parseResult.errors.length,
+            duplicateTransactions: 0,
+            uniqueTransactions: 0,
+            categorizedTransactions: 0,
+            uncategorizedTransactions: 0,
+          },
+        };
+      }
+
+      // Detect duplicates
+      const duplicateResult = await this.duplicateDetection.findDuplicates(
+        parseResult.transactions,
+        bankAccountId
+      );
+
+      // Validate transactions
+      const validationResult = await this.validateTransactions(
+        parseResult.transactions
+      );
+
+      // Generate transaction previews with categorization
+      const transactionPreviews = await this.generateTransactionPreviews(
+        parseResult.transactions,
+        duplicateResult,
+        validationResult.validTransactions
+      );
+
+      // Generate summary
+      const summary = this.generateSummary(
+        parseResult.transactions,
+        duplicateResult,
+        validationResult,
+        transactionPreviews
+      );
+
+      return {
+        success: true,
+        bankAccount,
+        parseResult,
+        transactions: transactionPreviews,
+        duplicates: duplicateResult,
+        validationErrors: validationResult.errors,
+        summary,
+      };
+    } catch (error) {
+      logger.error('ImportPreviewService.generatePreviewFromParsedResult failed', {
+        event: 'import_preview_error',
+        bankAccountId,
+        error,
+      });
+      const bankAccount = await this.getBankAccountSafely(bankAccountId);
+
+      return {
+        success: false,
+        bankAccount,
+        parseResult,
+        transactions: [],
+        duplicates: {
+          duplicates: [],
+          uniqueTransactions: [],
+          summary: {
+            total: 0,
+            duplicates: 0,
+            unique: 0,
+            exactMatches: 0,
+            potentialMatches: 0,
+          },
+        },
+        validationErrors: [
+          {
+            type: 'SYSTEM',
+            code: 'PREVIEW_GENERATION_ERROR',
+            message: `Failed to generate preview: ${
+              error instanceof Error ? error.message : 'Unknown error'
+            }`,
+            recoverable: false,
+          },
+        ],
+        summary: {
+          totalTransactions: 0,
+          validTransactions: 0,
+          invalidTransactions: 1,
+          duplicateTransactions: 0,
+          uniqueTransactions: 0,
+          categorizedTransactions: 0,
+          uncategorizedTransactions: 0,
+        },
+      };
+    }
+  }
+
+  /**
    * Generate import preview from OFX file
    */
   async generatePreview(

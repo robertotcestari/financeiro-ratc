@@ -8,6 +8,16 @@ const isIntegrationTest = process.argv.some(arg =>
   process.env.VITEST_INTEGRATION === 'true'
 );
 
+// Mock ResizeObserver for all tests (needed by cmdk component)
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
+
+// Mock scrollIntoView for all tests (needed by cmdk component)
+Element.prototype.scrollIntoView = () => {};
+
 if (isIntegrationTest) {
   beforeAll(async () => {
     // Limpa o banco de dados antes de todos os testes de integração

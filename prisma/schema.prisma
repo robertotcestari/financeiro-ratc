@@ -35,6 +35,11 @@ enum ImportStatus {
   FAILED // Falhou
 }
 
+enum SuggestionSource {
+  RULE // Sugestão baseada em regra
+  AI   // Sugestão baseada em IA
+}
+
 // 1. BankAccount (Contas Bancárias)
 model BankAccount {
   id          String      @id @default(cuid())
@@ -210,8 +215,12 @@ model TransactionSuggestion {
   processedTransactionId String
   processedTransaction   ProcessedTransaction @relation(fields: [processedTransactionId], references: [id])
 
-  ruleId String
-  rule   CategorizationRule @relation(fields: [ruleId], references: [id])
+  // Source of the suggestion
+  source    SuggestionSource @default(RULE)
+  
+  // Rule is optional for AI suggestions
+  ruleId String?
+  rule   CategorizationRule? @relation(fields: [ruleId], references: [id])
 
   // Suggested targets (category and/or property)
   suggestedCategoryId String?
@@ -221,12 +230,18 @@ model TransactionSuggestion {
   suggestedProperty   Property? @relation(fields: [suggestedPropertyId], references: [id])
 
   confidence Float     @default(1.0)
+  
+  // AI-specific fields
+  reasoning   String? @db.Text // Explanation of why this categorization was suggested
+  aiMetadata  Json?   // Store model name, processing time, tokens used, etc.
+  
   isApplied  Boolean   @default(false)
   appliedAt  DateTime?
 
   createdAt DateTime @default(now())
 
-  @@unique([processedTransactionId, ruleId])
+  @@unique([processedTransactionId, ruleId, source])
+  @@index([source])
   @@map("transaction_suggestions")
 }
 
