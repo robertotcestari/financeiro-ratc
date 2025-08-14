@@ -27,20 +27,25 @@ interface DescriptionCriteriaFormProps {
   form: RuleFormReturn;
 }
 
-export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFormProps) {
+export default function DescriptionCriteriaForm({
+  form,
+}: DescriptionCriteriaFormProps) {
   const [newKeyword, setNewKeyword] = useState('');
 
   const criteria = form.watch('criteria') || {};
-  const descriptionCriteria = criteria.description || {} as any;
-  const keywords = (descriptionCriteria.keywords || []) as string[];
-  const operator = (descriptionCriteria.operator || 'or') as 'and' | 'or';
-  const caseSensitive = (descriptionCriteria.caseSensitive || false) as boolean;
-  
+  const descriptionCriteria = criteria.description;
+  const keywords = (descriptionCriteria?.keywords || []) as string[];
+  const operator = (descriptionCriteria?.operator || 'or') as 'and' | 'or';
+  const caseSensitive = (descriptionCriteria?.caseSensitive ||
+    false) as boolean;
+
   // Derive useDescription from the actual form state
-  const useDescription = !!(criteria.description && 
-    (criteria.description.keywords?.length > 0 || 
-     criteria.description.operator || 
-     criteria.description.caseSensitive !== undefined));
+  const useDescription = !!(
+    criteria.description &&
+    (criteria.description.keywords?.length > 0 ||
+      criteria.description.operator ||
+      criteria.description.caseSensitive !== undefined)
+  );
 
   const handleDescriptionToggle = (enabled: boolean) => {
     if (!enabled) {
@@ -56,7 +61,7 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
           keywords: [],
           operator: 'or',
           caseSensitive: false,
-        }
+        },
       });
     }
   };
@@ -65,34 +70,42 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
     if (!newKeyword.trim()) return;
 
     const currentCriteria = form.getValues('criteria') || {};
-    const currentDescription = currentCriteria.description || { keywords: [], operator: 'or', caseSensitive: false };
+    const currentDescription = currentCriteria.description || {
+      keywords: [],
+      operator: 'or',
+      caseSensitive: false,
+    };
     const currentKeywords = currentDescription.keywords || [];
     const trimmedKeyword = newKeyword.trim();
-    
+
     if (!currentKeywords.includes(trimmedKeyword)) {
       form.setValue('criteria', {
         ...currentCriteria,
         description: {
           ...currentDescription,
-          keywords: [...currentKeywords, trimmedKeyword]
-        }
+          keywords: [...currentKeywords, trimmedKeyword],
+        },
       });
     }
-    
+
     setNewKeyword('');
   };
 
   const handleRemoveKeyword = (keywordToRemove: string) => {
     const currentCriteria = form.getValues('criteria') || {};
-    const currentDescription = currentCriteria.description || { keywords: [], operator: 'or', caseSensitive: false };
+    const currentDescription = currentCriteria.description || {
+      keywords: [],
+      operator: 'or',
+      caseSensitive: false,
+    };
     const currentKeywords = currentDescription.keywords || [];
-    
+
     form.setValue('criteria', {
       ...currentCriteria,
       description: {
         ...currentDescription,
-        keywords: currentKeywords.filter((k: string) => k !== keywordToRemove)
-      }
+        keywords: currentKeywords.filter((k: string) => k !== keywordToRemove),
+      },
     });
   };
 
@@ -105,39 +118,53 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
 
   const handleOperatorChange = (newOperator: 'and' | 'or') => {
     const currentCriteria = form.getValues('criteria') || {};
-    const currentDescription = currentCriteria.description || { keywords: [], operator: 'or', caseSensitive: false };
-    
+    const currentDescription = currentCriteria.description || {
+      keywords: [],
+      operator: 'or',
+      caseSensitive: false,
+    };
+
     form.setValue('criteria', {
       ...currentCriteria,
       description: {
         ...currentDescription,
-        operator: newOperator
-      }
+        operator: newOperator,
+      },
     });
   };
 
   const handleCaseSensitiveChange = (enabled: boolean) => {
     const currentCriteria = form.getValues('criteria') || {};
-    const currentDescription = currentCriteria.description || { keywords: [], operator: 'or', caseSensitive: false };
-    
+    const currentDescription = currentCriteria.description || {
+      keywords: [],
+      operator: 'or',
+      caseSensitive: false,
+    };
+
     form.setValue('criteria', {
       ...currentCriteria,
       description: {
         ...currentDescription,
-        caseSensitive: enabled
-      }
+        caseSensitive: enabled,
+      },
     });
   };
 
   const getDescription = (): string => {
     if (keywords.length === 0) return 'Adicione pelo menos uma palavra-chave';
-    
+
     if (keywords.length === 1) {
-      return `Transações que ${caseSensitive ? '' : '(sem diferenciar maiúsculas/minúsculas) '}contêm "${keywords[0]}"`;
+      return `Transações que ${
+        caseSensitive ? '' : '(sem diferenciar maiúsculas/minúsculas) '
+      }contêm "${keywords[0]}"`;
     }
 
-    const keywordList = keywords.map((k: string) => `"${k}"`).join(operator === 'and' ? ' E ' : ' OU ');
-    return `Transações que ${caseSensitive ? '' : '(sem diferenciar maiúsculas/minúsculas) '}contêm ${keywordList}`;
+    const keywordList = keywords
+      .map((k: string) => `"${k}"`)
+      .join(operator === 'and' ? ' E ' : ' OU ');
+    return `Transações que ${
+      caseSensitive ? '' : '(sem diferenciar maiúsculas/minúsculas) '
+    }contêm ${keywordList}`;
   };
 
   return (
@@ -152,7 +179,8 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
           <div>
             <FormLabel>Filtrar por Palavras-chave</FormLabel>
             <FormDescription className="text-xs">
-              Aplicar apenas em transações que contêm palavras ou frases específicas.
+              Aplicar apenas em transações que contêm palavras ou frases
+              específicas.
             </FormDescription>
           </div>
           <Switch
@@ -184,7 +212,8 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
                 </Button>
               </div>
               <FormDescription className="text-xs">
-                Digite uma palavra ou frase e pressione Enter ou clique em + para adicionar.
+                Digite uma palavra ou frase e pressione Enter ou clique em +
+                para adicionar.
               </FormDescription>
             </div>
 
@@ -222,15 +251,18 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="or">OU (qualquer palavra-chave)</SelectItem>
-                    <SelectItem value="and">E (todas as palavras-chave)</SelectItem>
+                    <SelectItem value="or">
+                      OU (qualquer palavra-chave)
+                    </SelectItem>
+                    <SelectItem value="and">
+                      E (todas as palavras-chave)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormDescription className="text-xs">
-                  {operator === 'or' 
+                  {operator === 'or'
                     ? 'A transação deve conter pelo menos uma das palavras-chave'
-                    : 'A transação deve conter todas as palavras-chave'
-                  }
+                    : 'A transação deve conter todas as palavras-chave'}
                 </FormDescription>
               </FormItem>
             )}
@@ -240,7 +272,8 @@ export default function DescriptionCriteriaForm({ form }: DescriptionCriteriaFor
               <div>
                 <FormLabel>Sensível a maiúsculas/minúsculas</FormLabel>
                 <FormDescription className="text-xs">
-                  Se ativado, &quot;ALUGUEL&quot; será diferente de &quot;aluguel&quot;.
+                  Se ativado, &quot;ALUGUEL&quot; será diferente de
+                  &quot;aluguel&quot;.
                 </FormDescription>
               </div>
               <Switch

@@ -179,7 +179,6 @@ describe('DuplicateDetectionService Integration', () => {
       expect(result.summary.unique).toBe(1);
     });
 
-
     it('should filter out low confidence matches', async () => {
       // Create a transaction with same amount but very different description and date
       await prisma.transaction.create({
@@ -215,7 +214,7 @@ describe('DuplicateDetectionService Integration', () => {
       if (!testBankAccountId) {
         throw new Error('Test bank account not initialized');
       }
-      
+
       // Create some existing transactions
       await prisma.transaction.create({
         data: {

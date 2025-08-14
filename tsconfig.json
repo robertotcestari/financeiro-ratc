@@ -23,14 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": [
-    "node_modules",
-    "vitest.setup.ts",
-    "vitest.config.mts",
-    "e2e/**/*",
-    "tests/**/*",
-    "scripts/**/*",
-    "prisma/seed.ts",
-    "prisma/seeder"
-  ]
+  "exclude": ["node_modules", "vitest.setup.ts", "vitest.config.mts"]
 }

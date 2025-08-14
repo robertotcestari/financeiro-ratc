@@ -30,8 +30,18 @@ interface DRETableClientProps {
 }
 
 const MONTH_NAMES = [
-  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+  'Janeiro',
+  'Fevereiro',
+  'Março',
+  'Abril',
+  'Maio',
+  'Junho',
+  'Julho',
+  'Agosto',
+  'Setembro',
+  'Outubro',
+  'Novembro',
+  'Dezembro',
 ];
 
 // IDs das seções que podem ser expandidas/colapsadas
@@ -40,12 +50,18 @@ const SECTION_IDS = {
   RECEITAS_OPERACIONAIS: 'section-receitas-operacionais',
   DESPESAS_OPERACIONAIS: 'section-despesas-operacionais',
   RECEITAS_NAO_OPERACIONAIS: 'section-receitas-não-operacionais',
-  DESPESAS_NAO_OPERACIONAIS: 'section-despesas-não-operacionais'
+  DESPESAS_NAO_OPERACIONAIS: 'section-despesas-não-operacionais',
 };
 
-export function DRETableClient({ year, selectedMonths, rows }: DRETableClientProps) {
+export function DRETableClient({
+  year,
+  selectedMonths,
+  rows,
+}: DRETableClientProps) {
   // Estado para controlar quais seções estão expandidas
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({
     [SECTION_IDS.SALDOS_BANCARIOS]: false,
     [SECTION_IDS.RECEITAS_OPERACIONAIS]: false,
     [SECTION_IDS.DESPESAS_OPERACIONAIS]: false,
@@ -63,17 +79,17 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const toggleSection = (sectionId: string) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [sectionId]: !prev[sectionId]
+      [sectionId]: !prev[sectionId],
     }));
   };
 
   const toggleAllSections = (expand: boolean) => {
     setExpandAll(expand);
-    setExpandedSections(prev => {
+    setExpandedSections((prev) => {
       const newState = { ...prev };
-      Object.keys(SECTION_IDS).forEach(key => {
+      Object.keys(SECTION_IDS).forEach((key) => {
         newState[SECTION_IDS[key as keyof typeof SECTION_IDS]] = expand;
       });
       return newState;
@@ -91,65 +107,81 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
 
   const getCellClass = (lineType: string, isBold: boolean, rowId?: string) => {
     let classes = 'px-3 text-right border-b border-gray-200 text-xs';
-    
+
     if (lineType === 'SEPARATOR') {
       return 'px-3 py-2 border-b border-gray-300';
     }
-    
+
     // Padding vertical maior para headers (lvl1) e totais
     if (lineType === 'HEADER' || lineType === 'TOTAL') {
       classes += ' py-3';
     } else {
       classes += ' py-1';
     }
-    
-    if (isBold || lineType === 'SUBTOTAL' || lineType === 'TOTAL' || lineType === 'HEADER') {
+
+    if (
+      isBold ||
+      lineType === 'SUBTOTAL' ||
+      lineType === 'TOTAL' ||
+      lineType === 'HEADER'
+    ) {
       classes += ' font-bold';
     }
-    
+
     // Estilo especial para linha de não categorizados
     if (rowId === 'nao-categorizados') {
       classes += ' bg-yellow-100 border-yellow-300';
     } else if (lineType === 'TOTAL') {
-      classes += ' bg-blue-50 border-t border-gray-400 border-b-2 border-gray-400';
+      classes +=
+        ' bg-blue-50 border-t border-gray-400 border-b-2 border-gray-400';
     } else if (lineType === 'SUBTOTAL') {
       classes += ' bg-gray-50 font-semibold';
     } else if (lineType === 'HEADER') {
       classes += ' font-bold';
     }
-    
+
     return classes;
   };
 
-  const getNameCellClass = (lineType: string, isBold: boolean, rowId?: string) => {
+  const getNameCellClass = (
+    lineType: string,
+    isBold: boolean,
+    rowId?: string
+  ) => {
     let classes = 'px-3 border-b border-gray-200 text-sm';
-    
+
     if (lineType === 'SEPARATOR') {
       return 'px-3 py-2 border-b border-gray-300';
     }
-    
+
     // Padding vertical maior para headers (lvl1) e totais
     if (lineType === 'HEADER' || lineType === 'TOTAL') {
       classes += ' py-3';
     } else {
       classes += ' py-1';
     }
-    
-    if (isBold || lineType === 'SUBTOTAL' || lineType === 'TOTAL' || lineType === 'HEADER') {
+
+    if (
+      isBold ||
+      lineType === 'SUBTOTAL' ||
+      lineType === 'TOTAL' ||
+      lineType === 'HEADER'
+    ) {
       classes += ' font-bold';
     }
-    
+
     // Estilo especial para linha de não categorizados
     if (rowId === 'nao-categorizados') {
       classes += ' bg-yellow-100 border-yellow-300';
     } else if (lineType === 'TOTAL') {
-      classes += ' bg-blue-50 border-t border-gray-400 border-b-2 border-gray-400';
+      classes +=
+        ' bg-blue-50 border-t border-gray-400 border-b-2 border-gray-400';
     } else if (lineType === 'SUBTOTAL') {
       classes += ' bg-gray-50 font-semibold';
     } else if (lineType === 'HEADER') {
       classes += ' font-bold';
     }
-    
+
     return classes;
   };
 
@@ -162,12 +194,12 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
   // Função para verificar se uma linha tem valores zero em todos os meses
   const hasOnlyZeroValues = (row: DRERow) => {
     if (row.lineType !== 'DETAIL') return false;
-    
-    const hasValues = selectedMonths.some(month => {
+
+    const hasValues = selectedMonths.some((month) => {
       const value = row.monthlyAmounts[month] || 0;
       return value !== 0;
     });
-    
+
     return !hasValues;
   };
 
@@ -217,7 +249,7 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
   // Função para renderizar o botão de toggle
   const renderToggleButton = (row: DRERow) => {
     const isToggleableSection = Object.values(SECTION_IDS).includes(row.id);
-    
+
     if (!isToggleableSection || row.lineType !== 'HEADER') {
       return null;
     }
@@ -237,11 +269,21 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
   };
 
   // Column helper for creating columns
+  // Create a column helper for the DRERow type. Column value types will be
+  // treated as unknown in the ColumnDef array below to allow different
+  // accessor return types (string | number).
   const columnHelper = createColumnHelper<DRERow>();
+  // Alias a column type that permits any value type. Using `any` here for
+  // the TValue avoids the complex generic incompatibilities between
+  // AccessorKeyColumnDef/AccessorFnColumnDef with different return types.
+  // This is safe because cells ultimately render strings/numbers.
+  // Use unknown for TValue to avoid `any` but allow casting from specific
+  // accessor column defs (string | number) when necessary.
+  type TableColumn = ColumnDef<DRERow, unknown>;
 
   // Create columns dynamically based on selected months
-  const columns = useMemo<ColumnDef<DRERow>[]>(() => {
-    const cols: ColumnDef<DRERow>[] = [
+  const columns = useMemo<TableColumn[]>(() => {
+    const cols: TableColumn[] = [
       // Name column
       columnHelper.accessor('name', {
         id: 'name',
@@ -255,18 +297,26 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
           return (
             <div className="flex items-center">
               {renderToggleButton(rowData)}
-              <span style={{ paddingLeft: `${Math.max(0, (rowData.lineType === 'SUBTOTAL' ? 1 : rowData.level - 1) * 16)}px` }}>
+              <span
+                style={{
+                  paddingLeft: `${Math.max(
+                    0,
+                    (rowData.lineType === 'SUBTOTAL' ? 1 : rowData.level - 1) *
+                      16
+                  )}px`,
+                }}
+              >
                 {rowData.name}
               </span>
             </div>
           );
         },
         enableSorting: false,
-      }),
+      }) as TableColumn,
     ];
 
     // Add month columns
-    selectedMonths.forEach(month => {
+    selectedMonths.forEach((month) => {
       cols.push(
         columnHelper.accessor((row) => row.monthlyAmounts[month] || 0, {
           id: `month-${month}`,
@@ -287,7 +337,7 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
             );
           },
           enableSorting: false,
-        })
+        }) as TableColumn
       );
     });
 
@@ -308,7 +358,7 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
             );
           },
           enableSorting: false,
-        })
+        }) as TableColumn
       );
     }
 
@@ -323,7 +373,8 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
   }, [rows, expandedSections, showZeroValues]);
 
   // Create table instance
-  const table = useReactTable({
+  // Provide the row type generic so the table types align with the column helpers
+  const table = useReactTable<DRERow>({
     data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -339,7 +390,9 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
   if (selectedMonths.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
-        <p className="text-gray-500 text-center">Selecione ao menos um mês para visualizar o DRE</p>
+        <p className="text-gray-500 text-center">
+          Selecione ao menos um mês para visualizar o DRE
+        </p>
       </div>
     );
   }
@@ -354,16 +407,19 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
               checked={showZeroValues}
               onCheckedChange={setShowZeroValues}
             />
-            <label className="cursor-pointer" onClick={() => setShowZeroValues(!showZeroValues)}>
+            <label
+              className="cursor-pointer"
+              onClick={() => setShowZeroValues(!showZeroValues)}
+            >
               Mostrar todas as categorias
             </label>
           </div>
           <div className="flex items-center gap-2">
-            <Switch
-              checked={expandAll}
-              onCheckedChange={toggleAllSections}
-            />
-            <label className="cursor-pointer" onClick={() => toggleAllSections(!expandAll)}>
+            <Switch checked={expandAll} onCheckedChange={toggleAllSections} />
+            <label
+              className="cursor-pointer"
+              onClick={() => toggleAllSections(!expandAll)}
+            >
               Expandir todas as seções
             </label>
           </div>
@@ -372,44 +428,63 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id} className="bg-gray-50 border-b border-gray-200">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr
+                key={headerGroup.id}
+                className="bg-gray-50 border-b border-gray-200"
+              >
                 {headerGroup.headers.map((header, index) => (
                   <th
                     key={header.id}
                     className={`px-3 py-3 font-medium text-gray-900 ${
                       index === 0
                         ? 'text-left sticky left-0 bg-gray-50 min-w-[300px]'
-                        : index === headerGroup.headers.length - 1 && selectedMonths.length > 1
+                        : index === headerGroup.headers.length - 1 &&
+                          selectedMonths.length > 1
                         ? 'text-center min-w-[120px] bg-blue-50'
                         : 'text-center min-w-[120px]'
                     }`}
                   >
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </th>
                 ))}
               </tr>
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map(row => (
+            {table.getRowModel().rows.map((row) => (
               <tr key={row.id} className="hover:bg-gray-50">
                 {row.getVisibleCells().map((cell, index) => {
                   const rowData = row.original;
                   const isNameCell = index === 0;
-                  const isTotalCell = index === row.getVisibleCells().length - 1 && selectedMonths.length > 1;
-                  
+                  const isTotalCell =
+                    index === row.getVisibleCells().length - 1 &&
+                    selectedMonths.length > 1;
+
                   return (
                     <td
                       key={cell.id}
                       className={`${
                         isNameCell
-                          ? `${getNameCellClass(rowData.lineType, rowData.isBold, rowData.id)} sticky left-0 ${
-                              rowData.id === 'nao-categorizados' ? 'bg-yellow-100' : 'bg-white'
+                          ? `${getNameCellClass(
+                              rowData.lineType,
+                              rowData.isBold,
+                              rowData.id
+                            )} sticky left-0 ${
+                              rowData.id === 'nao-categorizados'
+                                ? 'bg-yellow-100'
+                                : 'bg-white'
                             }`
-                          : `${getCellClass(rowData.lineType, rowData.isBold, rowData.id)} ${
+                          : `${getCellClass(
+                              rowData.lineType,
+                              rowData.isBold,
+                              rowData.id
+                            )} ${
                               isTotalCell && rowData.id === 'nao-categorizados'
                                 ? 'bg-yellow-100'
                                 : isTotalCell
@@ -418,7 +493,10 @@ export function DRETableClient({ year, selectedMonths, rows }: DRETableClientPro
                             }`
                       }`}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </td>
                   );
                 })}
