@@ -154,11 +154,11 @@ async function importFile(prisma: PrismaClient, filePath: string) {
 export async function seedTransactions(prisma: PrismaClient) {
   console.log('💰 Importing transactions from CSV files...')
   
-  const seederDir = path.resolve(__dirname)
-  const csvFiles = fs.readdirSync(seederDir)
+  const dataDir = path.resolve(__dirname, '../data')
+  const csvFiles = fs.readdirSync(dataDir)
     .filter(f => f.endsWith('.csv'))
     .filter(f => !f.includes('DRE') && !f.includes('Contas Unificadas') && !f.includes('Linked'))
-    .map(f => path.join(seederDir, f))
+    .map(f => path.join(dataDir, f))
   
   if (csvFiles.length > 0) {
     for (const filePath of csvFiles) {

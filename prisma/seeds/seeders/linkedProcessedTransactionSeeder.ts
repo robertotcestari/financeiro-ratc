@@ -35,7 +35,7 @@ function parseBRDate(text: any): Date | null {
 export async function seedLinkedProcessedTransactions(prisma: PrismaClient) {
   console.log('🔗 Creating linked processed transactions...')
   
-  const csvPath = path.join(__dirname, 'Contratos de Locação - Contas Unificadas - New Categories - With IDs - Fixed.csv')
+  const csvPath = path.join(__dirname, '../data', 'Contratos de Locação - Contas Unificadas - New Categories - With IDs - Fixed.csv')
   const csvContent = fs.readFileSync(csvPath, 'utf-8')
   const rows = parse(csvContent, { 
     columns: ['year', 'month', 'propertyRef', 'category', 'account', 'details', 'date', 'description', 'value', 'categoryId', 'transactionId'],

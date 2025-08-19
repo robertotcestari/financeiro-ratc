@@ -11,7 +11,7 @@
 const fs = require('fs')
 const path = require('path')
 const { parse } = require('csv-parse/sync')
-const { PrismaClient } = require('../../app/generated/prisma')
+const { PrismaClient } = require('../../../app/generated/prisma')
 
 const prisma = new PrismaClient()
 

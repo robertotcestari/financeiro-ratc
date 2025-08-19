@@ -1,5 +1,5 @@
 import { PrismaClient } from '@/app/generated/prisma';
-import cities from './cities.json';
+import cities from '../data/cities.json';
 
 interface CityData {
   code: string;

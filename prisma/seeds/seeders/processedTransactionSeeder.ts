@@ -52,7 +52,7 @@ function parseDate(dateStr: string): Date {
 export async function seedProcessedTransactions(prisma: PrismaClient) {
   console.log('🔗 Creating processed transactions...')
   
-  const csvPath = path.join(__dirname, 'Contratos de Locação - Contas Unificadas - New Categories.csv')
+  const csvPath = path.join(__dirname, '../data', 'Contratos de Locação - Contas Unificadas - New Categories.csv')
   
   if (!fs.existsSync(csvPath)) {
     console.log('   ⚠️ Processed transactions CSV not found, skipping...')

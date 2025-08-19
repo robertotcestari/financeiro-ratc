@@ -34,7 +34,7 @@ function parseBRDate(text: any): Date | null {
 export async function seedAllProcessedTransactions(prisma: PrismaClient) {
   console.log('🔗 Creating all processed transactions (with and without transactionId)...')
   
-  const csvPath = path.join(__dirname, 'Contratos de Locação - Contas Unificadas - New Categories - With IDs - Fixed.csv')
+  const csvPath = path.join(__dirname, '../data', 'Contratos de Locação - Contas Unificadas - New Categories - With IDs - Fixed.csv')
   
   if (!fs.existsSync(csvPath)) {
     console.log('   ⚠️ CSV file not found, skipping...')

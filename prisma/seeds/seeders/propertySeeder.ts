@@ -1,5 +1,5 @@
 import { PrismaClient } from '@/app/generated/prisma'
-import properties from './properties.json'
+import properties from '../data/properties.json'
 
 type PropertyData = {
   code: string

@@ -1,13 +1,13 @@
 import { PrismaClient } from '@/app/generated/prisma';
-import { seedBankAccounts } from './seeder/bankAccountSeeder';
-import { seedCategories } from './seeder/categorySeeder';
-import { seedCities } from './seeder/citySeeder';
-import { seedProperties } from './seeder/propertySeeder';
-import { seedTransactions } from './seeder/transactionSeeder';
-import { seedCSVTransactions } from './seeder/csvTransactionSeeder';
-import { seedLinkedProcessedTransactions } from './seeder/linkedProcessedTransactionSeeder';
-import { seedAllProcessedTransactions } from './seeder/allProcessedTransactionSeeder';
-import { seedCategorizationRulesFromInstituto } from './seeder/categorizationRuleSeederFromInstituto';
+import { seedBankAccounts } from './seeds/seeders/bankAccountSeeder';
+import { seedCategories } from './seeds/seeders/categorySeeder';
+import { seedCities } from './seeds/seeders/citySeeder';
+import { seedProperties } from './seeds/seeders/propertySeeder';
+import { seedTransactions } from './seeds/seeders/transactionSeeder';
+import { seedCSVTransactions } from './seeds/seeders/csvTransactionSeeder';
+import { seedLinkedProcessedTransactions } from './seeds/seeders/linkedProcessedTransactionSeeder';
+import { seedAllProcessedTransactions } from './seeds/seeders/allProcessedTransactionSeeder';
+import { seedCategorizationRulesFromInstituto } from './seeds/seeders/categorizationRuleSeederFromInstituto';
 
 const prisma = new PrismaClient();
 

@@ -1,5 +1,5 @@
 import { PrismaClient, CategoryType } from '@/app/generated/prisma'
-import categoriesData from './categories.json'
+import categoriesData from '../data/categories.json'
 
 interface CategoryData {
   id: string

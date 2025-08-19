@@ -165,7 +165,7 @@ export async function seedCSVTransactions() {
   let totalImported = 0;
   
   for (const { file, bankAccount } of csvFiles) {
-    const filePath = path.join(__dirname, file);
+    const filePath = path.join(__dirname, '../data', file);
     
     if (!fs.existsSync(filePath)) {
       console.log(`  ⚠️  File not found: ${file}`);

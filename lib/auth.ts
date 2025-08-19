@@ -2,9 +2,6 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from '@/lib/core/database/client';
 
-// Allowed email for authentication
-// const ALLOWED_EMAIL = "robertotcestari@gmail.com";
-
 export const auth = betterAuth({
   // Database configuration
   database: prismaAdapter(prisma, {

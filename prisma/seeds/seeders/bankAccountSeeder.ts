@@ -1,5 +1,5 @@
 import { PrismaClient, AccountType } from '@/app/generated/prisma'
-import bankAccounts from './bankAccounts.json'
+import bankAccounts from '../data/bankAccounts.json'
 
 export async function seedBankAccounts(prisma: PrismaClient) {
   console.log('📦 Creating bank accounts...')
