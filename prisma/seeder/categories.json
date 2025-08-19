@@ -217,13 +217,6 @@
     "type": "EXPENSE"
   },
   {
-    "id": "cat-darf-irpf",
-    "name": "DARF IRPF",
-    "level": 3,
-    "parentId": "cat-despesas-tributarias",
-    "type": "EXPENSE"
-  },
-  {
     "id": "cat-pis",
     "name": "PIS",
     "level": 3,

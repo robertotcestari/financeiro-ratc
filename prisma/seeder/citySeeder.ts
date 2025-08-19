@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../app/generated/prisma';
+import { PrismaClient } from '@/app/generated/prisma';
 import cities from './cities.json';
 
 interface CityData {

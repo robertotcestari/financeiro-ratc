@@ -1,10 +1,10 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useBulkOperations } from '@/app/transacoes/components/transaction-table/hooks/useBulkOperations';
-import { bulkCategorizeAction, bulkDeleteTransactionsAction } from '@/app/transacoes/actions';
+import { useBulkOperations } from '@/app/(protected)/transacoes/components/transaction-table/hooks/useBulkOperations';
+import { bulkCategorizeAction, bulkDeleteTransactionsAction } from '@/app/(protected)/transacoes/actions';
 
 // Mock the server actions
-vi.mock('@/app/transacoes/actions', () => ({
+vi.mock('@/app/(protected)/transacoes/actions', () => ({
   bulkCategorizeAction: vi.fn(),
   bulkDeleteTransactionsAction: vi.fn(),
 }));

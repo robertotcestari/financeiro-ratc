@@ -4,7 +4,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import OfxFileUpload from '@/components/ofx/OfxFileUpload';
-import type { OFXParseResult, OFXTransaction } from '@/lib/ofx/types';
+import type { OFXParseResult, OFXTransaction } from '@/lib/features/ofx/types';
 import AccountSelection, {
   type MinimalBankAccount,
   type ValidationResult,

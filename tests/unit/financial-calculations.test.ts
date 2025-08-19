@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { Decimal } from '@prisma/client/runtime/library';
-import { calculateRunningBalance } from '../../lib/financial-calculations';
+import { calculateRunningBalance } from '@/lib/features/financial/financial-calculations';
 
 // Mock prisma client
-vi.mock('../../lib/database/client', () => ({
+vi.mock('@/lib/core/database/client', () => ({
   prisma: {
     transaction: {
       aggregate: vi.fn(),

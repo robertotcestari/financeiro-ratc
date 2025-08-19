@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 // @vitest-environment jsdom
 
 // Mock the criteria form components
-vi.mock('@/app/regras-categorizacao/components/DateCriteriaForm', () => ({
+vi.mock('@/app/(protected)/regras-categorizacao/components/DateCriteriaForm', () => ({
   default: ({ form }: any) => (
     <div data-testid="date-criteria-form">
       <input
@@ -18,7 +18,7 @@ vi.mock('@/app/regras-categorizacao/components/DateCriteriaForm', () => ({
   ),
 }));
 
-vi.mock('@/app/regras-categorizacao/components/ValueCriteriaForm', () => ({
+vi.mock('@/app/(protected)/regras-categorizacao/components/ValueCriteriaForm', () => ({
   default: ({ form }: any) => (
     <div data-testid="value-criteria-form">
       <input
@@ -30,7 +30,7 @@ vi.mock('@/app/regras-categorizacao/components/ValueCriteriaForm', () => ({
   ),
 }));
 
-vi.mock('@/app/regras-categorizacao/components/DescriptionCriteriaForm', () => ({
+vi.mock('@/app/(protected)/regras-categorizacao/components/DescriptionCriteriaForm', () => ({
   default: ({ form }: any) => (
     <div data-testid="description-criteria-form">
       <input
@@ -41,7 +41,7 @@ vi.mock('@/app/regras-categorizacao/components/DescriptionCriteriaForm', () => (
   ),
 }));
 
-vi.mock('@/app/regras-categorizacao/components/AccountCriteriaForm', () => ({
+vi.mock('@/app/(protected)/regras-categorizacao/components/AccountCriteriaForm', () => ({
   default: ({ form, bankAccounts }: any) => (
     <div data-testid="account-criteria-form">
       {bankAccounts.map((account: any) => (
@@ -65,9 +65,9 @@ vi.mock('@/app/regras-categorizacao/components/AccountCriteriaForm', () => ({
 }));
 
 // Import the component after mocking
-import RuleForm from '@/app/regras-categorizacao/components/RuleForm';
-import type { RuleWithRelations } from '@/lib/database/rule-management';
-import type { FormData } from '@/app/regras-categorizacao/components/CreateRuleDialog';
+import RuleForm from '@/app/(protected)/regras-categorizacao/components/RuleForm';
+import type { RuleWithRelations } from '@/lib/core/database/rule-management';
+import type { FormData } from '@/app/(protected)/regras-categorizacao/components/CreateRuleDialog';
 
 const mockFormData: FormData = {
   categories: [

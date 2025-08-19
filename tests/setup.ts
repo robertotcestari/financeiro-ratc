@@ -1,5 +1,5 @@
 import { beforeAll, afterAll } from 'vitest';
-import { prisma } from '../lib/database/client';
+import { prisma } from '@/lib/core/database/client';
 
 // Only run database setup for integration tests, not component tests
 const isIntegrationTest = process.argv.some(arg => 

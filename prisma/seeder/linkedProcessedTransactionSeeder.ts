@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../app/generated/prisma'
+import { PrismaClient } from '@/app/generated/prisma'
 import * as fs from 'fs'
 import * as path from 'path'
 import { parse } from 'csv-parse/sync'
@@ -125,11 +125,11 @@ export async function seedLinkedProcessedTransactions(prisma: PrismaClient) {
         // Create processed transaction only if it doesn't exist
         await prisma.processedTransaction.create({
           data: {
-            transactionId: existingTransaction.id,
+            transaction: { connect: { id: existingTransaction.id } },
             year: parsedYear,
             month: parsedMonth,
-            categoryId: categoryId,
-            propertyId,
+            category: { connect: { id: categoryId } },
+            ...(propertyId ? { property: { connect: { id: propertyId } } } : {}),
             details: details || null,
             isReviewed: true // Mark as reviewed since these come from manual categorization
           }
@@ -139,8 +139,10 @@ export async function seedLinkedProcessedTransactions(prisma: PrismaClient) {
         await prisma.processedTransaction.update({
           where: { transactionId: existingTransaction.id },
           data: {
-            categoryId: categoryId,
-            propertyId,
+            category: { connect: { id: categoryId } },
+            ...(propertyId
+              ? { property: { connect: { id: propertyId } } }
+              : { property: { disconnect: true } }),
             details: details || null,
             isReviewed: true,
             updatedAt: new Date()

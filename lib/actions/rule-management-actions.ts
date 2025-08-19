@@ -7,16 +7,16 @@ import {
   type UpdateRuleRequest,
   type RuleListFilters,
   type RuleWithRelations
-} from '../database/rule-management';
+} from '@/lib/core/database/rule-management';
 import {
   ruleTestingService,
   type RuleTestRequest,
   type RulePreviewRequest,
   type RuleTestResult
-} from '../database/rule-testing';
-import { ruleEngine } from '../database/rule-engine';
-import type { RuleCriteria } from '../database/rule-types';
-import { createActionLogger } from '../logger';
+} from '@/lib/core/database/rule-testing';
+import { ruleEngine } from '@/lib/core/database/rule-engine';
+import type { RuleCriteria } from '@/lib/core/database/rule-types';
+import { createActionLogger } from '@/lib/core/logger/logger';
 
 // =============== Rule CRUD Actions ===============
 

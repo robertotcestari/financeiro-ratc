@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { OFXParserService } from '@/lib/ofx/parser';
+import { OFXParserService } from '@/lib/features/ofx/parser';
 
 describe('OFXParserService - Description Building', () => {
   const parser = new OFXParserService();

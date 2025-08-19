@@ -8,7 +8,7 @@ import {
   isDateInMonths,
   isDateInRange,
   formatTransactionDate,
-} from '../../lib/utils/date-helpers';
+} from '@/lib/utils/date-helpers';
 
 // rule-types utilities are pure as well
 import {
@@ -17,25 +17,24 @@ import {
   containsWholeWord,
   containsSubstring,
   type RuleCriteria,
-} from '../../lib/database/rule-types';
+} from '@/lib/core/database/rule-types';
 // Prisma types for strong typing of stubs
-import { Prisma } from '../../app/generated/prisma';
+import { Prisma } from '@/app/generated/prisma';
 import type {
   ProcessedTransaction as PTx,
   Transaction as Tx,
   CategorizationRule,
   Prisma as PrismaTypes,
-} from '../../app/generated/prisma';
+} from '@/app/generated/prisma';
 
-import { prisma } from '../../lib/database/client';
+import { prisma } from '@/lib/core/database/client';
 
 type PTxWithTx = PTx & { transaction: Tx | null };
 
 // 2) Modules that import prisma client: we must mock prisma module BEFORE importing them
 
-
 // IMPORTANT: mock the prisma client module used by DB-layer files
-vi.mock('../../lib/database/client', () => {
+vi.mock('@/lib/core/database/client', () => {
   const txMocks = {
     transactionSuggestion: {
       deleteMany: vi.fn(),
@@ -48,7 +47,7 @@ vi.mock('../../lib/database/client', () => {
       update: vi.fn(),
     },
   };
-  
+
   const prismaMocks = {
     transactionSuggestion: {
       deleteMany: vi.fn(),
@@ -64,9 +63,11 @@ vi.mock('../../lib/database/client', () => {
       findMany: vi.fn(),
       findUnique: vi.fn(),
     },
-    $transaction: vi.fn(async (cb: (txArg: typeof txMocks) => unknown) => cb(txMocks)),
+    $transaction: vi.fn(async (cb: (txArg: typeof txMocks) => unknown) =>
+      cb(txMocks)
+    ),
   };
-  
+
   return { prisma: prismaMocks };
 });
 
@@ -76,14 +77,14 @@ beforeEach(() => {
 });
 
 // Now we can import modules that reference prisma
-import { ruleEngine } from '../../lib/database/rule-engine';
+import { ruleEngine } from '@/lib/core/database/rule-engine';
 import {
   setBestSuggestionForTransaction,
   upsertSuggestion,
   applySuggestion,
   applySuggestions,
   dismissSuggestion,
-} from '../../lib/database/suggestions';
+} from '@/lib/core/database/suggestions';
 
 // ---------------------------
 // Section 1: date-helpers
@@ -313,7 +314,7 @@ describe('suggestions service (prisma mocked)', () => {
   it('setBestSuggestionForTransaction deletes non-applied, checks existing applied, then upserts', async () => {
     // Get the mocked prisma instance
     const mockedPrisma = prisma as any;
-    
+
     // Setup the transaction mock to return our transaction mocks when called
     mockedPrisma.$transaction.mockImplementation(async (cb: any) => {
       const txMocks = {
@@ -347,8 +348,10 @@ describe('suggestions service (prisma mocked)', () => {
 
   it('upsertSuggestion writes suggestion idempotently', async () => {
     const mockedPrisma = prisma as any;
-    
-    mockedPrisma.transactionSuggestion.upsert.mockResolvedValue({ id: 'sug-2' });
+
+    mockedPrisma.transactionSuggestion.upsert.mockResolvedValue({
+      id: 'sug-2',
+    });
 
     const created = await upsertSuggestion({
       processedTransactionId: 'ptx-2',
@@ -360,9 +363,10 @@ describe('suggestions service (prisma mocked)', () => {
 
     expect(mockedPrisma.transactionSuggestion.upsert).toHaveBeenCalledWith({
       where: {
-        processedTransactionId_ruleId: {
+        processedTransactionId_ruleId_source: {
           processedTransactionId: 'ptx-2',
           ruleId: 'rule-2',
+          source: 'RULE',
         },
       },
       create: {
@@ -371,6 +375,7 @@ describe('suggestions service (prisma mocked)', () => {
         suggestedCategoryId: null,
         suggestedPropertyId: 'prop-2',
         confidence: 0.8,
+        source: 'RULE',
       },
       update: {
         suggestedCategoryId: null,
@@ -388,10 +393,10 @@ describe('suggestions service (prisma mocked)', () => {
 
   it('applySuggestion updates ProcessedTransaction and marks suggestion as applied', async () => {
     const mockedPrisma = prisma as any;
-    
+
     // Track the mocks so we can assert on them
     let transactionMocks: any;
-    
+
     mockedPrisma.$transaction.mockImplementation(async (cb: any) => {
       transactionMocks = {
         transactionSuggestion: {
@@ -404,6 +409,9 @@ describe('suggestions service (prisma mocked)', () => {
           }),
           update: vi.fn().mockResolvedValue({}),
         },
+        category: {
+          findUnique: vi.fn().mockResolvedValue({ name: 'Outras Despesas' }),
+        },
         processedTransaction: {
           update: vi.fn().mockResolvedValue({}),
         },
@@ -414,7 +422,9 @@ describe('suggestions service (prisma mocked)', () => {
     await applySuggestion('sug-3');
 
     expect(mockedPrisma.$transaction).toHaveBeenCalled();
-    expect(transactionMocks.transactionSuggestion.findUnique).toHaveBeenCalledWith({
+    expect(
+      transactionMocks.transactionSuggestion.findUnique
+    ).toHaveBeenCalledWith({
       where: { id: 'sug-3' },
       select: {
         id: true,
@@ -440,7 +450,7 @@ describe('suggestions service (prisma mocked)', () => {
 
   it('applySuggestions processes multiple ids and reports per-item results', async () => {
     const mockedPrisma = prisma as any;
-    
+
     mockedPrisma.$transaction.mockImplementation(async (cb: any) => {
       const transactionMocks = {
         transactionSuggestion: {
@@ -452,6 +462,9 @@ describe('suggestions service (prisma mocked)', () => {
             isApplied: false,
           }),
           update: vi.fn().mockResolvedValue({}),
+        },
+        category: {
+          findUnique: vi.fn(), // won't be called since suggestedPropertyId is present
         },
         processedTransaction: {
           update: vi.fn().mockResolvedValue({}),
@@ -469,11 +482,11 @@ describe('suggestions service (prisma mocked)', () => {
 
   it('dismissSuggestion deletes the suggestion by id', async () => {
     const mockedPrisma = prisma as any;
-    
+
     mockedPrisma.transactionSuggestion.delete.mockResolvedValue({});
-    
+
     await dismissSuggestion('sug-6');
-    
+
     expect(mockedPrisma.transactionSuggestion.delete).toHaveBeenCalledWith({
       where: { id: 'sug-6' },
     });

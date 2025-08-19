@@ -32,7 +32,7 @@ vi.mock('date-fns/locale', () => ({
 }));
 
 // Mock the dialog components
-vi.mock('@/app/regras-categorizacao/components/EditRuleDialog', () => ({
+vi.mock('@/app/(protected)/regras-categorizacao/components/EditRuleDialog', () => ({
   default: ({ children, onRuleUpdated }: any) => (
     <div data-testid="edit-rule-dialog">
       {children}
@@ -43,7 +43,7 @@ vi.mock('@/app/regras-categorizacao/components/EditRuleDialog', () => ({
   ),
 }));
 
-vi.mock('@/app/regras-categorizacao/components/TestRuleDialog', () => ({
+vi.mock('@/app/(protected)/regras-categorizacao/components/TestRuleDialog', () => ({
   default: ({ children }: any) => (
     <div data-testid="test-rule-dialog">
       {children}
@@ -52,9 +52,9 @@ vi.mock('@/app/regras-categorizacao/components/TestRuleDialog', () => ({
 }));
 
 // Import the component after mocking
-import RulesList from '@/app/regras-categorizacao/components/RulesList';
-import type { RuleWithRelations } from '@/lib/database/rule-management';
-import type { FormData } from '@/app/regras-categorizacao/components/CreateRuleDialog';
+import RulesList from '@/app/(protected)/regras-categorizacao/components/RulesList';
+import type { RuleWithRelations } from '@/lib/core/database/rule-management';
+import type { FormData } from '@/app/(protected)/regras-categorizacao/components/CreateRuleDialog';
 
 const mockFormData: FormData = {
   categories: [

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isPendingTransaction } from '../../lib/database/transactions';
+import { isPendingTransaction } from '@/lib/core/database/transactions';
 
 describe('isPendingTransaction', () => {
   it('returns true when isReviewed is false even with category and transaction', () => {

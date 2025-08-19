@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import type { OFXTransaction } from '@/lib/ofx/types';
+import type { OFXTransaction } from '@/lib/features/ofx/types';
 import type { Transaction } from '@/app/generated/prisma';
 
 // Mock Prisma client
@@ -12,7 +12,7 @@ const mockTransaction = {
   findMany: vi.fn(),
 };
 
-vi.mock('@/lib/database/client', () => ({
+vi.mock('@/lib/core/database/client', () => ({
   prisma: {
     transaction: mockTransaction,
   },
@@ -20,7 +20,7 @@ vi.mock('@/lib/database/client', () => ({
 
 // Import after mocking
 const { DuplicateDetectionService } = await import(
-  '@/lib/ofx/duplicate-detection'
+  '@/lib/features/ofx/duplicate-detection'
 );
 
 describe('DuplicateDetectionService', () => {

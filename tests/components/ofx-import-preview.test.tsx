@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { describe, it, expect, vi } from 'vitest';
-import { OfxImportPreview } from '@/components/ofx/OfxImportPreview';
+import { OfxImportPreview } from '@/components/features/ofx/OfxImportPreview';
 
 type TransactionAction = 'import' | 'skip' | 'review';
 

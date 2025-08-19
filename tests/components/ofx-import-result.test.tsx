@@ -3,7 +3,7 @@ import React from 'react';
 import { render, screen, within, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { describe, it, expect, vi } from 'vitest';
-import { OfxImportResult } from '@/components/ofx/OfxImportResult';
+import { OfxImportResult } from '@/components/features/ofx/OfxImportResult';
 
 type ImportSummaryProp = {
   totalTransactions: number;

@@ -37,6 +37,16 @@ logs/*
 *.log.gz
 test-results/
 
+# backups
+backups/
+*.sql
+*.sql.gz
+*.backup
+
+# old implementations
+old_implementation/
+legacy/
+
 # env files (can opt-in for committing if needed)
 .env*
 
@@ -51,3 +61,7 @@ next-env.d.ts
 
 # prisma local sqlite leftovers
 prisma/dev.db
+
+# Environment variables
+.env.local
+.env.production.local

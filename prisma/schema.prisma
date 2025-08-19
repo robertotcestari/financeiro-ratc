@@ -170,7 +170,6 @@ model ProcessedTransaction {
   property   Property? @relation(fields: [propertyId], references: [id])
 
   details String? @db.Text // Detalhes adicionais
-  notes   String? @db.Text // Observações do usuário
 
   isReviewed Boolean @default(false)
 
@@ -266,7 +265,7 @@ model AccountSnapshot {
   // Metadados
   isVerified   Boolean  @default(false) // Se foi verificado manualmente
   lastSyncedAt DateTime // Última vez que foi sincronizado
-  notes        String?  @db.Text // Observações
+  // notes removido
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -302,4 +301,86 @@ model ImportBatch {
   transactions Transaction[]
 
   @@map("import_batches")
+}
+
+// ===========================
+// Better Auth Models
+// ===========================
+
+// User model for authentication
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+// OAuth accounts linked to users
+model Account {
+  id                    String   @id @default(cuid())
+  userId                String
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  accountId             String   // ID from the OAuth provider
+  providerId            String   // e.g., "google"
+  
+  // OAuth tokens
+  accessToken           String?  @db.Text
+  refreshToken          String?  @db.Text
+  idToken               String?  @db.Text
+  
+  // Token expiry
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  
+  // Additional OAuth data
+  scope                 String?
+  password              String?  // For credential accounts (not used with OAuth)
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+// User sessions
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?  @db.Text
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([token])
+  @@map("sessions")
+}
+
+// Email verification tokens
+model verification {
+  id         String   @id @default(cuid())
+  identifier String   // Email address
+  value      String   @db.Text // Using TEXT for large tokens
+  expiresAt  DateTime
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
 }

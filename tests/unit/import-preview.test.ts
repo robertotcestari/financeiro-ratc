@@ -6,19 +6,19 @@ import {
   vi,
   type MockedFunction,
 } from 'vitest';
-import { ImportPreviewService } from '@/lib/ofx/import-preview';
-import { OFXParserService } from '@/lib/ofx/parser';
-import { DuplicateDetectionService } from '@/lib/ofx/duplicate-detection';
-import { prisma } from '@/lib/database/client';
+import { ImportPreviewService } from '@/lib/features/ofx/import-preview';
+import { OFXParserService } from '@/lib/features/ofx/parser';
+import { DuplicateDetectionService } from '@/lib/features/ofx/duplicate-detection';
+import { prisma } from '@/lib/core/database/client';
 import type {
   OFXTransaction,
   OFXParseResult,
   DuplicateDetectionResult,
-} from '@/lib/ofx/types';
+} from '@/lib/features/ofx/types';
 import type { BankAccount, Category, Property } from '@/app/generated/prisma';
 
 // Mock dependencies
-vi.mock('@/lib/database/client', () => ({
+vi.mock('@/lib/core/database/client', () => ({
   prisma: {
     bankAccount: {
       findUnique: vi.fn(),
@@ -32,8 +32,8 @@ vi.mock('@/lib/database/client', () => ({
   },
 }));
 
-vi.mock('@/lib/ofx/parser');
-vi.mock('@/lib/ofx/duplicate-detection');
+vi.mock('@/lib/features/ofx/parser');
+vi.mock('@/lib/features/ofx/duplicate-detection');
 vi.mock('@/lib/logger', () => ({
   logger: {
     error: vi.fn(),

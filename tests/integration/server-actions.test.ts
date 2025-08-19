@@ -30,7 +30,7 @@ const mockPrismaClient = {
   $transaction: vi.fn(),
 };
 
-vi.mock('../../lib/database/client', () => ({
+vi.mock('@/lib/core/database/client', () => ({
   prisma: mockPrismaClient,
 }));
 
@@ -41,7 +41,7 @@ const CategoryType = {
   CONTROLE: 'CONTROLE',
 } as const;
 
-vi.mock('../../app/generated/prisma', () => ({
+vi.mock('@/app/generated/prisma', () => ({
   CategoryType,
 }));
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { prisma } from '@/lib/database/client';
+import { prisma } from '@/lib/core/database/client';
 
 describe('OFX Schema Extensions', () => {
   beforeEach(async () => {

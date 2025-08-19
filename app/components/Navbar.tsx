@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import UserMenu from './UserMenu';
 import {
   Home,
   CreditCard,
@@ -23,9 +24,13 @@ const navigation = [
   { name: 'Início', href: '/', icon: Home },
   { name: 'Bancos', href: '/bancos', icon: CreditCard },
   { name: 'Transações', href: '/transacoes', icon: FileText },
-  { name: 'Importação OFX', href: '/ofx-import', icon: FileText },
   { name: 'Integridade', href: '/integridade', icon: ShieldCheck },
   { name: 'DRE', href: '/dre', icon: BarChart2 },
+];
+
+const importOptions = [
+  { name: 'Importação OFX', href: '/ofx-import', icon: FileText },
+  { name: 'Importação Imobzi', href: '/importacao-imobzi', icon: FileText },
 ];
 
 const categorizationOptions = [
@@ -93,6 +98,33 @@ export default function Navbar() {
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                   <div className="py-1">
+                    {/* Importação Section */}
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      Importação
+                    </div>
+                    {importOptions.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = pathname === item.href;
+
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setIsDropdownOpen(false)}
+                          className={`flex items-center px-4 py-2 text-sm transition-colors ${
+                            isActive
+                              ? 'text-blue-600 bg-blue-50'
+                              : 'text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4 mr-2" />
+                          {item.name}
+                        </Link>
+                      );
+                    })}
+
+                    <Separator className="my-2" />
+
                     {/* Categorização Section */}
                     <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                       Categorização
@@ -148,9 +180,16 @@ export default function Navbar() {
                 </div>
               )}
             </div>
+
+            {/* User Menu */}
+            <UserMenu />
           </div>
 
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center space-x-2">
+            {/* User Menu for Mobile */}
+            <UserMenu />
+            
+            {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="icon"
@@ -219,6 +258,38 @@ export default function Navbar() {
 
               {isDropdownOpen && (
                 <div className="mt-2 space-y-1">
+                  {/* Importação Section */}
+                  <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Importação
+                  </div>
+                  {importOptions.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
+
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`flex items-center pl-8 pr-4 py-2 text-sm font-medium transition-colors ${
+                          isActive
+                            ? 'text-blue-600 bg-blue-50'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 mr-2" />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+
+                  <div className="px-8">
+                    <Separator className="my-2" />
+                  </div>
+
                   {/* Categorização Section */}
                   <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Categorização

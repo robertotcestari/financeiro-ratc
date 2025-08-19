@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ImportPreviewService } from '@/lib/ofx/import-preview';
-import { prisma } from '@/lib/database/client';
-import { OFXParserService } from '@/lib/ofx/parser';
-import { DuplicateDetectionService } from '@/lib/ofx/duplicate-detection';
-import type { OFXParseResult, DuplicateDetectionResult } from '@/lib/ofx/types';
+import { ImportPreviewService } from '@/lib/features/ofx/import-preview';
+import { prisma } from '@/lib/core/database/client';
+import { OFXParserService } from '@/lib/features/ofx/parser';
+import { DuplicateDetectionService } from '@/lib/features/ofx/duplicate-detection';
+import type { OFXParseResult, DuplicateDetectionResult } from '@/lib/features/ofx/types';
 import type { BankAccount, Category, Property } from '@/app/generated/prisma';
 
 vi.mock('@/lib/logger', () => ({

@@ -1,4 +1,4 @@
-import { prisma } from '../database/client'
+import { prisma } from '@/lib/core/database/client'
 
 export interface CityInfo {
   code: string

@@ -4,9 +4,9 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { prisma } from '@/lib/database/client';
-import { DuplicateDetectionService } from '@/lib/ofx/duplicate-detection';
-import type { OFXTransaction } from '@/lib/ofx/types';
+import { prisma } from '@/lib/core/database/client';
+import { DuplicateDetectionService } from '@/lib/features/ofx/duplicate-detection';
+import type { OFXTransaction } from '@/lib/features/ofx/types';
 
 describe('DuplicateDetectionService Integration', () => {
   let service: DuplicateDetectionService;

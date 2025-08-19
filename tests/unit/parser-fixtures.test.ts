@@ -1,6 +1,6 @@
 /* @vitest-environment jsdom */
 import { describe, it, expect } from 'vitest';
-import { OFXParserService } from '@/lib/ofx/parser';
+import { OFXParserService } from '@/lib/features/ofx/parser';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 

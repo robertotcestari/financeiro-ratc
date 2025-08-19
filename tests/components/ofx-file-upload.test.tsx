@@ -11,9 +11,9 @@ import {
 } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import { OfxFileUpload } from '@/components/ofx/OfxFileUpload';
-import { OFXParserService } from '@/lib/ofx/parser';
-import type { OFXParseResult } from '@/lib/ofx/types';
+import { OfxFileUpload } from '@/components/features/ofx/OfxFileUpload';
+import { OFXParserService } from '@/lib/features/ofx/parser';
+import type { OFXParseResult } from '@/lib/features/ofx/types';
 
 function makeFile(
   name: string,

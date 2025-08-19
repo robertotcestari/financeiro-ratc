@@ -40,7 +40,7 @@ const TestWrapper = ({
 };
 
 // Import after setting up test environment
-import AccountCriteriaForm from '@/app/regras-categorizacao/components/AccountCriteriaForm';
+import AccountCriteriaForm from '@/app/(protected)/regras-categorizacao/components/AccountCriteriaForm';
 
 // Mock bank accounts data
 const mockBankAccounts = [

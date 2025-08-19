@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { Decimal } from '@prisma/client/runtime/library';
 
 // Mock prisma client before importing anything that uses it
-vi.mock('../../lib/database/client', () => ({
+vi.mock('@/lib/core/database/client', () => ({
   prisma: {
     transactionSuggestion: {
       findMany: vi.fn(),
@@ -25,14 +25,14 @@ vi.mock('../../lib/database/client', () => ({
 }));
 
 // Import modules after mocking
-import { prisma } from '../../lib/database/client';
+import { prisma } from '@/lib/core/database/client';
 import {
   getSuggestionsForTransaction,
   applySuggestion,
   dismissSuggestion,
   setBestSuggestionForTransaction,
-} from '../../lib/database/suggestions';
-import { ruleEngine } from '../../lib/database/rule-engine';
+} from '@/lib/core/database/suggestions';
+import { ruleEngine } from '@/lib/core/database/rule-engine';
 
 const mockedPrisma = vi.mocked(prisma);
 
@@ -330,7 +330,7 @@ describe('Suggestion Workflow Integration', () => {
         }
       });
 
-      const { applySuggestions } = await import('../../lib/database/suggestions');
+      const { applySuggestions } = await import('@/lib/core/database/suggestions');
       const results = await applySuggestions(['sug-1', 'sug-2']);
 
       expect(results).toHaveLength(2);

@@ -39,5 +39,24 @@ export default defineConfig({
 
     // Prevent Vitest from picking up Playwright tests and other non-unit suites
     exclude: ['e2e/**', '**/node_modules/**', '**/dist/**'],
+
+    // Suppress known noisy stderr logs that don't affect test outcomes
+    // Keep this list tight to avoid hiding real issues
+    onConsoleLog(log, type) {
+      if (type !== 'stderr') return; // only screen stderr noise
+
+      const suppressedPatterns: RegExp[] = [
+        /Switch is changing from controlled to uncontrolled/i,
+        /^Error in .*Action:/i, // server action negative-path tests
+        /Database cleanup failed/i,
+        /Cleanup warning/i,
+        /Test cleanup error/i,
+        // Add other known harmless warnings below as needed
+      ];
+
+      if (suppressedPatterns.some((re) => re.test(log))) {
+        return false; // swallow this log line
+      }
+    },
   },
 });

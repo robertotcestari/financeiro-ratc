@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react'
-import { logger } from '@/lib/logger'
+import { logger } from '@/lib/core/logger/logger'
 
 interface ErrorProps {
   error: Error & { digest?: string }

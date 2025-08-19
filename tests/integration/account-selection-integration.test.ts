@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { AccountSelectionService } from '@/lib/ofx/account-selection';
+import { AccountSelectionService } from '@/lib/features/ofx/account-selection';
 import { PrismaClient, AccountType } from '@/app/generated/prisma';
 
 describe('AccountSelectionService Integration Tests', () => {

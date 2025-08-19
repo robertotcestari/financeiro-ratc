@@ -25,7 +25,7 @@ const mockPrismaClient = {
 };
 
 // Mock the database client
-vi.mock('../../lib/database/client', () => ({
+vi.mock('@/lib/core/database/client', () => ({
   prisma: mockPrismaClient,
 }));
 

@@ -6,7 +6,7 @@ vi.mock('next/cache', () => ({
 }));
 
 // Mock Prisma client before any imports that use it
-vi.mock('@/lib/database/client', () => ({
+vi.mock('@/lib/core/database/client', () => ({
   prisma: {
     processedTransaction: {
       deleteMany: vi.fn(),
@@ -43,8 +43,8 @@ vi.mock('@/lib/database/client', () => ({
 }));
 
 // Now import the action after mocks are set up
-const { bulkDeleteTransactionsAction } = await import('@/app/transacoes/actions');
-const { prisma: mockPrismaClient } = await import('@/lib/database/client');
+const { bulkDeleteTransactionsAction } = await import('@/app/(protected)/transacoes/actions');
+const { prisma: mockPrismaClient } = await import('@/lib/core/database/client');
 
 describe('Bulk Delete Actions', () => {
   beforeEach(() => {

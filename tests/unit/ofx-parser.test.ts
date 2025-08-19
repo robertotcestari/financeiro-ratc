@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { OFXParserService } from '../../lib/ofx/parser';
+import { OFXParserService } from '@/lib/features/ofx/parser';
 
 describe('OFXParserService', () => {
   let parser: OFXParserService;

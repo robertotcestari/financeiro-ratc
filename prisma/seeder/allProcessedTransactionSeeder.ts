@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../app/generated/prisma'
+import { PrismaClient } from '@/app/generated/prisma'
 import * as fs from 'fs'
 import * as path from 'path'
 import { parse } from 'csv-parse/sync'
@@ -102,6 +102,7 @@ export async function seedAllProcessedTransactions(prisma: PrismaClient) {
 
     try {
       // If we have a transactionId, verify the transaction exists
+      let canLinkTransaction = false
       if (hasTransactionId) {
         const existingTransaction = await prisma.transaction.findUnique({
           where: { id: transactionId }
@@ -109,6 +110,8 @@ export async function seedAllProcessedTransactions(prisma: PrismaClient) {
         
         if (!existingTransaction) {
           console.log(`⚠️  Transaction not found: ${transactionId}, creating ProcessedTransaction without link`)
+        } else {
+          canLinkTransaction = true
         }
       }
 
@@ -124,13 +127,17 @@ export async function seedAllProcessedTransactions(prisma: PrismaClient) {
         // Create processed transaction
         await prisma.processedTransaction.create({
           data: {
-            transactionId: hasTransactionId ? transactionId : null,
+            // Link to Transaction via relation when available
+            ...(canLinkTransaction
+              ? { transaction: { connect: { id: transactionId } } }
+              : {}),
             year: parsedYear,
             month: parsedMonth,
-            categoryId: categoryId,
-            propertyId,
-            details: details || null,
-            notes: description || null,
+            // Link category/property via relations
+            category: { connect: { id: categoryId } },
+            ...(propertyId ? { property: { connect: { id: propertyId } } } : {}),
+            // Use details for any free-text notes/description
+            details: (details || description) || null,
             isReviewed: true // Mark as reviewed since these come from manual categorization
           }
         })

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatCurrency, formatDate } from '../../lib/formatters';
+import { formatCurrency, formatDate } from '@/lib/formatters';
 
 describe('formatCurrency', () => {
   it('formats positive values with BRL currency', () => {

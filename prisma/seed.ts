@@ -1,4 +1,4 @@
-import { PrismaClient } from '../app/generated/prisma';
+import { PrismaClient } from '@/app/generated/prisma';
 import { seedBankAccounts } from './seeder/bankAccountSeeder';
 import { seedCategories } from './seeder/categorySeeder';
 import { seedCities } from './seeder/citySeeder';
@@ -7,6 +7,7 @@ import { seedTransactions } from './seeder/transactionSeeder';
 import { seedCSVTransactions } from './seeder/csvTransactionSeeder';
 import { seedLinkedProcessedTransactions } from './seeder/linkedProcessedTransactionSeeder';
 import { seedAllProcessedTransactions } from './seeder/allProcessedTransactionSeeder';
+import { seedCategorizationRulesFromInstituto } from './seeder/categorizationRuleSeederFromInstituto';
 
 const prisma = new PrismaClient();
 
@@ -34,6 +35,9 @@ async function main() {
   // Import all processed transactions (with and without transactionId)
   await seedAllProcessedTransactions(prisma);
 
+  // Seed categorization rules based on Instituto database patterns
+  await seedCategorizationRulesFromInstituto(prisma);
+
   console.log('✅ Seed completed!');
 
   const accountCount = await prisma.bankAccount.count();
@@ -42,6 +46,7 @@ async function main() {
   const propertyCount = await prisma.property.count();
   const transactionCount = await prisma.transaction.count();
   const processedCount = await prisma.processedTransaction.count();
+  const ruleCount = await prisma.categorizationRule.count();
 
   console.log(`📊 Summary:`);
   console.log(`   🏦 Bank Accounts: ${accountCount}`);
@@ -50,6 +55,7 @@ async function main() {
   console.log(`   � 🏠 Properties: ${propertyCount}`);
   console.log(`   💳 Transactions: ${transactionCount}`);
   console.log(`   🔗 Processed Transactions: ${processedCount}`);
+  console.log(`   📏 Categorization Rules: ${ruleCount}`);
 }
 
 main()

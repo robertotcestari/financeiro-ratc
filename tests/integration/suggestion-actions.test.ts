@@ -6,7 +6,7 @@ vi.mock('next/cache', () => ({
 }));
 
 // Mock suggestion services
-vi.mock('../../lib/database/suggestions', () => ({
+vi.mock('@/lib/core/database/suggestions', () => ({
   applySuggestion: vi.fn(),
   applySuggestions: vi.fn(),
   dismissSuggestion: vi.fn(),
@@ -15,7 +15,7 @@ vi.mock('../../lib/database/suggestions', () => ({
 }));
 
 // Mock rule engine
-vi.mock('../../lib/database/rule-engine', () => ({
+vi.mock('@/lib/core/database/rule-engine', () => ({
   ruleEngine: {
     generateSuggestions: vi.fn(),
   },
@@ -29,11 +29,11 @@ import {
   dismissSuggestionsAction,
   generateSuggestionsAction,
   getSuggestionsAction,
-} from '../../app/transacoes/actions';
+} from '@/app/(protected)/transacoes/actions';
 
 // Get the mocked functions
-import * as suggestionServices from '../../lib/database/suggestions';
-import * as ruleEngineModule from '../../lib/database/rule-engine';
+import * as suggestionServices from '@/lib/core/database/suggestions';
+import * as ruleEngineModule from '@/lib/core/database/rule-engine';
 
 const mockedSuggestionServices = vi.mocked(suggestionServices);
 const mockedRuleEngine = vi.mocked(ruleEngineModule);

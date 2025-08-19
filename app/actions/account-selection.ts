@@ -1,7 +1,7 @@
 'use server';
 
-import { accountSelectionService } from '@/lib/ofx/account-selection';
-import type { CreateBankAccountData } from '@/lib/ofx/account-selection';
+import { accountSelectionService } from '@/lib/features/ofx/account-selection';
+import type { CreateBankAccountData } from '@/lib/features/ofx/account-selection';
 
 export async function validateAccountSelection(bankAccountId: string) {
   const result = await accountSelectionService.validateAccountSelection(bankAccountId);

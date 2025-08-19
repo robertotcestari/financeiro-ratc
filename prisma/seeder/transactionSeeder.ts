@@ -1,4 +1,4 @@
-import { PrismaClient, ImportStatus } from '../../app/generated/prisma'
+import { PrismaClient, ImportStatus } from '@/app/generated/prisma'
 import * as fs from 'fs'
 import * as path from 'path'
 import { parse } from 'csv-parse/sync'

@@ -40,7 +40,7 @@ const TestWrapper = ({
 };
 
 // Import after setting up test environment
-import DateCriteriaForm from '@/app/regras-categorizacao/components/DateCriteriaForm';
+import DateCriteriaForm from '@/app/(protected)/regras-categorizacao/components/DateCriteriaForm';
 
 describe('DateCriteriaForm', () => {
   const mockOnFormChange = vi.fn();

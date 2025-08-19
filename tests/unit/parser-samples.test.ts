@@ -1,7 +1,7 @@
 /* @vitest-environment jsdom */
 import { describe, it, expect } from 'vitest';
-import { OFXParserService } from '@/lib/ofx/parser';
-import type { OFXParseResult } from '@/lib/ofx/types';
+import { OFXParserService } from '@/lib/features/ofx/parser';
+import type { OFXParseResult } from '@/lib/features/ofx/types';
 
 function makeFile(
   name: string,

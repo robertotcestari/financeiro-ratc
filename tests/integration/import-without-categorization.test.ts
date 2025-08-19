@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { ImportService } from '@/lib/ofx/import-service';
-import { prisma } from '@/lib/database/client';
-import type { OFXParseResult } from '@/lib/ofx/types';
+import { ImportService } from '@/lib/features/ofx/import-service';
+import { prisma } from '@/lib/core/database/client';
+import type { OFXParseResult } from '@/lib/features/ofx/types';
 
 // Mock do logger para evitar logs durante testes
 vi.mock('@/lib/logger', () => ({

@@ -5,21 +5,19 @@ import { revalidatePath } from 'next/cache';
 import {
   categorizeTransaction,
   bulkCategorizeTransactions,
-} from '@/lib/database/categorization';
-import { findPotentialTransfers } from '@/lib/database/transactions';
-import { prisma } from '@/lib/database/client';
-import type { Prisma } from '@prisma/client';
+} from '@/lib/core/database/categorization';
+import { findPotentialTransfers } from '@/lib/core/database/transactions';
+import { prisma } from '@/lib/core/database/client';
 import {
   applySuggestion,
   applySuggestions,
   dismissSuggestion,
   dismissSuggestions,
   getSuggestionsForTransaction,
-} from '@/lib/database/suggestions';
-import { ruleEngine } from '@/lib/database/rule-engine';
-import { AICategorizationService } from '@/lib/ai/categorization-service';
+} from '@/lib/core/database/suggestions';
+import { ruleEngine } from '@/lib/core/database/rule-engine';
+import { AICategorizationService } from '@/lib/features/ai/categorization-service';
 import { InputJsonValue } from '@prisma/client/runtime/library';
-import { Input } from 'postcss';
 
 const categorizeOneSchema = z.object({
   id: z.string(),
@@ -56,7 +54,11 @@ export async function categorizeOneAction(
     return { success: true };
   } catch (error) {
     console.error('Error in categorizeOneAction:', error);
-    return { success: false, error: 'Failed to categorize transaction' };
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Failed to categorize transaction';
+    return { success: false, error: message };
   }
 }
 
@@ -102,7 +104,6 @@ export async function bulkCategorizeAction(
 const markReviewedSchema = z.object({
   id: z.string(),
   reviewed: z.boolean(),
-  note: z.string().optional(),
 });
 
 export async function markReviewedAction(
@@ -111,27 +112,9 @@ export async function markReviewedAction(
   const validated = markReviewedSchema.parse(input);
 
   try {
-    const updateData: { isReviewed: boolean; notes?: string } = {
-      isReviewed: validated.reviewed,
-    };
-
-    if (validated.note) {
-      const transaction = await prisma.processedTransaction.findUnique({
-        where: { id: validated.id },
-        select: { notes: true },
-      });
-
-      const timestamp = new Date().toISOString();
-      const noteWithTimestamp = `[${timestamp}] ${validated.note}`;
-
-      updateData.notes = transaction?.notes
-        ? `${transaction.notes}\n${noteWithTimestamp}`
-        : noteWithTimestamp;
-    }
-
     await prisma.processedTransaction.update({
       where: { id: validated.id },
-      data: updateData,
+      data: { isReviewed: validated.reviewed },
     });
 
     try {
@@ -176,7 +159,6 @@ export async function potentialTransfersAction(
 const confirmTransferSchema = z.object({
   originTransactionId: z.string(),
   destinationTransactionId: z.string(),
-  description: z.string().optional(),
 });
 
 export async function confirmTransferAction(
@@ -238,34 +220,7 @@ export async function confirmTransferAction(
       },
     });
 
-    // Opcional: adicionar uma anotação com a descrição (mantém notas existentes)
-    if (validated.description && validated.description.trim().length > 0) {
-      const timestamp = new Date().toISOString();
-      const noteWithTimestamp = `[${timestamp}] ${validated.description.trim()}`;
-
-      const affected = await prisma.processedTransaction.findMany({
-        where: {
-          id: {
-            in: [
-              validated.originTransactionId,
-              validated.destinationTransactionId,
-            ],
-          },
-        },
-        select: { id: true, notes: true },
-      });
-
-      for (const t of affected) {
-        await prisma.processedTransaction.update({
-          where: { id: t.id },
-          data: {
-            notes: t.notes
-              ? `${t.notes}\n${noteWithTimestamp}`
-              : noteWithTimestamp,
-          },
-        });
-      }
-    }
+    // Campo de notas removido — não anexamos descrição como nota.
 
     try {
       revalidatePath('/transacoes');
@@ -277,6 +232,41 @@ export async function confirmTransferAction(
   } catch (error) {
     console.error('Error in confirmTransferAction:', error);
     return { success: false, error: 'Failed to confirm transfer' };
+  }
+}
+
+// ================== Inline Description (Details) ==================
+
+const updateTransactionDetailsSchema = z.object({
+  id: z.string(), // processedTransaction id
+  details: z.string().optional().nullable(),
+});
+
+export async function updateTransactionDetailsAction(
+  input: z.infer<typeof updateTransactionDetailsSchema>
+) {
+  const validated = updateTransactionDetailsSchema.parse(input);
+
+  try {
+    await prisma.processedTransaction.update({
+      where: { id: validated.id },
+      data: {
+        details:
+          validated.details && validated.details.trim().length > 0
+            ? validated.details.trim()
+            : null,
+      },
+    });
+
+    try {
+      revalidatePath('/transacoes');
+    } catch (revalidateError) {
+      console.warn('Revalidation error (non-critical):', revalidateError);
+    }
+    return { success: true };
+  } catch (error) {
+    console.error('Error in updateTransactionDetailsAction:', error);
+    return { success: false, error: 'Failed to update transaction details' };
   }
 }
 

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { OFXParserService } from '../../lib/ofx/parser';
+import { OFXParserService } from '@/lib/features/ofx/parser';
 
 describe('OFX Parser Integration Tests', () => {
   let parser: OFXParserService;

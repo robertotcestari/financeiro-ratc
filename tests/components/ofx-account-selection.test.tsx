@@ -9,7 +9,7 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { describe, it, expect, vi } from 'vitest';
-import { AccountSelection } from '@/components/ofx/AccountSelection';
+import { AccountSelection } from '@/components/features/ofx/AccountSelection';
 
 type AccountType = 'CHECKING' | 'SAVINGS' | 'INVESTMENT' | string;
 
