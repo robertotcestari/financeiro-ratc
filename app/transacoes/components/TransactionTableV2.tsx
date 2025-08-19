@@ -2,7 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { formatCurrency, formatDate } from '@/lib/formatters';
-import { useState, useTransition, useMemo, useCallback } from 'react';
+import type React from 'react';
+import { useState, useTransition, useMemo, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import {
   categorizeOneAction,
@@ -26,6 +27,7 @@ import {
   createColumnHelper,
   type ColumnDef,
   type RowSelectionState,
+  type Row,
 } from '@tanstack/react-table';
 import SuggestionIndicator from './SuggestionIndicator';
 
@@ -180,7 +182,9 @@ export default function TransactionTableV2({
         <Input
           type="checkbox"
           checked={row.getIsSelected()}
-          onChange={row.getToggleSelectedHandler()}
+          // Use onClick to support Shift range selection; suppress default onChange
+          onClick={(e) => handleRowSelectClick(e, row, true)}
+          onChange={() => {}}
           className="rounded border-gray-300 w-4 h-4"
         />
       ),
@@ -500,6 +504,91 @@ export default function TransactionTableV2({
     manualPagination: true,
   });
 
+  // Track last clicked row index for Shift range selection
+  const lastSelectedIndexRef = useRef<number | null>(null);
+
+  const handleRowSelectClick = useCallback(
+    (e: React.MouseEvent<any>, row: Row<Transaction>, fromCheckbox: boolean = false) => {
+      // Avoid bubbling to row click (e.g., when clicking checkbox)
+      if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      // Ignore clicks from interactive elements inside the row
+      const target = e.target as HTMLElement | null;
+      try {
+        // Debug logs
+        // eslint-disable-next-line no-console
+        console.log('[RowSelect] click', {
+          rowId: row.id,
+          shiftKey: e.shiftKey,
+          fromCheckbox,
+          targetTag: target?.tagName,
+          targetClasses: target?.className,
+        });
+      } catch {}
+      if (
+        !fromCheckbox &&
+        target &&
+        target.closest(
+          'button, a, input, select, textarea, [role="button"], [contenteditable="true"], .no-row-select'
+        )
+      ) {
+        // eslint-disable-next-line no-console
+        console.log('[RowSelect] ignored due to interactive target');
+        return;
+      }
+      const rows = table.getRowModel().rows;
+      const currentIndex = rows.findIndex((r) => r.id === row.id);
+      // eslint-disable-next-line no-console
+      console.log('[RowSelect] currentIndex', currentIndex, 'lastIndex', lastSelectedIndexRef.current);
+
+      if (e.shiftKey && lastSelectedIndexRef.current !== null) {
+        const start = Math.min(lastSelectedIndexRef.current, currentIndex);
+        const end = Math.max(lastSelectedIndexRef.current, currentIndex);
+        const targetSelected = !row.getIsSelected();
+        const base = table.getState().rowSelection as RowSelectionState;
+        const newSelection: RowSelectionState = { ...base };
+        for (let i = start; i <= end; i++) {
+          const id = rows[i]?.id;
+          if (!id) continue;
+          if (targetSelected) {
+            newSelection[id] = true;
+          } else {
+            delete newSelection[id];
+          }
+        }
+        table.setRowSelection(newSelection);
+        // eslint-disable-next-line no-console
+        console.log('[RowSelect] range applied', { start, end, selected: targetSelected, size: Object.keys(newSelection).length });
+      } else {
+        // Toggle via table API to ensure consistency
+        // If toggleSelected is available, use it; otherwise, fall back to state update
+        // @ts-expect-error: toggleSelected exists on TanStack row instances
+        if (typeof row.toggleSelected === 'function') {
+          // @ts-expect-error: exists at runtime
+          row.toggleSelected(!row.getIsSelected());
+          // eslint-disable-next-line no-console
+          console.log('[RowSelect] toggled via row.toggleSelected', { to: !row.getIsSelected() });
+        } else {
+          const id = row.id;
+          const base = table.getState().rowSelection as RowSelectionState;
+          const newSelection: RowSelectionState = { ...base };
+          if (row.getIsSelected()) {
+            delete newSelection[id];
+          } else {
+            newSelection[id] = true;
+          }
+          table.setRowSelection(newSelection);
+          // eslint-disable-next-line no-console
+          console.log('[RowSelect] toggled via setRowSelection', { id, to: !row.getIsSelected() });
+        }
+      }
+
+      lastSelectedIndexRef.current = currentIndex;
+      // eslint-disable-next-line no-console
+      console.log('[RowSelect] lastSelectedIndexRef set to', currentIndex);
+    },
+    [rowSelection, table]
+  );
+
   // Helper functions
   const startEdit = (transaction: Transaction) => {
     setEditingId(transaction.id);
@@ -786,9 +875,18 @@ export default function TransactionTableV2({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {table.getRowModel().rows.map(row => (
-              <tr key={row.id} className="hover:bg-gray-50">
+              <tr
+                key={row.id}
+                className={`hover:bg-gray-50 ${row.getIsSelected() ? 'bg-blue-50' : ''}`}
+                onClick={(e) => handleRowSelectClick(e, row)}
+                aria-selected={row.getIsSelected()}
+              >
                 {row.getVisibleCells().map(cell => (
-                  <td key={cell.id} className="px-3 py-1.5">
+                  <td
+                    key={cell.id}
+                    className="px-3 py-1.5"
+                    onClick={(e) => handleRowSelectClick(e, row)}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

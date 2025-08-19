@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import SuggestionIndicator from '../../SuggestionIndicator';
 import { getTypeColor, getTypeLabel } from './transaction-helpers';
 import type { Transaction } from '../types';
+import type { Row } from '@tanstack/react-table';
 
 const columnHelper = createColumnHelper<Transaction>();
 
@@ -22,6 +23,7 @@ interface ColumnDefinitionProps {
   saveEdit: () => Promise<void>;
   cancelEdit: () => void;
   handleMarkReviewed: (id: string, reviewed: boolean) => Promise<void>;
+  onSelectClick?: (e: React.MouseEvent<any>, row: Row<Transaction>, fromCheckbox?: boolean) => void;
 }
 
 export function createColumnDefinitions({
@@ -37,6 +39,7 @@ export function createColumnDefinitions({
   saveEdit,
   cancelEdit,
   handleMarkReviewed,
+  onSelectClick,
 }: ColumnDefinitionProps): ColumnDef<Transaction>[] {
   return [
     // Selection column
@@ -54,7 +57,8 @@ export function createColumnDefinitions({
         <Input
           type="checkbox"
           checked={row.getIsSelected()}
-          onChange={row.getToggleSelectedHandler()}
+          onClick={(e) => onSelectClick?.(e, row, true)}
+          onChange={() => {}}
           className="rounded border-gray-300 w-4 h-4"
         />
       ),

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useCallback, useTransition } from 'react';
+import { useMemo, useCallback, useTransition, useRef, useEffect } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -18,6 +18,7 @@ import { TransactionTableHeader } from './components/TransactionTableHeader';
 import { TransactionTablePagination } from './components/TransactionTablePagination';
 import { TransactionTableEmptyState } from './components/TransactionTableEmptyState';
 import { createColumnDefinitions } from './utils/column-definitions';
+import type { RowSelectionState, Row } from '@tanstack/react-table';
 import { prepareCategories } from './utils/transaction-helpers';
 import type { TransactionTableProps } from './types';
 import type { ComboboxOption } from '@/components/ui/combobox';
@@ -68,6 +69,79 @@ export default function TransactionTable({
   // Stable data reference
   const data = useMemo(() => transactions, [transactions]);
 
+  // Selection handling (Shift+clique)
+  const tableRef = useRef<ReturnType<typeof useReactTable> | null>(null);
+  const lastSelectedIndexRef = useRef<number | null>(null);
+
+  const handleRowSelectClick = useCallback(
+    (e: React.MouseEvent<any>, row: Row<any>, fromCheckbox: boolean = false) => {
+      if (typeof e.stopPropagation === 'function') e.stopPropagation();
+      const target = e.target as HTMLElement | null;
+      try { console.log('[RowSelect:TTable] click', { rowId: row.id, shiftKey: (e as any).shiftKey, fromCheckbox, tag: target?.tagName }); } catch {}
+
+      if (
+        !fromCheckbox &&
+        target &&
+        target.closest('button, a, input, select, textarea, [role="button"], [contenteditable="true"], .no-row-select')
+      ) {
+        return;
+      }
+
+      const tableInst = tableRef.current;
+      if (!tableInst) return;
+
+      const rows = tableInst.getRowModel().rows;
+      const currentIndex = rows.findIndex((r) => r.id === row.id);
+
+      if ((e as any).shiftKey && lastSelectedIndexRef.current !== null) {
+        const start = Math.min(lastSelectedIndexRef.current, currentIndex);
+        const end = Math.max(lastSelectedIndexRef.current, currentIndex);
+        const targetSelected = !row.getIsSelected();
+        const base = tableInst.getState().rowSelection as RowSelectionState;
+        const newSelection: RowSelectionState = { ...base };
+        for (let i = start; i <= end; i++) {
+          const id = rows[i]?.id as string | undefined;
+          if (!id) continue;
+          if (targetSelected) newSelection[id] = true; else delete newSelection[id];
+        }
+        tableInst.setRowSelection(newSelection);
+      } else {
+        // @ts-expect-error present at runtime
+        if (typeof row.toggleSelected === 'function') {
+          // @ts-expect-error present at runtime
+          row.toggleSelected(!row.getIsSelected());
+        } else {
+          const id = row.id as string;
+          const base = tableInst.getState().rowSelection as RowSelectionState;
+          const newSelection: RowSelectionState = { ...base };
+          if (row.getIsSelected()) delete newSelection[id]; else newSelection[id] = true;
+          tableInst.setRowSelection(newSelection);
+        }
+      }
+
+      lastSelectedIndexRef.current = currentIndex;
+
+      // Clear any accidental text selection for better DX
+      try {
+        const sel = (window as any).getSelection?.();
+        if (sel && typeof sel.removeAllRanges === 'function') sel.removeAllRanges();
+      } catch {}
+    },
+    []
+  );
+
+  // Prevent text selection on mousedown over non-interactive cells/rows
+  const handleRowMouseDown = useCallback((e: React.MouseEvent<any>) => {
+    const target = e.target as HTMLElement | null;
+    if (
+      target &&
+      target.closest('button, a, input, select, textarea, [role="button"], [contenteditable="true"], .no-row-select')
+    ) {
+      return;
+    }
+    e.preventDefault();
+  }, []);
+
   // Column definitions
   const columns = useMemo(() => 
     createColumnDefinitions({
@@ -83,6 +157,7 @@ export default function TransactionTable({
       saveEdit: editing.saveEdit,
       cancelEdit: editing.cancelEdit,
       handleMarkReviewed,
+      onSelectClick: handleRowSelectClick,
     }),
     [
       categoryOptions,
@@ -98,6 +173,7 @@ export default function TransactionTable({
       editing.cancelEdit,
       bulk.isPending,
       handleMarkReviewed,
+      handleRowSelectClick,
     ]
   );
 
@@ -122,6 +198,8 @@ export default function TransactionTable({
     pageCount: totalPages,
     manualPagination: true,
   });
+  // Expose table instance for selection handler
+  tableRef.current = table;
 
   // Handlers for AI suggestions
   const handleGenerateSuggestions = useCallback(async () => {
@@ -137,6 +215,18 @@ export default function TransactionTable({
   const handleApplySuggestions = useCallback(async () => {
     await ai.handleApplySuggestions(table);
   }, [table, ai]);
+
+  // Clear selection on ESC
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        bulk.clearSelection();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [bulk.clearSelection]);
 
   if (transactions.length === 0) {
     return <TransactionTableEmptyState />;
@@ -215,15 +305,26 @@ export default function TransactionTable({
                  row.original.category.name === 'Aluguel Pago') && 
                 !row.original.property;
               
+              const isSelected = row.getIsSelected();
               return (
                 <tr 
                   key={row.id} 
                   className={`hover:bg-gray-50 ${
-                    isRentalWithoutProperty ? 'bg-yellow-50 border-l-4 border-l-yellow-400' : ''
+                    isSelected
+                      ? 'bg-blue-50'
+                      : (isRentalWithoutProperty ? 'bg-yellow-50 border-l-4 border-l-yellow-400' : '')
                   }`}
+                  aria-selected={isSelected}
+                  onMouseDown={handleRowMouseDown}
+                  onClick={(e) => handleRowSelectClick(e, row)}
                 >
                   {row.getVisibleCells().map(cell => (
-                    <td key={cell.id} className="px-3 py-1.5">
+                    <td
+                      key={cell.id}
+                      className="px-3 py-1.5"
+                      onMouseDown={handleRowMouseDown}
+                      onClick={(e) => handleRowSelectClick(e, row)}
+                    >
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}

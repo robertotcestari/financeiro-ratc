@@ -8,6 +8,7 @@ import {
 } from '@/lib/database/categorization';
 import { findPotentialTransfers } from '@/lib/database/transactions';
 import { prisma } from '@/lib/database/client';
+import type { Prisma } from '@prisma/client';
 import {
   applySuggestion,
   applySuggestions,
@@ -18,6 +19,7 @@ import {
 import { ruleEngine } from '@/lib/database/rule-engine';
 import { AICategorizationService } from '@/lib/ai/categorization-service';
 import { InputJsonValue } from '@prisma/client/runtime/library';
+import { Input } from 'postcss';
 
 const categorizeOneSchema = z.object({
   id: z.string(),
@@ -603,7 +605,7 @@ export async function generateBulkAISuggestionsAction(
                 suggestedPropertyId: aiSuggestion.suggestedPropertyId,
                 confidence: aiSuggestion.confidence,
                 reasoning: aiSuggestion.reasoning,
-                aiMetadata: aiSuggestion.metadata as InputJsonValue,
+                aiMetadata: aiSuggestion.metadata as unknown as InputJsonValue,
               },
             });
           } else {
@@ -616,7 +618,7 @@ export async function generateBulkAISuggestionsAction(
                 suggestedCategoryId: aiSuggestion.suggestedCategoryId,
                 suggestedPropertyId: aiSuggestion.suggestedPropertyId,
                 confidence: aiSuggestion.confidence,
-                aiMetadata: aiSuggestion.metadata as InputJsonValue,
+                aiMetadata: aiSuggestion.metadata as unknown as InputJsonValue,
               },
             });
           }
