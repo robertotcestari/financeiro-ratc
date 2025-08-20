@@ -18,19 +18,16 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Cache node modules
+      - name: Cache npm
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.npm
-            node_modules
-            .next/cache
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-npm-
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --cache ~/.npm
 
       - name: Setup environment
         run: |
@@ -70,6 +67,10 @@ jobs:
             cp -r prisma "$DEPLOY_DIR/"
             cp next.config.* "$DEPLOY_DIR/" 2>/dev/null || true
           fi
+
+          # Verify prisma migrations are included
+          echo "Checking prisma directory in deploy bundle:"
+          ls -la "$DEPLOY_DIR/prisma/migrations/" || echo "Migrations not found in bundle!"
 
           # Create tarball
           tar -czf deploy.tar.gz -C "$DEPLOY_DIR" .
@@ -117,10 +118,16 @@ jobs:
 
             # Extract new build
             cd "${APP_DIR}"
-            tar -xzf deploy.tar.gz -C "${APP_PATH}" --overwrite
+            rm -rf "${APP_PATH}"/*
+            mkdir -p "${APP_PATH}"
+            tar -xzf deploy.tar.gz -C "${APP_PATH}"
 
             # Link shared .env file
             ln -sfn "${SHARED_DIR}/.env" "${APP_PATH}/.env"
+
+            # Verify migrations were copied
+            echo "Checking migrations directory:"
+            ls -la "${APP_PATH}/prisma/migrations/" || echo "Migrations directory not found!"
 
             # Install production dependencies and run migrations
             cd "${APP_PATH}"
