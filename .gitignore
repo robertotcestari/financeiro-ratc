@@ -39,7 +39,6 @@ test-results/
 
 # backups
 backups/
-*.sql
 !prisma/migrations/**/*.sql
 *.sql.gz
 *.backup
