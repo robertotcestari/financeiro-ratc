@@ -1,8 +1,11 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/core/auth/auth-utils";
 
-// Allowed email for authentication
-const ALLOWED_EMAIL = "robertotcestari@gmail.com";
+// Allowed emails for authentication
+const ALLOWED_EMAILS = [
+  "robertotcestari@gmail.com",
+  "contato@iolhoscatanduva.com.br"
+];
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -17,7 +20,7 @@ export default async function AuthGuard({ children }: AuthGuardProps) {
   }
   
   // Check if user email is allowed
-  if (user.email !== ALLOWED_EMAIL) {
+  if (!ALLOWED_EMAILS.includes(user.email || "")) {
     redirect("/auth/signin?error=unauthorized");
   }
   

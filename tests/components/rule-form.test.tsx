@@ -239,7 +239,7 @@ describe('RuleForm', () => {
 
       expect(screen.getByText('Nome descritivo para identificar facilmente esta regra.')).toBeInTheDocument();
       expect(screen.getByText('Prioridade da regra (0-100). Regras com maior prioridade são aplicadas primeiro.')).toBeInTheDocument();
-      expect(screen.getByText('Propriedade opcional a ser associada às transações que atendem esta regra.')).toBeInTheDocument();
+      expect(screen.getByText('Propriedade opcional para regras de aluguel. Deixe vazio para regras gerais que não precisam estar vinculadas a um imóvel específico.')).toBeInTheDocument();
     });
   });
 });

@@ -117,7 +117,7 @@ export default function RuleForm({
       name: rule?.name || '',
       description: rule?.description || '',
       categoryId: rule?.categoryId || '',
-      propertyId: rule?.propertyId || 'none',
+      propertyId: rule?.propertyId || null,
       priority: rule?.priority || 0,
       criteria: (rule?.criteria as RuleCriteria) || {},
     },
@@ -296,12 +296,10 @@ export default function RuleForm({
                         role="combobox"
                         className={cn(
                           'justify-between',
-                          !field.value || field.value === 'none'
-                            ? 'text-muted-foreground'
-                            : ''
+                          !field.value ? 'text-muted-foreground' : ''
                         )}
                       >
-                        {field.value && field.value !== 'none'
+                        {field.value
                           ? (() => {
                               const property = properties.find(
                                 (p) => p.id === field.value
@@ -330,15 +328,13 @@ export default function RuleForm({
                           <CommandItem
                             value="none"
                             onSelect={() => {
-                              form.setValue('propertyId', 'none');
+                              form.setValue('propertyId', null);
                             }}
                           >
                             <Check
                               className={cn(
                                 'mr-2 h-4 w-4',
-                                field.value === 'none' || !field.value
-                                  ? 'opacity-100'
-                                  : 'opacity-0'
+                                !field.value ? 'opacity-100' : 'opacity-0'
                               )}
                             />
                             Nenhuma propriedade
@@ -372,8 +368,8 @@ export default function RuleForm({
                   </PopoverContent>
                 </Popover>
                 <FormDescription>
-                  Propriedade opcional a ser associada às transações que atendem
-                  esta regra.
+                  Propriedade opcional para regras de aluguel. Deixe vazio para regras
+                  gerais que não precisam estar vinculadas a um imóvel específico.
                 </FormDescription>
                 <FormMessage />
               </FormItem>

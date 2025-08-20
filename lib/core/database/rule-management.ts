@@ -53,9 +53,9 @@ export class RuleManagementService {
   async createRule(params: CreateRuleRequest): Promise<RuleWithRelations> {
     const { name, description, priority = 0, categoryId, propertyId, criteria } = params;
 
-    // Validate that at least one target is provided (category OR property)
-    if (!categoryId && !propertyId) {
-      throw new Error('Rule must target at least one category or property');
+    // Validate that category is provided (property is optional)
+    if (!categoryId) {
+      throw new Error('Rule must have a category');
     }
 
     // Validate rule criteria
@@ -159,12 +159,11 @@ export class RuleManagementService {
       }
     }
 
-    // Validate targets - at least one must be provided after update
+    // Validate targets - category must be provided after update (property is optional)
     const finalCategoryId = categoryId !== undefined ? categoryId : existingRule.categoryId;
-    const finalPropertyId = propertyId !== undefined ? propertyId : existingRule.propertyId;
     
-    if (!finalCategoryId && !finalPropertyId) {
-      throw new Error('Rule must target at least one category or property');
+    if (!finalCategoryId) {
+      throw new Error('Rule must have a category');
     }
 
     // Validate category if provided
