@@ -13,27 +13,43 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Prepare deploy source bundle
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Prisma generate
+        run: npx prisma generate
+
+      - name: Build application
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=4096"
+          export NEXT_TELEMETRY_DISABLED=1
+          export SKIP_BUILD_CHECKS=true
+          npm run build
+
+      - name: Prepare deployment bundle
         run: |
           set -euo pipefail
-          OUT_DIR=out
-          rm -rf "$OUT_DIR"
-          mkdir -p "$OUT_DIR"
+          DEPLOY_DIR=deploy-bundle
+          rm -rf "$DEPLOY_DIR"
+          mkdir -p "$DEPLOY_DIR"
 
-          # Copy source (exclude node_modules/.next/git/logs)
-          rsync -a --delete \
-            --exclude '.git' \
-            --exclude 'node_modules' \
-            --exclude '.next' \
-            --exclude 'logs' \
-            --exclude 'out' \
-            ./ "$OUT_DIR/"
+          # Copy built application and required files
+          cp -r .next "$DEPLOY_DIR/"
+          cp -r public "$DEPLOY_DIR/" 2>/dev/null || true
+          cp package.json package-lock.json "$DEPLOY_DIR/"
+          cp -r prisma "$DEPLOY_DIR/"
+          
+          # Copy next config if exists
+          cp next.config.* "$DEPLOY_DIR/" 2>/dev/null || true
 
-          # Ensure lockfiles and prisma schema are included
-          cp -f package.json package-lock.json "$OUT_DIR/"
-
-          # Pack source for server-side build
-          tar -C "$OUT_DIR" -czf release.tgz .
+          # Create tarball
+          tar -czf deploy.tar.gz -C "$DEPLOY_DIR" .
 
       - name: Ensure server directories exist
         uses: appleboy/ssh-action@v1.0.3
@@ -46,19 +62,21 @@ jobs:
           script: |
             set -euo pipefail
             APP_DIR="/opt/financeiro-ratc"
-            mkdir -p "${APP_DIR}/uploads" "${APP_DIR}/releases" "${APP_DIR}/shared"
+            mkdir -p "${APP_DIR}/app" "${APP_DIR}/shared"
+            [ -f "${APP_DIR}/shared/.env" ] || touch "${APP_DIR}/shared/.env"
 
-      - name: Upload bundle to server
-        uses: appleboy/scp-action@v0.1.7
+      - name: Deploy to server via rsync
+        uses: burnett01/rsync-deployments@7.0.1
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || 22 }}
-          source: 'release.tgz'
-          target: '/opt/financeiro-ratc/uploads'
+          switches: -avzr --delete
+          path: deploy.tar.gz
+          remote_path: /opt/financeiro-ratc/
+          remote_host: ${{ secrets.VPS_HOST }}
+          remote_user: ${{ secrets.VPS_USER }}
+          remote_key: ${{ secrets.VPS_SSH_KEY }}
+          remote_port: ${{ secrets.VPS_PORT || 22 }}
 
-      - name: Activate release on server
+      - name: Extract and start application
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -70,48 +88,23 @@ jobs:
             set -euo pipefail
             APP_NAME="financeiro-ratc"
             APP_DIR="/opt/${APP_NAME}"
-            RELEASES_DIR="${APP_DIR}/releases"
+            APP_PATH="${APP_DIR}/app"
             SHARED_DIR="${APP_DIR}/shared"
-            CURRENT_LINK="${APP_DIR}/current"
-            RELEASE_NAME="$(date +%Y%m%d%H%M%S)"
-            NEW_RELEASE="${RELEASES_DIR}/${RELEASE_NAME}"
-            PRISMA_SCHEMA_PATH="prisma/schema.prisma"
             DOMAIN="financeiro.ratc.com.br"
 
-            mkdir -p "${RELEASES_DIR}" "${SHARED_DIR}" "${APP_DIR}/uploads"
-            [ -f "${SHARED_DIR}/.env" ] || touch "${SHARED_DIR}/.env"
+            # Extract new build
+            cd "${APP_DIR}"
+            tar -xzf deploy.tar.gz -C "${APP_PATH}" --overwrite
 
-            mkdir -p "${NEW_RELEASE}"
-            tar -C "${NEW_RELEASE}" -xzf "${APP_DIR}/uploads/release.tgz"
+            # Link shared .env file
+            ln -sfn "${SHARED_DIR}/.env" "${APP_PATH}/.env"
 
-            ln -sfn "${SHARED_DIR}/.env" "${NEW_RELEASE}/.env"
+            # Install production dependencies and run migrations
+            cd "${APP_PATH}"
+            npm ci --omit=dev
+            npx prisma migrate deploy
 
-            # Build on server using environment from ${SHARED_DIR}/.env
-            if [ -f "${NEW_RELEASE}/${PRISMA_SCHEMA_PATH}" ]; then
-              cd "${NEW_RELEASE}"
-
-              if ! command -v node >/dev/null 2>&1; then
-                echo "Node.js not found on server. Please install Node 22.x and retry." >&2
-                exit 1
-              fi
-
-              # Install dependencies (include dev to ensure build works), migrate, then build
-              npm ci
-              npx prisma migrate deploy --schema "${PRISMA_SCHEMA_PATH}"
-              # Increase Node heap to avoid OOM during typecheck/lint and disable telemetry
-              export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
-              export NEXT_TELEMETRY_DISABLED=1
-              # Skip ESLint and TS checks only for deploy builds
-              export SKIP_BUILD_CHECKS=true
-              npm run build
-              # Optionally prune dev dependencies for runtime
-              npm prune --omit=dev || true
-            fi
-
-            ln -sfn "${NEW_RELEASE}" "${CURRENT_LINK}"
-            cd "${CURRENT_LINK}"
-
-            # Start Next.js application
+            # Restart or start application with PM2
             PORT="${PORT:-3000}"
             START_CMD="node node_modules/next/dist/bin/next start -p ${PORT}"
 
@@ -123,8 +116,7 @@ jobs:
 
             pm2 save
 
-            # Keep last 5 releases
-            cd "${RELEASES_DIR}"
-            ls -1t | tail -n +6 | xargs -r rm -rf
+            # Cleanup
+            rm -f "${APP_DIR}/deploy.tar.gz"
 
             echo "Deploy completed successfully for ${DOMAIN}"
