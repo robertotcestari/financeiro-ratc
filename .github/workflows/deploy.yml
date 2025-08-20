@@ -1,0 +1,131 @@
+name: Deploy financeiro-ratc
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Prepare deploy bundle
+        run: |
+          set -euo pipefail
+          OUT_DIR=out
+          rm -rf "$OUT_DIR"
+          
+          # Create output directory structure
+          mkdir -p "$OUT_DIR"
+          
+          # Copy production dependencies
+          cp package*.json "$OUT_DIR/"
+          cd "$OUT_DIR"
+          npm ci --omit=dev
+          cd ..
+          
+          # Copy built application
+          cp -r .next "$OUT_DIR/"
+          [ -d "public" ] && cp -r public "$OUT_DIR/" || true
+          [ -d "prisma" ] && cp -r prisma "$OUT_DIR/" || true
+          
+          # Copy Next.js config
+          for f in next.config.ts next.config.js next.config.mjs; do
+            [ -f "$f" ] && cp "$f" "$OUT_DIR/" || true
+          done
+          
+          # Pack release
+          tar -C "$OUT_DIR" -czf release.tgz .
+
+      - name: Ensure server directories exist
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_DIR="/opt/financeiro-ratc"
+            mkdir -p "${APP_DIR}/uploads" "${APP_DIR}/releases" "${APP_DIR}/shared"
+
+      - name: Upload bundle to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          source: 'release.tgz'
+          target: '/opt/financeiro-ratc/uploads'
+
+      - name: Activate release on server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_NAME="financeiro-ratc"
+            APP_DIR="/opt/${APP_NAME}"
+            RELEASES_DIR="${APP_DIR}/releases"
+            SHARED_DIR="${APP_DIR}/shared"
+            CURRENT_LINK="${APP_DIR}/current"
+            RELEASE_NAME="$(date +%Y%m%d%H%M%S)"
+            NEW_RELEASE="${RELEASES_DIR}/${RELEASE_NAME}"
+            PRISMA_SCHEMA_PATH="prisma/schema.prisma"
+            DOMAIN="financeiro.ratc.com.br"
+            
+            mkdir -p "${RELEASES_DIR}" "${SHARED_DIR}" "${APP_DIR}/uploads"
+            [ -f "${SHARED_DIR}/.env" ] || touch "${SHARED_DIR}/.env"
+            
+            mkdir -p "${NEW_RELEASE}"
+            tar -C "${NEW_RELEASE}" -xzf "${APP_DIR}/uploads/release.tgz"
+            
+            ln -sfn "${SHARED_DIR}/.env" "${NEW_RELEASE}/.env"
+            
+            # Run Prisma migrations if schema exists
+            if [ -f "${NEW_RELEASE}/${PRISMA_SCHEMA_PATH}" ]; then
+              cd "${NEW_RELEASE}"
+              npx prisma migrate deploy --schema "${PRISMA_SCHEMA_PATH}"
+            fi
+            
+            ln -sfn "${NEW_RELEASE}" "${CURRENT_LINK}"
+            cd "${CURRENT_LINK}"
+            
+            # Start Next.js application
+            PORT="${PORT:-3000}"
+            START_CMD="node node_modules/next/dist/bin/next start -p ${PORT}"
+            
+            if pm2 describe "${APP_NAME}" >/dev/null 2>&1; then
+              pm2 restart "${APP_NAME}" --update-env --time
+            else
+              pm2 start "$START_CMD" --name "${APP_NAME}" --time
+            fi
+            
+            pm2 save
+            
+            # Keep last 5 releases
+            cd "${RELEASES_DIR}"
+            ls -1t | tail -n +6 | xargs -r rm -rf
+            
+            echo "Deploy completed successfully for ${DOMAIN}"
