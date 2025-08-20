@@ -5,7 +5,8 @@ import type {
   Property,
   Prisma
 } from '@/app/generated/prisma';
-import { RuleCriteria, validateRuleCriteria } from './rule-types';
+import { validateRuleCriteria } from './rule-types';
+import type { RuleCriteria } from './rule-types';
 
 export interface CreateRuleRequest {
   name: string;

@@ -3,23 +3,23 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import OfxFileUpload from '@/components/ofx/OfxFileUpload';
+import OfxFileUpload from '@/components/features/ofx/OfxFileUpload';
 import type { OFXParseResult, OFXTransaction } from '@/lib/features/ofx/types';
 import AccountSelection, {
   type MinimalBankAccount,
   type ValidationResult,
-} from '@/components/ofx/AccountSelection';
+} from '@/components/features/ofx/AccountSelection';
 import OfxImportPreview, {
   type CategoryOption,
   type PropertyOption,
   type TransactionAction,
   type PreviewRow,
-} from '@/components/ofx/OfxImportPreview';
-import OfxImportResult from '@/components/ofx/OfxImportResult';
+} from '@/components/features/ofx/OfxImportPreview';
+import OfxImportResult from '@/components/features/ofx/OfxImportResult';
 import {
   validateAccountSelection as validateAccount,
 } from '@/app/actions/account-selection';
-import { getPreviewBalances, confirmImportTransactions } from '@/app/ofx-import/actions';
+import { getPreviewBalances, confirmImportTransactions } from '@/app/(protected)/ofx-import/actions';
 
 type Step = 1 | 2 | 3 | 4;
 

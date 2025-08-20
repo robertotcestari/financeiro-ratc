@@ -17,7 +17,7 @@ import {
 } from '@/lib/core/database/suggestions';
 import { ruleEngine } from '@/lib/core/database/rule-engine';
 import { AICategorizationService } from '@/lib/features/ai/categorization-service';
-import { InputJsonValue } from '@prisma/client/runtime/library';
+import type { InputJsonValue } from '@prisma/client/runtime/library';
 
 const categorizeOneSchema = z.object({
   id: z.string(),
@@ -519,13 +519,26 @@ export async function generateBulkAISuggestionsAction(
       return { success: false, error: 'No transactions found' };
     }
 
+    // Transform transactions to match expected format
+    const transformedTransactions = transactions.map(t => ({
+      ...t,
+      transaction: t.transaction ? {
+        ...t.transaction,
+        amount: t.transaction.amount.toNumber(),
+        bankAccount: {
+          name: t.transaction.bankAccount.name,
+          accountType: t.transaction.bankAccount.accountType,
+        }
+      } : null
+    }));
+
     // Initialize AI service
     const aiService = new AICategorizationService();
 
     // Generate AI suggestions
     let aiSuggestions;
     try {
-      aiSuggestions = await aiService.generateBulkSuggestions(transactions);
+      aiSuggestions = await aiService.generateBulkSuggestions(transformedTransactions);
     } catch (aiError: unknown) {
       console.error('Error generating AI suggestions:', aiError);
 

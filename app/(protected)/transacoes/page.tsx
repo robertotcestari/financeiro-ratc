@@ -12,7 +12,12 @@ type PTWithIncludes = Prisma.ProcessedTransactionGetPayload<{
     category: { include: { parent: true } };
     property: true;
     suggestions: {
-      include: {
+      select: {
+        id: true;
+        confidence: true;
+        createdAt: true;
+        source: true;
+        reasoning: true;
         rule: true;
         suggestedCategory: {
           select: { 

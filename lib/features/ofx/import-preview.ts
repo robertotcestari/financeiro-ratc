@@ -501,8 +501,7 @@ export class ImportPreviewService {
         categorization,
         recommendedAction: this.determineRecommendedAction(
           isValid,
-          duplicateMatches,
-          categorization
+          duplicateMatches
         ),
       };
 

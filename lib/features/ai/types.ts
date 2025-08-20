@@ -85,7 +85,7 @@ export interface ProcessedTransactionWithContext extends ProcessedTransaction {
       name: string;
       accountType: string;
     };
-  };
+  } | null;
 }
 
 // AI response format

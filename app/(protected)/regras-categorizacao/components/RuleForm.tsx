@@ -124,7 +124,12 @@ export default function RuleForm({
   });
 
   const handleSubmit = async (values: RuleFormValues) => {
-    await onSubmit(values);
+    // Convert null to undefined for propertyId to match API expectations
+    const submitValues = {
+      ...values,
+      propertyId: values.propertyId ?? undefined,
+    };
+    await onSubmit(submitValues);
   };
 
   return (

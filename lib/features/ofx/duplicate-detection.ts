@@ -8,36 +8,9 @@
  */
 
 import { prisma } from '@/lib/core/database/client';
-import type { OFXTransaction } from './types';
+import type { OFXTransaction, DuplicateDetectionResult, DuplicateMatch, DuplicatePreview } from './types';
 import { Prisma, type Transaction } from '@/app/generated/prisma';
 import { logger } from '@/lib/core/logger/logger';
-
-export interface DuplicateMatch {
-  ofxTransaction: OFXTransaction;
-  existingTransaction: Transaction;
-  confidence: number;
-  matchCriteria: string[];
-  isExactMatch: boolean;
-}
-
-export interface DuplicateDetectionResult {
-  duplicates: DuplicateMatch[];
-  uniqueTransactions: OFXTransaction[];
-  summary: {
-    total: number;
-    duplicates: number;
-    unique: number;
-    exactMatches: number;
-    potentialMatches: number;
-  };
-}
-
-export interface DuplicatePreview {
-  transaction: OFXTransaction;
-  matches: DuplicateMatch[];
-  recommendation: 'skip' | 'import' | 'review';
-  reason: string;
-}
 
 /**
  * Main duplicate detection service

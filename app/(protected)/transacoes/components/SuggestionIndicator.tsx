@@ -18,7 +18,7 @@ interface Suggestion {
   rule?: {
     id: string;
     name: string;
-    description?: string;
+    description?: string | null;
   } | null;
   suggestedCategory: {
     id: string;

@@ -315,7 +315,7 @@ export default function ImobziPreview({
       </Card>
 
       {/* Status Messages */}
-      {summary.duplicates > 0 && (
+      {summary.duplicates && summary.duplicates > 0 && (
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Transações Duplicadas</AlertTitle>

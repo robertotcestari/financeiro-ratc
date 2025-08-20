@@ -65,7 +65,7 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
     }
   };
 
-  const handleOperatorChange = (newOperator: string) => {
+  const handleOperatorChange = (newOperator: 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'between') => {
     const currentValue = form.getValues('criteria.value') || {};
     let newValue = { ...currentValue, operator: newOperator };
 

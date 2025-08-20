@@ -4,7 +4,7 @@ export interface RuleFormValues {
   name: string;
   description?: string;
   categoryId: string;
-  propertyId?: string;
+  propertyId?: string | null;
   priority: number;
   criteria: {
     date?: {
@@ -14,11 +14,11 @@ export interface RuleFormValues {
     value?: {
       min?: number;
       max?: number;
-      operator?: string;
+      operator?: 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'between';
     };
     description?: {
       keywords: string[];
-      operator: string;
+      operator: 'and' | 'or';
       caseSensitive?: boolean;
     };
     accounts?: string[];

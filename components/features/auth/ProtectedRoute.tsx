@@ -1,5 +1,5 @@
-import { requireAuth } from "@/lib/core/auth/auth-helpers";
-import { ReactNode } from "react";
+import { requireAuthWithRedirect } from "@/lib/core/auth";
+import type { ReactNode } from "react";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -15,7 +15,7 @@ export default async function ProtectedRoute({
   redirectTo 
 }: ProtectedRouteProps) {
   // This will redirect if not authenticated
-  await requireAuth(redirectTo);
+  await requireAuthWithRedirect(redirectTo);
   
   // If we reach here, user is authenticated
   return <>{children}</>;

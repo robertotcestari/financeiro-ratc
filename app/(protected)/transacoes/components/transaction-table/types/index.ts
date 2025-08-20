@@ -2,11 +2,13 @@ export interface Suggestion {
   id: string;
   confidence: number;
   createdAt: Date;
-  rule: {
+  source?: 'RULE' | 'AI';
+  reasoning?: string | null;
+  rule?: {
     id: string;
     name: string;
-    description?: string;
-  };
+    description?: string | null;
+  } | null;
   suggestedCategory: {
     id: string;
     name: string;

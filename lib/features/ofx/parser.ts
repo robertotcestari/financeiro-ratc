@@ -1,4 +1,4 @@
-import {
+import type {
   OFXParseResult,
   OFXValidationResult,
   OFXFormatDetectionResult,
@@ -742,8 +742,8 @@ export class OFXParserService {
       amount,
       description,
       type: type || 'OTHER',
-      memo,
-      checkNumber,
+      memo: memo ?? undefined,
+      checkNumber: checkNumber ?? undefined,
     };
   }
 
@@ -783,7 +783,7 @@ export class OFXParserService {
       amount,
       description,
       type: type || 'OTHER',
-      memo,
+      memo: memo ?? undefined,
     };
   }
 
@@ -911,8 +911,8 @@ export class OFXParserService {
       amount,
       description,
       type: type || 'OTHER',
-      memo,
-      checkNumber,
+      memo: memo ?? undefined,
+      checkNumber: checkNumber ?? undefined,
     };
   }
 
@@ -950,7 +950,7 @@ export class OFXParserService {
       amount,
       description,
       type: type || 'OTHER',
-      memo,
+      memo: memo ?? undefined,
     };
   }
 
@@ -1010,8 +1010,8 @@ export class OFXParserService {
     }
 
     // 3. Return the longest unique field as fallback
-    return uniqueFields.reduce((longest, current) => 
-      current && current.length > longest.length ? current : longest, '');
+    return uniqueFields.reduce((longest: string, current) => 
+      current && current.length > (longest?.length ?? 0) ? current : longest, '');
   }
 
   /**
@@ -1360,8 +1360,8 @@ export class OFXParserService {
       amount,
       description: description || '',
       type: type || 'OTHER',
-      memo,
-      checkNumber,
+      memo: memo ?? undefined,
+      checkNumber: checkNumber ?? undefined,
     };
   }
 
@@ -1396,7 +1396,7 @@ export class OFXParserService {
       amount,
       description: description || '',
       type: type || 'OTHER',
-      memo,
+      memo: memo ?? undefined,
     };
   }
 

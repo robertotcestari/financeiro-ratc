@@ -31,11 +31,11 @@ export async function createRuleAction(
   try {
     actionLogger.info('Creating new categorization rule');
     const rule = await ruleManagementService.createRule(params);
-    actionLogger.info('Rule created successfully', { ruleId: rule.id });
+    actionLogger.info({ ruleId: rule.id }, 'Rule created successfully');
     revalidatePath('/regras-categorizacao');
     return { success: true, data: rule };
   } catch (error) {
-    actionLogger.error('Failed to create rule', { error });
+    actionLogger.error({ error }, 'Failed to create rule');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to create rule',
@@ -59,7 +59,7 @@ export async function updateRuleAction(
     revalidatePath('/regras-categorizacao');
     return { success: true, data: rule };
   } catch (error) {
-    actionLogger.error('Failed to update rule', { error });
+    actionLogger.error({ error }, 'Failed to update rule');
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to update rule',
@@ -392,7 +392,7 @@ export async function generateRetroactiveSuggestionsAction(
       };
     }
 
-    const { prisma } = await import('../database/client');
+    const { prisma } = await import('../core/database/client');
     const transactions = await prisma.processedTransaction.findMany({
       where: whereClause,
       select: { id: true },

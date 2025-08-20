@@ -33,10 +33,10 @@ export default function ImobziResult({
   onReset,
   onViewTransactions,
 }: ImobziResultProps) {
-  const details = result.details || {
-    imported: 0,
-    skipped: 0,
-    errors: 0,
+  const details = {
+    imported: result.details?.imported ?? 0,
+    skipped: result.details?.skipped ?? 0,
+    errors: result.details?.errors ?? 0,
   };
 
   const total = details.imported + details.skipped + details.errors;
