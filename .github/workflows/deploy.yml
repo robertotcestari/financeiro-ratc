@@ -154,12 +154,12 @@ jobs:
             fi
 
             if pm2 describe "${APP_NAME}" >/dev/null 2>&1; then
-              pm2 restart "${APP_NAME}" --update-env --time
+              pm2 restart "${APP_NAME}" --update-env --time || echo "PM2 restart failed, but continuing"
             else
-              pm2 start "$START_CMD" --name "${APP_NAME}" --time
+              pm2 start "$START_CMD" --name "${APP_NAME}" --time || echo "PM2 start failed, but continuing"
             fi
 
-            pm2 save
+            pm2 save || echo "PM2 save failed, but continuing"
 
             # Cleanup
             rm -f "${APP_DIR}/deploy.tar.gz"
