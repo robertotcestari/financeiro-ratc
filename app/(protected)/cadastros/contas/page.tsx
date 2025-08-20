@@ -3,6 +3,8 @@ import { getBankAccounts } from './actions';
 import { BankAccountList } from './components/BankAccountList';
 import { Button } from '@/components/ui/button';
 
+export const dynamic = 'force-dynamic';
+
 export default async function BankAccountsPage() {
   const accounts = await getBankAccounts();
 
@@ -18,9 +20,7 @@ export default async function BankAccountsPage() {
           </p>
         </div>
         <Button asChild>
-          <Link href="/cadastros/contas/nova">
-            Nova Conta
-          </Link>
+          <Link href="/cadastros/contas/nova">Nova Conta</Link>
         </Button>
       </div>
 
@@ -31,17 +31,19 @@ export default async function BankAccountsPage() {
           </div>
           <div className="text-sm text-gray-600">Total de Contas</div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow p-6">
           <div className="text-2xl font-bold text-green-600">
-            {accounts.filter(a => a.isActive).length}
+            {accounts.filter((a) => a.isActive).length}
           </div>
           <div className="text-sm text-gray-600">Contas Ativas</div>
         </div>
-        
+
         <div className="bg-white rounded-lg shadow p-6">
           <div className="text-2xl font-bold text-blue-600">
-            {accounts.reduce((sum, a) => sum + a._count.transactions, 0).toLocaleString()}
+            {accounts
+              .reduce((sum, a) => sum + a._count.transactions, 0)
+              .toLocaleString()}
           </div>
           <div className="text-sm text-gray-600">Total de Transações</div>
         </div>
