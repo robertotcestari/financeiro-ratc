@@ -98,6 +98,11 @@ jobs:
               # Install dependencies (include dev to ensure build works), migrate, then build
               npm ci
               npx prisma migrate deploy --schema "${PRISMA_SCHEMA_PATH}"
+              # Increase Node heap to avoid OOM during typecheck/lint and disable telemetry
+              export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=4096}"
+              export NEXT_TELEMETRY_DISABLED=1
+              # Skip ESLint and TS checks only for deploy builds
+              export SKIP_BUILD_CHECKS=true
               npm run build
               # Optionally prune dev dependencies for runtime
               npm prune --omit=dev || true
