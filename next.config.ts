@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const skipBuildChecks = process.env.SKIP_BUILD_CHECKS === 'true';
+const isCIBuild = process.env.CI === 'true';
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['pino', 'pino-pretty'],
@@ -14,6 +15,8 @@ const nextConfig: NextConfig = {
     // Only skip type errors on deploy builds when explicitly requested
     ignoreBuildErrors: skipBuildChecks,
   },
+  // Use standalone output for optimized deployments
+  output: isCIBuild ? 'standalone' : undefined,
 };
 
 export default nextConfig;

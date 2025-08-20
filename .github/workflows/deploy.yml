@@ -17,7 +17,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: 'npm'
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            .next/cache
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm ci
@@ -30,27 +40,36 @@ jobs:
         run: npx prisma generate
 
       - name: Build application
-        run: |
-          export NODE_OPTIONS="--max-old-space-size=4096"
-          export NEXT_TELEMETRY_DISABLED=1
-          export SKIP_BUILD_CHECKS=true
-          npm run build
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
+          NEXT_TELEMETRY_DISABLED: "1"
+          SKIP_BUILD_CHECKS: "true"
+          CI: "true"
+          # Dummy DATABASE_URL for build time (Prisma types need it, but won't connect)
+          DATABASE_URL: "mysql://user:pass@localhost:3306/db"
+        run: npm run build
 
       - name: Prepare deployment bundle
         run: |
           set -euo pipefail
           DEPLOY_DIR=deploy-bundle
           rm -rf "$DEPLOY_DIR"
-          mkdir -p "$DEPLOY_DIR"
-
-          # Copy built application and required files
-          cp -r .next "$DEPLOY_DIR/"
-          cp -r public "$DEPLOY_DIR/" 2>/dev/null || true
-          cp package.json package-lock.json "$DEPLOY_DIR/"
-          cp -r prisma "$DEPLOY_DIR/"
           
-          # Copy next config if exists
-          cp next.config.* "$DEPLOY_DIR/" 2>/dev/null || true
+          # When using standalone output, Next.js creates optimized bundle
+          if [ -d ".next/standalone" ]; then
+            cp -r .next/standalone "$DEPLOY_DIR"
+            cp -r .next/static "$DEPLOY_DIR/.next/static"
+            cp -r public "$DEPLOY_DIR/" 2>/dev/null || true
+            cp -r prisma "$DEPLOY_DIR/"
+          else
+            # Fallback to regular build
+            mkdir -p "$DEPLOY_DIR"
+            cp -r .next "$DEPLOY_DIR/"
+            cp -r public "$DEPLOY_DIR/" 2>/dev/null || true
+            cp package.json package-lock.json "$DEPLOY_DIR/"
+            cp -r prisma "$DEPLOY_DIR/"
+            cp next.config.* "$DEPLOY_DIR/" 2>/dev/null || true
+          fi
 
           # Create tarball
           tar -czf deploy.tar.gz -C "$DEPLOY_DIR" .
@@ -105,12 +124,27 @@ jobs:
 
             # Install production dependencies and run migrations
             cd "${APP_PATH}"
-            npm ci --omit=dev
+            
+            # Check if using standalone build
+            if [ -f "server.js" ]; then
+              # Standalone build - minimal dependencies needed
+              npm ci --omit=dev --only=production 2>/dev/null || true
+            else
+              # Regular build - install production dependencies
+              npm ci --omit=dev
+            fi
+            
             npx prisma migrate deploy
 
             # Restart or start application with PM2
             PORT="${PORT:-3000}"
-            START_CMD="node node_modules/next/dist/bin/next start -p ${PORT}"
+            
+            # Use standalone server if available, otherwise regular Next.js start
+            if [ -f "server.js" ]; then
+              START_CMD="node server.js"
+            else
+              START_CMD="node node_modules/next/dist/bin/next start -p ${PORT}"
+            fi
 
             if pm2 describe "${APP_NAME}" >/dev/null 2>&1; then
               pm2 restart "${APP_NAME}" --update-env --time
