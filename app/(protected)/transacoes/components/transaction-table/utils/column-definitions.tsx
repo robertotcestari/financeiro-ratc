@@ -226,7 +226,7 @@ export function createColumnDefinitions({
               placeholder="Selecionar categoria"
               searchPlaceholder="Buscar categoria..."
               emptyMessage="Nenhuma categoria encontrada."
-              allowClear={false}
+              allowClear={true}
               compact={true}
               className="w-full"
             />

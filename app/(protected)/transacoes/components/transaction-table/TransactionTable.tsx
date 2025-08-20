@@ -105,7 +105,7 @@ export default function TransactionTable({
         !fromCheckbox &&
         target &&
         target.closest(
-          'button, a, input, select, textarea, [role="button"], [contenteditable="true"], .no-row-select'
+          'button, a, input, select, textarea, [role="button"], [role="combobox"], [contenteditable="true"], .no-row-select, [data-slot="popover-trigger"], [data-slot="popover-content"]'
         )
       ) {
         return;
@@ -325,13 +325,14 @@ export default function TransactionTable({
   }, [bulk, table]);
 
   // Close inline editing when the row gets deselected (e.g., via ESC or click elsewhere)
-  useEffect(() => {
-    if (!editing.editingId) return;
-    const stillSelected = !!bulk.rowSelection[editing.editingId];
-    if (!stillSelected) {
-      editing.cancelEdit();
-    }
-  }, [bulk.rowSelection, editing]);
+  // COMMENTED OUT: This was causing issues with combobox interaction
+  // useEffect(() => {
+  //   if (!editing.editingId) return;
+  //   const stillSelected = !!bulk.rowSelection[editing.editingId];
+  //   if (!stillSelected) {
+  //     editing.cancelEdit();
+  //   }
+  // }, [bulk.rowSelection, editing]);
 
   if (transactions.length === 0) {
     return <TransactionTableEmptyState />;
@@ -432,13 +433,13 @@ export default function TransactionTable({
                   `}
                   aria-selected={isSelected}
                   onMouseDown={handleRowMouseDown}
-                  onClick={(e) => handleRowSelectClick(e, row)}
-                  onBlur={() => {
-                    if (editing.editingId === row.id) {
-                      try {
-                        editing.saveEdit();
-                      } catch {}
+                  onClick={(e) => {
+                    // Don't trigger row selection if clicking on interactive elements
+                    const target = e.target as HTMLElement;
+                    if (target.closest('[role="combobox"], [data-slot="popover-trigger"], button, input, textarea, select')) {
+                      return;
                     }
+                    handleRowSelectClick(e, row);
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -446,7 +447,14 @@ export default function TransactionTable({
                       key={cell.id}
                       className="px-2 py-1 text-[11px]"
                       onMouseDown={handleRowMouseDown}
-                      onClick={(e) => handleRowSelectClick(e, row)}
+                      onClick={(e) => {
+                        // Don't trigger row selection if clicking on interactive elements
+                        const target = e.target as HTMLElement;
+                        if (target.closest('[role="combobox"], [data-slot="popover-trigger"], button, input, textarea, select')) {
+                          return;
+                        }
+                        handleRowSelectClick(e, row);
+                      }}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

@@ -40,9 +40,6 @@ export async function categorizeTransaction(
       'Manutenção',
     ]);
 
-    if (category && requiresPropertyNames.has(category.name) && !propertyId) {
-      throw new Error('Esta categoria exige um imóvel associado.');
-    }
   }
 
   // Atualiza a ProcessedTransaction existente
