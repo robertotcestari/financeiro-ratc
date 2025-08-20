@@ -14,6 +14,9 @@ export default async function IntegrityPage({ searchParams }: PageProps) {
   
   const year = params.year ? parseInt(params.year) : undefined;
   const month = params.month ? parseInt(params.month) : undefined;
+  
+  // Create a unique key based on search params to reset Suspense boundary
+  const suspenseKey = `${year || 'all'}-${month || 'all'}`;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -34,7 +37,7 @@ export default async function IntegrityPage({ searchParams }: PageProps) {
           <CalculateBalancesButton />
         </div>
 
-        <Suspense fallback={<IntegrityDataSkeleton />}>
+        <Suspense key={suspenseKey} fallback={<IntegrityDataSkeleton />}>
           <IntegrityData year={year} month={month} />
         </Suspense>
       </div>

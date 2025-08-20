@@ -17,17 +17,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
 
       - name: Install dependencies
-        run: npm ci --cache ~/.npm
+        run: npm ci --prefer-offline --no-audit --fund=false
 
       - name: Setup environment
         run: |
@@ -54,7 +48,9 @@ jobs:
           
           # When using standalone output, Next.js creates optimized bundle
           if [ -d ".next/standalone" ]; then
-            cp -r .next/standalone "$DEPLOY_DIR"
+            # Flatten standalone output into deploy root so server.js is at the root
+            cp -r .next/standalone/* "$DEPLOY_DIR/"
+            mkdir -p "$DEPLOY_DIR/.next"
             cp -r .next/static "$DEPLOY_DIR/.next/static"
             cp -r public "$DEPLOY_DIR/" 2>/dev/null || true
             cp -r prisma "$DEPLOY_DIR/"
@@ -134,11 +130,13 @@ jobs:
             
             # Check if using standalone build
             if [ -f "server.js" ]; then
-              # Standalone build - minimal dependencies needed
-              npm ci --omit=dev --only=production 2>/dev/null || true
+              # Standalone build already contains necessary node_modules; skip install
+              echo "Standalone build detected; skipping npm install on server"
             else
               # Regular build - install production dependencies
-              npm ci --omit=dev
+              # Use shared npm cache to speed up repeated installs
+              export NPM_CONFIG_CACHE="${SHARED_DIR}/.npm"
+              npm ci --omit=dev --prefer-offline --no-audit --fund=false
             fi
             
             npx prisma migrate deploy || echo "No pending migrations"
