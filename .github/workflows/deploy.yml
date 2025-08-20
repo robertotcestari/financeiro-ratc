@@ -13,45 +13,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build
-
-      - name: Prepare deploy bundle
+      - name: Prepare deploy source bundle
         run: |
           set -euo pipefail
           OUT_DIR=out
           rm -rf "$OUT_DIR"
-
-          # Create output directory structure
           mkdir -p "$OUT_DIR"
 
-          # Copy production dependencies
-          cp package*.json "$OUT_DIR/"
-          cd "$OUT_DIR"
-          npm ci --omit=dev
-          cd ..
+          # Copy source (exclude node_modules/.next/git/logs)
+          rsync -a --delete \
+            --exclude '.git' \
+            --exclude 'node_modules' \
+            --exclude '.next' \
+            --exclude 'logs' \
+            --exclude 'out' \
+            ./ "$OUT_DIR/"
 
-          # Copy built application
-          cp -r .next "$OUT_DIR/"
-          [ -d "public" ] && cp -r public "$OUT_DIR/" || true
-          [ -d "prisma" ] && cp -r prisma "$OUT_DIR/" || true
+          # Ensure lockfiles and prisma schema are included
+          cp -f package.json package-lock.json "$OUT_DIR/"
 
-          # Copy Next.js config
-          for f in next.config.ts next.config.js next.config.mjs; do
-            [ -f "$f" ] && cp "$f" "$OUT_DIR/" || true
-          done
-
-          # Pack release
+          # Pack source for server-side build
           tar -C "$OUT_DIR" -czf release.tgz .
 
       - name: Ensure server directories exist
@@ -105,10 +86,21 @@ jobs:
 
             ln -sfn "${SHARED_DIR}/.env" "${NEW_RELEASE}/.env"
 
-            # Run Prisma migrations if schema exists
+            # Build on server using environment from ${SHARED_DIR}/.env
             if [ -f "${NEW_RELEASE}/${PRISMA_SCHEMA_PATH}" ]; then
               cd "${NEW_RELEASE}"
+
+              if ! command -v node >/dev/null 2>&1; then
+                echo "Node.js not found on server. Please install Node 22.x and retry." >&2
+                exit 1
+              fi
+
+              # Install dependencies (include dev to ensure build works), migrate, then build
+              npm ci
               npx prisma migrate deploy --schema "${PRISMA_SCHEMA_PATH}"
+              npm run build
+              # Optionally prune dev dependencies for runtime
+              npm prune --omit=dev || true
             fi
 
             ln -sfn "${NEW_RELEASE}" "${CURRENT_LINK}"
