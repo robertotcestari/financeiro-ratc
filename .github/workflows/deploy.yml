@@ -62,11 +62,17 @@ jobs:
             cp -r public "$DEPLOY_DIR/" 2>/dev/null || true
             cp -r prisma "$DEPLOY_DIR/"
           else
-            # Fallback to regular build
+            # Fallback to regular build - copy all necessary files
             cp -r .next "$DEPLOY_DIR/"
             cp -r public "$DEPLOY_DIR/" 2>/dev/null || true
             cp -r prisma "$DEPLOY_DIR/"
+            cp -r app "$DEPLOY_DIR/"
+            cp -r lib "$DEPLOY_DIR/"
+            cp -r components "$DEPLOY_DIR/"
+            cp -r hooks "$DEPLOY_DIR/" 2>/dev/null || true
             cp next.config.* "$DEPLOY_DIR/" 2>/dev/null || true
+            cp tsconfig.json "$DEPLOY_DIR/" 2>/dev/null || true
+            cp middleware.ts "$DEPLOY_DIR/" 2>/dev/null || true
           fi
 
           # Verify prisma migrations are included
@@ -118,8 +124,11 @@ jobs:
             # Extract new build
             cd "${APP_DIR}"
             # Remove old app completely to ensure no cache remains
+            echo "Removing old application and cache..."
             rm -rf "${APP_PATH}"
             mkdir -p "${APP_PATH}"
+            
+            echo "Extracting new build..."
             tar -xzf deploy.tar.gz -C "${APP_PATH}"
             
             echo "Extraction completed successfully"
@@ -228,9 +237,28 @@ jobs:
             echo "Stopping existing PM2 process if exists..."
             pm2 delete "${APP_NAME}" 2>/dev/null || true
             
-            # Clear Next.js cache explicitly
+            # Clear Next.js cache only (not the entire build)
             echo "Clearing Next.js cache..."
-            rm -rf .next/cache 2>/dev/null || true
+            if [ -d ".next/cache" ]; then
+              rm -rf .next/cache
+              echo "✓ Cache cleared"
+            else
+              echo "ℹ No cache directory found"
+            fi
+            
+            # Verify build exists before starting
+            echo "Verifying Next.js build..."
+            if [ -f "server.js" ]; then
+              echo "✓ Standalone build found (server.js)"
+            elif [ -d ".next" ]; then
+              echo "✓ Regular Next.js build found (.next directory)"
+              ls -la .next/ | head -5
+            else
+              echo "✗ No Next.js build found! Cannot start application."
+              echo "Contents of app directory:"
+              ls -la
+              exit 1
+            fi
             
             echo "Starting application..."
             

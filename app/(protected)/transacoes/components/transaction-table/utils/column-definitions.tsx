@@ -6,7 +6,7 @@ import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
 import { Pencil, Check } from 'lucide-react';
 import SuggestionIndicator from '../../SuggestionIndicator';
-import { getTypeColor, getTypeLabel } from './transaction-helpers';
+import { getTypeColor, getTypeLabel, getTypeFullLabel } from './transaction-helpers';
 import { AlertTriangle } from 'lucide-react';
 import type { Transaction } from '../types';
 import type { Row } from '@tanstack/react-table';
@@ -191,9 +191,8 @@ export function createColumnDefinitions({
           row.original.category?.id === 'uncategorized';
         if (isUncategorized) {
           return (
-            <span className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded-full text-[10px] font-medium bg-yellow-100 text-yellow-800">
+            <span className="inline-flex items-center justify-center px-1 py-0.5 rounded-full text-[10px] font-medium bg-yellow-100 text-yellow-800" title="Sem Categoria">
               <AlertTriangle className="h-2.5 w-2.5" />
-              Sem Categoria
             </span>
           );
         }
@@ -202,6 +201,7 @@ export function createColumnDefinitions({
             className={`inline-flex px-1.5 py-0.5 rounded-full text-[10px] font-medium ${getTypeColor(
               type
             )}`}
+            title={getTypeFullLabel(type)}
           >
             {getTypeLabel(type)}
           </span>

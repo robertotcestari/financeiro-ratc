@@ -42,11 +42,26 @@ export function getTypeColor(type: string): string {
 export function getTypeLabel(type: string): string {
   switch (type) {
     case 'INCOME':
+      return 'R';
+    case 'EXPENSE':
+      return 'D';
+    case 'TRANSFER':
+      return 'T';
+    case 'ADJUSTMENT':
+      return 'A';
+    default:
+      return type;
+  }
+}
+
+export function getTypeFullLabel(type: string): string {
+  switch (type) {
+    case 'INCOME':
       return 'Receita';
     case 'EXPENSE':
       return 'Despesa';
     case 'TRANSFER':
-      return 'Transf.';
+      return 'Transferência';
     case 'ADJUSTMENT':
       return 'Ajuste';
     default:
