@@ -184,22 +184,7 @@ export async function applySuggestion(suggestionId: string): Promise<void> {
 
     // Business rule: validate property requirement for certain categories
     // Only fetch the category if the suggestion does NOT include a property yet
-    if (suggestion.suggestedCategoryId && !suggestion.suggestedPropertyId) {
-      const category = await tx.category.findUnique({
-        where: { id: suggestion.suggestedCategoryId },
-        select: { name: true },
-      });
-      const requiresPropertyNames = new Set<string>([
-        'Aluguel',
-        'Aluguel de Terceiros',
-        'Repasse de Aluguel',
-        'Aluguel Pago',
-        'Manutenção',
-      ]);
-      if (category && requiresPropertyNames.has(category.name)) {
-        throw new Error('Esta categoria exige um imóvel associado.');
-      }
-    }
+
 
     await tx.processedTransaction.update({
       where: { id: suggestion.processedTransactionId },

@@ -79,6 +79,19 @@ describe('Suggestion Server Actions', () => {
       });
     });
 
+    it('should apply category without requiring property', async () => {
+      mockedSuggestionServices.applySuggestion.mockResolvedValue(undefined);
+
+      const result = await applySuggestionAction({
+        suggestionId: 'sug-category-only',
+      });
+
+      expect(mockedSuggestionServices.applySuggestion).toHaveBeenCalledWith(
+        'sug-category-only'
+      );
+      expect(result).toEqual({ success: true });
+    });
+
     it('should validate input schema', async () => {
       // Test with invalid input (should throw validation error)
       await expect(
