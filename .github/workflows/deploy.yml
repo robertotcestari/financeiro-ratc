@@ -141,7 +141,6 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script_stop: true
           script: |
-            set -euo pipefail
             APP_DIR="${{ env.APP_DIR }}"
             mkdir -p "${APP_DIR}/releases" "${APP_DIR}/shared" "${APP_DIR}/uploads"
             [ -f "${APP_DIR}/shared/.env" ] || touch "${APP_DIR}/shared/.env"
@@ -166,8 +165,6 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script_stop: true
           script: |
-            set -euo pipefail
-
             APP_NAME="${{ env.APP_NAME }}"
             APP_DIR="${{ env.APP_DIR }}"
             RELEASE_ID="${{ env.RELEASE_ID }}"
@@ -206,7 +203,6 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script_stop: true
           script: |
-            set -euo pipefail
             APP_DIR="${{ env.APP_DIR }}"
             RELEASE_ID="${{ env.RELEASE_ID }}"
             RELEASES="${APP_DIR}/releases"
@@ -217,10 +213,34 @@ jobs:
 
             # Instala dependências apenas para build regular
             echo "[ETAPA 3] Verificando tipo de build..."
+            
+            # Debug: lista arquivos no diretório
+            echo "Conteúdo do diretório:"
+            ls -la | head -20
+            
             if [ ! -f "server.js" ]; then
               echo "Build regular detectado — instalando dependências de runtime…"
+              
+              # Verifica se package.json existe
+              if [ ! -f "package.json" ]; then
+                echo "✗ ERRO: package.json não encontrado!"
+                exit 1
+              fi
+              
+              # Verifica se package-lock.json existe  
+              if [ ! -f "package-lock.json" ]; then
+                echo "✗ ERRO: package-lock.json não encontrado!"
+                exit 1
+              fi
+              
               export NPM_CONFIG_CACHE="${SHARED}/.npm"
-              npm ci --omit=dev --no-audit --fund=false
+              echo "Executando: npm ci --omit=dev --no-audit --fund=false"
+              npm ci --omit=dev --no-audit --fund=false 2>&1
+              EXIT_CODE=$?
+              if [ $EXIT_CODE -ne 0 ]; then
+                echo "✗ ERRO ao instalar dependências! Código de saída: $EXIT_CODE"
+                exit 1
+              fi
               echo "✓ Dependências instaladas"
             else
               echo "Standalone detectado — pulando npm install."
@@ -235,7 +255,6 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script_stop: true
           script: |
-            set -euo pipefail
             APP_DIR="${{ env.APP_DIR }}"
             RELEASE_ID="${{ env.RELEASE_ID }}"
             RELEASES="${APP_DIR}/releases"
@@ -277,7 +296,6 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script_stop: true
           script: |
-            set -euo pipefail
             APP_NAME="${{ env.APP_NAME }}"
             APP_DIR="${{ env.APP_DIR }}"
             RELEASE_ID="${{ env.RELEASE_ID }}"
@@ -346,7 +364,6 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script_stop: true
           script: |
-            set -euo pipefail
             APP_NAME="${{ env.APP_NAME }}"
             APP_DIR="${{ env.APP_DIR }}"
             CURRENT="${APP_DIR}/current"
@@ -409,7 +426,6 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script_stop: false
           script: |
-            set -euo pipefail
             APP_DIR="${{ env.APP_DIR }}"
             RELEASE_ID="${{ env.RELEASE_ID }}"
             RELEASES="${APP_DIR}/releases"
