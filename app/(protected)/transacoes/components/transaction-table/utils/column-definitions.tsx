@@ -379,7 +379,7 @@ export function createColumnDefinitions({
                 disabled={isPending}
                 variant="ghost"
                 size="sm"
-                className="text-green-600 hover:text-green-800"
+                className="text-green-600 hover:text-green-800 cursor-pointer"
               >
                 Salvar
               </Button>
@@ -387,7 +387,7 @@ export function createColumnDefinitions({
                 onClick={cancelEdit}
                 variant="ghost"
                 size="sm"
-                className="text-gray-600 hover:text-gray-800"
+                className="text-gray-600 hover:text-gray-800 cursor-pointer"
               >
                 Cancelar
               </Button>
@@ -399,7 +399,7 @@ export function createColumnDefinitions({
                 onClick={() => startEdit(row.original)}
                 variant="ghost"
                 size="icon"
-                className="text-blue-600 hover:text-blue-800"
+                className="text-blue-600 hover:text-blue-800 cursor-pointer"
                 aria-label="Editar"
                 title="Editar"
               >
@@ -422,7 +422,7 @@ export function createColumnDefinitions({
                   disabled={isPending}
                   variant="ghost"
                   size="icon"
-                  className="text-green-600 hover:text-green-800"
+                  className="text-green-600 hover:text-green-800 cursor-pointer"
                   aria-label="Marcar como revisado"
                   title="Marcar como revisado"
                 >
