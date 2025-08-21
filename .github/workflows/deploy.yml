@@ -44,7 +44,6 @@ jobs:
 
       - name: Compute release id
         run: |
-          set -euo pipefail
           SHORT_SHA="${GITHUB_SHA::7}"
           TS="$(date +%Y%m%d%H%M%S)"
           echo "RELEASE_ID=${SHORT_SHA}-${TS}" >> "$GITHUB_ENV"
@@ -56,22 +55,39 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'package-lock.json'
 
-      - name: Cache Next.js & Prisma
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-node${{ env.NODE_VERSION }}-
+            npm-${{ runner.os }}-
+      
+      - name: Cache Next.js build
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/prisma
             .next/cache
-          key: next-prisma-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json', 'prisma/schema.prisma') }}
+            ${{ github.workspace }}/.next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', '**/*.json') }}
           restore-keys: |
-            next-prisma-${{ runner.os }}-node${{ env.NODE_VERSION }}-
+            nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+            nextjs-${{ runner.os }}-
+      
+      - name: Cache Prisma
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/prisma
+          key: prisma-${{ runner.os }}-${{ hashFiles('prisma/schema.prisma') }}
+          restore-keys: |
+            prisma-${{ runner.os }}-
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit --fund=false
+        run: npm ci --prefer-offline --no-audit --fund=false --cache ~/.npm
 
       - name: Write build-time .env (masked)
         run: |
-          set -euo pipefail
           umask 077
           printf "%s" "${{ secrets.ENV }}" > .env
           echo "Build-time .env created"
@@ -86,7 +102,6 @@ jobs:
           # Dummy DATABASE_URL para os tipos do Prisma no build
           DATABASE_URL: 'mysql://user:pass@localhost:3306/db'
         run: |
-          set -euo pipefail
           npm run build
           if [ -d ".next/standalone" ]; then
             echo "Standalone build ✅"
@@ -96,7 +111,6 @@ jobs:
 
       - name: Create deployment bundle
         run: |
-          set -euo pipefail
           DEPLOY_DIR="deploy-bundle"
           rm -rf "$DEPLOY_DIR"
           mkdir -p "$DEPLOY_DIR"
@@ -213,11 +227,11 @@ jobs:
 
             # Instala dependências apenas para build regular
             echo "[ETAPA 3] Verificando tipo de build..."
-            
+
             # Debug: lista arquivos no diretório
             echo "Conteúdo do diretório:"
             ls -la | head -20
-            
+
             if [ ! -f "server.js" ]; then
               echo "Build regular detectado — instalando dependências de runtime…"
               
@@ -234,8 +248,8 @@ jobs:
               fi
               
               export NPM_CONFIG_CACHE="${SHARED}/.npm"
-              echo "Executando: npm ci --omit=dev --no-audit --fund=false"
-              npm ci --omit=dev --no-audit --fund=false 2>&1
+              echo "Executando: npm install --omit=dev --no-audit --fund=false"
+              npm install --omit=dev --no-audit --fund=false 2>&1
               EXIT_CODE=$?
               if [ $EXIT_CODE -ne 0 ]; then
                 echo "✗ ERRO ao instalar dependências! Código de saída: $EXIT_CODE"
