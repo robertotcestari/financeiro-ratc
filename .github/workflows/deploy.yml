@@ -51,9 +51,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '22'
           cache: 'npm'
-      
+
       - name: Cache Next.js build
         uses: actions/cache@v4
         with:
@@ -62,7 +62,7 @@ jobs:
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
             nextjs-${{ runner.os }}-
-      
+
       - name: Cache Prisma
         uses: actions/cache@v4
         with:
