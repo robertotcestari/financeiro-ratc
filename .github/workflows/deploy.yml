@@ -62,13 +62,14 @@ jobs:
             node-modules-${{ runner.os }}-
 
       - name: Cache Next.js build
+        id: cache-nextjs-build
         uses: actions/cache@v4
         with:
-          path: .next/cache
-          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          path: .next
+          key: nextjs-build-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx', 'prisma/schema.prisma') }}
           restore-keys: |
-            nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
-            nextjs-${{ runner.os }}-
+            nextjs-build-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+            nextjs-build-${{ runner.os }}-
 
       - name: Cache Prisma
         uses: actions/cache@v4
@@ -89,9 +90,11 @@ jobs:
           echo "Build-time .env created"
 
       - name: Prisma generate (CI)
+        if: steps.cache-nextjs-build.outputs.cache-hit != 'true'
         run: npx prisma generate
 
       - name: Build (Next.js)
+        if: steps.cache-nextjs-build.outputs.cache-hit != 'true'
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
           SKIP_BUILD_CHECKS: 'true'
