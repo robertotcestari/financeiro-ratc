@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
-  workflow_dispatch:
+t  workflow_dispatch:
 
 permissions:
   contents: read
@@ -70,7 +70,6 @@ jobs:
         run: npm ci --prefer-offline --no-audit --fund=false
 
       - name: Write build-time .env (masked)
-        if: ${{ secrets.ENV }}
         run: |
           set -euo pipefail
           umask 077
