@@ -183,7 +183,7 @@ jobs:
             tar -xzf "${UPLOADS}/deploy-${RELEASE_ID}.tar.gz" -C "${NEW_RELEASE}"
             echo "✓ Bundle extraído com sucesso"
 
-            # Linka .env compartilhado
+            # Faz o link com .env compartilhado
             echo "[ETAPA 2] Linkando arquivo .env..."
             ln -sfn "${SHARED}/.env" "${NEW_RELEASE}/.env"
             if [ -f "${NEW_RELEASE}/.env" ]; then
