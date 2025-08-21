@@ -6,7 +6,6 @@ on:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
-      - '.github/**'
   workflow_dispatch:
 
 permissions:
@@ -16,18 +15,11 @@ concurrency:
   group: deploy-financeiro-ratc-${{ github.ref }}
   cancel-in-progress: true
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
   deploy:
     name: Build & Deploy (production)
     runs-on: ubuntu-latest
-    timeout-minutes: 35
-    environment:
-      name: production
-      url: https://financeiro.ratc.com.br
+    timeout-minutes: 10
 
     env:
       # Quantidade de releases a manter
@@ -78,7 +70,7 @@ jobs:
         run: npm ci --prefer-offline --no-audit --fund=false
 
       - name: Write build-time .env (masked)
-        if: ${{ secrets.ENV != '' }}
+        if: ${{ secrets.ENV }}
         run: |
           set -euo pipefail
           umask 077
