@@ -318,19 +318,29 @@ jobs:
             echo "Porta configurada: ${PORT}"
 
             echo "[ETAPA 7] Reiniciando aplicação com PM2..."
+            # Usamos o binário do Next diretamente para evitar wrappers do npm/shell
+            START_NODE="node"
+            START_SCRIPT="node_modules/next/dist/bin/next"
+            START_ARGS=(start -p "$PORT")
+
+            # Mostra versões para debug
+            echo "node: $(command -v node) | $(node -v 2>/dev/null || echo 'node not found')"
+            echo "npm:  $(command -v npm)  | $(npm -v 2>/dev/null || echo 'npm not found')"
+            echo "pm2:  $(command -v pm2)  | $(pm2 -v 2>/dev/null || echo 'pm2 not found')"
+            ls -la node_modules/.bin || true
+
+            # Se já existir, exclui e inicia novamente com comando explícito
             if pm2 describe "${APP_NAME}" >/dev/null 2>&1; then
-              echo "Aplicação já existe no PM2. Fazendo reload..."
-              pm2 reload "${APP_NAME}" --update-env || pm2 restart "${APP_NAME}" --update-env
-            else
-              echo "Primeira vez rodando. Iniciando aplicação..."
-              if [ -f "package.json" ] && grep -q '"start"' package.json; then
-                echo "Iniciando com npm start..."
-                pm2 start "npm start" --name "${APP_NAME}" --time
-              else
-                echo "Iniciando com next start direto..."
-                pm2 start "node node_modules/.bin/next start" --name "${APP_NAME}" --time
-              fi
+              echo "Aplicação já existe no PM2. Reiniciando com comando explícito..."
+              pm2 delete "${APP_NAME}" || true
             fi
+
+            echo "Iniciando: $START_NODE $START_SCRIPT ${START_ARGS[*]}"
+            pm2 start "$START_NODE" --name "${APP_NAME}" --time -- "$START_SCRIPT" "${START_ARGS[@]}" || {
+              echo "✗ Falha ao iniciar via PM2. Últimos logs:";
+              pm2 logs "${APP_NAME}" --nostream --lines 50 || true;
+              exit 1;
+            }
 
             pm2 save || true
             echo "✓ PM2 configurado"
