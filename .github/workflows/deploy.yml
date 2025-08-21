@@ -29,8 +29,7 @@ jobs:
       APP_DIR: /opt/financeiro-ratc
       DOMAIN: financeiro.ratc.com.br
 
-      # Node/Next/Prisma
-      NODE_VERSION: '22'
+      # Next/Prisma
       NEXT_TELEMETRY_DISABLED: '1'
       PRISMA_CLI_QUERY_ENGINE_TYPE: 'library'
       CI: 'true'
