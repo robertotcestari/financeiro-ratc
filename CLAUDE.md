@@ -11,7 +11,7 @@ Financial management system for automating financial control by importing OFX ba
 ### Core Development
 
 - `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build production application
+- `npm run build` - Build production application (without Turbopack for production)
 - `npm start` - Start production server
 - `npm run lint` - Run ESLint
 
@@ -67,11 +67,17 @@ Financial management system for automating financial control by importing OFX ba
 
 - **Framework**: Next.js 15 with App Router
 - **Styling**: Tailwind CSS v4
-- **UI Components**: shadcn/ui
-- **Database Logic**: Organized in `lib/database/` modules:
+- **UI Components**: shadcn/ui with custom components:
+  - `BanksList` and `BanksListSkeleton` - Bank account listing with loading states
+  - `IntegrityData` and `IntegrityDataSkeleton` - Data integrity checks with Suspense
+  - Enhanced `TransactionTable` with improved inline editing
+  - Improved `Combobox` component for better interaction
+- **Database Logic**: Organized in `lib/core/database/` modules:
   - `client.ts` - Prisma client singleton
   - `transactions.ts` - Transaction operations
-  - (Future) `categorization.ts` - Auto-categorization logic
+  - `categorization.ts` - Categorization logic
+  - `suggestions.ts` - Category suggestions (no longer requires property for all categories)
+  - `rule-management.ts` - Categorization rules management
   - `dre.ts` - Financial statement generation
 
 ### Key Features
@@ -91,7 +97,7 @@ Financial management system for automating financial control by importing OFX ba
 - Use the singleton client from `lib/database/client.ts`
 - **IMPORTANT**: Always import the database client as `prisma` from `@/lib/database/client`:
   ```typescript
-  import { prisma } from '@/lib/database/client'
+  import { prisma } from '@/lib/database/client';
   ```
 
 ### Next.js Patterns
@@ -114,21 +120,25 @@ Financial management system for automating financial control by importing OFX ba
 The project includes comprehensive seed data for initial setup:
 
 ### Bank Accounts (`prisma/seeder/bankAccounts.json`)
+
 - **CC - Sicredi**: Checking account at Sicredi
-- **CC - PJBank**: Checking account at PJBank  
+- **CC - PJBank**: Checking account at PJBank
 - **CI - XP**: Investment account at XP
 - **CI - SicrediInvest**: Investment account at Sicredi
 
 ### Categories (`prisma/seeder/categories.json`)
+
 Hierarchical 3-level category structure:
 
 **Income Categories:**
+
 - Receitas Operacionais (level 1)
   - Aluguel (level 2)
   - Aluguel de Terceiros (level 2)
   - Outras Receitas (level 2)
 
 **Expense Categories:**
+
 - Despesas Operacionais (level 1)
   - Despesas Administrativas (level 2)
     - Tarifas Bancárias, Escritórios e Postagens, Contabilidade, Salários, FGTS, INSS, TI, Documentações e Jurídico (level 3)
@@ -140,21 +150,26 @@ Hierarchical 3-level category structure:
     - IRPJ, Impostos e Taxas, DARF IRPF (level 3)
 
 **Financial Categories:**
+
 - Despesas Financeiras (level 1)
   - Juros, IOF, Taxas e Encargos (level 2)
 - Receitas Financeiras (level 1)
   - Rendimentos (level 2)
 
 **Investment Categories:**
+
 - Investimentos (level 1)
   - Aplicações, Resgates (level 2)
 
 **Transfer Category:**
+
 - Transferências (level 1)
   - Transferência Entre Contas (level 2)
 
 ### Properties (`prisma/seeder/properties.json`)
+
 Real estate properties for transaction linking:
+
 - **CAT (Catanduva)**: 13 properties including commercial spaces and land
 - **SJP (São José do Rio Preto)**: 3 properties on Av. Alberto Andaló
 - **RIB (Ribeirão Preto)**: 3 commercial properties
@@ -163,6 +178,7 @@ Real estate properties for transaction linking:
 - **SVC (São Vicente)**: 1 apartment
 
 ### Seeding Commands
+
 - `npm run db:seed` - Run all seeders
 - Seeds are idempotent using `upsert` operations
 - Seed modules located in `prisma/seeder/`
