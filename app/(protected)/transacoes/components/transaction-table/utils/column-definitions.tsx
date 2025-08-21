@@ -1,10 +1,9 @@
 import { createColumnHelper, type ColumnDef } from '@tanstack/react-table';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
-import { Pencil, Check } from 'lucide-react';
+import { Pencil, Check, X, Save } from 'lucide-react';
 import SuggestionIndicator from '../../SuggestionIndicator';
 import { getTypeColor, getTypeLabel, getTypeFullLabel } from './transaction-helpers';
 import { AlertTriangle } from 'lucide-react';
@@ -74,16 +73,9 @@ export function createColumnDefinitions({
         />
       ),
       enableSorting: false,
-      size: 32,
-    }),
-
-    // Suggestion indicator column
-    columnHelper.display({
-      id: 'suggestions',
-      header: 'Sugestão',
-      cell: ({ row }) => <SuggestionIndicator transaction={row.original} />,
-      enableSorting: false,
-      size: 50,
+      size: 24,
+      minSize: 24,
+      maxSize: 24,
     }),
 
     // Date column
@@ -96,8 +88,21 @@ export function createColumnDefinitions({
         </div>
       ),
       sortingFn: 'datetime',
-      size: 85,
+      size: 70,
+      minSize: 70,
+      maxSize: 70,
     }) as ColumnDef<Transaction>,
+
+    // Suggestion indicator column
+    columnHelper.display({
+      id: 'suggestions',
+      header: 'Sugestão',
+      cell: ({ row }) => <SuggestionIndicator transaction={row.original} />,
+      enableSorting: false,
+      size: 45,
+      minSize: 45,
+      maxSize: 45,
+    }),
 
     // Description column (raw bank description)
     columnHelper.accessor('transaction.description', {
@@ -106,12 +111,17 @@ export function createColumnDefinitions({
       cell: ({ getValue }) => {
         const rawDescription = getValue();
         return (
-          <div className="text-[11px] text-gray-900 leading-tight py-1 break-words">
+          <div 
+            className="text-[11px] text-gray-900 leading-tight py-1 line-clamp-2 overflow-hidden"
+            title={rawDescription as string}
+          >
             {rawDescription}
           </div>
         );
       },
-      size: 250,
+      size: 200,
+      minSize: 200,
+      maxSize: 200,
     }) as ColumnDef<Transaction>,
 
     // Details column (editable user-provided details)
@@ -124,25 +134,20 @@ export function createColumnDefinitions({
         if (editingId === row.id) {
           return (
             <div className="py-1">
-              <Textarea
+              <Input
+                type="text"
                 value={editingDescription}
                 onChange={(e) => setEditingDescription(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
+                  if (e.key === 'Enter') {
                     e.preventDefault();
-                    try {
-                      saveEdit();
-                    } catch {}
+                    saveEdit();
+                  } else if (e.key === 'Escape') {
+                    cancelEdit();
                   }
                 }}
-                onBlur={() => {
-                  try {
-                    saveEdit();
-                  } catch {}
-                }}
-                placeholder={row.original.transaction.description || 'Detalhes'}
-                className="w-full text-[11px] leading-tight resize-none h-7 min-h-[28px] py-1"
-                rows={1}
+                placeholder="Adicionar detalhes"
+                className="w-full text-[11px] leading-tight h-7 py-1 px-2 bg-white"
               />
             </div>
           );
@@ -151,7 +156,7 @@ export function createColumnDefinitions({
         return (
           <div
             onDoubleClick={() => startEdit(row.original)}
-            className="text-[11px] text-gray-900 leading-tight py-1 break-words cursor-pointer"
+            className="text-[11px] text-gray-900 leading-tight h-7 flex items-center px-2 break-words cursor-pointer hover:bg-gray-50 rounded"
             title={details || ''}
           >
             {details && details.trim().length > 0 ? (
@@ -162,7 +167,9 @@ export function createColumnDefinitions({
           </div>
         );
       },
-      size: 220,
+      size: 140,
+      minSize: 140,
+      maxSize: 140,
     }) as ColumnDef<Transaction>,
 
     // Bank account column
@@ -178,6 +185,8 @@ export function createColumnDefinitions({
         </div>
       ),
       size: 110,
+      minSize: 110,
+      maxSize: 110,
     }) as ColumnDef<Transaction>,
 
     // Type column
@@ -207,7 +216,9 @@ export function createColumnDefinitions({
           </span>
         );
       },
-      size: 90,
+      size: 45,
+      minSize: 45,
+      maxSize: 45,
     }) as ColumnDef<Transaction>,
 
     // Category column
@@ -219,17 +230,19 @@ export function createColumnDefinitions({
 
         if (editingId === row.id) {
           return (
-            <Combobox
-              options={categoryOptions}
-              value={editingCategory}
-              onValueChange={setEditingCategory}
-              placeholder="Selecionar categoria"
-              searchPlaceholder="Buscar categoria..."
-              emptyMessage="Nenhuma categoria encontrada."
-              allowClear={true}
-              compact={true}
-              className="w-full"
-            />
+            <div className="min-h-[32px] flex items-center">
+              <Combobox
+                options={categoryOptions}
+                value={editingCategory}
+                onValueChange={setEditingCategory}
+                placeholder="Selecionar categoria"
+                searchPlaceholder="Buscar categoria..."
+                emptyMessage="Nenhuma categoria encontrada."
+                allowClear={true}
+                compact={true}
+                className="w-full"
+              />
+            </div>
           );
         }
         const isUncategorized =
@@ -239,10 +252,10 @@ export function createColumnDefinitions({
         return (
           <div
             onDoubleClick={() => startEdit(row.original)}
-            className="cursor-pointer"
+            className="cursor-pointer min-h-[32px] flex flex-col justify-center"
           >
             {category.parent && !isUncategorized && (
-              <div className="text-[9px] text-gray-400 leading-tight mb-0.5">
+              <div className="text-[9px] text-gray-400 leading-tight">
                 {category.parent.name}
               </div>
             )}
@@ -257,7 +270,9 @@ export function createColumnDefinitions({
           </div>
         );
       },
-      size: 160,
+      size: 165,
+      minSize: 165,
+      maxSize: 165,
     }) as ColumnDef<Transaction>,
 
     // Property column
@@ -326,12 +341,14 @@ export function createColumnDefinitions({
         );
       },
       size: 100,
+      minSize: 100,
+      maxSize: 100,
     }) as ColumnDef<Transaction>,
 
     // Amount column
     columnHelper.accessor('transaction.amount', {
       id: 'amount',
-      header: 'Valor',
+      header: () => <div className="text-right">Valor</div>,
       cell: ({ getValue }) => (
         <div className="whitespace-nowrap text-xs text-right leading-tight">
           <div
@@ -343,7 +360,9 @@ export function createColumnDefinitions({
           </div>
         </div>
       ),
-      size: 120,
+      size: 85,
+      minSize: 85,
+      maxSize: 85,
     }) as ColumnDef<Transaction>,
 
     // Status column
@@ -363,7 +382,9 @@ export function createColumnDefinitions({
           )}
         </div>
       ),
-      size: 100,
+      size: 80,
+      minSize: 80,
+      maxSize: 80,
     }) as ColumnDef<Transaction>,
 
     // Actions column
@@ -372,69 +393,76 @@ export function createColumnDefinitions({
       header: 'Ações',
       cell: ({ row }) => (
         <div className="flex items-center justify-center">
-          {editingId === row.id ? (
-            <>
-              <Button
-                onClick={saveEdit}
-                disabled={isPending}
-                variant="ghost"
-                size="sm"
-                className="text-green-600 hover:text-green-800 cursor-pointer"
-              >
-                Salvar
-              </Button>
-              <Button
-                onClick={cancelEdit}
-                variant="ghost"
-                size="sm"
-                className="text-gray-600 hover:text-gray-800 cursor-pointer"
-              >
-                Cancelar
-              </Button>
-            </>
-          ) : (
-            // Keep layout stable: always reserve two icon slots
-            <div className="grid grid-cols-2 gap-2 w-[72px] justify-items-center">
-              <Button
-                onClick={() => startEdit(row.original)}
-                variant="ghost"
-                size="icon"
-                className="text-blue-600 hover:text-blue-800 cursor-pointer"
-                aria-label="Editar"
-                title="Editar"
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-              {row.original.isReviewed ? (
-                // Invisible placeholder to prevent shifting when reviewed
+          <div className="grid grid-cols-2 gap-2 w-[72px] justify-items-center">
+            {editingId === row.id ? (
+              <>
                 <Button
-                  variant="ghost"
-                  size="icon"
-                  className="opacity-0 pointer-events-none"
-                  aria-hidden
-                  tabIndex={-1}
-                >
-                  <Check className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => handleMarkReviewed(row.original.id, true)}
+                  onClick={saveEdit}
                   disabled={isPending}
                   variant="ghost"
                   size="icon"
                   className="text-green-600 hover:text-green-800 cursor-pointer"
-                  aria-label="Marcar como revisado"
-                  title="Marcar como revisado"
+                  aria-label="Salvar"
+                  title="Salvar"
                 >
-                  <Check className="h-4 w-4" />
+                  <Save className="h-4 w-4" />
                 </Button>
-              )}
-            </div>
-          )}
+                <Button
+                  onClick={cancelEdit}
+                  variant="ghost"
+                  size="icon"
+                  className="text-gray-600 hover:text-gray-800 cursor-pointer"
+                  aria-label="Cancelar"
+                  title="Cancelar"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  onClick={() => startEdit(row.original)}
+                  variant="ghost"
+                  size="icon"
+                  className="text-blue-600 hover:text-blue-800 cursor-pointer"
+                  aria-label="Editar"
+                  title="Editar"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                {row.original.isReviewed ? (
+                  // Invisible placeholder to prevent shifting when reviewed
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="opacity-0 pointer-events-none"
+                    aria-hidden
+                    tabIndex={-1}
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleMarkReviewed(row.original.id, true)}
+                    disabled={isPending}
+                    variant="ghost"
+                    size="icon"
+                    className="text-green-600 hover:text-green-800 cursor-pointer"
+                    aria-label="Marcar como revisado"
+                    title="Marcar como revisado"
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
         </div>
       ),
       enableSorting: false,
-      size: 120,
+      size: 80,
+      minSize: 80,
+      maxSize: 80,
     }),
   ];
 }

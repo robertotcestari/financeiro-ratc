@@ -54,13 +54,26 @@ export function Combobox({
   'data-testid': dataTestId
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
+  const buttonRef = React.useRef<HTMLButtonElement>(null)
 
   const selectedOption = options.find((option) => option.value === value)
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover 
+      open={open} 
+      onOpenChange={(newOpen) => {
+        setOpen(newOpen)
+        if (!newOpen) {
+          // When closing, keep focus on the button
+          setTimeout(() => {
+            buttonRef.current?.focus()
+          }, 0)
+        }
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
+          ref={buttonRef}
           variant="outline"
           role="combobox"
           aria-expanded={open}
@@ -82,17 +95,35 @@ export function Combobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
-        <Command>
+        <Command
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setOpen(false)
+              buttonRef.current?.focus()
+            }
+            // Enter will select the item and then close
+            if (e.key === 'Enter') {
+              setTimeout(() => {
+                setOpen(false)
+                buttonRef.current?.focus()
+              }, 100)
+            }
+          }}
+        >
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
               {allowClear && (
                 <CommandItem
-                  value=""
+                  value="__clear__"
+                  keywords={[clearLabel]}
                   onSelect={() => {
                     onValueChange('')
-                    setOpen(false)
+                    // Keep focus on the combobox
+                    setTimeout(() => {
+                      buttonRef.current?.focus()
+                    }, 0)
                   }}
                 >
                   <Check
@@ -107,11 +138,14 @@ export function Combobox({
               {options.map((option) => (
                 <CommandItem
                   key={option.value}
-                  value={option.label.toLowerCase()}
-                  keywords={option.keywords}
-                  onSelect={() => {
-                    onValueChange(option.value)
-                    setOpen(false)
+                  value={option.value}
+                  keywords={[option.label, ...(option.keywords || [])]}
+                  onSelect={(currentValue) => {
+                    onValueChange(currentValue === value ? '' : currentValue)
+                    // Keep focus on the combobox
+                    setTimeout(() => {
+                      buttonRef.current?.focus()
+                    }, 0)
                   }}
                 >
                   <Check

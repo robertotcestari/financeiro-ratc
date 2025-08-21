@@ -157,7 +157,7 @@ jobs:
           remote_key: ${{ secrets.VPS_SSH_KEY }}
           remote_port: ${{ secrets.VPS_PORT || 22 }}
 
-      - name: Deploy & reload (atomic with health-check)
+      - name: Extract release bundle
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -178,104 +178,251 @@ jobs:
             NEW_RELEASE="${RELEASES}/${RELEASE_ID}"
 
             # Extrai novo release
+            echo "[ETAPA 1] Extraindo bundle..."
             mkdir -p "${NEW_RELEASE}"
             tar -xzf "${UPLOADS}/deploy-${RELEASE_ID}.tar.gz" -C "${NEW_RELEASE}"
+            echo "✓ Bundle extraído com sucesso"
 
             # Linka .env compartilhado
+            echo "[ETAPA 2] Linkando arquivo .env..."
             ln -sfn "${SHARED}/.env" "${NEW_RELEASE}/.env"
+            if [ -f "${NEW_RELEASE}/.env" ]; then
+              echo "✓ Arquivo .env linkado"
+            else
+              echo "✗ ERRO: Arquivo .env não encontrado!"
+              exit 1
+            fi
 
             # Guarda release anterior (para rollback)
             PREV_RELEASE="$(readlink -f "${CURRENT}" 2>/dev/null || true)"
+            echo "Release anterior: ${PREV_RELEASE:-'nenhum'}"
+
+      - name: Install dependencies (if needed)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_DIR="${{ env.APP_DIR }}"
+            RELEASE_ID="${{ env.RELEASE_ID }}"
+            RELEASES="${APP_DIR}/releases"
+            SHARED="${APP_DIR}/shared"
+            NEW_RELEASE="${RELEASES}/${RELEASE_ID}"
 
             cd "${NEW_RELEASE}"
 
             # Instala dependências apenas para build regular
+            echo "[ETAPA 3] Verificando tipo de build..."
             if [ ! -f "server.js" ]; then
               echo "Build regular detectado — instalando dependências de runtime…"
               export NPM_CONFIG_CACHE="${SHARED}/.npm"
               npm ci --omit=dev --no-audit --fund=false
+              echo "✓ Dependências instaladas"
             else
               echo "Standalone detectado — pulando npm install."
             fi
 
-            # Migrations & client Prisma com npx efêmero
+      - name: Run Prisma migrations
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_DIR="${{ env.APP_DIR }}"
+            RELEASE_ID="${{ env.RELEASE_ID }}"
+            RELEASES="${APP_DIR}/releases"
+            NEW_RELEASE="${RELEASES}/${RELEASE_ID}"
+
+            cd "${NEW_RELEASE}"
+
+            # Verifica conexão com banco de dados
+            echo "[ETAPA 4] Configurando Prisma..."
             export NODE_ENV=production
             export NEXT_TELEMETRY_DISABLED=1
             export PRISMA_CLI_QUERY_ENGINE_TYPE=library
 
+            # Carrega .env para obter DATABASE_URL
+            if [ -f ".env" ]; then
+              export $(grep -v '^#' .env | xargs)
+            fi
+
             echo "Executando prisma migrate deploy…"
-            npx --yes prisma migrate deploy
+            npx --yes prisma migrate deploy 2>&1 || {
+              echo "✗ ERRO nas migrations!"
+              exit 1
+            }
+            echo "✓ Migrations executadas"
 
             echo "Gerando prisma client…"
-            npx --yes prisma generate
+            npx --yes prisma generate 2>&1 || {
+              echo "✗ ERRO ao gerar Prisma client!"
+              exit 1
+            }
+            echo "✓ Prisma client gerado"
+
+      - name: Switch to new release and restart PM2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_NAME="${{ env.APP_NAME }}"
+            APP_DIR="${{ env.APP_DIR }}"
+            RELEASE_ID="${{ env.RELEASE_ID }}"
+            RELEASES="${APP_DIR}/releases"
+            CURRENT="${APP_DIR}/current"
+            NEW_RELEASE="${RELEASES}/${RELEASE_ID}"
+
+            # Guarda release anterior
+            PREV_RELEASE="$(readlink -f "${CURRENT}" 2>/dev/null || true)"
 
             # Aponta 'current' para o novo release
+            echo "[ETAPA 5] Atualizando symlink..."
             ln -sfn "${NEW_RELEASE}" "${CURRENT}"
+            echo "✓ Symlink atualizado para: ${NEW_RELEASE}"
 
             # Start/reload com PM2 a partir de 'current'
             cd "${CURRENT}"
 
             # Carrega variáveis do .env para o ambiente do shell (PM2/Next em runtime)
+            echo "[ETAPA 6] Carregando variáveis de ambiente..."
             if [ -f ".env" ]; then
-              # Desabilita 'set -u' temporariamente para evitar erro com variáveis não definidas
               set +u
               set -a
               . ./.env
               set +a
               set -u
+              echo "✓ Variáveis de ambiente carregadas"
+            else
+              echo "⚠ Arquivo .env não encontrado"
             fi
 
             PORT="${PORT:-3000}"
+            echo "Porta configurada: ${PORT}"
 
+            echo "[ETAPA 7] Reiniciando aplicação com PM2..."
             if pm2 describe "${APP_NAME}" >/dev/null 2>&1; then
-              echo "Reload PM2 ${APP_NAME}…"
+              echo "Aplicação já existe no PM2. Fazendo reload..."
               pm2 reload "${APP_NAME}" --update-env || pm2 restart "${APP_NAME}" --update-env
             else
-              echo "Start PM2 ${APP_NAME}…"
+              echo "Primeira vez rodando. Iniciando aplicação..."
               if [ -f "server.js" ]; then
+                echo "Iniciando com server.js (standalone)..."
                 pm2 start "node server.js" --name "${APP_NAME}" --time
               elif [ -f "package.json" ] && grep -q '"start"' package.json; then
+                echo "Iniciando com npm start..."
                 pm2 start "npm start" --name "${APP_NAME}" --time
               else
+                echo "Iniciando com next start direto..."
                 pm2 start "node node_modules/.bin/next start" --name "${APP_NAME}" --time
               fi
             fi
 
             pm2 save || true
+            echo "✓ PM2 configurado"
 
-            # Health-check simples (localhost)
-            echo "Health check http://127.0.0.1:${PORT}/"
+            # Mostra status do PM2
+            echo "\n[STATUS PM2]"
+            pm2 status "${APP_NAME}" || true
+
+      - name: Health check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_NAME="${{ env.APP_NAME }}"
+            APP_DIR="${{ env.APP_DIR }}"
+            CURRENT="${APP_DIR}/current"
+            RELEASES="${APP_DIR}/releases"
+
+            cd "${CURRENT}"
+
+            # Carrega porta do .env
+            if [ -f ".env" ]; then
+              export $(grep -v '^#' .env | grep -E '^PORT=' | xargs)
+            fi
+            PORT="${PORT:-3000}"
+
+            # Health-check com mais detalhes
+            echo "[ETAPA 8] Health check em http://127.0.0.1:${PORT}/"
             ok=0
-            for i in 1 2 3 4 5; do
-              if curl -fsS --max-time 5 "http://127.0.0.1:${PORT}/" >/dev/null; then
+            for i in 1 2 3 4 5 6 7 8 9 10; do
+              echo "Tentativa $i/10..."
+              if curl -fsS --max-time 5 "http://127.0.0.1:${PORT}/" >/dev/null 2>&1; then
+                echo "✓ Aplicação respondendo!"
                 ok=1
                 break
+              else
+                echo "Aguardando aplicação iniciar..."
+                # Mostra logs do PM2 para debug
+                if [ "$i" -eq 5 ]; then
+                  echo "\n[LOGS PM2 - Últimas 20 linhas]"
+                  pm2 logs "${APP_NAME}" --nostream --lines 20 || true
+                  echo "\n"
+                fi
+                sleep 3
               fi
-              echo "Tentativa $i/5…"
-              sleep 2
             done
 
             if [ "$ok" -ne 1 ]; then
-              echo "Health-check falhou; iniciando rollback…"
-              if [ -n "${PREV_RELEASE}" ] && [ -d "${PREV_RELEASE}" ]; then
+              echo "\n✗ Health-check FALHOU após 10 tentativas!"
+              echo "\n[LOGS PM2 COMPLETOS]"
+              pm2 logs "${APP_NAME}" --nostream --lines 100 || true
+              
+              # Tenta fazer rollback
+              PREV_RELEASE="$(readlink -f "${CURRENT}" 2>/dev/null || true)"
+              if [ -n "${PREV_RELEASE}" ] && [ -d "${PREV_RELEASE}" ] && [ "${PREV_RELEASE}" != "${CURRENT}" ]; then
+                echo "\n[ROLLBACK] Voltando para release anterior: ${PREV_RELEASE}"
                 ln -sfn "${PREV_RELEASE}" "${CURRENT}"
                 cd "${CURRENT}"
-                if pm2 describe "${APP_NAME}" >/dev/null 2>&1; then
-                  pm2 reload "${APP_NAME}" --update-env || pm2 restart "${APP_NAME}" --update-env
-                fi
+                pm2 reload "${APP_NAME}" --update-env || pm2 restart "${APP_NAME}" --update-env
               fi
-              pm2 logs "${APP_NAME}" --lines 80 || true
               exit 1
             fi
 
-            # Housekeeping: mantém apenas KEEP_RELEASES (padrão 3)
+            echo "\n✓ Deploy concluído com sucesso!"
+
+      - name: Cleanup old releases
+        uses: appleboy/ssh-action@v1.0.3
+        if: success()
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: false
+          script: |
+            set -euo pipefail
+            APP_DIR="${{ env.APP_DIR }}"
+            RELEASE_ID="${{ env.RELEASE_ID }}"
+            RELEASES="${APP_DIR}/releases"
+            UPLOADS="${APP_DIR}/uploads"
             KEEP_RELEASES="${{ env.KEEP_RELEASES }}"
+
+            # Housekeeping: mantém apenas KEEP_RELEASES (padrão 3)
+            echo "[LIMPEZA] Mantendo apenas ${KEEP_RELEASES} releases..."
             keep="${KEEP_RELEASES:-3}"
             cd "${RELEASES}"
-            count=$(( keep + 1 ))     # apaga da (keep+1)-ésima em diante
-            ls -1dt */ | tail -n +$count | xargs -r rm -rf
+            count=$(( keep + 1 ))
+            ls -1dt */ | tail -n +$count | xargs -r rm -rf || true
 
             # Remove o bundle após sucesso
             rm -f "${UPLOADS}/deploy-${RELEASE_ID}.tar.gz"
-
-            echo "Deploy OK: ${APP_NAME} -> ${CURRENT}"
+            echo "✓ Limpeza concluída"

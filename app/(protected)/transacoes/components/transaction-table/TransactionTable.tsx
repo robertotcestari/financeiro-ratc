@@ -367,8 +367,8 @@ export default function TransactionTable({
       />
 
       {/* Table */}
-      <div className="overflow-x-auto px-4">
-        <table className="w-full text-xs border-collapse">
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs border-collapse table-fixed">
           <thead className="bg-gray-50 shadow-sm">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -376,7 +376,11 @@ export default function TransactionTable({
                   <th
                     key={header.id}
                     className="px-2 py-1 text-left text-[10px] font-semibold text-gray-600 uppercase tracking-wide border-b border-gray-200"
-                    style={{ width: `${header.getSize()}px` }}
+                    style={{ 
+                      width: `${header.getSize()}px`,
+                      minWidth: `${header.getSize()}px`,
+                      maxWidth: `${header.getSize()}px`
+                    }}
                   >
                     {header.isPlaceholder ? null : (
                       <div
@@ -445,7 +449,12 @@ export default function TransactionTable({
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
-                      className="px-2 py-1 text-[11px]"
+                      className="px-2 py-1 text-[11px] overflow-hidden"
+                      style={{ 
+                        width: `${cell.column.getSize()}px`,
+                        minWidth: `${cell.column.getSize()}px`,
+                        maxWidth: `${cell.column.getSize()}px`
+                      }}
                       onMouseDown={handleRowMouseDown}
                       onClick={(e) => {
                         // Don't trigger row selection if clicking on interactive elements

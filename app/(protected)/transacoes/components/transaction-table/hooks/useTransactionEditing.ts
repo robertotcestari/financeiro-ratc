@@ -37,9 +37,8 @@ export function useTransactionEditing(
       transaction.category?.id === 'uncategorized' ? '' : transaction.category.id
     );
     setEditingProperty(transaction.property?.code || '');
-    setEditingDescription(
-      transaction.details || transaction.transaction.description || ''
-    );
+    // Use only details field for editing, not the description
+    setEditingDescription(transaction.details || '');
   }, []);
 
   const cancelEdit = useCallback(() => {

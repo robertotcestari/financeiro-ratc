@@ -26,22 +26,6 @@ export async function categorizeTransaction(
       : null;
   const propertyId = overridePropertyId ?? null;
 
-  // Business rule: some categories require an associated property
-  if (categoryId) {
-    const category = await prisma.category.findUnique({
-      where: { id: categoryId },
-      select: { name: true },
-    });
-    const requiresPropertyNames = new Set<string>([
-      'Aluguel',
-      'Aluguel de Terceiros',
-      'Repasse de Aluguel',
-      'Aluguel Pago',
-      'Manutenção',
-    ]);
-
-  }
-
   // Atualiza a ProcessedTransaction existente
   const updatedProcessedTransaction = await prisma.processedTransaction.update({
     where: { id: processedTransactionId },
