@@ -117,7 +117,8 @@ jobs:
             
             # Extract new build
             cd "${APP_DIR}"
-            rm -rf "${APP_PATH}"/*
+            # Remove old app completely to ensure no cache remains
+            rm -rf "${APP_PATH}"
             mkdir -p "${APP_PATH}"
             tar -xzf deploy.tar.gz -C "${APP_PATH}"
             
@@ -226,6 +227,10 @@ jobs:
             
             echo "Stopping existing PM2 process if exists..."
             pm2 delete "${APP_NAME}" 2>/dev/null || true
+            
+            # Clear Next.js cache explicitly
+            echo "Clearing Next.js cache..."
+            rm -rf .next/cache 2>/dev/null || true
             
             echo "Starting application..."
             
