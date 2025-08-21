@@ -95,7 +95,7 @@ jobs:
       - name: Prisma generate (CI)
         run: npx prisma generate
 
-      - name: Build (Next.js standalone if enabled)
+      - name: Build (Next.js)
         env:
           NODE_OPTIONS: '--max-old-space-size=4096'
           SKIP_BUILD_CHECKS: 'true'
@@ -103,11 +103,6 @@ jobs:
           DATABASE_URL: 'mysql://user:pass@localhost:3306/db'
         run: |
           npm run build
-          if [ -d ".next/standalone" ]; then
-            echo "Standalone build ✅"
-          else
-            echo "Standalone build não encontrado; será usado build regular ⚠"
-          fi
 
       - name: Create deployment bundle
         run: |
@@ -118,19 +113,14 @@ jobs:
           # Sempre inclua package.json e lock (úteis para build regular)
           cp package.json package-lock.json "$DEPLOY_DIR/"
 
-          if [ -d ".next/standalone" ]; then
-            cp -r .next/standalone/* "$DEPLOY_DIR/"
-            mkdir -p "$DEPLOY_DIR/.next"
-            cp -r .next/static "$DEPLOY_DIR/.next/static"
-            [ -d public ] && cp -r public "$DEPLOY_DIR/" || true
-            cp -r prisma "$DEPLOY_DIR/"
-          else
-            cp -r .next "$DEPLOY_DIR/"
-            [ -d public ] && cp -r public "$DEPLOY_DIR/" || true
-            cp -r prisma "$DEPLOY_DIR/"
-            for d in app src lib components hooks; do [ -d "$d" ] && cp -r "$d" "$DEPLOY_DIR/" || true; done
-            for f in next.config.* tsconfig.json middleware.ts; do [ -f "$f" ] && cp "$f" "$DEPLOY_DIR/" || true; done
-          fi
+          # Build regular (Next.js start): copiamos .next e recursos necessários
+          cp -r .next "$DEPLOY_DIR/"
+          [ -d public ] && cp -r public "$DEPLOY_DIR/" || true
+          cp -r prisma "$DEPLOY_DIR/"
+          # Estes diretórios/arquivos não são estritamente necessários em runtime,
+          # mas mantê-los não causa problemas e ajuda em eventuais scripts.
+          for d in app src lib components hooks; do [ -d "$d" ] && cp -r "$d" "$DEPLOY_DIR/" || true; done
+          for f in next.config.* tsconfig.json middleware.ts; do [ -f "$f" ] && cp "$f" "$DEPLOY_DIR/" || true; done
 
           tar -czf "deploy-${RELEASE_ID}.tar.gz" -C "$DEPLOY_DIR" .
           echo "Bundle criado: deploy-${RELEASE_ID}.tar.gz"
@@ -208,7 +198,7 @@ jobs:
             PREV_RELEASE="$(readlink -f "${CURRENT}" 2>/dev/null || true)"
             echo "Release anterior: ${PREV_RELEASE:-'nenhum'}"
 
-      - name: Install dependencies (if needed)
+      - name: Install dependencies
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -225,40 +215,23 @@ jobs:
 
             cd "${NEW_RELEASE}"
 
-            # Instala dependências apenas para build regular
-            echo "[ETAPA 3] Verificando tipo de build..."
-
+            echo "[ETAPA 3] Instalando dependências de runtime (build regular)…"
             # Debug: lista arquivos no diretório
             echo "Conteúdo do diretório:"
             ls -la | head -20
 
-            if [ ! -f "server.js" ]; then
-              echo "Build regular detectado — instalando dependências de runtime…"
-              
-              # Verifica se package.json existe
-              if [ ! -f "package.json" ]; then
-                echo "✗ ERRO: package.json não encontrado!"
-                exit 1
-              fi
-              
-              # Verifica se package-lock.json existe  
-              if [ ! -f "package-lock.json" ]; then
-                echo "✗ ERRO: package-lock.json não encontrado!"
-                exit 1
-              fi
-              
-              export NPM_CONFIG_CACHE="${SHARED}/.npm"
-              echo "Executando: npm install --omit=dev --no-audit --fund=false"
-              npm install --omit=dev --no-audit --fund=false 2>&1
-              EXIT_CODE=$?
-              if [ $EXIT_CODE -ne 0 ]; then
-                echo "✗ ERRO ao instalar dependências! Código de saída: $EXIT_CODE"
-                exit 1
-              fi
-              echo "✓ Dependências instaladas"
-            else
-              echo "Standalone detectado — pulando npm install."
+            if [ ! -f "package.json" ] || [ ! -f "package-lock.json" ]; then
+              echo "✗ ERRO: package.json ou package-lock.json não encontrado!"
+              exit 1
             fi
+
+            export NPM_CONFIG_CACHE="${SHARED}/.npm"
+            echo "Executando: npm ci --omit=dev --no-audit --fund=false"
+            npm ci --omit=dev --no-audit --fund=false 2>&1 || {
+              echo "✗ ERRO ao instalar dependências (npm ci)!"
+              exit 1
+            }
+            echo "✓ Dependências instaladas"
 
       - name: Run Prisma migrations
         uses: appleboy/ssh-action@v1.0.3
@@ -350,10 +323,7 @@ jobs:
               pm2 reload "${APP_NAME}" --update-env || pm2 restart "${APP_NAME}" --update-env
             else
               echo "Primeira vez rodando. Iniciando aplicação..."
-              if [ -f "server.js" ]; then
-                echo "Iniciando com server.js (standalone)..."
-                pm2 start "node server.js" --name "${APP_NAME}" --time
-              elif [ -f "package.json" ] && grep -q '"start"' package.json; then
+              if [ -f "package.json" ] && grep -q '"start"' package.json; then
                 echo "Iniciando com npm start..."
                 pm2 start "npm start" --name "${APP_NAME}" --time
               else
