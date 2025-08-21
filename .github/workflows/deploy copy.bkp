@@ -1,0 +1,323 @@
+name: Deploy financeiro-ratc
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --fund=false
+
+      - name: Setup environment
+        run: |
+          echo "${{ secrets.ENV }}" > .env
+
+      - name: Run Prisma generate
+        run: npx prisma generate
+
+      - name: Build application
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+          NEXT_TELEMETRY_DISABLED: '1'
+          SKIP_BUILD_CHECKS: 'true'
+          CI: 'true'
+          # Dummy DATABASE_URL for build time (Prisma types need it, but won't connect)
+          DATABASE_URL: 'mysql://user:pass@localhost:3306/db'
+        run: |
+          npm run build
+          echo "Checking standalone output:"
+          ls -la .next/standalone/ || echo "Standalone build not created!"
+
+      - name: Prepare deployment bundle
+        run: |
+          set -euo pipefail
+          DEPLOY_DIR=deploy-bundle
+          rm -rf "$DEPLOY_DIR"
+          mkdir -p "$DEPLOY_DIR"
+
+          # Always include package.json and package-lock.json for npm install on server
+          cp package.json package-lock.json "$DEPLOY_DIR/"
+
+          # When using standalone output, Next.js creates optimized bundle
+          if [ -d ".next/standalone" ]; then
+            # Flatten standalone output into deploy root so server.js is at the root
+            cp -r .next/standalone/* "$DEPLOY_DIR/"
+            mkdir -p "$DEPLOY_DIR/.next"
+            cp -r .next/static "$DEPLOY_DIR/.next/static"
+            cp -r public "$DEPLOY_DIR/" 2>/dev/null || true
+            cp -r prisma "$DEPLOY_DIR/"
+            # Include generated Prisma client used at runtime
+            mkdir -p "$DEPLOY_DIR/app/generated"
+            cp -r app/generated/prisma "$DEPLOY_DIR/app/generated/"
+          else
+            # Fallback to regular build - copy all necessary files
+            cp -r .next "$DEPLOY_DIR/"
+            cp -r public "$DEPLOY_DIR/" 2>/dev/null || true
+            cp -r prisma "$DEPLOY_DIR/"
+            cp -r app "$DEPLOY_DIR/"
+            cp -r lib "$DEPLOY_DIR/"
+            cp -r components "$DEPLOY_DIR/"
+            cp -r hooks "$DEPLOY_DIR/" 2>/dev/null || true
+            cp next.config.* "$DEPLOY_DIR/" 2>/dev/null || true
+            cp tsconfig.json "$DEPLOY_DIR/" 2>/dev/null || true
+            cp middleware.ts "$DEPLOY_DIR/" 2>/dev/null || true
+          fi
+
+          # Verify prisma migrations are included
+          echo "Checking prisma directory in deploy bundle:"
+          ls -la "$DEPLOY_DIR/prisma/migrations/" || echo "Migrations not found in bundle!"
+
+          # Create tarball
+          tar -czf deploy.tar.gz -C "$DEPLOY_DIR" .
+
+      - name: Ensure server directories exist
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_DIR="/opt/financeiro-ratc"
+            mkdir -p "${APP_DIR}/app" "${APP_DIR}/shared"
+            [ -f "${APP_DIR}/shared/.env" ] || touch "${APP_DIR}/shared/.env"
+
+      - name: Deploy to server via rsync
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr
+          path: deploy.tar.gz
+          remote_path: /opt/financeiro-ratc/
+          remote_host: ${{ secrets.VPS_HOST }}
+          remote_user: ${{ secrets.VPS_USER }}
+          remote_key: ${{ secrets.VPS_SSH_KEY }}
+          remote_port: ${{ secrets.VPS_PORT || 22 }}
+
+      - name: Extract deployment bundle
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_NAME="financeiro-ratc"
+            APP_DIR="/opt/${APP_NAME}"
+            APP_PATH="${APP_DIR}/app"
+
+            # Extract new build
+            cd "${APP_DIR}"
+            # Remove old app completely to ensure no cache remains
+            echo "Removing old application and cache..."
+            rm -rf "${APP_PATH}"
+            mkdir -p "${APP_PATH}"
+
+            echo "Extracting new build..."
+            tar -xzf deploy.tar.gz -C "${APP_PATH}"
+
+            echo "Extraction completed successfully"
+
+      - name: Setup environment and verify files
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_NAME="financeiro-ratc"
+            APP_DIR="/opt/${APP_NAME}"
+            APP_PATH="${APP_DIR}/app"
+            SHARED_DIR="${APP_DIR}/shared"
+
+            # Link shared .env file
+            ln -sfn "${SHARED_DIR}/.env" "${APP_PATH}/.env"
+
+            # Verify critical files exist
+            echo "Verifying critical files:"
+            [ -f "${APP_PATH}/package.json" ] && echo "✓ package.json found" || { echo "✗ package.json missing"; exit 1; }
+            [ -f "${APP_PATH}/.env" ] && echo "✓ .env linked" || echo "⚠ .env not linked"
+            [ -d "${APP_PATH}/prisma/migrations" ] && echo "✓ migrations found" || echo "⚠ migrations directory missing"
+            [ -f "${APP_PATH}/server.js" ] && echo "✓ server.js found (standalone build)" || echo "ℹ server.js not found (regular build)"
+            [ -d "${APP_PATH}/app/generated/prisma" ] && echo "✓ Prisma client present" || echo "⚠ Prisma client not found"
+
+      - name: Install dependencies
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_NAME="financeiro-ratc"
+            APP_DIR="/opt/${APP_NAME}"
+            APP_PATH="${APP_DIR}/app"
+            SHARED_DIR="${APP_DIR}/shared"
+
+            cd "${APP_PATH}"
+
+            # Log runtime versions
+            echo "Node version: $(node -v || echo 'not found')"
+            echo "npm version:  $(npm -v || echo 'not found')"
+
+            # Install production dependencies
+            echo "Installing production dependencies..."
+            export NPM_CONFIG_CACHE="${SHARED_DIR}/.npm"
+            npm ci --omit=dev --prefer-offline --no-audit --fund=false || {
+              echo "npm ci failed, trying npm install..."
+              npm install --omit=dev --no-audit --fund=false
+            }
+
+            # Ensure Next.js only if not standalone
+            if [ ! -f "server.js" ] && [ ! -f "node_modules/.bin/next" ]; then
+              echo "Installing next for regular build runtime..."
+              npm install next --no-save
+            fi
+
+            echo "Dependencies installed successfully"
+
+      - name: Run database migrations
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_NAME="financeiro-ratc"
+            APP_DIR="/opt/${APP_NAME}"
+            APP_PATH="${APP_DIR}/app"
+
+            cd "${APP_PATH}"
+
+            echo "Running Prisma migrations..."
+            npx prisma migrate deploy
+
+            echo "Generating Prisma client..."
+            npx prisma generate || echo "Prisma generate failed (non-critical)"
+
+      - name: Start application with PM2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_NAME="financeiro-ratc"
+            APP_DIR="/opt/${APP_NAME}"
+            APP_PATH="${APP_DIR}/app"
+            DOMAIN="financeiro.ratc.com.br"
+
+            cd "${APP_PATH}"
+
+            # Ensure PM2 is available
+            if ! command -v pm2 >/dev/null 2>&1; then
+              echo "PM2 not found, attempting to install globally..."
+              npm i -g pm2 || { echo "Failed to install PM2. Please install PM2 on the server."; exit 1; }
+            fi
+
+            # Configure environment
+            export NODE_ENV=production
+            export PORT="${PORT:-3000}"
+
+            echo "Stopping existing PM2 process if exists..."
+            pm2 delete "${APP_NAME}" 2>/dev/null || true
+
+            # Verify build exists before starting
+            echo "Verifying Next.js build..."
+            if [ -f "server.js" ]; then
+              echo "✓ Standalone build found (server.js)"
+            elif [ -d ".next" ]; then
+              echo "✓ Regular Next.js build found (.next directory)"
+              ls -la .next/ | head -5
+            else
+              echo "✗ No Next.js build found! Cannot start application."
+              echo "Contents of app directory:"
+              ls -la
+              exit 1
+            fi
+
+            echo "Starting application..."
+
+            # Try different start methods based on build type
+            if [ -f "server.js" ]; then
+              echo "Starting standalone build with server.js"
+              pm2 start "node server.js" --name "${APP_NAME}" --time --update-env
+            elif [ -f "package.json" ] && grep -q '"start"' package.json; then
+              echo "Starting with npm start"
+              pm2 start npm --name "${APP_NAME}" --time -- start
+            else
+              echo "Starting with next start"
+              pm2 start "node node_modules/.bin/next start" --name "${APP_NAME}" --time
+            fi
+
+            # Save PM2 configuration
+            pm2 save || echo "PM2 save failed, but continuing"
+
+            # Show PM2 status
+            echo "PM2 process status:"
+            pm2 list
+
+            echo "Application started successfully"
+
+      - name: Cleanup and verify deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            set -euo pipefail
+            APP_NAME="financeiro-ratc"
+            APP_DIR="/opt/${APP_NAME}"
+            DOMAIN="financeiro.ratc.com.br"
+
+            # Cleanup deployment archive
+            rm -f "${APP_DIR}/deploy.tar.gz"
+
+            # Check if application is running
+            sleep 5
+            if pm2 info "${APP_NAME}" > /dev/null 2>&1; then
+              echo "✓ Application is running"
+              pm2 info "${APP_NAME}"
+            else
+              echo "✗ Application is not running!"
+              exit 1
+            fi
+
+            echo "Deploy completed successfully for ${DOMAIN}"
