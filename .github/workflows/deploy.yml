@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
-t  workflow_dispatch:
+  workflow_dispatch:
 
 permissions:
   contents: read
