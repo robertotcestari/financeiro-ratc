@@ -5,10 +5,16 @@ import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
 import { Pencil, Check, X, Save } from 'lucide-react';
 import SuggestionIndicator from '../../SuggestionIndicator';
-import { getTypeColor, getTypeLabel, getTypeFullLabel } from './transaction-helpers';
+import {
+  getTypeColor,
+  getTypeLabel,
+  getTypeFullLabel,
+} from './transaction-helpers';
 import { AlertTriangle } from 'lucide-react';
 import type { Transaction } from '../types';
 import type { Row } from '@tanstack/react-table';
+
+import { useEffect, useRef, useState } from 'react';
 
 const columnHelper = createColumnHelper<Transaction>();
 
@@ -18,13 +24,16 @@ interface ColumnDefinitionProps {
   editingId: string | null;
   editingCategory: string;
   editingProperty: string;
-  editingDescription: string;
+  focusedField: 'details' | 'category' | 'property';
   isPending: boolean;
   setEditingCategory: (value: string) => void;
   setEditingProperty: (value: string) => void;
   setEditingDescription: (value: string) => void;
-  startEdit: (transaction: Transaction) => void;
-  saveEdit: () => Promise<void>;
+  startEdit: (
+    transaction: Transaction,
+    field?: 'details' | 'category' | 'property'
+  ) => void;
+  saveEdit: (overrideDetails?: string) => Promise<void>;
   cancelEdit: () => void;
   handleMarkReviewed: (id: string, reviewed: boolean) => Promise<void>;
   onSelectClick?: (
@@ -32,6 +41,70 @@ interface ColumnDefinitionProps {
     row: Row<Transaction>,
     fromCheckbox?: boolean
   ) => void;
+  ensureRowSelected?: (rowId: string) => void;
+}
+
+function InlineDetailsEditor({
+  initialValue,
+  onChangeLive,
+  onSave,
+  onCancel,
+  autoFocus = false,
+}: {
+  initialValue: string;
+  onChangeLive: (value: string) => void;
+  onSave: (value: string) => void;
+  onCancel: () => void;
+  autoFocus?: boolean;
+}) {
+  const [value, setValue] = useState(initialValue);
+  const rafRef = useRef<number | null>(null);
+
+  // Keep parent live ref updated without thrashing renders
+  useEffect(() => {
+    onChangeLive(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const commitLive = (next: string) => {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = requestAnimationFrame(() => {
+      onChangeLive(next);
+      rafRef.current = null;
+    });
+  };
+
+  useEffect(
+    () => () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    },
+    []
+  );
+
+  return (
+    <Input
+      type="text"
+      value={value}
+      autoFocus={autoFocus}
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
+      onChange={(e) => {
+        const next = e.target.value;
+        setValue(next);
+        commitLive(next);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          onSave(value);
+        } else if (e.key === 'Escape') {
+          onCancel();
+        }
+      }}
+      placeholder="Adicionar detalhes"
+      className="w-full text-[11px] leading-tight h-7 py-1 px-2 bg-white"
+    />
+  );
 }
 
 export function createColumnDefinitions({
@@ -40,7 +113,7 @@ export function createColumnDefinitions({
   editingId,
   editingCategory,
   editingProperty,
-  editingDescription,
+  focusedField,
   isPending,
   setEditingCategory,
   setEditingProperty,
@@ -50,6 +123,7 @@ export function createColumnDefinitions({
   cancelEdit,
   handleMarkReviewed,
   onSelectClick,
+  ensureRowSelected,
 }: ColumnDefinitionProps): ColumnDef<Transaction>[] {
   return [
     // Selection column
@@ -111,7 +185,7 @@ export function createColumnDefinitions({
       cell: ({ getValue }) => {
         const rawDescription = getValue();
         return (
-          <div 
+          <div
             className="text-[11px] text-gray-900 leading-tight py-1 line-clamp-2 overflow-hidden"
             title={rawDescription as string}
           >
@@ -134,20 +208,12 @@ export function createColumnDefinitions({
         if (editingId === row.id) {
           return (
             <div className="py-1">
-              <Input
-                type="text"
-                value={editingDescription}
-                onChange={(e) => setEditingDescription(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    saveEdit();
-                  } else if (e.key === 'Escape') {
-                    cancelEdit();
-                  }
-                }}
-                placeholder="Adicionar detalhes"
-                className="w-full text-[11px] leading-tight h-7 py-1 px-2 bg-white"
+              <InlineDetailsEditor
+                initialValue={row.original.details || ''}
+                onChangeLive={setEditingDescription}
+                onSave={(val) => saveEdit(val)}
+                onCancel={cancelEdit}
+                autoFocus={focusedField === 'details'}
               />
             </div>
           );
@@ -155,8 +221,13 @@ export function createColumnDefinitions({
 
         return (
           <div
-            onDoubleClick={() => startEdit(row.original)}
-            className="text-[11px] text-gray-900 leading-tight h-7 flex items-center px-2 break-words cursor-pointer hover:bg-gray-50 rounded"
+            // onDoubleClick={() => {
+            //   try {
+            //     console.log('[Cell:dblclick] details', { rowId: row.id });
+            //   } catch {}
+            //   startEdit(row.original, 'details');
+            // }}
+            className="no-row-select text-[11px] text-gray-900 leading-tight h-7 flex items-center px-2 break-words cursor-pointer hover:bg-gray-50 rounded"
             title={details || ''}
           >
             {details && details.trim().length > 0 ? (
@@ -200,7 +271,10 @@ export function createColumnDefinitions({
           row.original.category?.id === 'uncategorized';
         if (isUncategorized) {
           return (
-            <span className="inline-flex items-center justify-center px-1 py-0.5 rounded-full text-[10px] font-medium bg-yellow-100 text-yellow-800" title="Sem Categoria">
+            <span
+              className="inline-flex items-center justify-center px-1 py-0.5 rounded-full text-[10px] font-medium bg-yellow-100 text-yellow-800"
+              title="Sem Categoria"
+            >
               <AlertTriangle className="h-2.5 w-2.5" />
             </span>
           );
@@ -251,8 +325,14 @@ export function createColumnDefinitions({
 
         return (
           <div
-            onDoubleClick={() => startEdit(row.original)}
-            className="cursor-pointer min-h-[32px] flex flex-col justify-center"
+            onDoubleClick={() => {
+              try {
+                console.log('[Cell:dblclick] category', { rowId: row.id });
+              } catch {}
+              ensureRowSelected?.(row.id);
+              startEdit(row.original, 'category');
+            }}
+            className="no-row-select cursor-pointer min-h-[32px] flex flex-col justify-center"
           >
             {category.parent && !isUncategorized && (
               <div className="text-[9px] text-gray-400 leading-tight">
@@ -308,8 +388,14 @@ export function createColumnDefinitions({
 
         return (
           <div
-            onDoubleClick={() => startEdit(row.original)}
-            className="cursor-pointer"
+            onDoubleClick={() => {
+              try {
+                console.log('[Cell:dblclick] property', { rowId: row.id });
+              } catch {}
+              ensureRowSelected?.(row.id);
+              startEdit(row.original, 'property');
+            }}
+            className="no-row-select cursor-pointer"
           >
             {property ? (
               <div>
@@ -397,7 +483,7 @@ export function createColumnDefinitions({
             {editingId === row.id ? (
               <>
                 <Button
-                  onClick={saveEdit}
+                  onClick={() => saveEdit()}
                   disabled={isPending}
                   variant="ghost"
                   size="icon"

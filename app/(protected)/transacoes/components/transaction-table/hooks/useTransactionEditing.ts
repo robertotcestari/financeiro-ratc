@@ -1,4 +1,4 @@
-import { useState, useTransition, useCallback } from 'react';
+import { useState, useTransition, useCallback, useRef } from 'react';
 import {
   categorizeOneAction,
   updateTransactionDetailsAction,
@@ -11,10 +11,11 @@ export interface UseTransactionEditingReturn {
   editingCategory: string;
   editingProperty: string;
   editingDescription: string;
+  focusedField: 'details' | 'category' | 'property';
   isPending: boolean;
-  startEdit: (transaction: Transaction) => void;
+  startEdit: (transaction: Transaction, field?: 'details' | 'category' | 'property') => void;
   cancelEdit: () => void;
-  saveEdit: () => Promise<void>;
+  saveEdit: (overrideDetails?: string) => Promise<void>;
   setEditingCategory: (value: string) => void;
   setEditingProperty: (value: string) => void;
   setEditingDescription: (value: string) => void;
@@ -28,30 +29,41 @@ export function useTransactionEditing(
   const [editingCategory, setEditingCategory] = useState<string>('');
   const [editingProperty, setEditingProperty] = useState<string>('');
   const [editingDescription, setEditingDescription] = useState<string>('');
+  const [focusedField, setFocusedField] = useState<'details' | 'category' | 'property'>('details');
+  // Live ref to avoid re-rendering the whole table on each keystroke
+  const editingDescriptionRef = useRef<string>('');
   const { toast } = useToast();
 
-  const startEdit = useCallback((transaction: Transaction) => {
+  const startEdit = useCallback((transaction: Transaction, field: 'details' | 'category' | 'property' = 'details') => {
+    try { console.log('[Editing] startEdit', { id: transaction.id, field }); } catch {}
     setEditingId(transaction.id);
+    setFocusedField(field);
     // Normalize pseudo "uncategorized" to empty selection in editor
     setEditingCategory(
       transaction.category?.id === 'uncategorized' ? '' : transaction.category.id
     );
     setEditingProperty(transaction.property?.code || '');
     // Use only details field for editing, not the description
-    setEditingDescription(transaction.details || '');
+    const initial = transaction.details || '';
+    setEditingDescription(initial);
+    editingDescriptionRef.current = initial;
   }, []);
 
   const cancelEdit = useCallback(() => {
+    try { console.log('[Editing] cancelEdit'); } catch {}
     setEditingId(null);
     setEditingCategory('');
     setEditingProperty('');
     setEditingDescription('');
+    editingDescriptionRef.current = '';
+    setFocusedField('details');
   }, []);
 
-  const saveEdit = useCallback(async () => {
+  const saveEdit = useCallback(async (overrideDetails?: string) => {
     if (!editingId) return;
 
     startTransition(async () => {
+      try { console.log('[Editing] saveEdit', { id: editingId }); } catch {}
       const propertyId = properties.find((p) => p.code === editingProperty)?.id;
       // Map pseudo "uncategorized" (or empty) to null for persistence
       const normalizedCategoryId =
@@ -73,17 +85,17 @@ export function useTransactionEditing(
         return;
       }
       // Save description into processed details (acts as editable description)
-      await updateTransactionDetailsAction({
-        id: editingId,
-        details: editingDescription,
-      });
+      const detailsToSave =
+        overrideDetails !== undefined
+          ? overrideDetails
+          : editingDescriptionRef.current;
+      await updateTransactionDetailsAction({ id: editingId, details: detailsToSave });
       cancelEdit();
     });
   }, [
     editingId,
     editingCategory,
     editingProperty,
-    editingDescription,
     properties,
     cancelEdit,
     toast,
@@ -94,12 +106,17 @@ export function useTransactionEditing(
     editingCategory,
     editingProperty,
     editingDescription,
+    focusedField,
     isPending,
     startEdit,
     cancelEdit,
     saveEdit,
     setEditingCategory,
     setEditingProperty,
-    setEditingDescription,
+    setEditingDescription: (v: string) => {
+      // Update ref to keep the latest value without forcing re-renders
+      editingDescriptionRef.current = v;
+      // Intentionally avoid setState here to keep typing fluid
+    },
   };
 }

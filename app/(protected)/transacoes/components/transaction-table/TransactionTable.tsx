@@ -84,98 +84,110 @@ export default function TransactionTable({
   );
   const lastSelectedIndexRef = useRef<number | null>(null);
 
-  const handleRowSelectClick = useCallback(
-    (
-      e: React.MouseEvent<HTMLElement>,
-      row: Row<Transaction>,
-      fromCheckbox: boolean = false
-    ) => {
-      if (typeof e.stopPropagation === 'function') e.stopPropagation();
-      const target = e.target as HTMLElement | null;
-      try {
-        console.log('[RowSelect:TTable] click', {
-          rowId: row.id,
-          shiftKey: e.shiftKey,
-          fromCheckbox,
-          tag: target?.tagName,
-        });
-      } catch {}
+  const handleRowSelectClick = (
+    e: React.MouseEvent<HTMLElement>,
+    row: Row<Transaction>,
+    fromCheckbox: boolean = false
+  ) => {
+    console.log('Entrou no handleRowSelect');
 
-      if (
-        !fromCheckbox &&
-        target &&
-        target.closest(
-          'button, a, input, select, textarea, [role="button"], [role="combobox"], [contenteditable="true"], .no-row-select, [data-slot="popover-trigger"], [data-slot="popover-content"]'
-        )
-      ) {
-        return;
+    if (typeof e.stopPropagation === 'function') e.stopPropagation();
+    const target = e.target as HTMLElement | null;
+    try {
+      console.log('[RowSelect:TTable] click', {
+        rowId: row.id,
+        shiftKey: e.shiftKey,
+        fromCheckbox,
+        tag: target?.tagName,
+      });
+    } catch {}
+
+    const tableInst = tableRef.current;
+    if (!tableInst) {
+      console.log('ops');
+      return;
+    }
+
+    const rows = tableInst.getRowModel().rows;
+    const currentIndex = rows.findIndex((r) => r.id === row.id);
+
+    if (e.shiftKey && lastSelectedIndexRef.current !== null) {
+      const start = Math.min(lastSelectedIndexRef.current, currentIndex);
+      const end = Math.max(lastSelectedIndexRef.current, currentIndex);
+      const targetSelected = !row.getIsSelected();
+      const base = tableInst.getState().rowSelection as RowSelectionState;
+      const newSelection: RowSelectionState = { ...base };
+      for (let i = start; i <= end; i++) {
+        const id = rows[i]?.id as string | undefined;
+        if (!id) continue;
+        if (targetSelected) newSelection[id] = true;
+        else delete newSelection[id];
       }
-
-      const tableInst = tableRef.current;
-      if (!tableInst) return;
-
-      const rows = tableInst.getRowModel().rows;
-      const currentIndex = rows.findIndex((r) => r.id === row.id);
-
-      if (e.shiftKey && lastSelectedIndexRef.current !== null) {
-        const start = Math.min(lastSelectedIndexRef.current, currentIndex);
-        const end = Math.max(lastSelectedIndexRef.current, currentIndex);
-        const targetSelected = !row.getIsSelected();
-        const base = tableInst.getState().rowSelection as RowSelectionState;
-        const newSelection: RowSelectionState = { ...base };
-        for (let i = start; i <= end; i++) {
-          const id = rows[i]?.id as string | undefined;
-          if (!id) continue;
-          if (targetSelected) newSelection[id] = true;
-          else delete newSelection[id];
-        }
-        tableInst.setRowSelection(newSelection);
-      } else {
-        // Default click on a row (not from checkbox): single selection
-        // First click selects the row; second click (when already solely selected) enters edit mode.
-        if (!fromCheckbox) {
-          const id = row.id as string;
-          const current = tableInst.getState()
-            .rowSelection as RowSelectionState;
-          const selectedIds = Object.keys(current);
-          const isOnlyThisSelected = selectedIds.length === 1 && !!current[id];
-          if (isOnlyThisSelected) {
-            try {
-              // Start editing this transaction on second click
-              editing.startEdit?.(row.original);
-            } catch {}
-          } else {
-            // If navigating away from a different editing row, save it before switching selection
-            if (editing.editingId && editing.editingId !== id) {
-              try {
-                editing.saveEdit();
-              } catch {}
-            }
-            const newSelection: RowSelectionState = { [id]: true };
-            tableInst.setRowSelection(newSelection);
-          }
+      tableInst.setRowSelection(newSelection);
+    } else {
+      // Default click on a row (not from checkbox): single selection
+      // First click selects the row; second click (when already solely selected) enters edit mode.
+      if (!fromCheckbox) {
+        const id = row.id as string;
+        const current = tableInst.getState().rowSelection as RowSelectionState;
+        const selectedIds = Object.keys(current);
+        const isOnlyThisSelected = selectedIds.length === 1 && !!current[id];
+        if (isOnlyThisSelected) {
+          // Start editing this transaction on second click
+          editing.startEdit?.(row.original);
         } else {
-          // Checkbox clicks maintain multi-select toggle behavior
-          const id = row.id as string;
-          const base = tableInst.getState().rowSelection as RowSelectionState;
-          const newSelection: RowSelectionState = { ...base };
-          if (row.getIsSelected()) delete newSelection[id];
-          else newSelection[id] = true;
+          // If navigating away from a different editing row, save it before switching selection
+          if (editing.editingId && editing.editingId !== id) {
+            try {
+              editing.saveEdit();
+            } catch {}
+          }
+          const newSelection: RowSelectionState = { [id]: true };
           tableInst.setRowSelection(newSelection);
         }
+      } else {
+        // Checkbox clicks maintain multi-select toggle behavior
+        const id = row.id as string;
+        const base = tableInst.getState().rowSelection as RowSelectionState;
+        const newSelection: RowSelectionState = { ...base };
+        if (row.getIsSelected()) delete newSelection[id];
+        else newSelection[id] = true;
+        tableInst.setRowSelection(newSelection);
       }
+    }
 
-      lastSelectedIndexRef.current = currentIndex;
+    lastSelectedIndexRef.current = currentIndex;
 
-      // Clear any accidental text selection for better DX
-      try {
-        const sel = window.getSelection?.();
-        if (sel && typeof sel.removeAllRanges === 'function')
-          sel.removeAllRanges();
-      } catch {}
-    },
-    [editing]
-  );
+    // Clear any accidental text selection for better DX
+    try {
+      const sel = window.getSelection?.();
+      if (sel && typeof sel.removeAllRanges === 'function')
+        sel.removeAllRanges();
+    } catch {}
+  };
+
+  // Ensure a specific row is selected (used when entering edit via cell dblclick)
+  // const ensureRowSelected = useCallback(
+  //   (rowId: string) => {
+  //     const tableInst = tableRef.current;
+  //     if (!tableInst) return;
+
+  //     const current = tableInst.getState().rowSelection as RowSelectionState;
+  //     const isOnlyThisSelected =
+  //       Object.keys(current).length === 1 && !!current[rowId];
+  //     if (isOnlyThisSelected) return;
+
+  //     // If switching from another editing row, save it first
+  //     if (editing.editingId && editing.editingId !== rowId) {
+  //       try {
+  //         editing.saveEdit();
+  //       } catch {}
+  //     }
+
+  //     tableInst.setRowSelection({ [rowId]: true });
+  //   },
+  //   [editing]
+  // );
 
   // Prevent text selection on mousedown over non-interactive cells/rows
   const handleRowMouseDown = useCallback((e: React.MouseEvent<HTMLElement>) => {
@@ -200,8 +212,8 @@ export default function TransactionTable({
         editingId: editing.editingId,
         editingCategory: editing.editingCategory,
         editingProperty: editing.editingProperty,
-        editingDescription: editing.editingDescription,
         isPending: editing.isPending || bulk.isPending,
+        focusedField: editing.focusedField,
         setEditingCategory: editing.setEditingCategory,
         setEditingProperty: editing.setEditingProperty,
         setEditingDescription: editing.setEditingDescription,
@@ -210,24 +222,26 @@ export default function TransactionTable({
         cancelEdit: editing.cancelEdit,
         handleMarkReviewed,
         onSelectClick: handleRowSelectClick,
+        // ensureRowSelected,
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       categoryOptions,
       propertyOptions,
       editing.editingId,
       editing.editingCategory,
       editing.editingProperty,
+      editing.focusedField,
       editing.isPending,
       editing.setEditingCategory,
       editing.setEditingProperty,
-      editing.editingDescription,
       editing.setEditingDescription,
       editing.startEdit,
       editing.saveEdit,
       editing.cancelEdit,
       bulk.isPending,
       handleMarkReviewed,
-      handleRowSelectClick,
+      // ensureRowSelected,
     ]
   );
 
@@ -376,10 +390,10 @@ export default function TransactionTable({
                   <th
                     key={header.id}
                     className="px-2 py-1 text-left text-[10px] font-semibold text-gray-600 uppercase tracking-wide border-b border-gray-200"
-                    style={{ 
+                    style={{
                       width: `${header.getSize()}px`,
                       minWidth: `${header.getSize()}px`,
-                      maxWidth: `${header.getSize()}px`
+                      maxWidth: `${header.getSize()}px`,
                     }}
                   >
                     {header.isPlaceholder ? null : (
@@ -439,10 +453,18 @@ export default function TransactionTable({
                   onMouseDown={handleRowMouseDown}
                   onClick={(e) => {
                     // Don't trigger row selection if clicking on interactive elements
-                    const target = e.target as HTMLElement;
-                    if (target.closest('[role="combobox"], [data-slot="popover-trigger"], button, input, textarea, select')) {
-                      return;
-                    }
+                    // const target = e.target as HTMLElement;
+                    // if (
+                    //   target.closest(
+                    //     '[role="combobox"], [data-slot="popover-trigger"], button, input, textarea, select, .no-row-select'
+                    //   )
+                    // ) {
+                    //   console.log(
+                    //     '[RowSelect:TTable] click ignored due to interactive element',
+                    //     { tag: target?.tagName }
+                    //   );
+                    //   return;
+                    // }
                     handleRowSelectClick(e, row);
                   }}
                 >
@@ -450,16 +472,20 @@ export default function TransactionTable({
                     <td
                       key={cell.id}
                       className="px-2 py-1 text-[11px] overflow-hidden"
-                      style={{ 
+                      style={{
                         width: `${cell.column.getSize()}px`,
                         minWidth: `${cell.column.getSize()}px`,
-                        maxWidth: `${cell.column.getSize()}px`
+                        maxWidth: `${cell.column.getSize()}px`,
                       }}
                       onMouseDown={handleRowMouseDown}
                       onClick={(e) => {
                         // Don't trigger row selection if clicking on interactive elements
                         const target = e.target as HTMLElement;
-                        if (target.closest('[role="combobox"], [data-slot="popover-trigger"], button, input, textarea, select')) {
+                        if (
+                          target.closest(
+                            '[role="combobox"], [data-slot="popover-trigger"], button, input, textarea, select, .no-row-select'
+                          )
+                        ) {
                           return;
                         }
                         handleRowSelectClick(e, row);

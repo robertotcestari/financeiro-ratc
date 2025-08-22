@@ -8,7 +8,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { processUnprocessedTransactions, deleteTransactions } from '../actions';
 import { toast } from 'sonner';
-import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Trash2,
+  Edit2,
+  Save,
+  X,
+} from 'lucide-react';
+import { useTransactionEditing } from './hooks/useTransactionEditing';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -73,6 +81,19 @@ export function TransactionList({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const {
+    editingId,
+    editingDescription,
+    editingAmount,
+    editingField,
+    isPending: isEditPending,
+    startEdit,
+    cancelEdit,
+    saveEdit,
+    setEditingDescription,
+    setEditingAmount,
+  } = useTransactionEditing(bankAccountId || '');
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -103,7 +124,10 @@ export function TransactionList({
         ),
         cell: ({ row }) => {
           // Don't show checkbox for virtual balance rows
-          if (row.original.id === 'initial-balance' || row.original.id === 'final-balance') {
+          if (
+            row.original.id === 'initial-balance' ||
+            row.original.id === 'final-balance'
+          ) {
             return null;
           }
           return (
@@ -127,26 +151,91 @@ export function TransactionList({
       {
         accessorKey: 'description',
         header: 'Descrição',
-        cell: ({ getValue, row }) => (
-          <div className="max-w-md">
-            <div className="text-xs break-words whitespace-normal">
-              {getValue() as string}
-            </div>
-            {row.original.ofxTransId && (
-              <div className="text-xs text-gray-500 mt-1">
-                ID: {row.original.ofxTransId}
+        cell: ({ getValue, row }) => {
+          const isEditing = editingId === row.original.id;
+          const isVirtualRow =
+            row.original.id === 'initial-balance' ||
+            row.original.id === 'final-balance';
+
+          if (isEditing && !isVirtualRow) {
+            return (
+              <Input
+                value={editingDescription}
+                onChange={(e) => setEditingDescription(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveEdit();
+                  } else if (e.key === 'Escape') {
+                    cancelEdit();
+                  }
+                }}
+                className="max-w-md text-xs h-8"
+                autoFocus={editingField === 'description'}
+              />
+            );
+          }
+
+          return (
+            <div
+              className="max-w-md cursor-pointer hover:bg-gray-50 px-2 py-1 rounded"
+              // onDoubleClick={() => !isVirtualRow && startEdit(row.original, 'description')}
+            >
+              <div className="text-xs break-words whitespace-normal">
+                {getValue() as string}
               </div>
-            )}
-          </div>
-        ),
+              {row.original.ofxTransId && (
+                <div className="text-xs text-gray-500 mt-1">
+                  ID: {row.original.ofxTransId}
+                </div>
+              )}
+            </div>
+          );
+        },
       },
       {
         accessorKey: 'amount',
         header: 'Valor',
-        cell: ({ getValue }) => {
+        cell: ({ getValue, row }) => {
           const value = getValue() as number;
+          const isEditing = editingId === row.original.id;
+          const isVirtualRow =
+            row.original.id === 'initial-balance' ||
+            row.original.id === 'final-balance';
+
+          if (isEditing && !isVirtualRow) {
+            return (
+              <Input
+                value={editingAmount}
+                onChange={(e) => {
+                  // Allow only numbers and decimal point
+                  const newValue = e.target.value.replace(/[^\d.]/g, '');
+                  setEditingAmount(newValue);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveEdit();
+                  } else if (e.key === 'Escape') {
+                    cancelEdit();
+                  }
+                }}
+                className="w-32 text-xs h-8"
+                placeholder="0.00"
+                autoFocus={editingField === 'amount'}
+              />
+            );
+          }
+
           return (
-            <span className={value >= 0 ? 'text-green-600' : 'text-red-600'}>
+            <span
+              className={`${
+                value >= 0 ? 'text-green-600' : 'text-red-600'
+              } cursor-pointer hover:bg-gray-50 px-2 py-1 rounded inline-block`}
+              // onDoubleClick={() =>
+              //   !isVirtualRow && startEdit(row.original, 'amount')
+              // }
+            >
               {formatCurrency(value)}
             </span>
           );
@@ -157,7 +246,9 @@ export function TransactionList({
         header: 'Saldo',
         cell: ({ getValue, row }) => {
           const value = getValue() as number;
-          const isVirtualRow = row.original.id === 'initial-balance' || row.original.id === 'final-balance';
+          const isVirtualRow =
+            row.original.id === 'initial-balance' ||
+            row.original.id === 'final-balance';
           return (
             <span className={isVirtualRow ? 'font-semibold' : ''}>
               {formatCurrency(value)}
@@ -170,7 +261,10 @@ export function TransactionList({
         header: 'Status',
         cell: ({ getValue, row }) => {
           // Don't show badge for virtual balance rows
-          if (row.original.id === 'initial-balance' || row.original.id === 'final-balance') {
+          if (
+            row.original.id === 'initial-balance' ||
+            row.original.id === 'final-balance'
+          ) {
             return null;
           }
           return (
@@ -187,8 +281,69 @@ export function TransactionList({
           );
         },
       },
+      {
+        id: 'actions',
+        header: 'Ações',
+        cell: ({ row }) => {
+          const isEditing = editingId === row.original.id;
+          const isVirtualRow =
+            row.original.id === 'initial-balance' ||
+            row.original.id === 'final-balance';
+
+          if (isVirtualRow) {
+            return null;
+          }
+
+          if (isEditing) {
+            return (
+              <div className="flex items-center gap-1">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => saveEdit()}
+                  disabled={isEditPending}
+                  className="h-7 w-7 p-0"
+                >
+                  <Save className="h-3 w-3" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={cancelEdit}
+                  disabled={isEditPending}
+                  className="h-7 w-7 p-0"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            );
+          }
+
+          return (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => startEdit(row.original, 'description')}
+              className="h-7 w-7 p-0"
+            >
+              <Edit2 className="h-3 w-3" />
+            </Button>
+          );
+        },
+      },
     ],
-    []
+    [
+      editingId,
+      editingDescription,
+      editingAmount,
+      editingField,
+      isEditPending,
+      startEdit,
+      cancelEdit,
+      saveEdit,
+      setEditingDescription,
+      setEditingAmount,
+    ]
   );
 
   // Filter data based on type
@@ -276,7 +431,9 @@ export function TransactionList({
       globalFilter,
       rowSelection,
     },
-    enableRowSelection: (row) => row.original.id !== 'initial-balance' && row.original.id !== 'final-balance',
+    enableRowSelection: (row) =>
+      row.original.id !== 'initial-balance' &&
+      row.original.id !== 'final-balance',
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -321,8 +478,12 @@ export function TransactionList({
 
     const selectedRows = table.getFilteredSelectedRowModel().rows;
     const transactionIds = selectedRows
-      .filter(row => row.original.id !== 'initial-balance' && row.original.id !== 'final-balance')
-      .map(row => row.original.id);
+      .filter(
+        (row) =>
+          row.original.id !== 'initial-balance' &&
+          row.original.id !== 'final-balance'
+      )
+      .map((row) => row.original.id);
 
     if (transactionIds.length === 0) {
       toast.error('Nenhuma transação válida selecionada');
@@ -332,7 +493,7 @@ export function TransactionList({
     setIsDeleting(true);
     try {
       const result = await deleteTransactions(transactionIds, bankAccountId);
-      
+
       if (result.success) {
         toast.success(result.message || 'Transações removidas com sucesso');
         setRowSelection({});
@@ -419,7 +580,10 @@ export function TransactionList({
         <div className="bg-blue-50 border-b border-blue-200 p-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-blue-700">
-              {selectedCount} {selectedCount === 1 ? 'transação selecionada' : 'transações selecionadas'}
+              {selectedCount}{' '}
+              {selectedCount === 1
+                ? 'transação selecionada'
+                : 'transações selecionadas'}
             </span>
             <div className="flex items-center gap-2">
               <Button
@@ -494,7 +658,17 @@ export function TransactionList({
         {/* Header with search and filters */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <h2 className="text-xl font-semibold text-gray-900">
-            Transações ({table.getFilteredRowModel().rows.filter(row => row.original.id !== 'initial-balance' && row.original.id !== 'final-balance').length})
+            Transações (
+            {
+              table
+                .getFilteredRowModel()
+                .rows.filter(
+                  (row) =>
+                    row.original.id !== 'initial-balance' &&
+                    row.original.id !== 'final-balance'
+                ).length
+            }
+            )
           </h2>
 
           <div className="flex flex-col md:flex-row gap-4">
@@ -641,19 +815,26 @@ export function TransactionList({
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {table.getRowModel().rows.map((row) => {
-              const isVirtualRow = row.original.id === 'initial-balance' || row.original.id === 'final-balance';
+              const isVirtualRow =
+                row.original.id === 'initial-balance' ||
+                row.original.id === 'final-balance';
+              const isEditing = editingId === row.original.id;
               return (
                 <tr
                   key={row.id}
                   className={
                     isVirtualRow
                       ? 'bg-gray-100 font-semibold'
+                      : isEditing
+                      ? 'bg-blue-50'
                       : 'hover:bg-gray-50'
                   }
                 >
                   {row.getVisibleCells().map((cell) => {
                     // Special rendering for virtual balance rows
-                    const isVirtualRow = row.original.id === 'initial-balance' || row.original.id === 'final-balance';
+                    const isVirtualRow =
+                      row.original.id === 'initial-balance' ||
+                      row.original.id === 'final-balance';
                     if (isVirtualRow) {
                       if (cell.column.id === 'date') {
                         return (
@@ -793,17 +974,23 @@ export function TransactionList({
       )}
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirmar Remoção</AlertDialogTitle>
             <AlertDialogDescription>
-              Tem certeza que deseja remover {selectedCount} {selectedCount === 1 ? 'transação' : 'transações'}?
-              Esta ação não pode ser desfeita.
+              Tem certeza que deseja remover {selectedCount}{' '}
+              {selectedCount === 1 ? 'transação' : 'transações'}? Esta ação não
+              pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel disabled={isDeleting}>
+              Cancelar
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteSelected}
               disabled={isDeleting}

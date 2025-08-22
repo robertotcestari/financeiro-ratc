@@ -1,11 +1,15 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const skipBuildChecks = process.env.SKIP_BUILD_CHECKS === 'true';
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ['pino', 'pino-pretty'],
   images: {
-    domains: ['lh3.googleusercontent.com', 'avatars.githubusercontent.com', 'www.gravatar.com'],
+    domains: [
+      'lh3.googleusercontent.com',
+      'avatars.githubusercontent.com',
+      'www.gravatar.com',
+    ],
   },
   eslint: {
     ignoreDuringBuilds: skipBuildChecks,
@@ -13,6 +17,9 @@ const nextConfig: NextConfig = {
   typescript: {
     // Only skip type errors on deploy builds when explicitly requested
     ignoreBuildErrors: skipBuildChecks,
+  },
+  experimental: {
+    reactCompiler: true,
   },
 };
 

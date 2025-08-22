@@ -20,9 +20,9 @@ type PTWithIncludes = Prisma.ProcessedTransactionGetPayload<{
         reasoning: true;
         rule: true;
         suggestedCategory: {
-          select: { 
-            id: true; 
-            name: true; 
+          select: {
+            id: true;
+            name: true;
             type: true;
             parent: { select: { name: true } };
           };
@@ -63,7 +63,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
     'sugestoes',
     'busca',
   ];
-  
+
   // Verifica se há parâmetros de filtro definidos
   const hasAnyFilterParam = filterKeys.some((k) => {
     const v = (resolvedParams as Record<string, string | undefined>)[k];
@@ -74,23 +74,23 @@ export default async function TransacoesPage({ searchParams }: Props) {
   // 1. Não há nenhum parâmetro de filtro, OU
   // 2. Há apenas paginação sem filtros
   const hasOnlyPagination = !hasAnyFilterParam && resolvedParams.page;
-  
+
   if (!hasAnyFilterParam || hasOnlyPagination) {
     const now = new Date();
     // Calcular mês anterior
     const previousMonth = new Date(now.getFullYear(), now.getMonth() - 1);
     const year = previousMonth.getFullYear();
     const month = previousMonth.getMonth() + 1;
-    
+
     const params = new URLSearchParams();
-    
+
     // Preserva paginação caso exista
     if (resolvedParams.page) params.set('page', resolvedParams.page);
-    
+
     // Define filtros padrão do inbox (apenas mês anterior - deixa status desmarcado)
     params.set('ano', year.toString());
     params.set('mes', month.toString());
-    
+
     redirect(`/transacoes?${params.toString()}`);
   }
 
@@ -183,27 +183,24 @@ export default async function TransacoesPage({ searchParams }: Props) {
     const searchTerm = effectiveFilters.busca.trim();
     const searchConditions = {
       OR: [
-        { 
-          transaction: { 
-            description: { 
-              contains: searchTerm
-            } 
-          } 
+        {
+          transaction: {
+            description: {
+              contains: searchTerm,
+            },
+          },
         },
-        { 
-          details: { 
-            contains: searchTerm
-          } 
-        }
-      ]
+        {
+          details: {
+            contains: searchTerm,
+          },
+        },
+      ],
     };
 
     // Se houver filtro de status pendentes, combinar com AND
     if (effectiveFilters.status === 'pendentes') {
-      where.AND = [
-        { OR: orConditions },
-        searchConditions
-      ];
+      where.AND = [{ OR: orConditions }, searchConditions];
     } else {
       andConditions.push(searchConditions);
     }
@@ -214,7 +211,11 @@ export default async function TransacoesPage({ searchParams }: Props) {
   // Aplicar condições AND se não houver conflito com busca e status pendentes
   if (andConditions.length > 0 && !effectiveFilters.busca) {
     where.AND = andConditions;
-  } else if (andConditions.length > 0 && effectiveFilters.busca && effectiveFilters.status !== 'pendentes') {
+  } else if (
+    andConditions.length > 0 &&
+    effectiveFilters.busca &&
+    effectiveFilters.status !== 'pendentes'
+  ) {
     where.AND = andConditions;
   }
 
@@ -243,22 +244,19 @@ export default async function TransacoesPage({ searchParams }: Props) {
             reasoning: true,
             rule: true,
             suggestedCategory: {
-              select: { 
-                id: true, 
-                name: true, 
+              select: {
+                id: true,
+                name: true,
                 type: true,
-                parent: { select: { name: true } }
-              }
+                parent: { select: { name: true } },
+              },
             },
             suggestedProperty: {
-              select: { id: true, code: true, city: true }
+              select: { id: true, code: true, city: true },
             },
           },
           where: { isApplied: false },
-          orderBy: [
-            { confidence: 'desc' },
-            { createdAt: 'desc' },
-          ],
+          orderBy: [{ confidence: 'desc' }, { createdAt: 'desc' }],
         },
       },
       orderBy: [
@@ -330,35 +328,43 @@ export default async function TransacoesPage({ searchParams }: Props) {
       property: t.property
         ? { code: t.property.code, city: t.property.city }
         : null,
-      suggestions: t.suggestions.map(s => ({
+      suggestions: t.suggestions.map((s) => ({
         id: s.id,
         confidence: s.confidence,
         createdAt: s.createdAt,
         source: s.source,
         reasoning: s.reasoning,
-        rule: s.rule ? {
-          id: s.rule.id,
-          name: s.rule.name,
-          description: s.rule.description,
-        } : null,
-        suggestedCategory: s.suggestedCategory ? {
-          id: s.suggestedCategory.id,
-          name: s.suggestedCategory.name,
-          type: s.suggestedCategory.type,
-          parent: s.suggestedCategory.parent ? { name: s.suggestedCategory.parent.name } : null,
-        } : null,
-        suggestedProperty: s.suggestedProperty ? {
-          id: s.suggestedProperty.id,
-          code: s.suggestedProperty.code,
-          city: s.suggestedProperty.city,
-        } : null,
+        rule: s.rule
+          ? {
+              id: s.rule.id,
+              name: s.rule.name,
+              description: s.rule.description,
+            }
+          : null,
+        suggestedCategory: s.suggestedCategory
+          ? {
+              id: s.suggestedCategory.id,
+              name: s.suggestedCategory.name,
+              type: s.suggestedCategory.type,
+              parent: s.suggestedCategory.parent
+                ? { name: s.suggestedCategory.parent.name }
+                : null,
+            }
+          : null,
+        suggestedProperty: s.suggestedProperty
+          ? {
+              id: s.suggestedProperty.id,
+              code: s.suggestedProperty.code,
+              city: s.suggestedProperty.city,
+            }
+          : null,
       })),
     };
   });
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="py-8">
+      <div className="py-8 pb-24">
         <div className="container mx-auto px-4 mb-8">
           <div className="flex items-center justify-between">
             <div>

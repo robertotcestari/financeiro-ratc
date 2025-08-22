@@ -152,3 +152,61 @@ export async function deleteTransactions(transactionIds: string[], bankAccountId
     }
   }
 }
+
+export async function updateTransactionAction(
+  transactionId: string,
+  description: string,
+  amount: number,
+  bankAccountId: string
+) {
+  try {
+    // Validate inputs
+    if (!transactionId || !bankAccountId) {
+      return {
+        success: false,
+        error: 'ID da transação ou conta bancária inválido'
+      }
+    }
+
+    if (!description || description.trim().length === 0) {
+      return {
+        success: false,
+        error: 'Descrição não pode estar vazia'
+      }
+    }
+
+    if (isNaN(amount) || amount === 0) {
+      return {
+        success: false,
+        error: 'Valor inválido'
+      }
+    }
+
+    // Update the transaction
+    const updatedTransaction = await prisma.transaction.update({
+      where: { 
+        id: transactionId,
+        bankAccountId: bankAccountId // Extra safety check
+      },
+      data: {
+        description: description.trim(),
+        amount: amount
+      }
+    })
+
+    // Revalidate the page to show updated data
+    revalidatePath(`/bancos/${bankAccountId}`)
+
+    return {
+      success: true,
+      transaction: updatedTransaction,
+      message: 'Transação atualizada com sucesso'
+    }
+  } catch (error) {
+    console.error('Erro ao atualizar transação:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro ao atualizar transação'
+    }
+  }
+}
