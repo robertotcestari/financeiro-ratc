@@ -13,9 +13,14 @@ export interface UseTransactionEditingReturn {
   editingDescription: string;
   focusedField: 'details' | 'category' | 'property';
   isPending: boolean;
+  optimisticUpdates: Map<string, {
+    categoryId?: string | null;
+    propertyId?: string | null;
+    details?: string | null;
+  }>;
   startEdit: (transaction: Transaction, field?: 'details' | 'category' | 'property') => void;
   cancelEdit: () => void;
-  saveEdit: (overrideDetails?: string) => Promise<void>;
+  saveEdit: (overrides?: { category?: string; property?: string; details?: string }) => Promise<void>;
   setEditingCategory: (value: string) => void;
   setEditingProperty: (value: string) => void;
   setEditingDescription: (value: string) => void;
@@ -24,7 +29,7 @@ export interface UseTransactionEditingReturn {
 export function useTransactionEditing(
   properties: Property[]
 ): UseTransactionEditingReturn {
-  const [isPending, startTransition] = useTransition();
+  const [isPending] = useTransition();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingCategory, setEditingCategory] = useState<string>('');
   const [editingProperty, setEditingProperty] = useState<string>('');
@@ -33,24 +38,49 @@ export function useTransactionEditing(
   // Live ref to avoid re-rendering the whole table on each keystroke
   const editingDescriptionRef = useRef<string>('');
   const { toast } = useToast();
+  
+  // Store initial values to detect changes
+  const initialValuesRef = useRef<{
+    category: string;
+    property: string;
+    details: string;
+  }>({ category: '', property: '', details: '' });
+  
+  // Store optimistic updates to immediately reflect changes in UI
+  const [optimisticUpdates, setOptimisticUpdates] = useState<Map<string, {
+    categoryId?: string | null;
+    propertyId?: string | null;
+    details?: string | null;
+  }>>(new Map());
 
   const startEdit = useCallback((transaction: Transaction, field: 'details' | 'category' | 'property' = 'details') => {
-    try { console.log('[Editing] startEdit', { id: transaction.id, field }); } catch {}
+    // If already editing this transaction, just change the focus field
+    if (editingId === transaction.id) {
+      setFocusedField(field);
+      return;
+    }
+    
     setEditingId(transaction.id);
     setFocusedField(field);
     // Normalize pseudo "uncategorized" to empty selection in editor
-    setEditingCategory(
-      transaction.category?.id === 'uncategorized' ? '' : transaction.category.id
-    );
-    setEditingProperty(transaction.property?.code || '');
-    // Use only details field for editing, not the description
-    const initial = transaction.details || '';
-    setEditingDescription(initial);
-    editingDescriptionRef.current = initial;
-  }, []);
+    const categoryValue = transaction.category?.id === 'uncategorized' ? '' : (transaction.category?.id || '');
+    const propertyValue = transaction.property?.code || '';
+    const detailsValue = transaction.details || '';
+    
+    setEditingCategory(categoryValue);
+    setEditingProperty(propertyValue);
+    setEditingDescription(detailsValue);
+    editingDescriptionRef.current = detailsValue;
+    
+    // Store initial values to detect changes
+    initialValuesRef.current = {
+      category: categoryValue,
+      property: propertyValue,
+      details: detailsValue,
+    };
+  }, [editingId]);
 
   const cancelEdit = useCallback(() => {
-    try { console.log('[Editing] cancelEdit'); } catch {}
     setEditingId(null);
     setEditingCategory('');
     setEditingProperty('');
@@ -59,24 +89,66 @@ export function useTransactionEditing(
     setFocusedField('details');
   }, []);
 
-  const saveEdit = useCallback(async (overrideDetails?: string) => {
+  const saveEdit = useCallback(async (overrides?: { category?: string; property?: string; details?: string }) => {
+    // Use overrides if provided, otherwise use current editing values
+    const categoryToSave = overrides?.category !== undefined ? overrides.category : editingCategory;
+    const propertyToSave = overrides?.property !== undefined ? overrides.property : editingProperty;
+    const detailsToSave = overrides?.details !== undefined ? overrides.details : editingDescriptionRef.current;
+    
     if (!editingId) return;
+    
+    const initial = initialValuesRef.current;
+    
+    const hasActualChanges = 
+      categoryToSave !== initial.category ||
+      propertyToSave !== initial.property ||
+      detailsToSave !== initial.details;
+    
+    // If no changes, just cancel the edit without saving
+    if (!hasActualChanges) {
+      cancelEdit();
+      return;
+    }
 
-    startTransition(async () => {
-      try { console.log('[Editing] saveEdit', { id: editingId }); } catch {}
-      const propertyId = properties.find((p) => p.code === editingProperty)?.id;
-      // Map pseudo "uncategorized" (or empty) to null for persistence
-      const normalizedCategoryId =
-        editingCategory && editingCategory !== 'uncategorized'
-          ? editingCategory
-          : null;
+    const propertyId = properties.find((p) => p.code === propertyToSave)?.id;
+    const normalizedCategoryId =
+      categoryToSave && categoryToSave !== 'uncategorized'
+        ? categoryToSave
+        : null;
+
+    // Apply optimistic update immediately
+    setOptimisticUpdates(prev => {
+      const updates = new Map(prev);
+      updates.set(editingId, {
+        categoryId: normalizedCategoryId,
+        propertyId,
+        details: detailsToSave,
+      });
+      return updates;
+    });
+
+    // Close the editor immediately for better UX
+    const currentEditingId = editingId;
+    cancelEdit();
+
+    // Perform the actual save in the background
+    try {
+      
       // Save category/property
       const result = await categorizeOneAction({
-        id: editingId,
+        id: currentEditingId,
         categoryId: normalizedCategoryId,
         propertyId,
       });
+      
       if (!result?.success) {
+        // Revert optimistic update on failure
+        setOptimisticUpdates(prev => {
+          const updates = new Map(prev);
+          updates.delete(currentEditingId);
+          return updates;
+        });
+        
         toast({
           variant: 'destructive',
           title: 'Não foi possível salvar',
@@ -84,14 +156,52 @@ export function useTransactionEditing(
         });
         return;
       }
-      // Save description into processed details (acts as editable description)
-      const detailsToSave =
-        overrideDetails !== undefined
-          ? overrideDetails
-          : editingDescriptionRef.current;
-      await updateTransactionDetailsAction({ id: editingId, details: detailsToSave });
-      cancelEdit();
-    });
+      
+      // Save description
+      const detailsResult = await updateTransactionDetailsAction({ 
+        id: currentEditingId, 
+        details: detailsToSave 
+      });
+      
+      if (!detailsResult?.success) {
+        // Revert optimistic update on failure
+        setOptimisticUpdates(prev => {
+          const updates = new Map(prev);
+          updates.delete(currentEditingId);
+          return updates;
+        });
+        
+        toast({
+          variant: 'destructive',
+          title: 'Não foi possível salvar',
+          description: 'Falha ao salvar os detalhes da transação',
+        });
+        return;
+      }
+      
+      // Remove optimistic update after successful save
+      // The revalidatePath will update with real data
+      setOptimisticUpdates(prev => {
+        const updates = new Map(prev);
+        updates.delete(currentEditingId);
+        return updates;
+      });
+      
+    } catch (error) {
+      // Revert optimistic update on error
+      setOptimisticUpdates(prev => {
+        const updates = new Map(prev);
+        updates.delete(currentEditingId);
+        return updates;
+      });
+      
+      console.error('Error saving edit:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao salvar',
+        description: 'Ocorreu um erro ao salvar as alterações',
+      });
+    }
   }, [
     editingId,
     editingCategory,
@@ -108,6 +218,7 @@ export function useTransactionEditing(
     editingDescription,
     focusedField,
     isPending,
+    optimisticUpdates,
     startEdit,
     cancelEdit,
     saveEdit,

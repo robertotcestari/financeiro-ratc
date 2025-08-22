@@ -1,6 +1,7 @@
 'use client';
+'use no memo';
 
-import { useMemo, useCallback, useTransition, useRef, useEffect } from 'react';
+import { useMemo, useCallback, useTransition, useRef } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -13,12 +14,14 @@ import { markReviewedAction } from '../../actions';
 import { useTransactionEditing } from './hooks/useTransactionEditing';
 import { useBulkOperations } from './hooks/useBulkOperations';
 import { useAISuggestions } from './hooks/useAISuggestions';
+import { useRowSelection } from './hooks/useRowSelection';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { applyOptimisticUpdates } from './utils/optimistic-updates';
 import { BulkActionsToolbar } from './toolbar/BulkActionsToolbar';
 import { TransactionTableHeader } from './components/TransactionTableHeader';
 import { TransactionTablePagination } from './components/TransactionTablePagination';
 import { TransactionTableEmptyState } from './components/TransactionTableEmptyState';
 import { createColumnDefinitions } from './utils/column-definitions';
-import type { RowSelectionState, Row } from '@tanstack/react-table';
 import type { Transaction } from './types';
 import { prepareCategories } from './utils/transaction-helpers';
 import type { TransactionTableProps } from './types';
@@ -75,133 +78,22 @@ export default function TransactionTable({
     []
   );
 
-  // Stable data reference
-  const data = useMemo(() => transactions, [transactions]);
+  // Apply optimistic updates to transactions
+  const data = useMemo(
+    () => applyOptimisticUpdates(transactions, editing.optimisticUpdates, categories, properties),
+    [transactions, editing.optimisticUpdates, categories, properties]
+  );
 
-  // Selection handling (Shift+clique)
+  // Table ref for selection handling
   const tableRef = useRef<ReturnType<typeof useReactTable<Transaction>> | null>(
     null
   );
-  const lastSelectedIndexRef = useRef<number | null>(null);
 
-  const handleRowSelectClick = (
-    e: React.MouseEvent<HTMLElement>,
-    row: Row<Transaction>,
-    fromCheckbox: boolean = false
-  ) => {
-    console.log('Entrou no handleRowSelect');
-
-    if (typeof e.stopPropagation === 'function') e.stopPropagation();
-    const target = e.target as HTMLElement | null;
-    try {
-      console.log('[RowSelect:TTable] click', {
-        rowId: row.id,
-        shiftKey: e.shiftKey,
-        fromCheckbox,
-        tag: target?.tagName,
-      });
-    } catch {}
-
-    const tableInst = tableRef.current;
-    if (!tableInst) {
-      console.log('ops');
-      return;
-    }
-
-    const rows = tableInst.getRowModel().rows;
-    const currentIndex = rows.findIndex((r) => r.id === row.id);
-
-    if (e.shiftKey && lastSelectedIndexRef.current !== null) {
-      const start = Math.min(lastSelectedIndexRef.current, currentIndex);
-      const end = Math.max(lastSelectedIndexRef.current, currentIndex);
-      const targetSelected = !row.getIsSelected();
-      const base = tableInst.getState().rowSelection as RowSelectionState;
-      const newSelection: RowSelectionState = { ...base };
-      for (let i = start; i <= end; i++) {
-        const id = rows[i]?.id as string | undefined;
-        if (!id) continue;
-        if (targetSelected) newSelection[id] = true;
-        else delete newSelection[id];
-      }
-      tableInst.setRowSelection(newSelection);
-    } else {
-      // Default click on a row (not from checkbox): single selection
-      // First click selects the row; second click (when already solely selected) enters edit mode.
-      if (!fromCheckbox) {
-        const id = row.id as string;
-        const current = tableInst.getState().rowSelection as RowSelectionState;
-        const selectedIds = Object.keys(current);
-        const isOnlyThisSelected = selectedIds.length === 1 && !!current[id];
-        if (isOnlyThisSelected) {
-          // Start editing this transaction on second click
-          editing.startEdit?.(row.original);
-        } else {
-          // If navigating away from a different editing row, save it before switching selection
-          if (editing.editingId && editing.editingId !== id) {
-            try {
-              editing.saveEdit();
-            } catch {}
-          }
-          const newSelection: RowSelectionState = { [id]: true };
-          tableInst.setRowSelection(newSelection);
-        }
-      } else {
-        // Checkbox clicks maintain multi-select toggle behavior
-        const id = row.id as string;
-        const base = tableInst.getState().rowSelection as RowSelectionState;
-        const newSelection: RowSelectionState = { ...base };
-        if (row.getIsSelected()) delete newSelection[id];
-        else newSelection[id] = true;
-        tableInst.setRowSelection(newSelection);
-      }
-    }
-
-    lastSelectedIndexRef.current = currentIndex;
-
-    // Clear any accidental text selection for better DX
-    try {
-      const sel = window.getSelection?.();
-      if (sel && typeof sel.removeAllRanges === 'function')
-        sel.removeAllRanges();
-    } catch {}
-  };
-
-  // Ensure a specific row is selected (used when entering edit via cell dblclick)
-  // const ensureRowSelected = useCallback(
-  //   (rowId: string) => {
-  //     const tableInst = tableRef.current;
-  //     if (!tableInst) return;
-
-  //     const current = tableInst.getState().rowSelection as RowSelectionState;
-  //     const isOnlyThisSelected =
-  //       Object.keys(current).length === 1 && !!current[rowId];
-  //     if (isOnlyThisSelected) return;
-
-  //     // If switching from another editing row, save it first
-  //     if (editing.editingId && editing.editingId !== rowId) {
-  //       try {
-  //         editing.saveEdit();
-  //       } catch {}
-  //     }
-
-  //     tableInst.setRowSelection({ [rowId]: true });
-  //   },
-  //   [editing]
-  // );
-
-  // Prevent text selection on mousedown over non-interactive cells/rows
-  const handleRowMouseDown = useCallback((e: React.MouseEvent<HTMLElement>) => {
-    const target = e.target as HTMLElement | null;
-    if (
-      target &&
-      target.closest(
-        'button, a, input, select, textarea, [role="button"], [contenteditable="true"], .no-row-select'
-      )
-    ) {
-      return;
-    }
-    e.preventDefault();
-  }, []);
+  // Use row selection hook
+  const { handleRowSelectClick, handleRowMouseDown } = useRowSelection({
+    tableRef,
+    editing,
+  });
 
   // Column definitions
   const columns = useMemo(
@@ -214,6 +106,7 @@ export default function TransactionTable({
         editingProperty: editing.editingProperty,
         isPending: editing.isPending || bulk.isPending,
         focusedField: editing.focusedField,
+        optimisticUpdates: editing.optimisticUpdates,
         setEditingCategory: editing.setEditingCategory,
         setEditingProperty: editing.setEditingProperty,
         setEditingDescription: editing.setEditingDescription,
@@ -224,7 +117,6 @@ export default function TransactionTable({
         onSelectClick: handleRowSelectClick,
         // ensureRowSelected,
       }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       categoryOptions,
       propertyOptions,
@@ -233,6 +125,7 @@ export default function TransactionTable({
       editing.editingProperty,
       editing.focusedField,
       editing.isPending,
+      editing.optimisticUpdates,
       editing.setEditingCategory,
       editing.setEditingProperty,
       editing.setEditingDescription,
@@ -241,6 +134,7 @@ export default function TransactionTable({
       editing.cancelEdit,
       bulk.isPending,
       handleMarkReviewed,
+      handleRowSelectClick,
       // ensureRowSelected,
     ]
   );
@@ -291,62 +185,13 @@ export default function TransactionTable({
   }, [table, ai]);
 
   // Keyboard shortcuts
-  useEffect(() => {
-    const onKeyDown = (e: KeyboardEvent) => {
-      // ESC - Clear selection
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        bulk.clearSelection();
-        return;
-      }
+  useKeyboardShortcuts({
+    table,
+    rowSelection: bulk.rowSelection,
+    setRowSelection: bulk.setRowSelection,
+    clearSelection: bulk.clearSelection,
+  });
 
-      // Ctrl/Cmd + A - Select all visible
-      if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
-        e.preventDefault();
-        const allRows = table.getRowModel().rows;
-        const newSelection: RowSelectionState = {};
-        allRows.forEach((row) => {
-          newSelection[row.id] = true;
-        });
-        bulk.setRowSelection(newSelection);
-        return;
-      }
-
-      // Ctrl/Cmd + D - Deselect all
-      if ((e.metaKey || e.ctrlKey) && e.key === 'd') {
-        e.preventDefault();
-        bulk.clearSelection();
-        return;
-      }
-
-      // Ctrl/Cmd + I - Invert selection
-      if ((e.metaKey || e.ctrlKey) && e.key === 'i') {
-        e.preventDefault();
-        const allRows = table.getRowModel().rows;
-        const currentSelection = bulk.rowSelection;
-        const newSelection: RowSelectionState = {};
-        allRows.forEach((row) => {
-          if (!currentSelection[row.id]) {
-            newSelection[row.id] = true;
-          }
-        });
-        bulk.setRowSelection(newSelection);
-        return;
-      }
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [bulk, table]);
-
-  // Close inline editing when the row gets deselected (e.g., via ESC or click elsewhere)
-  // COMMENTED OUT: This was causing issues with combobox interaction
-  // useEffect(() => {
-  //   if (!editing.editingId) return;
-  //   const stillSelected = !!bulk.rowSelection[editing.editingId];
-  //   if (!stillSelected) {
-  //     editing.cancelEdit();
-  //   }
-  // }, [bulk.rowSelection, editing]);
 
   if (transactions.length === 0) {
     return <TransactionTableEmptyState />;
@@ -434,11 +279,14 @@ export default function TransactionTable({
 
               const isSelected = row.getIsSelected();
               const isEvenRow = index % 2 === 0;
+              const hasPendingUpdate = editing.optimisticUpdates.has(row.original.id);
+              
               return (
                 <tr
                   key={row.id}
                   className={`
-                    transition-colors duration-75 border-b border-gray-100
+                    transition-all duration-200 border-b border-gray-100
+                    ${hasPendingUpdate ? 'opacity-75 animate-pulse' : ''}
                     ${
                       isSelected
                         ? 'bg-blue-50 hover:bg-blue-100 ring-1 ring-inset ring-blue-200'
@@ -448,6 +296,7 @@ export default function TransactionTable({
                         ? 'bg-white hover:bg-gray-50'
                         : 'bg-gray-50/50 hover:bg-gray-100/70'
                     }
+                    ${hasPendingUpdate && !isSelected ? 'border-l-2 border-l-blue-400' : ''}
                   `}
                   aria-selected={isSelected}
                   onMouseDown={handleRowMouseDown}

@@ -58,6 +58,7 @@ export interface Category {
   id: string;
   name: string;
   level: number;
+  type: string;
   parent: { name: string } | null;
 }
 

@@ -1,4 +1,4 @@
-import { useState, useTransition, useCallback } from 'react';
+import { useState, useTransition } from 'react';
 import { updateTransactionAction } from '../../actions';
 import { toast } from 'sonner';
 
@@ -9,101 +9,53 @@ interface TransactionForEdit {
 }
 
 export interface UseTransactionEditingReturn {
-  editingId: string | null;
-  editingDescription: string;
-  editingAmount: string;
-  originalSign: number;
+  isDialogOpen: boolean;
+  editingTransaction: TransactionForEdit | null;
   isPending: boolean;
-  editingField: 'description' | 'amount' | null;
-  startEdit: (transaction: TransactionForEdit, field?: 'description' | 'amount') => void;
-  cancelEdit: () => void;
-  saveEdit: () => Promise<void>;
-  setEditingDescription: (value: string) => void;
-  setEditingAmount: (value: string) => void;
+  openEditDialog: (transaction: TransactionForEdit) => void;
+  closeEditDialog: () => void;
+  saveTransaction: (id: string, description: string, amount: number) => Promise<void>;
 }
 
 export function useTransactionEditing(
   bankAccountId: string
 ): UseTransactionEditingReturn {
   const [isPending, startTransition] = useTransition();
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editingDescription, setEditingDescription] = useState<string>('');
-  const [editingAmount, setEditingAmount] = useState<string>('');
-  const [originalSign, setOriginalSign] = useState<number>(1);
-  const [editingField, setEditingField] = useState<'description' | 'amount' | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<TransactionForEdit | null>(null);
 
-  const startEdit = useCallback((transaction: TransactionForEdit, field: 'description' | 'amount' = 'description') => {
-    // Don't allow editing virtual rows
+  const openEditDialog = (transaction: TransactionForEdit) => {
     if (transaction.id === 'initial-balance' || transaction.id === 'final-balance') {
       return;
     }
-    
-    setEditingId(transaction.id);
-    const description = transaction.description || '';
-    const amount = Math.abs(transaction.amount).toString();
-    
-    setEditingDescription(description);
-    setEditingAmount(amount);
-    setOriginalSign(transaction.amount < 0 ? -1 : 1);
-    setEditingField(field);
-  }, []);
+    setEditingTransaction(transaction);
+    setIsDialogOpen(true);
+  };
 
-  const cancelEdit = useCallback(() => {
-    setEditingId(null);
-    setEditingDescription('');
-    setEditingAmount('');
-    setOriginalSign(1);
-    setEditingField(null);
-  }, []);
+  const closeEditDialog = () => {
+    setIsDialogOpen(false);
+    setEditingTransaction(null);
+  };
 
-  const saveEdit = useCallback(async () => {
-    if (!editingId) return;
-
-    const description = editingDescription.trim();
-    const amountStr = editingAmount.replace(/[^\d.-]/g, '');
-    const amount = parseFloat(amountStr);
-
-    if (!description) {
-      toast.error('Descrição não pode estar vazia');
-      return;
-    }
-
-    if (isNaN(amount) || amount === 0) {
-      toast.error('Valor inválido');
-      return;
-    }
-
+  const saveTransaction = async (id: string, description: string, amount: number) => {
     startTransition(async () => {
-      // Preserve the original sign
-      const finalAmount = originalSign < 0 ? -Math.abs(amount) : Math.abs(amount);
-
-      const result = await updateTransactionAction(
-        editingId,
-        description,
-        finalAmount,
-        bankAccountId
-      );
+      const result = await updateTransactionAction(id, description, amount, bankAccountId);
 
       if (result.success) {
         toast.success('Transação atualizada com sucesso');
-        cancelEdit();
+        closeEditDialog();
       } else {
         toast.error(result.error || 'Erro ao atualizar transação');
       }
     });
-  }, [editingId, editingDescription, editingAmount, originalSign, bankAccountId, cancelEdit]);
+  };
 
   return {
-    editingId,
-    editingDescription,
-    editingAmount,
-    originalSign,
+    isDialogOpen,
+    editingTransaction,
     isPending,
-    editingField,
-    startEdit,
-    cancelEdit,
-    saveEdit,
-    setEditingDescription,
-    setEditingAmount,
+    openEditDialog,
+    closeEditDialog,
+    saveTransaction,
   };
 }

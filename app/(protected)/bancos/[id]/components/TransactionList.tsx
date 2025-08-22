@@ -3,7 +3,6 @@
 import { Transaction } from '@/app/generated/prisma';
 import { useState, useMemo, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { processUnprocessedTransactions, deleteTransactions } from '../actions';
@@ -13,10 +12,9 @@ import {
   ChevronRight,
   Trash2,
   Edit2,
-  Save,
-  X,
 } from 'lucide-react';
 import { useTransactionEditing } from './hooks/useTransactionEditing';
+import { TransactionEditDialog } from './TransactionEditDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -82,16 +80,12 @@ export function TransactionList({
   const [isDeleting, setIsDeleting] = useState(false);
 
   const {
-    editingId,
-    editingDescription,
-    editingAmount,
-    editingField,
+    isDialogOpen,
+    editingTransaction,
     isPending: isEditPending,
-    startEdit,
-    cancelEdit,
-    saveEdit,
-    setEditingDescription,
-    setEditingAmount,
+    openEditDialog,
+    closeEditDialog,
+    saveTransaction,
   } = useTransactionEditing(bankAccountId || '');
 
   const formatCurrency = (value: number) => {
@@ -152,35 +146,8 @@ export function TransactionList({
         accessorKey: 'description',
         header: 'Descrição',
         cell: ({ getValue, row }) => {
-          const isEditing = editingId === row.original.id;
-          const isVirtualRow =
-            row.original.id === 'initial-balance' ||
-            row.original.id === 'final-balance';
-
-          if (isEditing && !isVirtualRow) {
-            return (
-              <Input
-                value={editingDescription}
-                onChange={(e) => setEditingDescription(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    saveEdit();
-                  } else if (e.key === 'Escape') {
-                    cancelEdit();
-                  }
-                }}
-                className="max-w-md text-xs h-8"
-                autoFocus={editingField === 'description'}
-              />
-            );
-          }
-
           return (
-            <div
-              className="max-w-md cursor-pointer hover:bg-gray-50 px-2 py-1 rounded"
-              // onDoubleClick={() => !isVirtualRow && startEdit(row.original, 'description')}
-            >
+            <div className="max-w-md px-2 py-1">
               <div className="text-xs break-words whitespace-normal">
                 {getValue() as string}
               </div>
@@ -196,45 +163,13 @@ export function TransactionList({
       {
         accessorKey: 'amount',
         header: 'Valor',
-        cell: ({ getValue, row }) => {
+        cell: ({ getValue }) => {
           const value = getValue() as number;
-          const isEditing = editingId === row.original.id;
-          const isVirtualRow =
-            row.original.id === 'initial-balance' ||
-            row.original.id === 'final-balance';
-
-          if (isEditing && !isVirtualRow) {
-            return (
-              <Input
-                value={editingAmount}
-                onChange={(e) => {
-                  // Allow only numbers and decimal point
-                  const newValue = e.target.value.replace(/[^\d.]/g, '');
-                  setEditingAmount(newValue);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    saveEdit();
-                  } else if (e.key === 'Escape') {
-                    cancelEdit();
-                  }
-                }}
-                className="w-32 text-xs h-8"
-                placeholder="0.00"
-                autoFocus={editingField === 'amount'}
-              />
-            );
-          }
-
           return (
             <span
               className={`${
                 value >= 0 ? 'text-green-600' : 'text-red-600'
-              } cursor-pointer hover:bg-gray-50 px-2 py-1 rounded inline-block`}
-              // onDoubleClick={() =>
-              //   !isVirtualRow && startEdit(row.original, 'amount')
-              // }
+              } px-2 py-1 inline-block`}
             >
               {formatCurrency(value)}
             </span>
@@ -285,7 +220,6 @@ export function TransactionList({
         id: 'actions',
         header: 'Ações',
         cell: ({ row }) => {
-          const isEditing = editingId === row.original.id;
           const isVirtualRow =
             row.original.id === 'initial-balance' ||
             row.original.id === 'final-balance';
@@ -294,36 +228,11 @@ export function TransactionList({
             return null;
           }
 
-          if (isEditing) {
-            return (
-              <div className="flex items-center gap-1">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => saveEdit()}
-                  disabled={isEditPending}
-                  className="h-7 w-7 p-0"
-                >
-                  <Save className="h-3 w-3" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={cancelEdit}
-                  disabled={isEditPending}
-                  className="h-7 w-7 p-0"
-                >
-                  <X className="h-3 w-3" />
-                </Button>
-              </div>
-            );
-          }
-
           return (
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => startEdit(row.original, 'description')}
+              onClick={() => openEditDialog(row.original)}
               className="h-7 w-7 p-0"
             >
               <Edit2 className="h-3 w-3" />
@@ -332,18 +241,7 @@ export function TransactionList({
         },
       },
     ],
-    [
-      editingId,
-      editingDescription,
-      editingAmount,
-      editingField,
-      isEditPending,
-      startEdit,
-      cancelEdit,
-      saveEdit,
-      setEditingDescription,
-      setEditingAmount,
-    ]
+    [openEditDialog]
   );
 
   // Filter data based on type
@@ -673,12 +571,12 @@ export function TransactionList({
 
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
-            <Input
+            <input
               type="text"
               placeholder="Buscar por descrição..."
               value={globalFilter ?? ''}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="max-w-sm"
+              className="max-w-sm px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
 
             {/* Filter */}
@@ -818,15 +716,12 @@ export function TransactionList({
               const isVirtualRow =
                 row.original.id === 'initial-balance' ||
                 row.original.id === 'final-balance';
-              const isEditing = editingId === row.original.id;
               return (
                 <tr
                   key={row.id}
                   className={
                     isVirtualRow
                       ? 'bg-gray-100 font-semibold'
-                      : isEditing
-                      ? 'bg-blue-50'
                       : 'hover:bg-gray-50'
                   }
                 >
@@ -1001,6 +896,15 @@ export function TransactionList({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Transaction Edit Dialog */}
+      <TransactionEditDialog
+        isOpen={isDialogOpen}
+        onClose={closeEditDialog}
+        transaction={editingTransaction || { id: '', description: '', amount: 0 }}
+        onSave={saveTransaction}
+        isLoading={isEditPending}
+      />
     </div>
   );
 }

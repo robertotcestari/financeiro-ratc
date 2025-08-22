@@ -26,6 +26,11 @@ interface ColumnDefinitionProps {
   editingProperty: string;
   focusedField: 'details' | 'category' | 'property';
   isPending: boolean;
+  optimisticUpdates: Map<string, {
+    categoryId?: string | null;
+    propertyId?: string | null;
+    details?: string | null;
+  }>;
   setEditingCategory: (value: string) => void;
   setEditingProperty: (value: string) => void;
   setEditingDescription: (value: string) => void;
@@ -33,7 +38,7 @@ interface ColumnDefinitionProps {
     transaction: Transaction,
     field?: 'details' | 'category' | 'property'
   ) => void;
-  saveEdit: (overrideDetails?: string) => Promise<void>;
+  saveEdit: (overrides?: { category?: string; property?: string; details?: string }) => Promise<void>;
   cancelEdit: () => void;
   handleMarkReviewed: (id: string, reviewed: boolean) => Promise<void>;
   onSelectClick?: (
@@ -115,6 +120,7 @@ export function createColumnDefinitions({
   editingProperty,
   focusedField,
   isPending,
+  optimisticUpdates,
   setEditingCategory,
   setEditingProperty,
   setEditingDescription,
@@ -204,6 +210,9 @@ export function createColumnDefinitions({
       header: 'Detalhes',
       cell: ({ getValue, row }) => {
         const details = getValue();
+        const hasPendingUpdate = optimisticUpdates.has(row.original.id);
+        const pendingUpdate = optimisticUpdates.get(row.original.id);
+        const hasDetailsUpdate = pendingUpdate?.details !== undefined;
 
         if (editingId === row.id) {
           return (
@@ -211,7 +220,7 @@ export function createColumnDefinitions({
               <InlineDetailsEditor
                 initialValue={row.original.details || ''}
                 onChangeLive={setEditingDescription}
-                onSave={(val) => saveEdit(val)}
+                onSave={(val) => saveEdit({ details: val })}
                 onCancel={cancelEdit}
                 autoFocus={focusedField === 'details'}
               />
@@ -227,7 +236,9 @@ export function createColumnDefinitions({
             //   } catch {}
             //   startEdit(row.original, 'details');
             // }}
-            className="no-row-select text-[11px] text-gray-900 leading-tight h-7 flex items-center px-2 break-words cursor-pointer hover:bg-gray-50 rounded"
+            className={`no-row-select text-[11px] text-gray-900 leading-tight h-7 flex items-center px-2 break-words cursor-pointer hover:bg-gray-50 rounded ${
+              hasPendingUpdate && hasDetailsUpdate ? 'animate-pulse' : ''
+            }`}
             title={details || ''}
           >
             {details && details.trim().length > 0 ? (
@@ -301,6 +312,9 @@ export function createColumnDefinitions({
       header: 'Categoria',
       cell: ({ getValue, row }) => {
         const category = getValue();
+        const hasPendingUpdate = optimisticUpdates.has(row.original.id);
+        const pendingUpdate = optimisticUpdates.get(row.original.id);
+        const hasCategoryUpdate = pendingUpdate?.categoryId !== undefined;
 
         if (editingId === row.id) {
           return (
@@ -308,7 +322,11 @@ export function createColumnDefinitions({
               <Combobox
                 options={categoryOptions}
                 value={editingCategory}
-                onValueChange={setEditingCategory}
+                onValueChange={(newValue) => {
+                  setEditingCategory(newValue);
+                  // Auto-save when category is selected
+                  setTimeout(() => saveEdit({ category: newValue }), 100);
+                }}
                 placeholder="Selecionar categoria"
                 searchPlaceholder="Buscar categoria..."
                 emptyMessage="Nenhuma categoria encontrada."
@@ -332,7 +350,9 @@ export function createColumnDefinitions({
               ensureRowSelected?.(row.id);
               startEdit(row.original, 'category');
             }}
-            className="no-row-select cursor-pointer min-h-[32px] flex flex-col justify-center"
+            className={`no-row-select cursor-pointer min-h-[32px] flex flex-col justify-center ${
+              hasPendingUpdate && hasCategoryUpdate ? 'animate-pulse' : ''
+            }`}
           >
             {category.parent && !isUncategorized && (
               <div className="text-[9px] text-gray-400 leading-tight">
@@ -361,13 +381,20 @@ export function createColumnDefinitions({
       header: 'Propriedade',
       cell: ({ getValue, row }) => {
         const property = getValue();
+        const hasPendingUpdate = optimisticUpdates.has(row.original.id);
+        const pendingUpdate = optimisticUpdates.get(row.original.id);
+        const hasPropertyUpdate = pendingUpdate?.propertyId !== undefined;
 
         if (editingId === row.id) {
           return (
             <Combobox
               options={propertyOptions}
               value={editingProperty}
-              onValueChange={setEditingProperty}
+              onValueChange={(newValue) => {
+                setEditingProperty(newValue);
+                // Auto-save when property is selected
+                setTimeout(() => saveEdit({ property: newValue }), 100);
+              }}
               placeholder="Selecionar propriedade"
               searchPlaceholder="Buscar propriedade..."
               emptyMessage="Nenhuma propriedade encontrada."
@@ -395,7 +422,9 @@ export function createColumnDefinitions({
               ensureRowSelected?.(row.id);
               startEdit(row.original, 'property');
             }}
-            className="no-row-select cursor-pointer"
+            className={`no-row-select cursor-pointer ${
+              hasPendingUpdate && hasPropertyUpdate ? 'animate-pulse' : ''
+            }`}
           >
             {property ? (
               <div>
