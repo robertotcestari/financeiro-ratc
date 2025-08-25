@@ -5,16 +5,18 @@ import { useState, useMemo, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { processUnprocessedTransactions, deleteTransactions } from '../actions';
+import { processUnprocessedTransactions, deleteTransactions, createTransactionAction } from '../actions';
 import { toast } from 'sonner';
 import {
   ChevronLeft,
   ChevronRight,
   Trash2,
   Edit2,
+  Plus,
 } from 'lucide-react';
 import { useTransactionEditing } from './hooks/useTransactionEditing';
 import { TransactionEditDialog } from './TransactionEditDialog';
+import { TransactionAddDialog } from './TransactionAddDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -78,6 +80,8 @@ export function TransactionList({
   const [isPending, startTransition] = useTransition();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   const {
     isDialogOpen,
@@ -371,6 +375,30 @@ export function TransactionList({
     });
   };
 
+  const handleAddTransaction = async (description: string, amount: number, date: Date) => {
+    if (!bankAccountId) return;
+
+    setIsAdding(true);
+    try {
+      const result = await createTransactionAction(
+        description,
+        amount,
+        date,
+        bankAccountId
+      );
+
+      if (result.success) {
+        toast.success(result.message || 'Transação adicionada com sucesso');
+        setIsAddDialogOpen(false);
+        router.refresh();
+      } else {
+        toast.error(result.error || 'Erro ao adicionar transação');
+      }
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
   const handleDeleteSelected = async () => {
     if (!bankAccountId) return;
 
@@ -539,18 +567,29 @@ export function TransactionList({
             </Button>
           </div>
 
-          {unprocessedCount > 0 && bankAccountId && (
+          <div className="flex items-center gap-2">
             <Button
-              onClick={handleProcessUnprocessed}
-              disabled={isPending}
+              onClick={() => setIsAddDialogOpen(true)}
               variant="outline"
               size="sm"
             >
-              {isPending
-                ? 'Processando...'
-                : `Processar ${unprocessedCount} Não Processadas`}
+              <Plus className="h-4 w-4 mr-1" />
+              Nova Transação
             </Button>
-          )}
+            
+            {unprocessedCount > 0 && bankAccountId && (
+              <Button
+                onClick={handleProcessUnprocessed}
+                disabled={isPending}
+                variant="outline"
+                size="sm"
+              >
+                {isPending
+                  ? 'Processando...'
+                  : `Processar ${unprocessedCount} Não Processadas`}
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Header with search and filters */}
@@ -904,6 +943,14 @@ export function TransactionList({
         transaction={editingTransaction || { id: '', description: '', amount: 0 }}
         onSave={saveTransaction}
         isLoading={isEditPending}
+      />
+
+      {/* Transaction Add Dialog */}
+      <TransactionAddDialog
+        isOpen={isAddDialogOpen}
+        onClose={() => setIsAddDialogOpen(false)}
+        onSave={handleAddTransaction}
+        isLoading={isAdding}
       />
     </div>
   );
