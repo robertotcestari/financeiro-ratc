@@ -51,7 +51,8 @@ export async function listInadimplentes(): Promise<
 > {
   // Prefer container row with array of items
   const container = await getContainerRow();
-  if (container && container.items.length > 0) return container.items;
+  // If a container row exists, always trust it — even if empty
+  if (container) return container.items;
 
   // Fallback (legacy): multiple rows, each with a single item payload
   const rows = await prisma.$queryRaw<Array<{ id: string; data: unknown }>>`

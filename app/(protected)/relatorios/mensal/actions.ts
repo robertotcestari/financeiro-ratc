@@ -130,10 +130,11 @@ export async function sendMonthlyReportEmail(params: {
   month: number;
   year: number;
   to?: string;
+  recipients?: string[];
 }): Promise<{ success: boolean; messageId?: string; error?: string }> {
   'use server';
 
-  const { month, year, to } = params;
+  const { month, year, to, recipients } = params;
 
   try {
     // Import here to avoid issues with server components
@@ -147,35 +148,18 @@ export async function sendMonthlyReportEmail(params: {
       getRentPayments(month, year),
     ]);
 
-    // Get previous months for comparison
+    // Get previous month for comparison
     const prevMonth = (y: number, m: number) => {
       if (m === 1) return { year: y - 1, month: 12 };
       return { year: y, month: m - 1 };
     };
 
     const p1 = prevMonth(year, month);
-    const p2 = prevMonth(p1.year, p1.month);
 
-    const [indP1, indP2] = await Promise.all([
-      calculateFinancialIndicators(p1.year, p1.month),
-      calculateFinancialIndicators(p2.year, p2.month),
-    ]);
+    const indP1 = await calculateFinancialIndicators(p1.year, p1.month);
 
-    // Prepare DRE data for email
+    // Prepare DRE data for email (2 months only)
     const dreData = [
-      {
-        label: new Date(p2.year, p2.month - 1, 1)
-          .toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
-          .replace('.', ''),
-        values: {
-          receitasOperacionais: indP2.totalReceitasOperacionais,
-          despesasOperacionais: indP2.totalDespesasOperacionais,
-          lucroOperacional: indP2.lucroOperacional,
-          receitasEDespesasNaoOperacionais:
-            indP2.totalReceitasNaoOperacionais + indP2.totalDespesasNaoOperacionais,
-          resultadoDeCaixa: indP2.resultadoDeCaixa,
-        },
-      },
       {
         label: new Date(p1.year, p1.month - 1, 1)
           .toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
@@ -271,9 +255,13 @@ export async function sendMonthlyReportEmail(params: {
     });
 
     // Send email
-    const emailTo = to || process.env.MAILGUN_TO_EMAIL;
+    // Priority: recipients array > to parameter > env variable
+    const emailTo = recipients && recipients.length > 0 
+      ? recipients.join(', ') 
+      : (to || process.env.MAILGUN_TO_EMAIL);
+      
     if (!emailTo) {
-      throw new Error('No email recipient specified. Set MAILGUN_TO_EMAIL environment variable or provide "to" parameter.');
+      throw new Error('No email recipient specified. Provide recipients or set MAILGUN_TO_EMAIL environment variable.');
     }
 
     const subjectDate = new Date(year, month - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).replace(' ', ' de ');

@@ -69,29 +69,14 @@ export default async function EmailRascunhoPage({
   };
 
   const p1 = prevMonth(ano, mes);
-  const p2 = prevMonth(p1.year, p1.month);
 
-  const [indAtual, indP1, indP2] = await Promise.all([
+  const [indAtual, indP1] = await Promise.all([
     calculateFinancialIndicators(ano, mes),
     calculateFinancialIndicators(p1.year, p1.month),
-    calculateFinancialIndicators(p2.year, p2.month),
   ]);
 
   // Order oldest -> newest so the most recent month is on the right
   const mesesTabela = [
-    {
-      label: new Date(p2.year, p2.month - 1, 1)
-        .toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
-        .replace('.', ''),
-      values: {
-        receitasOperacionais: indP2.totalReceitasOperacionais,
-        despesasOperacionais: indP2.totalDespesasOperacionais,
-        lucroOperacional: indP2.lucroOperacional,
-        receitasEDespesasNaoOperacionais:
-          indP2.totalReceitasNaoOperacionais + indP2.totalDespesasNaoOperacionais,
-        resultadoDeCaixa: indP2.resultadoDeCaixa,
-      },
-    },
     {
       label: new Date(p1.year, p1.month - 1, 1)
         .toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
@@ -235,7 +220,7 @@ export default async function EmailRascunhoPage({
           <Card>
             <CardHeader>
               <CardTitle>
-                DRE Resumo — {mesesTabela.map(m => m.label.toUpperCase()).join(', ')}
+                DRE Resumo — {mesesTabela.map(m => m.label.toUpperCase()).join(' e ')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -397,12 +382,11 @@ export default async function EmailRascunhoPage({
                 <h4 className="font-medium text-gray-900 mb-2">Preview do Email</h4>
                 <div className="text-sm text-gray-600 space-y-2">
                   <p><strong>Assunto:</strong> [RATC] Relatório Mensal - {new Date(ano, mes - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).replace(' ', ' de ')}</p>
-                  <p><strong>Destinatário:</strong> {process.env.MAILGUN_TO_EMAIL || 'Configure MAILGUN_TO_EMAIL'}</p>
                   <div className="mt-3">
                     <p className="font-medium text-gray-900 mb-1">Conteúdo do email:</p>
                      <ul className="text-xs space-y-1 ml-4">
                       <li>• Inadimplentes até o último dia do mês ({inadimplentes.length} registros)</li>
-                      <li>• DRE Resumo (comparativo de 3 meses)</li>
+                      <li>• DRE Resumo (comparativo de 2 meses)</li>
                       <li>• Aluguéis: totais (Próprios e Terceiros) + link para PDF</li>
                       {existingFile && <li>• Link para relatório DRE em PDF</li>}
                     </ul>
@@ -410,11 +394,11 @@ export default async function EmailRascunhoPage({
                 </div>
               </div>
 
-              <div className="flex items-center justify-between">
+              <div className="space-y-4">
                 <div className="text-sm text-gray-600">
                   <p>Status da configuração:</p>
                   <p className="text-xs">
-                    {process.env.MAILGUN_API_KEY && process.env.MAILGUN_DOMAIN && process.env.MAILGUN_TO_EMAIL
+                    {process.env.MAILGUN_API_KEY && process.env.MAILGUN_DOMAIN
                       ? '✅ Configuração completa'
                       : '⚠️ Verifique as variáveis de ambiente do Mailgun'
                     }
@@ -423,7 +407,7 @@ export default async function EmailRascunhoPage({
                 <SendEmailButton
                   month={mes}
                   year={ano}
-                  disabled={!process.env.MAILGUN_API_KEY || !process.env.MAILGUN_DOMAIN || !process.env.MAILGUN_TO_EMAIL}
+                  defaultEmail={process.env.MAILGUN_TO_EMAIL}
                 />
               </div>
             </CardContent>
