@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
+import { useSession } from "@/lib/core/auth/auth-client";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,6 +13,9 @@ export default function SignInPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const session = useSession();
+  const role = session.data?.user?.role as string | undefined;
+  const canSeeReports = role === 'admin' || role === 'superuser';
 
   useEffect(() => {
     // Check for error parameter from middleware
@@ -32,9 +36,12 @@ export default function SignInPage() {
     if (isAuthenticated && !isLoading) {
       // Use the redirect parameter if available, otherwise go to home
       const redirectTo = searchParams.get("redirect") || "/";
-      router.push(redirectTo);
+      // If redirecting to a report route and the user cannot see reports, send to home instead
+      const isReportRoute = /^\/(dre|relatorios|integridade)(\b|\/)/.test(redirectTo);
+      const target = isReportRoute && !canSeeReports ? "/" : redirectTo;
+      router.push(target);
     }
-  }, [isAuthenticated, isLoading, router, searchParams]);
+  }, [isAuthenticated, isLoading, router, searchParams, canSeeReports]);
 
   const handleSignIn = async () => {
     try {

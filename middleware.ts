@@ -56,10 +56,15 @@ export async function middleware(request: NextRequest) {
   // Get session from cookie (optimistic check - no DB call)
   const sessionCookie = await getSessionCookie(request);
   
-  // If we have a session and user is on auth route, redirect to home
+  // If we have a session and user is on auth route:
+  // - If there's no explicit redirect target, send them home.
+  // - If a redirect is provided, let the page handle it (to avoid loops when target is unauthorized).
   if (sessionCookie && isAuthRoute) {
-    const redirectTo = request.nextUrl.searchParams.get("redirect") || "/";
-    return NextResponse.redirect(new URL(redirectTo, request.url));
+    const redirectTo = request.nextUrl.searchParams.get("redirect");
+    if (!redirectTo) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
   }
   
   // Redirect logic for protected routes without session
