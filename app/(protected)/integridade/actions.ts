@@ -48,6 +48,16 @@ export interface TransferStats {
   volumeAmount: number; // Volume total (valor absoluto)
 }
 
+export interface TransferDetail {
+  id: string;
+  date: Date;
+  description: string;
+  amount: number;
+  bankAccountName: string;
+  bankName: string;
+  categoryId: string | null;
+}
+
 export interface RecentActivity {
   bankAccountId: string;
   accountName: string;
@@ -79,6 +89,7 @@ export interface FinancialIntegrityData {
   totalTransactions: number;
   integrityStats: IntegrityStats;
   transferStats: TransferStats;
+  transferDetails: TransferDetail[];
   recentActivity: RecentActivity[];
   unifiedWithoutCategory: number;
   unprocessedTransactions: UnprocessedTransaction[];
@@ -444,6 +455,128 @@ export async function getFinancialIntegrityData(
       volumeAmount: volumeTransferAmount,
     };
 
+    // 7. Buscar transferências detalhadas para exibir na tabela
+    let transferDetails: TransferDetail[] = [];
+
+    if (dateFilter && year && month) {
+      const transferDetailsRaw = await prisma.processedTransaction.findMany({
+        where: {
+          year: year,
+          month: month,
+          category: {
+            type: 'TRANSFER',
+          },
+        },
+        include: {
+          transaction: {
+            include: {
+              bankAccount: {
+                select: {
+                  name: true,
+                  bankName: true,
+                },
+              },
+            },
+          },
+          category: true,
+        },
+        orderBy: {
+          transaction: {
+            date: 'desc',
+          },
+        },
+      });
+
+      transferDetails = transferDetailsRaw
+        .filter((pt) => pt.transaction !== null && pt.transactionId !== null)
+        .map((pt) => ({
+          id: pt.transactionId!,
+          date: pt.transaction!.date,
+          description: pt.transaction!.description,
+          amount: Number(pt.transaction!.amount),
+          bankAccountName: pt.transaction!.bankAccount.name,
+          bankName: pt.transaction!.bankAccount.bankName,
+          categoryId: pt.categoryId,
+        }));
+    } else if (dateFilter && year) {
+      const transferDetailsRaw = await prisma.processedTransaction.findMany({
+        where: {
+          year: year,
+          category: {
+            type: 'TRANSFER',
+          },
+        },
+        include: {
+          transaction: {
+            include: {
+              bankAccount: {
+                select: {
+                  name: true,
+                  bankName: true,
+                },
+              },
+            },
+          },
+          category: true,
+        },
+        orderBy: {
+          transaction: {
+            date: 'desc',
+          },
+        },
+      });
+
+      transferDetails = transferDetailsRaw
+        .filter((pt) => pt.transaction !== null && pt.transactionId !== null)
+        .map((pt) => ({
+          id: pt.transactionId!,
+          date: pt.transaction!.date,
+          description: pt.transaction!.description,
+          amount: Number(pt.transaction!.amount),
+          bankAccountName: pt.transaction!.bankAccount.name,
+          bankName: pt.transaction!.bankAccount.bankName,
+          categoryId: pt.categoryId,
+        }));
+    } else {
+      const transferDetailsRaw = await prisma.processedTransaction.findMany({
+        where: {
+          category: {
+            type: 'TRANSFER',
+          },
+        },
+        include: {
+          transaction: {
+            include: {
+              bankAccount: {
+                select: {
+                  name: true,
+                  bankName: true,
+                },
+              },
+            },
+          },
+          category: true,
+        },
+        orderBy: {
+          transaction: {
+            date: 'desc',
+          },
+        },
+      });
+
+      transferDetails = transferDetailsRaw
+        .filter((pt) => pt.transaction !== null && pt.transactionId !== null)
+        .map((pt) => ({
+          id: pt.transactionId!,
+          date: pt.transaction!.date,
+          description: pt.transaction!.description,
+          amount: Number(pt.transaction!.amount),
+          bankAccountName: pt.transaction!.bankAccount.name,
+          bankName: pt.transaction!.bankAccount.bankName,
+          categoryId: pt.categoryId,
+        }));
+    }
+
     // Usar o uncategorizedCount já calculado
     const unifiedWithoutCategory = uncategorizedCount;
 
@@ -579,6 +712,7 @@ export async function getFinancialIntegrityData(
       totalTransactions,
       integrityStats,
       transferStats,
+      transferDetails,
       recentActivity,
       unifiedWithoutCategory,
       unprocessedTransactions,

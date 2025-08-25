@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 import { IntegrityFilters } from './components/IntegrityFilters';
 import { CalculateBalancesButton } from './components/CalculateBalancesButton';
 import { IntegrityData } from './components/IntegrityData';
@@ -11,7 +12,26 @@ interface PageProps {
 
 export default async function IntegrityPage({ searchParams }: PageProps) {
   const params = await searchParams;
-  
+
+  // Set default values when no parameters are provided
+  if (!params.year && !params.month) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1; // getMonth() returns 0-11
+
+    // Previous month logic
+    let defaultYear = currentYear;
+    let defaultMonth = currentMonth - 1;
+
+    // If current month is January (1), previous month should be December of previous year
+    if (defaultMonth === 0) {
+      defaultMonth = 12;
+      defaultYear = currentYear - 1;
+    }
+
+    redirect(`/integridade?year=${defaultYear}&month=${defaultMonth}`);
+  }
+
   const year = params.year ? parseInt(params.year) : undefined;
   const month = params.month ? parseInt(params.month) : undefined;
   
