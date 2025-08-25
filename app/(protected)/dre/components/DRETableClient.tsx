@@ -106,8 +106,8 @@ export function DRETableClient({
     }).format(value);
   };
 
-  const getCellClass = (lineType: string, isBold: boolean, rowId?: string) => {
-    let classes = 'px-3 text-right border-b border-gray-200 text-xs';
+  const getCellClass = (lineType: string, isBold: boolean, rowId?: string, isLastColumn: boolean = false) => {
+    let classes = `${isLastColumn ? 'pl-3 pr-6' : 'px-3'} text-right border-b border-gray-200 text-xs`;
 
     if (lineType === 'SEPARATOR') {
       return 'px-3 py-2 border-b border-gray-300';
@@ -426,15 +426,17 @@ export function DRETableClient({
                 key={headerGroup.id}
                 className="bg-gray-50 border-b border-gray-200"
               >
-                {headerGroup.headers.map((header, index) => (
-                  <th
-                    key={header.id}
-                    className={`px-3 py-3 font-medium text-gray-900 ${
-                      index === 0
-                        ? 'text-left sticky left-0 bg-gray-50 min-w-[300px]'
-                        : 'text-center min-w-[120px]'
-                    }`}
-                  >
+                {headerGroup.headers.map((header, index) => {
+                  const isLastColumn = index === headerGroup.headers.length - 1;
+                  return (
+                    <th
+                      key={header.id}
+                      className={`${isLastColumn && index !== 0 ? 'pl-3 pr-6' : 'px-3'} py-3 font-medium text-gray-900 ${
+                        index === 0
+                          ? 'text-left sticky left-0 bg-gray-50 min-w-[300px]'
+                          : 'text-center min-w-[120px]'
+                      }`}
+                    >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -442,7 +444,8 @@ export function DRETableClient({
                           header.getContext()
                         )}
                   </th>
-                ))}
+                  );
+                })}
               </tr>
             ))}
           </thead>
@@ -452,6 +455,7 @@ export function DRETableClient({
                 {row.getVisibleCells().map((cell, index) => {
                   const rowData = row.original;
                   const isNameCell = index === 0;
+                  const isLastColumn = index === row.getVisibleCells().length - 1;
 
                   return (
                     <td
@@ -470,7 +474,8 @@ export function DRETableClient({
                           : `${getCellClass(
                               rowData.lineType,
                               rowData.isBold,
-                              rowData.id
+                              rowData.id,
+                              isLastColumn
                             )}`
                       }`}
                     >
