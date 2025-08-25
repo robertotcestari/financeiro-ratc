@@ -199,7 +199,6 @@ export async function updateTransactionAction(
 
     return {
       success: true,
-      transaction: updatedTransaction,
       message: 'Transação atualizada com sucesso'
     }
   } catch (error) {
@@ -207,6 +206,72 @@ export async function updateTransactionAction(
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Erro ao atualizar transação'
+    }
+  }
+}
+
+export async function createTransactionAction(
+  description: string,
+  amount: number,
+  date: Date,
+  bankAccountId: string
+) {
+  try {
+    // Validate inputs
+    if (!bankAccountId) {
+      return {
+        success: false,
+        error: 'ID da conta bancária inválido'
+      }
+    }
+
+    if (!description || description.trim().length === 0) {
+      return {
+        success: false,
+        error: 'Descrição não pode estar vazia'
+      }
+    }
+
+    if (isNaN(amount) || amount === 0) {
+      return {
+        success: false,
+        error: 'Valor inválido'
+      }
+    }
+
+    if (!date || !(date instanceof Date)) {
+      return {
+        success: false,
+        error: 'Data inválida'
+      }
+    }
+
+    // Create the transaction
+    const newTransaction = await prisma.transaction.create({
+      data: {
+        description: description.trim(),
+        amount: amount,
+        date: date,
+        bankAccountId: bankAccountId,
+        ofxTransId: null,
+        ofxAccountId: null,
+        importBatchId: null,
+        isDuplicate: false
+      }
+    })
+
+    // Revalidate the page to show updated data
+    revalidatePath(`/bancos/${bankAccountId}`)
+
+    return {
+      success: true,
+      message: 'Transação criada com sucesso'
+    }
+  } catch (error) {
+    console.error('Erro ao criar transação:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Erro ao criar transação'
     }
   }
 }
