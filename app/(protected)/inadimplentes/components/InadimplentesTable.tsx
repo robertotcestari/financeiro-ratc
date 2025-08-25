@@ -1,9 +1,9 @@
 'use client';
 
-import { setSettled } from '../actions';
+import { setSettled, deleteItem } from '../actions';
 import { useTransition } from 'react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { Trash2 } from 'lucide-react';
 
 interface Item {
   id: string;
@@ -16,9 +16,17 @@ interface Item {
   };
 }
 
-interface PropertyMap { [id: string]: { code: string } }
+interface PropertyMap {
+  [id: string]: { code: string };
+}
 
-export default function InadimplentesTable({ items, properties }: { items: Item[]; properties: PropertyMap }) {
+export default function InadimplentesTable({
+  items,
+  properties,
+}: {
+  items: Item[];
+  properties: PropertyMap;
+}) {
   const [pending, startTransition] = useTransition();
 
   const toggle = (id: string, value: boolean) => {
@@ -28,36 +36,107 @@ export default function InadimplentesTable({ items, properties }: { items: Item[
     });
   };
 
-  const fmt = (n: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(n);
+  const handleDelete = (id: string) => {
+    if (confirm('Tem certeza que deseja deletar este inadimplente?')) {
+      startTransition(async () => {
+        await deleteItem(id);
+        // optimistic handled by refresh from parent
+      });
+    }
+  };
+
+  const fmt = (n: number) => {
+    if (isNaN(n) || n === null || n === undefined) return 'R$ 0,00';
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(n);
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Data inválida';
+      return date.toLocaleDateString('pt-BR');
+    } catch {
+      return 'Data inválida';
+    }
+  };
+
+  if (!items || items.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        <p>Nenhum inadimplente cadastrado.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Imóvel</TableHead>
-            <TableHead>Inquilino</TableHead>
-            <TableHead>Valor</TableHead>
-            <TableHead>Vencimento</TableHead>
-            <TableHead className="text-right">Quitado</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell>{properties[item.data.propertyId]?.code || '-'}</TableCell>
-              <TableCell>{item.data.tenant}</TableCell>
-              <TableCell>{fmt(item.data.amount)}</TableCell>
-              <TableCell>{new Date(item.data.dueDate).toLocaleDateString('pt-BR')}</TableCell>
-              <TableCell className="text-right">
-                <Button variant={item.data.settled ? 'default' : 'outline'} size="sm" onClick={() => toggle(item.id, !item.data.settled)} disabled={pending}>
-                  {item.data.settled ? 'Sim' : 'Não'}
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <table className="w-full text-sm">
+        <thead className="text-left text-gray-600 border-b">
+          <tr>
+            <th className="py-2 pr-4">Imóvel</th>
+            <th className="py-2 pr-4">Inquilino</th>
+            <th className="py-2 pr-4">Valor</th>
+            <th className="py-2 pr-4">Vencimento</th>
+            <th className="py-2 pr-4 text-right">Quitado</th>
+            <th className="py-2 text-right">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map((item) => {
+            // Defensive: skip if item or item.data is null/undefined
+            if (!item || !item.data) {
+              return (
+                <tr
+                  key={item?.id || Math.random()}
+                  className="border-b last:border-none"
+                >
+                  <td className="py-2 pr-4">-</td>
+                  <td className="py-2 pr-4">-</td>
+                  <td className="py-2 pr-4">-</td>
+                  <td className="py-2 pr-4">-</td>
+                  <td className="py-2 pr-4 text-right">-</td>
+                  <td className="py-2 text-right">-</td>
+                </tr>
+              );
+            }
+            const propertyCode = item.data.propertyId
+              ? properties[item.data.propertyId]?.code || '-'
+              : '-';
+            return (
+              <tr key={item.id} className="border-b last:border-none">
+                <td className="py-2 pr-4">{propertyCode}</td>
+                <td className="py-2 pr-4">{item.data.tenant || '-'}</td>
+                <td className="py-2 pr-4">{fmt(item.data.amount)}</td>
+                <td className="py-2 pr-4">{formatDate(item.data.dueDate)}</td>
+                <td className="py-2 pr-4 text-right">
+                  <Button
+                    variant={item.data.settled ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => toggle(item.id, !item.data.settled)}
+                    disabled={pending}
+                  >
+                    {item.data.settled ? 'Sim' : 'Não'}
+                  </Button>
+                </td>
+                <td className="py-2 text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDelete(item.id)}
+                    disabled={pending}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }

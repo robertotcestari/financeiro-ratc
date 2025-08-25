@@ -183,3 +183,5 @@ Real estate properties for transaction linking:
 - Seeds are idempotent using `upsert` operations
 - Seed modules located in `prisma/seeder/`
 - não tem password na base de dados mysql no ambiente dev e o user é root
+
+- Event handlers cannot be passed to Client Component props.

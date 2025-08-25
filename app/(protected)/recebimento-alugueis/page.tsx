@@ -1,9 +1,9 @@
-import { getRentTransactions, getRentStats, getImobziPendingRents } from './actions';
+import { Suspense } from 'react';
 import RentFilters from './components/RentFilters';
-import RentSummaryCards from './components/RentSummaryCards';
-import RentTable from './components/RentTable';
-import ExportButton from './components/ExportButton';
-import ImobziPendingRents from './components/ImobziPendingRents';
+import RentDataSection from './components/RentDataSection';
+import RentDataSkeleton from './components/RentDataSkeleton';
+import ImobziSection from './components/ImobziSection';
+import ImobziPendingRentsSkeleton from './components/ImobziPendingRentsSkeleton';
 
 interface SearchParams {
   mes?: string;
@@ -18,14 +18,12 @@ export default async function RecebimentoAlugueisPage({ searchParams }: Props) {
   const params = await searchParams;
   
   const currentDate = new Date();
-  const month = params.mes ? parseInt(params.mes) : currentDate.getMonth() + 1;
-  const year = params.ano ? parseInt(params.ano) : currentDate.getFullYear();
-
-  const [transactions, stats, imobziInvoices] = await Promise.all([
-    getRentTransactions({ month, year }),
-    getRentStats({ month, year }),
-    getImobziPendingRents({ month, year })
-  ]);
+  // Quando não há parâmetros, usa o mês anterior ao atual
+  const previousMonth = currentDate.getMonth(); // getMonth() retorna 0-11, então já é o mês anterior
+  const previousYear = previousMonth === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
+  
+  const month = params.mes ? parseInt(params.mes) : (previousMonth === 0 ? 12 : previousMonth);
+  const year = params.ano ? parseInt(params.ano) : previousYear;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -46,24 +44,14 @@ export default async function RecebimentoAlugueisPage({ searchParams }: Props) {
           />
         </div>
 
-        <div className="mb-6">
-          <RentSummaryCards stats={stats} />
-        </div>
-
-        <div className="mb-4 flex justify-end">
-          <ExportButton 
-            transactions={transactions}
-            month={month}
-            year={year}
-          />
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-          <RentTable transactions={transactions} />
-        </div>
+        <Suspense fallback={<RentDataSkeleton />}>
+          <RentDataSection month={month} year={year} />
+        </Suspense>
 
         <div className="mt-8">
-          <ImobziPendingRents invoices={imobziInvoices} />
+          <Suspense fallback={<ImobziPendingRentsSkeleton />}>
+            <ImobziSection month={month} year={year} />
+          </Suspense>
         </div>
       </div>
     </div>

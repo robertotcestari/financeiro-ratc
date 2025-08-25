@@ -1,7 +1,8 @@
 'use server';
 
-import { createInadimplente, listInadimplentes, toggleInadimplenteSettled, InadimplenteData } from '@/lib/core/database/inadimplentes';
+import { createInadimplente, listInadimplentes, toggleInadimplenteSettled, deleteInadimplente, InadimplenteData } from '@/lib/core/database/inadimplentes';
 import { prisma } from '@/lib/core/database/client';
+import { revalidatePath } from 'next/cache';
 
 export async function getProperties() {
   return prisma.property.findMany({
@@ -15,9 +16,17 @@ export async function listItems() {
 }
 
 export async function createItem(data: InadimplenteData) {
-  return createInadimplente(data);
+  const result = await createInadimplente(data);
+  revalidatePath('/inadimplentes');
+  return result;
 }
 
 export async function setSettled(id: string, settled: boolean) {
   await toggleInadimplenteSettled(id, settled);
+  revalidatePath('/inadimplentes');
+}
+
+export async function deleteItem(id: string) {
+  await deleteInadimplente(id);
+  revalidatePath('/inadimplentes');
 }

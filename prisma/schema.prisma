@@ -17,12 +17,14 @@ datasource db {
 // Enums
 enum SavedFileType {
   DRE // Relatórios DRE
+  ALUGUEIS // Relatórios de Aluguéis
 }
 
 // Meta storage for arbitrary domain data
 enum MetaType {
   INADIMPLENTES
 }
+
 enum AccountType {
   CHECKING // Conta Corrente
   SAVINGS // Poupança
@@ -45,7 +47,7 @@ enum ImportStatus {
 
 enum SuggestionSource {
   RULE // Sugestão baseada em regra
-  AI   // Sugestão baseada em IA
+  AI // Sugestão baseada em IA
 }
 
 // 1. BankAccount (Contas Bancárias)
@@ -223,8 +225,8 @@ model TransactionSuggestion {
   processedTransaction   ProcessedTransaction @relation(fields: [processedTransactionId], references: [id])
 
   // Source of the suggestion
-  source    SuggestionSource @default(RULE)
-  
+  source SuggestionSource @default(RULE)
+
   // Rule is optional for AI suggestions
   ruleId String?
   rule   CategorizationRule? @relation(fields: [ruleId], references: [id])
@@ -236,14 +238,14 @@ model TransactionSuggestion {
   suggestedPropertyId String?
   suggestedProperty   Property? @relation(fields: [suggestedPropertyId], references: [id])
 
-  confidence Float     @default(1.0)
-  
+  confidence Float @default(1.0)
+
   // AI-specific fields
-  reasoning   String? @db.Text // Explanation of why this categorization was suggested
-  aiMetadata  Json?   // Store model name, processing time, tokens used, etc.
-  
-  isApplied  Boolean   @default(false)
-  appliedAt  DateTime?
+  reasoning  String? @db.Text // Explanation of why this categorization was suggested
+  aiMetadata Json? // Store model name, processing time, tokens used, etc.
+
+  isApplied Boolean   @default(false)
+  appliedAt DateTime?
 
   createdAt DateTime @default(now())
 
@@ -317,13 +319,13 @@ model ImportBatch {
 
 // User model for authentication
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
+  id            String   @id @default(cuid())
+  email         String   @unique
   name          String?
   image         String?
-  emailVerified Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  emailVerified Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   accounts Account[]
   sessions Session[]
@@ -333,28 +335,28 @@ model User {
 
 // OAuth accounts linked to users
 model Account {
-  id                    String   @id @default(cuid())
-  userId                String
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  accountId             String   // ID from the OAuth provider
-  providerId            String   // e.g., "google"
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  accountId  String // ID from the OAuth provider
+  providerId String // e.g., "google"
+
   // OAuth tokens
-  accessToken           String?  @db.Text
-  refreshToken          String?  @db.Text
-  idToken               String?  @db.Text
-  
+  accessToken  String? @db.Text
+  refreshToken String? @db.Text
+  idToken      String? @db.Text
+
   // Token expiry
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
-  
+
   // Additional OAuth data
-  scope                 String?
-  password              String?  // For credential accounts (not used with OAuth)
-  
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  scope    String?
+  password String? // For credential accounts (not used with OAuth)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([providerId, accountId])
   @@index([userId])
@@ -363,15 +365,15 @@ model Account {
 
 // User sessions
 model Session {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   token     String   @unique
   expiresAt DateTime
   ipAddress String?
   userAgent String?  @db.Text
-  
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -383,23 +385,23 @@ model Session {
 // Email verification tokens
 model verification {
   id         String   @id @default(cuid())
-  identifier String   // Email address
+  identifier String // Email address
   value      String   @db.Text // Using TEXT for large tokens
   expiresAt  DateTime
-  
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([identifier])
 }
 
 // 10. SavedFile (Arquivos Salvos)
 model SavedFile {
-  id        String        @id @default(cuid())
-  fileName  String
-  path      String        // Caminho do arquivo (ex.: s3://bucket/key ou file://...)
-  type      SavedFileType // Tipo do arquivo (por enquanto apenas DRE)
-  savedAt   DateTime      @default(now())
+  id       String        @id @default(cuid())
+  fileName String
+  path     String // Caminho do arquivo (ex.: s3://bucket/key ou file://...)
+  type     SavedFileType // Tipo do arquivo (por enquanto apenas DRE)
+  savedAt  DateTime      @default(now())
 
   @@index([type, savedAt])
   @@map("saved_files")
@@ -409,7 +411,7 @@ model SavedFile {
 model Meta {
   id        String   @id @default(cuid())
   type      MetaType
-  data      Json
+  data      Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

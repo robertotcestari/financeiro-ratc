@@ -43,8 +43,8 @@ export default function UserMenu() {
       <Button
         onClick={() => setIsOpen(!isOpen)}
         variant="ghost"
-        size="sm"
-        className="flex items-center space-x-2"
+        size="icon"
+        className="relative h-10 w-10 rounded-full"
       >
         {user?.image ? (
           <Image
@@ -59,10 +59,6 @@ export default function UserMenu() {
             {user?.name?.charAt(0).toUpperCase() || "U"}
           </div>
         )}
-        <span className="hidden md:block text-sm font-medium">
-          {user?.name || user?.email}
-        </span>
-        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? "rotate-180" : ""}`} />
       </Button>
 
       {isOpen && (

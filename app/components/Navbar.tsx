@@ -28,9 +28,7 @@ const navigation = [
   { name: 'Bancos', href: '/bancos', icon: CreditCard },
   { name: 'Transações', href: '/transacoes', icon: FileText },
   { name: 'Aluguéis', href: '/recebimento-alugueis', icon: DollarSign },
-  { name: 'Inadimplentes', href: '/inadimplentes', icon: FileText },
-  { name: 'Integridade', href: '/integridade', icon: ShieldCheck },
-  { name: 'DRE', href: '/dre', icon: BarChart2 },
+  // Inadimplentes, Integridade and DRE moved to Mais
 ];
 
 const importOptions = [
@@ -47,11 +45,14 @@ const registrationOptions = [
   { name: 'Contas Bancárias', href: '/cadastros/contas', icon: CreditCard },
   { name: 'Cidades', href: '/cidades', icon: MapPin },
   { name: 'Imóveis', href: '/imoveis', icon: Building2 },
+  { name: 'Inadimplentes', href: '/inadimplentes', icon: FileText },
 ];
 
 const reportOptions = [
-  { name: 'Relatório Mensal', href: '/relatorios/rascunho-email', icon: Mail },
+  { name: 'Relatório Mensal', href: '/relatorios/mensal', icon: Mail },
   { name: 'Arquivos Salvos', href: '/relatorios/arquivos', icon: FileTextIcon },
+  { name: 'DRE', href: '/dre', icon: BarChart2 },
+  { name: 'Integridade', href: '/integridade', icon: ShieldCheck },
 ];
 
 // ...existing code...
@@ -225,7 +226,7 @@ export default function Navbar() {
           <div className="md:hidden flex items-center space-x-2">
             {/* User Menu for Mobile */}
             <UserMenu />
-            
+
             {/* Mobile Menu Button */}
             <Button
               variant="ghost"

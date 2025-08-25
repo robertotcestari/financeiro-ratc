@@ -21,7 +21,7 @@ export default function RentFilters({ selectedMonth, selectedYear }: Props) {
     const params = new URLSearchParams();
     params.set('mes', month.toString());
     params.set('ano', year.toString());
-    router.push(`/recebimento-alugueis?${params.toString()}`);
+    router.replace(`/recebimento-alugueis?${params.toString()}`, { scroll: false });
   };
 
   const handlePreviousMonth = () => {

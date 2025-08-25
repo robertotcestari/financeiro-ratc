@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { createItem } from '../actions';
 import { useRouter } from 'next/navigation';
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 
 interface PropertyOption {
   id: string;
@@ -14,7 +15,11 @@ interface PropertyOption {
   city: string;
 }
 
-export default function InadimplentesForm({ properties }: { properties: PropertyOption[] }) {
+export default function InadimplentesForm({
+  properties,
+}: {
+  properties: PropertyOption[];
+}) {
   const [propertyId, setPropertyId] = useState(properties[0]?.id || '');
   const [tenant, setTenant] = useState('');
   const [amount, setAmount] = useState('');
@@ -50,33 +55,63 @@ export default function InadimplentesForm({ properties }: { properties: Property
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div>
           <Label>Imóvel</Label>
-          <select value={propertyId} onChange={(e) => setPropertyId(e.target.value)} className="w-full border rounded px-3 py-2">
-            {properties.map((p) => (
-              <option key={p.id} value={p.id}>{p.code}</option>
-            ))}
-          </select>
+          <Combobox
+            className="w-full"
+            options={properties.map<ComboboxOption>((p) => ({
+              value: p.id,
+              label: p.code,
+              keywords: [p.address, p.city].filter(Boolean) as string[],
+            }))}
+            value={propertyId}
+            onValueChange={(val) => setPropertyId(val)}
+            placeholder="Selecionar imóvel"
+            searchPlaceholder="Buscar por código, endereço ou cidade..."
+            emptyMessage="Nenhum imóvel encontrado."
+            allowClear={false}
+          />
         </div>
         <div>
           <Label>Inquilino</Label>
-          <Input value={tenant} onChange={(e) => setTenant(e.target.value)} placeholder="Nome do inquilino" required />
+          <Input
+            value={tenant}
+            onChange={(e) => setTenant(e.target.value)}
+            placeholder="Nome do inquilino"
+            required
+          />
         </div>
         <div>
           <Label>Valor (R$)</Label>
-          <Input value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0,00" required />
+          <Input
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="0,00"
+            required
+          />
         </div>
         <div>
           <Label>Vencimento</Label>
-          <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} required />
+          <Input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            required
+          />
         </div>
         <div className="flex items-end">
           <label className="inline-flex items-center gap-2">
-            <input type="checkbox" checked={settled} onChange={(e) => setSettled(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={settled}
+              onChange={(e) => setSettled(e.target.checked)}
+            />
             Quitado
           </label>
         </div>
       </div>
       <div>
-        <Button type="submit" disabled={submitting}>{submitting ? 'Salvando...' : 'Adicionar'}</Button>
+        <Button type="submit" disabled={submitting}>
+          {submitting ? 'Salvando...' : 'Adicionar'}
+        </Button>
       </div>
     </form>
   );

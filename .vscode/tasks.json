@@ -196,6 +196,31 @@
 			"type": "shell",
 			"command": "npm run test:e2e",
 			"group": "build"
+		},
+		{
+			"label": "Run lint",
+			"type": "shell",
+			"command": "npm run lint --silent"
+		},
+		{
+			"label": "Run unit tests (Vitest)",
+			"type": "shell",
+			"command": "npm run test:run"
+		},
+		{
+			"label": "Run lint",
+			"type": "shell",
+			"command": "npm run lint --silent"
+		},
+		{
+			"label": "Run lint",
+			"type": "shell",
+			"command": "npm run lint --silent"
+		},
+		{
+			"label": "Run unit tests (Vitest) - retry",
+			"type": "shell",
+			"command": "npm run test:run"
 		}
 	]
 }

@@ -21,7 +21,7 @@ export default function MonthFilters({ selectedMonth, selectedYear }: Props) {
     const params = new URLSearchParams();
     params.set('mes', month.toString());
     params.set('ano', year.toString());
-    router.push(`/relatorios/rascunho-email?${params.toString()}`);
+    router.push(`/relatorios/mensal?${params.toString()}`);
   };
 
   const handlePreviousMonth = () => {
