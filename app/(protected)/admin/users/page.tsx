@@ -1,7 +1,5 @@
-import { isAdmin } from "@/lib/core/auth/auth-utils";
 import { prisma } from "@/lib/core/database/client";
 import { auth } from "@/lib/core/auth/auth";
-import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/core/auth/permission-helpers";
 import { headers } from "next/headers";
 
@@ -9,10 +7,7 @@ type Role = "admin" | "user" | "superuser";
 
 export const dynamic = "force-dynamic";
 
-async function requireAdminOrRedirect(currentPath: string) {
-  const admin = await isAdmin();
-  if (!admin) redirect(`/auth/signin?redirect=${encodeURIComponent(currentPath)}&error=unauthorized`);
-}
+// Page view permissions removed
 
 async function getData() {
   const users = await prisma.user.findMany({
@@ -32,7 +27,6 @@ async function updateRoleAction(formData: FormData) {
 }
 
 export default async function UsersAdminPage({ params }: { params: unknown }) {
-  await requireAdminOrRedirect("/admin/users");
   const users = await getData();
 
   return (
