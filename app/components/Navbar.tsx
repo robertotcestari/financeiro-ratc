@@ -18,12 +18,14 @@ import {
   Plus,
   ChevronDown,
   Settings,
+  DollarSign,
 } from 'lucide-react';
 
 const navigation = [
   { name: 'Início', href: '/', icon: Home },
   { name: 'Bancos', href: '/bancos', icon: CreditCard },
   { name: 'Transações', href: '/transacoes', icon: FileText },
+  { name: 'Aluguéis', href: '/recebimento-alugueis', icon: DollarSign },
   { name: 'Integridade', href: '/integridade', icon: ShieldCheck },
   { name: 'DRE', href: '/dre', icon: BarChart2 },
 ];
