@@ -21,7 +21,10 @@ export async function IntegrityData({ year, month }: IntegrityDataProps) {
       />
 
       {/* Transferências */}
-      <TransferStatsCard transferStats={data.transferStats} />
+      <TransferStatsCard
+        transferStats={data.transferStats}
+        transferDetails={data.transferDetails}
+      />
 
       {/* Comparação de Saldos por Conta */}
       <AccountBalanceComparisonCard 
