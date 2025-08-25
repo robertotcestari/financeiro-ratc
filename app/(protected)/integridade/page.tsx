@@ -5,12 +5,15 @@ import { CalculateBalancesButton } from './components/CalculateBalancesButton';
 import { IntegrityData } from './components/IntegrityData';
 import { IntegrityDataSkeleton } from './components/IntegrityDataSkeleton';
 import { Search } from 'lucide-react';
+import { requirePermissions } from '@/lib/core/auth/permission-helpers';
+import { REPORT_VIEW_PERMISSION } from '@/lib/core/auth/permissions';
 
 interface PageProps {
   searchParams: Promise<{ year?: string; month?: string }>;
 }
 
 export default async function IntegrityPage({ searchParams }: PageProps) {
+  await requirePermissions(REPORT_VIEW_PERMISSION);
   const params = await searchParams;
 
   // Set default values when no parameters are provided

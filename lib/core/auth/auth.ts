@@ -1,5 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { admin as adminPlugin } from "better-auth/plugins";
+import { ac, roleAdmin, roleUser, roleSuperuser } from "./permissions";
 import { prisma } from "@/lib/core/database/client";
 
 export const auth = betterAuth({
@@ -13,6 +15,8 @@ export const auth = betterAuth({
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      // Prevent new users from registering; only existing users can sign in
+      disableSignUp: true,
     },
   },
 
@@ -34,6 +38,20 @@ export const auth = betterAuth({
       trustedProviders: ["google"], // Trust Google's email verification
     },
   },
+
+  // Plugins (roles/permissions)
+  plugins: [
+    adminPlugin({
+      ac,
+      roles: {
+        admin: roleAdmin,
+        user: roleUser,
+        superuser: roleSuperuser,
+      },
+      adminRoles: ["admin", "superuser"],
+      // Optionally: add static admins by userId later, or keep dynamic
+    }),
+  ],
 });
 
 // Export type helpers for TypeScript

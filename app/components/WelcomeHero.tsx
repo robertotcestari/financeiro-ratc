@@ -1,12 +1,16 @@
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
+import { useSession } from "@/lib/core/auth/auth-client";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, TrendingUp, FileText } from "lucide-react";
 import Link from "next/link";
 
 export default function WelcomeHero() {
   const { user, isAuthenticated, isLoading, signInWithGoogle } = useAuth();
+  const session = useSession();
+  const role = session.data?.user?.role as string | undefined;
+  const canSeeReports = role === 'admin' || role === 'superuser';
 
   if (!isAuthenticated) {
     return (
@@ -58,7 +62,7 @@ export default function WelcomeHero() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className={`grid grid-cols-1 md:grid-cols-${canSeeReports ? '4' : '2'} gap-6 max-w-6xl mx-auto`}>
           <Link href="/transacoes" className="block">
             <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
               <FileText className="h-8 w-8 text-blue-600 mb-3" />
@@ -75,21 +79,25 @@ export default function WelcomeHero() {
             </div>
           </Link>
 
-          <Link href="/dre" className="block">
-            <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-              <TrendingUp className="h-8 w-8 text-purple-600 mb-3" />
-              <h3 className="font-semibold text-lg mb-1">DRE</h3>
-              <p className="text-sm text-gray-600">Demonstrativo de resultados</p>
-            </div>
-          </Link>
+          {canSeeReports && (
+            <Link href="/dre" className="block">
+              <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
+                <TrendingUp className="h-8 w-8 text-purple-600 mb-3" />
+                <h3 className="font-semibold text-lg mb-1">DRE</h3>
+                <p className="text-sm text-gray-600">Demonstrativo de resultados</p>
+              </div>
+            </Link>
+          )}
 
-          <Link href="/integridade" className="block">
-            <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
-              <Shield className="h-8 w-8 text-orange-600 mb-3" />
-              <h3 className="font-semibold text-lg mb-1">Integridade</h3>
-              <p className="text-sm text-gray-600">Verifique consistência</p>
-            </div>
-          </Link>
+          {canSeeReports && (
+            <Link href="/integridade" className="block">
+              <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
+                <Shield className="h-8 w-8 text-orange-600 mb-3" />
+                <h3 className="font-semibold text-lg mb-1">Integridade</h3>
+                <p className="text-sm text-gray-600">Verifique consistência</p>
+              </div>
+            </Link>
+          )}
         </div>
       </div>
     </div>

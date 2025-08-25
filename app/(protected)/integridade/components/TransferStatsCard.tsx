@@ -1,6 +1,9 @@
+'use client';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { RefreshCw, FileText, CheckCircle, AlertTriangle, Info } from 'lucide-react';
+import { RefreshCw, FileText, CheckCircle, AlertTriangle, Info, ChevronDown, ChevronUp } from 'lucide-react';
 import { TransferDetail } from '../actions';
+import { useState } from 'react';
 
 interface TransferStats {
   totalTransfers: number;
@@ -16,6 +19,7 @@ interface Props {
 }
 
 export function TransferStatsCard({ transferStats, transferDetails }: Props) {
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (transferStats.totalTransfers === 0) {
   return (
@@ -123,54 +127,66 @@ export function TransferStatsCard({ transferStats, transferDetails }: Props) {
         {/* Tabela de Transferências */}
         {transferDetails.length > 0 && (
           <div className="mt-6">
-            <h4 className="text-lg font-semibold mb-4">Lista de Transferências</h4>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2 px-2">Data</th>
-                    <th className="text-left py-2 px-2">Conta Bancária</th>
-                    <th className="text-left py-2 px-2">Descrição</th>
-                    <th className="text-right py-2 px-2">Valor</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transferDetails.map((transfer) => (
-                    <tr key={transfer.id} className="border-b hover:bg-gray-50">
-                      <td className="py-2 px-2">
-                        {new Intl.DateTimeFormat('pt-BR').format(new Date(transfer.date))}
-                      </td>
-                      <td className="py-2 px-2">
-                        <div className="text-xs text-gray-600">{transfer.bankName}</div>
-                        <div>{transfer.bankAccountName}</div>
-                      </td>
-                      <td className="py-2 px-2 max-w-xs truncate" title={transfer.description}>
-                        {transfer.description}
-                      </td>
+            <div 
+              className="flex items-center mb-4 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
+              onClick={() => setIsExpanded(!isExpanded)}
+            >
+              <h4 className="text-lg font-semibold flex items-center gap-2">
+                Lista de Transferências ({transferDetails.length})
+                <span className="text-gray-500 hover:text-gray-700">
+                  {isExpanded ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+                </span>
+              </h4>
+            </div>
+            {isExpanded && (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2 px-2">Data</th>
+                      <th className="text-left py-2 px-2">Conta Bancária</th>
+                      <th className="text-left py-2 px-2">Descrição</th>
+                      <th className="text-right py-2 px-2">Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {transferDetails.map((transfer) => (
+                      <tr key={transfer.id} className="border-b hover:bg-gray-50">
+                        <td className="py-2 px-2">
+                          {new Intl.DateTimeFormat('pt-BR').format(new Date(transfer.date))}
+                        </td>
+                        <td className="py-2 px-2">
+                          <div className="text-xs text-gray-600">{transfer.bankName}</div>
+                          <div>{transfer.bankAccountName}</div>
+                        </td>
+                        <td className="py-2 px-2 max-w-xs truncate" title={transfer.description}>
+                          {transfer.description}
+                        </td>
+                        <td className="py-2 px-2 text-right">
+                          <span className={transfer.amount >= 0 ? 'text-green-600' : 'text-red-600'}>
+                            {new Intl.NumberFormat('pt-BR', {
+                              style: 'currency',
+                              currency: 'BRL',
+                            }).format(transfer.amount)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="border-t-2 font-semibold">
+                      <td colSpan={3} className="py-2 px-2 text-right">Total:</td>
                       <td className="py-2 px-2 text-right">
-                        <span className={transfer.amount >= 0 ? 'text-green-600' : 'text-red-600'}>
-                          {new Intl.NumberFormat('pt-BR', {
-                            style: 'currency',
-                            currency: 'BRL',
-                          }).format(transfer.amount)}
-                        </span>
+                        {new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(transferDetails.reduce((sum, transfer) => sum + transfer.amount, 0))}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="border-t-2 font-semibold">
-                    <td colSpan={3} className="py-2 px-2 text-right">Total:</td>
-                    <td className="py-2 px-2 text-right">
-                      {new Intl.NumberFormat('pt-BR', {
-                        style: 'currency',
-                        currency: 'BRL',
-                      }).format(transferDetails.reduce((sum, transfer) => sum + transfer.amount, 0))}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
+                  </tfoot>
+                </table>
+              </div>
+            )}
           </div>
         )}
 

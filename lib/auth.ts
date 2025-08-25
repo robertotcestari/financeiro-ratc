@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { prisma } from '@/lib/core/database/client';
+import { admin } from 'better-auth/plugins';
 
 export const auth = betterAuth({
   // Database configuration
@@ -34,6 +35,7 @@ export const auth = betterAuth({
       trustedProviders: ['google'], // Trust Google's email verification
     },
   },
+  plugins: [admin()],
 });
 
 // Export type helpers for TypeScript

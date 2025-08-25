@@ -17,9 +17,6 @@ import { prisma } from "@/lib/core/database/client";
  * and Better Auth routes them to the appropriate handlers internally.
  */
 
-// Allowed email for authentication
-const ALLOWED_EMAIL = "robertotcestari@gmail.com";
-
 const handlers = toNextJsHandler(auth.handler);
 
 // Custom GET handler that validates after Google callback
@@ -44,16 +41,7 @@ export async function GET(req: NextRequest) {
           where: { token: sessionToken.value },
           include: { user: true }
         });
-        
-        if (session?.user && session.user.email !== ALLOWED_EMAIL) {
-          // Delete unauthorized session
-          await prisma.session.delete({
-            where: { id: session.id }
-          }).catch(() => {});
-          
-          // Redirect to signin with error
-          return NextResponse.redirect(new URL("/auth/signin?error=unauthorized", req.url));
-        }
+        // No whitelist-based restriction anymore; roles are managed via Better Auth admin plugin.
       }
     }
   }

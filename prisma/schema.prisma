@@ -15,12 +15,14 @@ datasource db {
 }
 
 // Enums
+
 enum SavedFileType {
   DRE // Relatórios DRE
   ALUGUEIS // Relatórios de Aluguéis
 }
 
 // Meta storage for arbitrary domain data
+
 enum MetaType {
   INADIMPLENTES
 }
@@ -51,6 +53,7 @@ enum SuggestionSource {
 }
 
 // 1. BankAccount (Contas Bancárias)
+
 model BankAccount {
   id          String      @id @default(cuid())
   name        String      @unique // "CC - Sicredi", "CC - PJBank", "CI - XP"
@@ -68,6 +71,7 @@ model BankAccount {
 }
 
 // 2. Category (Categorias)
+
 model Category {
   id         String       @id @default(cuid())
   name       String       @unique
@@ -89,6 +93,7 @@ model Category {
 }
 
 // 3. City (Cidades)
+
 model City {
   id        String   @id @default(cuid())
   code      String   @unique // "CAT", "COS", "SJP", etc.
@@ -103,6 +108,7 @@ model City {
 }
 
 // 4. Property (Imóveis)
+
 model Property {
   id          String   @id @default(cuid())
   code        String   @unique // "CAT - Rua Brasil", "SJP - Av. Alberto Andaló"
@@ -123,6 +129,7 @@ model Property {
 }
 
 // 4. Transaction (Transações Brutas)
+
 model Transaction {
   id            String       @id @default(cuid())
   bankAccountId String
@@ -152,6 +159,7 @@ model Transaction {
 }
 
 // 4.1. OFXAccountMapping (Mapeamento de Contas OFX)
+
 model OFXAccountMapping {
   id            String      @id @default(cuid())
   ofxAccountId  String // ID da conta no arquivo OFX
@@ -167,6 +175,7 @@ model OFXAccountMapping {
 }
 
 // 5. ProcessedTransaction (Transações Processadas)
+
 model ProcessedTransaction {
   id            String       @id @default(cuid())
   transactionId String?      @unique
@@ -255,6 +264,7 @@ model TransactionSuggestion {
 }
 
 // 8. AccountSnapshot (Snapshots Mensais de Saldo)
+
 model AccountSnapshot {
   id            String      @id @default(cuid())
   bankAccountId String
@@ -287,6 +297,7 @@ model AccountSnapshot {
 }
 
 // 9. ImportBatch (Controle de Importações)
+
 model ImportBatch {
   id            String @id @default(cuid())
   fileName      String
@@ -318,6 +329,7 @@ model ImportBatch {
 // ===========================
 
 // User model for authentication
+
 model User {
   id            String   @id @default(cuid())
   email         String   @unique
@@ -330,10 +342,16 @@ model User {
   accounts Account[]
   sessions Session[]
 
+  role       String?   @db.Text
+  banned     Boolean?
+  banReason  String?   @db.Text
+  banExpires DateTime?
+
   @@map("users")
 }
 
 // OAuth accounts linked to users
+
 model Account {
   id     String @id @default(cuid())
   userId String
@@ -364,6 +382,7 @@ model Account {
 }
 
 // User sessions
+
 model Session {
   id     String @id @default(cuid())
   userId String
@@ -377,12 +396,15 @@ model Session {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  impersonatedBy String? @db.Text
+
   @@index([userId])
   @@index([token])
   @@map("sessions")
 }
 
 // Email verification tokens
+
 model verification {
   id         String   @id @default(cuid())
   identifier String // Email address
@@ -396,6 +418,7 @@ model verification {
 }
 
 // 10. SavedFile (Arquivos Salvos)
+
 model SavedFile {
   id       String        @id @default(cuid())
   fileName String
@@ -408,6 +431,7 @@ model SavedFile {
 }
 
 // Generic meta table to store arbitrary JSON payloads by type
+
 model Meta {
   id        String   @id @default(cuid())
   type      MetaType

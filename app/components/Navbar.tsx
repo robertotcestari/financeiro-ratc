@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import UserMenu from './UserMenu';
+import { useSession } from '@/lib/core/auth/auth-client';
 import {
   Home,
   CreditCard,
@@ -61,6 +62,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const session = useSession();
+  const role = session.data?.user?.role as string | undefined;
+  const canSeeReports = role === 'admin' || role === 'superuser';
 
   return (
     <nav className="bg-white shadow-sm border-b">
@@ -164,31 +168,35 @@ export default function Navbar() {
                     <Separator className="my-2" />
 
                     {/* Relatórios Section */}
-                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Relatórios
-                    </div>
-                    {reportOptions.map((item) => {
-                      const Icon = item.icon;
-                      const isActive = pathname === item.href;
+                    {canSeeReports && (
+                      <>
+                        <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Relatórios
+                        </div>
+                        {reportOptions.map((item) => {
+                          const Icon = item.icon;
+                          const isActive = pathname === item.href;
 
-                      return (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          onClick={() => setIsDropdownOpen(false)}
-                          className={`flex items-center px-4 py-2 text-sm transition-colors ${
-                            isActive
-                              ? 'text-blue-600 bg-blue-50'
-                              : 'text-gray-700 hover:bg-gray-100'
-                          }`}
-                        >
-                          <Icon className="w-4 h-4 mr-2" />
-                          {item.name}
-                        </Link>
-                      );
-                    })}
-
-                    <Separator className="my-2" />
+                          return (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              onClick={() => setIsDropdownOpen(false)}
+                              className={`flex items-center px-4 py-2 text-sm transition-colors ${
+                                isActive
+                                  ? 'text-blue-600 bg-blue-50'
+                                  : 'text-gray-700 hover:bg-gray-100'
+                              }`}
+                            >
+                              <Icon className="w-4 h-4 mr-2" />
+                              {item.name}
+                            </Link>
+                          );
+                        })}
+                        <Separator className="my-2" />
+                      </>
+                    )}
+                    {!canSeeReports && <Separator className="my-2" />}
 
                     {/* Cadastro Section */}
                     <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -361,36 +369,44 @@ export default function Navbar() {
                   </div>
 
                   {/* Relatórios Section */}
-                  <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                    Relatórios
-                  </div>
-                  {reportOptions.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
+                  {canSeeReports && (
+                    <>
+                      <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Relatórios
+                      </div>
+                      {reportOptions.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = pathname === item.href;
 
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        onClick={() => {
-                          setIsDropdownOpen(false);
-                          setIsMobileMenuOpen(false);
-                        }}
-                        className={`flex items-center pl-8 pr-4 py-2 text-sm font-medium transition-colors ${
-                          isActive
-                            ? 'text-blue-600 bg-blue-50'
-                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                        }`}
-                      >
-                        <Icon className="w-4 h-4 mr-2" />
-                        {item.name}
-                      </Link>
-                    );
-                  })}
-
-                  <div className="px-8">
-                    <Separator className="my-2" />
-                  </div>
+                        return (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            onClick={() => {
+                              setIsDropdownOpen(false);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className={`flex items-center pl-8 pr-4 py-2 text-sm font-medium transition-colors ${
+                              isActive
+                                ? 'text-blue-600 bg-blue-50'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                            }`}
+                          >
+                            <Icon className="w-4 h-4 mr-2" />
+                            {item.name}
+                          </Link>
+                        );
+                      })}
+                      <div className="px-8">
+                        <Separator className="my-2" />
+                      </div>
+                    </>
+                  )}
+                  {!canSeeReports && (
+                    <div className="px-8">
+                      <Separator className="my-2" />
+                    </div>
+                  )}
 
                   {/* Cadastro Section */}
                   <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">

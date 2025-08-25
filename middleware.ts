@@ -27,6 +27,7 @@ const protectedRoutes = [
   "/importacao-imobzi",
   "/regras-categorizacao",
   "/cadastros",
+  "/admin",
 ];
 
 export async function middleware(request: NextRequest) {
@@ -68,6 +69,45 @@ export async function middleware(request: NextRequest) {
     // Add the original URL as a redirect parameter
     signInUrl.searchParams.set("redirect", path);
     return NextResponse.redirect(signInUrl);
+  }
+  
+  // If route is protected and we have a session cookie, validate authorization server-side
+  if (isProtectedRoute && sessionCookie) {
+    try {
+      const res = await fetch(new URL("/api/auth/get-session", request.url), {
+        headers: { cookie: request.headers.get("cookie") ?? "" },
+      });
+      if (!res.ok) {
+        const signInUrl = new URL("/auth/signin", request.url);
+        signInUrl.searchParams.set("redirect", path);
+        signInUrl.searchParams.set("error", "unauthorized");
+        return NextResponse.redirect(signInUrl);
+      }
+    } catch {
+      // On failure, be safe and redirect to signin
+      const signInUrl = new URL("/auth/signin", request.url);
+      signInUrl.searchParams.set("redirect", path);
+      return NextResponse.redirect(signInUrl);
+    }
+  }
+
+  // Extra check for admin-only routes
+  if (path.startsWith("/admin") && sessionCookie) {
+    try {
+      const res = await fetch(new URL("/api/auth/has-admin", request.url), {
+        headers: { cookie: request.headers.get("cookie") ?? "" },
+      });
+      if (!res.ok) {
+        const signInUrl = new URL("/auth/signin", request.url);
+        signInUrl.searchParams.set("redirect", path);
+        signInUrl.searchParams.set("error", "unauthorized");
+        return NextResponse.redirect(signInUrl);
+      }
+    } catch {
+      const signInUrl = new URL("/auth/signin", request.url);
+      signInUrl.searchParams.set("redirect", path);
+      return NextResponse.redirect(signInUrl);
+    }
   }
   
   return NextResponse.next();

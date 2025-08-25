@@ -1,12 +1,15 @@
 import { DRETable } from './components/DRETable';
 import { DREFilters } from './components/DREFilters';
 import { DRESummaryCards } from './components/DRESummaryCards';
+import { requirePermissions } from '@/lib/core/auth/permission-helpers';
+import { REPORT_VIEW_PERMISSION } from '@/lib/core/auth/permissions';
 
 export default async function DREPage({
   searchParams,
 }: {
   searchParams: Promise<{ year?: string; months?: string }>;
 }) {
+  await requirePermissions(REPORT_VIEW_PERMISSION);
   const currentYear = new Date().getFullYear();
   const params = await searchParams;
   const year = params.year ? parseInt(params.year) : currentYear;

@@ -1,4 +1,6 @@
 import { calculateFinancialIndicators } from '@/lib/core/database/dre';
+import { requirePermissions } from '@/lib/core/auth/permission-helpers';
+import { REPORT_VIEW_PERMISSION } from '@/lib/core/auth/permissions';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -51,6 +53,7 @@ export default async function EmailRascunhoPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await requirePermissions(REPORT_VIEW_PERMISSION);
   const params = await searchParams;
   const today = new Date();
   // Quando não há parâmetros, usa o mês anterior ao atual

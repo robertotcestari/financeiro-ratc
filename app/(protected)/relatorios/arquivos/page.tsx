@@ -1,4 +1,6 @@
 import { listSavedFiles } from '@/lib/core/database/saved-files';
+import { requirePermissions } from '@/lib/core/auth/permission-helpers';
+import { REPORT_VIEW_PERMISSION } from '@/lib/core/auth/permissions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import CopyPathButton from './components/CopyPathButton';
@@ -19,6 +21,7 @@ function formatDateTime(date: Date): string {
 }
 
 export default async function SavedFilesPage() {
+  await requirePermissions(REPORT_VIEW_PERMISSION);
   const files = await listSavedFiles(100);
 
   return (
