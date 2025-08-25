@@ -1,8 +1,9 @@
-import { getRentTransactions, getRentStats } from './actions';
+import { getRentTransactions, getRentStats, getImobziPendingRents } from './actions';
 import RentFilters from './components/RentFilters';
 import RentSummaryCards from './components/RentSummaryCards';
 import RentTable from './components/RentTable';
 import ExportButton from './components/ExportButton';
+import ImobziPendingRents from './components/ImobziPendingRents';
 
 interface SearchParams {
   mes?: string;
@@ -20,9 +21,10 @@ export default async function RecebimentoAlugueisPage({ searchParams }: Props) {
   const month = params.mes ? parseInt(params.mes) : currentDate.getMonth() + 1;
   const year = params.ano ? parseInt(params.ano) : currentDate.getFullYear();
 
-  const [transactions, stats] = await Promise.all([
+  const [transactions, stats, imobziInvoices] = await Promise.all([
     getRentTransactions({ month, year }),
-    getRentStats({ month, year })
+    getRentStats({ month, year }),
+    getImobziPendingRents({ month, year })
   ]);
 
   return (
@@ -58,6 +60,10 @@ export default async function RecebimentoAlugueisPage({ searchParams }: Props) {
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           <RentTable transactions={transactions} />
+        </div>
+
+        <div className="mt-8">
+          <ImobziPendingRents invoices={imobziInvoices} />
         </div>
       </div>
     </div>

@@ -15,6 +15,14 @@ datasource db {
 }
 
 // Enums
+enum SavedFileType {
+  DRE // Relatórios DRE
+}
+
+// Meta storage for arbitrary domain data
+enum MetaType {
+  INADIMPLENTES
+}
 enum AccountType {
   CHECKING // Conta Corrente
   SAVINGS // Poupança
@@ -383,4 +391,28 @@ model verification {
   updatedAt  DateTime @updatedAt
 
   @@index([identifier])
+}
+
+// 10. SavedFile (Arquivos Salvos)
+model SavedFile {
+  id        String        @id @default(cuid())
+  fileName  String
+  path      String        // Caminho do arquivo (ex.: s3://bucket/key ou file://...)
+  type      SavedFileType // Tipo do arquivo (por enquanto apenas DRE)
+  savedAt   DateTime      @default(now())
+
+  @@index([type, savedAt])
+  @@map("saved_files")
+}
+
+// Generic meta table to store arbitrary JSON payloads by type
+model Meta {
+  id        String   @id @default(cuid())
+  type      MetaType
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type, createdAt])
+  @@map("meta")
 }

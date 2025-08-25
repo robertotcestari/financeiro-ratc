@@ -18,12 +18,14 @@
     "db:migrate:local": "dotenv -e .env.local -- npx prisma migrate dev",
     "db:reset:local": "dotenv -e .env.local -- npx prisma migrate reset --force",
     "db:seed": "dotenv -e .env.local -- npx prisma db seed",
+    "db:push": "dotenv -e .env.local -- npx prisma db push",
     "db:backup": "node scripts/database/backup-database.js",
     "import:legacy": "node prisma/seeder/import-legacy.js",
     "snapshots:generate": "tsx scripts/database/generate-snapshots.ts",
     "test:ai": "tsx scripts/testing/test-ai-categorization.ts"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.645.0",
     "@ai-sdk/openai": "^2.0.19",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^5.2.1",

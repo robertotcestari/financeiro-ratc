@@ -19,6 +19,8 @@ import {
   ChevronDown,
   Settings,
   DollarSign,
+  Mail,
+  FileText as FileTextIcon,
 } from 'lucide-react';
 
 const navigation = [
@@ -26,6 +28,7 @@ const navigation = [
   { name: 'Bancos', href: '/bancos', icon: CreditCard },
   { name: 'Transações', href: '/transacoes', icon: FileText },
   { name: 'Aluguéis', href: '/recebimento-alugueis', icon: DollarSign },
+  { name: 'Inadimplentes', href: '/inadimplentes', icon: FileText },
   { name: 'Integridade', href: '/integridade', icon: ShieldCheck },
   { name: 'DRE', href: '/dre', icon: BarChart2 },
 ];
@@ -44,6 +47,11 @@ const registrationOptions = [
   { name: 'Contas Bancárias', href: '/cadastros/contas', icon: CreditCard },
   { name: 'Cidades', href: '/cidades', icon: MapPin },
   { name: 'Imóveis', href: '/imoveis', icon: Building2 },
+];
+
+const reportOptions = [
+  { name: 'Relatório Mensal', href: '/relatorios/rascunho-email', icon: Mail },
+  { name: 'Arquivos Salvos', href: '/relatorios/arquivos', icon: FileTextIcon },
 ];
 
 // ...existing code...
@@ -132,6 +140,33 @@ export default function Navbar() {
                       Categorização
                     </div>
                     {categorizationOptions.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = pathname === item.href;
+
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setIsDropdownOpen(false)}
+                          className={`flex items-center px-4 py-2 text-sm transition-colors ${
+                            isActive
+                              ? 'text-blue-600 bg-blue-50'
+                              : 'text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4 mr-2" />
+                          {item.name}
+                        </Link>
+                      );
+                    })}
+
+                    <Separator className="my-2" />
+
+                    {/* Relatórios Section */}
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      Relatórios
+                    </div>
+                    {reportOptions.map((item) => {
                       const Icon = item.icon;
                       const isActive = pathname === item.href;
 
@@ -297,6 +332,38 @@ export default function Navbar() {
                     Categorização
                   </div>
                   {categorizationOptions.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
+
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`flex items-center pl-8 pr-4 py-2 text-sm font-medium transition-colors ${
+                          isActive
+                            ? 'text-blue-600 bg-blue-50'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 mr-2" />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+
+                  <div className="px-8">
+                    <Separator className="my-2" />
+                  </div>
+
+                  {/* Relatórios Section */}
+                  <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Relatórios
+                  </div>
+                  {reportOptions.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
 
