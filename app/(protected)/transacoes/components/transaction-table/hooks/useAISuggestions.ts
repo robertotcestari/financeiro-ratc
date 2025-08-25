@@ -36,12 +36,14 @@ export function useAISuggestions(
       try {
         const result = await generateSuggestionsAction({ transactionIds: selectedIds });
         if (result.success) {
-          if (result.suggested && result.suggested > 0) {
-            toast.success(`${result.suggested} sugestões criadas para ${result.processed} transações processadas`, {
+          const suggested = result.suggested || 0;
+          
+          if (suggested > 0) {
+            toast.success(`${suggested} sugestões criadas para ${result.processed} transações processadas`, {
               id: 'rule-generating',
             });
           } else {
-            toast.info(`Nenhuma sugestão encontrada para as ${result.processed} transações analisadas`, {
+            toast.info(`Nenhuma regra correspondente encontrada para as ${result.processed} transações analisadas`, {
               id: 'rule-generating',
             });
           }
@@ -94,7 +96,7 @@ export function useAISuggestions(
   const handleApplySuggestions = useCallback(async (table: Table<Transaction>) => {
     const selectedRows = table.getSelectedRowModel().rows;
     const suggestionIds = selectedRows
-      .flatMap(row => row.original.suggestions)
+      .flatMap(row => row.original.suggestions || [])
       .map(suggestion => suggestion.id);
       
     if (suggestionIds.length === 0) return;

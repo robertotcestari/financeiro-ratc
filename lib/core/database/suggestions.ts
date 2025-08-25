@@ -46,6 +46,7 @@ export async function setBestSuggestionForTransaction(params: {
   suggestedCategoryId?: string | null;
   suggestedPropertyId?: string | null;
   confidence: number;
+  forceRegenerate?: boolean;
 }): Promise<TransactionSuggestion | null> {
   const {
     processedTransactionId,
@@ -53,30 +54,39 @@ export async function setBestSuggestionForTransaction(params: {
     suggestedCategoryId,
     suggestedPropertyId,
     confidence,
+    forceRegenerate = false, // Default to false to maintain backward compatibility with tests
   } = params;
 
   return prisma.$transaction(async (tx) => {
-    // Remove existing non-applied suggestions (keep audit/applied history)
-    await tx.transactionSuggestion.deleteMany({
-      where: { processedTransactionId, isApplied: false },
-    });
+    if (forceRegenerate) {
+      // Remove ALL existing suggestions (including applied) when force regenerating
+      // This ensures a fresh start when user manually triggers regeneration
+      await tx.transactionSuggestion.deleteMany({
+        where: { processedTransactionId },
+      });
+    } else {
+      // Normal behavior: only remove non-applied suggestions
+      await tx.transactionSuggestion.deleteMany({
+        where: { processedTransactionId, isApplied: false },
+      });
 
-    // If there is already an applied suggestion for this rule/transaction, do not create a duplicate
-    const existingApplied = await tx.transactionSuggestion.findUnique({
-      where: {
-        processedTransactionId_ruleId_source: {
-          processedTransactionId,
-          ruleId,
-          source: 'RULE',
+      // Check if there's already an applied suggestion for this rule/transaction
+      const existingApplied = await tx.transactionSuggestion.findUnique({
+        where: {
+          processedTransactionId_ruleId_source: {
+            processedTransactionId,
+            ruleId,
+            source: 'RULE',
+          },
         },
-      },
-    });
+      });
 
-    if (existingApplied && existingApplied.isApplied) {
-      return null;
+      if (existingApplied && existingApplied.isApplied) {
+        return null;
+      }
     }
 
-    // Create or update (in case a not-yet-deleted unique record exists)
+    // Create or update the suggestion
     const created = await tx.transactionSuggestion.upsert({
       where: {
         processedTransactionId_ruleId_source: {

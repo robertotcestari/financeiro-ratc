@@ -284,7 +284,7 @@ export class RuleEngine {
    * Generate suggestions for multiple transactions (best single suggestion per transaction).
    * - Loads active rules (optionally filtered by ruleIds)
    * - Evaluates in batches
-   * - Persists only the best suggestion per transaction (replaces non-applied ones)
+   * - Persists only the best suggestion per transaction (force regenerates all)
    */
   async generateSuggestions(
     processedTransactionIds: string[],
@@ -292,10 +292,19 @@ export class RuleEngine {
   ): Promise<{
     processed: number;
     suggested: number;
+    matched: number;
   }> {
     if (processedTransactionIds.length === 0) {
-      return { processed: 0, suggested: 0 };
+      return { processed: 0, suggested: 0, matched: 0 };
     }
+
+    console.log(
+      'Generating suggestions for',
+      processedTransactionIds.length,
+      'transactions'
+    );
+
+    // Load active rules (optionally filtered)
 
     const rules = await prisma.categorizationRule.findMany({
       where: {
@@ -305,11 +314,14 @@ export class RuleEngine {
       orderBy: [{ priority: 'desc' }, { createdAt: 'desc' }],
     });
 
-    if (rules.length === 0) return { processed: 0, suggested: 0 };
+    console.log(rules.length, 'active rules loaded');
+
+    if (rules.length === 0) return { processed: 0, suggested: 0, matched: 0 };
 
     const idBatches = chunk(processedTransactionIds, 100);
     let processed = 0;
     let suggested = 0;
+    let matched = 0;
 
     for (const ids of idBatches) {
       const txs = await prisma.processedTransaction.findMany({
@@ -320,11 +332,15 @@ export class RuleEngine {
       for (const tx of txs) {
         processed += 1;
 
+        console.log(tx);
+
         try {
           const evaluated = await this.evaluateTransaction(
             tx as PTxWithTx,
             rules
           );
+
+          console.log('Evaluated, got', evaluated.length, 'matches');
           if (evaluated.length === 0) {
             // No match; we do not delete existing suggestions here (only setBestSuggestion does for matched).
             continue;
@@ -337,9 +353,15 @@ export class RuleEngine {
             suggestedCategoryId: best.suggestedCategoryId ?? null,
             suggestedPropertyId: best.suggestedPropertyId ?? null,
             confidence: best.confidence,
+            forceRegenerate: true, // Always force regenerate when user triggers via UI
           });
 
-          if (created) suggested += 1;
+          // Since we now delete all previous suggestions, every match creates a new suggestion
+          if (created) {
+            matched += 1;
+            suggested += 1;
+            console.log(`New suggestion created for transaction ${best.processedTransactionId}`);
+          }
         } catch {
           // Partial failure: continue with others
           // Optional: log error
@@ -347,7 +369,10 @@ export class RuleEngine {
       }
     }
 
-    return { processed, suggested };
+    console.log(
+      `Processed ${processed} transactions, ${matched} matched, ${suggested} new suggestions created/updated`
+    );
+    return { processed, suggested, matched };
   }
 
   /**

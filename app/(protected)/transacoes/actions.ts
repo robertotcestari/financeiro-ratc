@@ -418,6 +418,7 @@ export async function generateSuggestionsAction(
       success: true,
       processed: result.processed,
       suggested: result.suggested,
+      matched: result.matched,
     };
   } catch (error) {
     console.error('Error in generateSuggestionsAction:', error);
@@ -523,23 +524,27 @@ export async function generateBulkAISuggestionsAction(
     const aiService = new AICategorizationService();
 
     // Convert transactions to the format expected by AI service
-    const transactionsForAI = transactions.map(t => ({
+    const transactionsForAI = transactions.map((t) => ({
       ...t,
-      transaction: t.transaction ? {
-        description: t.transaction.description,
-        amount: Number(t.transaction.amount),
-        date: t.transaction.date,
-        bankAccount: {
-          name: t.transaction.bankAccount.name,
-          accountType: t.transaction.bankAccount.accountType.toString(),
-        }
-      } : undefined,
+      transaction: t.transaction
+        ? {
+            description: t.transaction.description,
+            amount: Number(t.transaction.amount),
+            date: t.transaction.date,
+            bankAccount: {
+              name: t.transaction.bankAccount.name,
+              accountType: t.transaction.bankAccount.accountType.toString(),
+            },
+          }
+        : undefined,
     }));
 
     // Generate AI suggestions
     let aiSuggestions;
     try {
-      aiSuggestions = await aiService.generateBulkSuggestions(transactionsForAI);
+      aiSuggestions = await aiService.generateBulkSuggestions(
+        transactionsForAI
+      );
     } catch (aiError: unknown) {
       console.error('Error generating AI suggestions:', aiError);
 

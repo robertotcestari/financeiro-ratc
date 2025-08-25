@@ -5,10 +5,16 @@ const skipBuildChecks = process.env.SKIP_BUILD_CHECKS === 'true';
 const nextConfig: NextConfig = {
   serverExternalPackages: ['pino', 'pino-pretty'],
   images: {
-    domains: [
-      'lh3.googleusercontent.com',
-      'avatars.githubusercontent.com',
-      'www.gravatar.com',
+    remotePatterns: [
+      {
+        hostname: 'lh3.googleusercontent.com',
+      },
+      {
+        hostname: 'avatars.githubusercontent.com',
+      },
+      {
+        hostname: 'www.gravatar.com',
+      },
     ],
   },
   eslint: {

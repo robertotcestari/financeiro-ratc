@@ -418,6 +418,7 @@ export async function generateSuggestionsAction(
       success: true,
       processed: result.processed,
       suggested: result.suggested,
+      matched: result.matched,
     };
   } catch (error) {
     console.error('Error in generateSuggestionsAction:', error);
