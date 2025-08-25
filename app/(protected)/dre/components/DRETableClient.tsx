@@ -10,8 +10,9 @@ import {
   type ExpandedState,
   type ColumnDef,
 } from '@tanstack/react-table';
-import { ChevronDownIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronDownIcon, ChevronRightIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { Switch } from '@/components/ui/switch';
+import { exportDREToPDF } from '../utils/export-pdf';
 
 interface DRERow {
   id: string;
@@ -341,27 +342,6 @@ export function DRETableClient({
       );
     });
 
-    // Add total column if more than one month
-    if (selectedMonths.length > 1) {
-      cols.push(
-        columnHelper.accessor('total', {
-          id: 'total',
-          header: 'Total',
-          cell: ({ getValue, row }) => {
-            const value = getValue() || 0;
-            const rowData = row.original;
-            if (rowData.lineType === 'SEPARATOR') return '';
-            return (
-              <span className={getValueColor(value, rowData.lineType)}>
-                {formatCurrency(value)}
-              </span>
-            );
-          },
-          enableSorting: false,
-        }) as TableColumn
-      );
-    }
-
     return cols;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedMonths, year]);
@@ -387,6 +367,10 @@ export function DRETableClient({
     manualSorting: true,
   });
 
+  const handleExportPDF = () => {
+    exportDREToPDF(rows, year, selectedMonths, showZeroValues, expandedSections);
+  };
+
   if (selectedMonths.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
@@ -401,28 +385,37 @@ export function DRETableClient({
     <div className="bg-white rounded-lg shadow overflow-hidden">
       {/* Toggles para controle da visualização */}
       <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center gap-6 text-sm text-gray-600">
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={showZeroValues}
-              onCheckedChange={setShowZeroValues}
-            />
-            <label
-              className="cursor-pointer"
-              onClick={() => setShowZeroValues(!showZeroValues)}
-            >
-              Mostrar todas as categorias
-            </label>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-6 text-sm text-gray-600">
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={showZeroValues}
+                onCheckedChange={setShowZeroValues}
+              />
+              <label
+                className="cursor-pointer"
+                onClick={() => setShowZeroValues(!showZeroValues)}
+              >
+                Mostrar todas as categorias
+              </label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch checked={expandAll} onCheckedChange={toggleAllSections} />
+              <label
+                className="cursor-pointer"
+                onClick={() => toggleAllSections(!expandAll)}
+              >
+                Expandir todas as seções
+              </label>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Switch checked={expandAll} onCheckedChange={toggleAllSections} />
-            <label
-              className="cursor-pointer"
-              onClick={() => toggleAllSections(!expandAll)}
-            >
-              Expandir todas as seções
-            </label>
-          </div>
+          <button
+            onClick={handleExportPDF}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          >
+            <ArrowDownTrayIcon className="w-4 h-4" />
+            Exportar PDF
+          </button>
         </div>
       </div>
       <div className="overflow-x-auto">
@@ -439,9 +432,6 @@ export function DRETableClient({
                     className={`px-3 py-3 font-medium text-gray-900 ${
                       index === 0
                         ? 'text-left sticky left-0 bg-gray-50 min-w-[300px]'
-                        : index === headerGroup.headers.length - 1 &&
-                          selectedMonths.length > 1
-                        ? 'text-center min-w-[120px] bg-blue-50'
                         : 'text-center min-w-[120px]'
                     }`}
                   >
@@ -462,9 +452,6 @@ export function DRETableClient({
                 {row.getVisibleCells().map((cell, index) => {
                   const rowData = row.original;
                   const isNameCell = index === 0;
-                  const isTotalCell =
-                    index === row.getVisibleCells().length - 1 &&
-                    selectedMonths.length > 1;
 
                   return (
                     <td
@@ -484,13 +471,7 @@ export function DRETableClient({
                               rowData.lineType,
                               rowData.isBold,
                               rowData.id
-                            )} ${
-                              isTotalCell && rowData.id === 'nao-categorizados'
-                                ? 'bg-yellow-100'
-                                : isTotalCell
-                                ? 'bg-blue-50'
-                                : ''
-                            }`
+                            )}`
                       }`}
                     >
                       {flexRender(
