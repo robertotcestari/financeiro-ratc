@@ -18,22 +18,24 @@ export async function categorizeTransaction(
     throw new Error('Processed transaction not found');
   }
 
-  // Permitir transações sem categoria (uncategorized)
-  // Normalize pseudo id "uncategorized" to null
-  const categoryId =
-    overrideCategoryId && overrideCategoryId !== 'uncategorized'
-      ? overrideCategoryId
-      : null;
-  const propertyId = overridePropertyId ?? null;
+  // Monta dinamicamente os campos a serem atualizados, respeitando undefined (não altera)
+  const data: any = { updatedAt: new Date() };
+  // Permitir transações sem categoria (uncategorized) - null limpa, undefined mantém
+  if (overrideCategoryId !== undefined) {
+    data.categoryId =
+      overrideCategoryId && overrideCategoryId !== 'uncategorized'
+        ? overrideCategoryId
+        : null;
+  }
+  // Propriedade: null limpa, undefined mantém
+  if (overridePropertyId !== undefined) {
+    data.propertyId = overridePropertyId ?? null;
+  }
 
-  // Atualiza a ProcessedTransaction existente
+  // Atualiza a ProcessedTransaction existente apenas com campos fornecidos
   const updatedProcessedTransaction = await prisma.processedTransaction.update({
     where: { id: processedTransactionId },
-    data: {
-      categoryId,
-      propertyId,
-      updatedAt: new Date(),
-    },
+    data,
     include: {
       category: true,
       property: true,
@@ -72,8 +74,8 @@ export async function bulkCategorizeTransactions(
     try {
       const result = await categorizeTransaction(
         transactionId,
-        categoryId ?? null,
-        propertyId ?? null
+        categoryId,
+        propertyId
       );
       results.push({ transactionId, success: true, result });
     } catch (error) {

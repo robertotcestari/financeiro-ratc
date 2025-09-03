@@ -215,6 +215,7 @@ export default function TransactionTable({
         handleApplySuggestions={handleApplySuggestions}
         handleDismissSuggestions={handleDismissSuggestions}
         handleBulkCategorize={bulk.handleBulkCategorize}
+        handleBulkApplyProperty={bulk.handleBulkApplyProperty}
         handleBulkMarkReviewed={bulk.handleBulkMarkReviewed}
         handleBulkDelete={bulk.handleBulkDelete}
         clearSelection={bulk.clearSelection}

@@ -34,8 +34,8 @@ export async function categorizeOneAction(
   try {
     await categorizeTransaction(
       validated.id,
-      validated.categoryId ?? null,
-      validated.propertyId ?? null
+      validated.categoryId,
+      validated.propertyId
     );
 
     if (validated.markReviewed) {
@@ -77,8 +77,8 @@ export async function bulkCategorizeAction(
   try {
     await bulkCategorizeTransactions(
       validated.ids,
-      validated.categoryId ?? null,
-      validated.propertyId ?? null
+      validated.categoryId,
+      validated.propertyId
     );
 
     if (validated.markReviewed) {

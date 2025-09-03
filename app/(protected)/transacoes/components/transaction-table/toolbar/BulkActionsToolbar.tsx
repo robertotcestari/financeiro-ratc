@@ -33,6 +33,7 @@ interface BulkActionsToolbarProps {
   handleApplySuggestions: () => Promise<void>;
   handleDismissSuggestions: () => Promise<void>;
   handleBulkCategorize: () => Promise<void>;
+  handleBulkApplyProperty: () => Promise<void>;
   handleBulkMarkReviewed: () => Promise<void>;
   handleBulkDelete: () => Promise<void>;
   clearSelection: () => void;
@@ -54,6 +55,7 @@ export function BulkActionsToolbar({
   handleApplySuggestions,
   handleDismissSuggestions,
   handleBulkCategorize,
+  handleBulkApplyProperty,
   handleBulkMarkReviewed,
   handleBulkDelete,
   clearSelection,
@@ -158,6 +160,16 @@ export function BulkActionsToolbar({
             size="sm"
           >
             Aplicar Categoria
+          </Button>
+
+          <Button
+            onClick={handleBulkApplyProperty}
+            disabled={!bulkProperty || isPending || isGeneratingAI}
+            variant="default"
+            size="sm"
+            className="bg-indigo-600 hover:bg-indigo-700"
+          >
+            Aplicar Propriedade
           </Button>
 
           <Button
