@@ -266,6 +266,48 @@ describe('RuleEngine.evaluateTransaction', () => {
     expect(res).toHaveLength(1);
   });
 
+  it('respects value.sign = negative (only matches negative amounts)', async () => {
+    const engine = ruleEngine;
+    const negativeTx = makeTx({ amount: -120 });
+    const positiveTx = makeTx({ amount: 120 });
+
+    const ruleNegOnly = makeRule({
+      criteria: {
+        value: { max: 200, operator: 'lte', sign: 'negative' },
+        description: { keywords: ['CASA'], operator: 'or' },
+      },
+    });
+
+    const resNeg = await engine.evaluateTransaction(negativeTx, [ruleNegOnly]);
+    expect(resNeg).toHaveLength(1);
+
+    const resPos = await engine.evaluateTransaction(positiveTx, [ruleNegOnly]);
+    expect(resPos).toHaveLength(0);
+  });
+
+  it('respects value.sign = positive (only matches >= 0 amounts)', async () => {
+    const engine = ruleEngine;
+    const negativeTx = makeTx({ amount: -50 });
+    const zeroTx = makeTx({ amount: 0 });
+    const positiveTx = makeTx({ amount: 50 });
+
+    const rulePosOnly = makeRule({
+      criteria: {
+        value: { min: 0, operator: 'gte', sign: 'positive' },
+        description: { keywords: ['CASA'], operator: 'or' },
+      },
+    });
+
+    const resNeg = await engine.evaluateTransaction(negativeTx, [rulePosOnly]);
+    expect(resNeg).toHaveLength(0);
+
+    const resZero = await engine.evaluateTransaction(zeroTx, [rulePosOnly]);
+    expect(resZero).toHaveLength(1);
+
+    const resPos = await engine.evaluateTransaction(positiveTx, [rulePosOnly]);
+    expect(resPos).toHaveLength(1);
+  });
+
   it('resolves by priority then recency if multiple rules match', async () => {
     const tx = makeTx();
 

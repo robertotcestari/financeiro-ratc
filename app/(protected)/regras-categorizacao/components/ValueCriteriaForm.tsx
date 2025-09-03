@@ -42,6 +42,7 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
   const criteria = form.watch('criteria') || {};
   const valueCriteria = criteria.value || {};
   const operator = valueCriteria.operator || 'gte';
+  const sign = valueCriteria.sign || 'any';
 
   // Initialize useValue state based on existing criteria
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
       delete newCriteria.value;
       form.setValue('criteria', newCriteria);
     } else {
-      form.setValue('criteria.value', { operator: 'gte', min: 0 });
+      form.setValue('criteria.value', { operator: 'gte', min: 0, sign: 'any' });
     }
   };
 
@@ -106,7 +107,8 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
 
     const { min, max } = valueCriteria;
 
-    switch (operator) {
+    const base = (() => {
+      switch (operator) {
       case 'gt':
         return min != null ? `Valor maior que ${formatCurrency(min)}` : '';
       case 'gte':
@@ -123,7 +125,17 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
           : '';
       default:
         return '';
-    }
+    })();
+
+    if (!base) return '';
+
+    const signText = sign === 'positive'
+      ? ' (apenas positivos)'
+      : sign === 'negative'
+      ? ' (apenas negativos)'
+      : '';
+
+    return `${base}${signText}`;
   };
 
   return (
@@ -168,6 +180,36 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
               </Select>
               <FormMessage />
             </FormItem>
+
+            {/* Sign Selection */}
+            <FormField
+              control={form.control}
+              name="criteria.value.sign"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Sinal do valor</FormLabel>
+                  <Select
+                    value={field.value || 'any'}
+                    onValueChange={(val) => field.onChange(val)}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o sinal" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="any">Qualquer (positivo ou negativo)</SelectItem>
+                      <SelectItem value="positive">Apenas positivos (receitas)</SelectItem>
+                      <SelectItem value="negative">Apenas negativos (despesas)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription className="text-xs">
+                    Combine com os valores mínimos/máximos. Comparações continuam usando valor absoluto.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Value Inputs */}
             <div className="grid grid-cols-1 gap-4">
@@ -224,7 +266,7 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
               <FormDescription className="text-xs bg-muted p-2 rounded">
                 <strong>Resumo:</strong> {getDescription()}
                 <br />
-                <em>Nota: Valores negativos (despesas) são comparados pelo valor absoluto.</em>
+                <em>Nota: Comparações são por valor absoluto. Use o “Sinal do valor” para limitar a positivos/negativos.</em>
               </FormDescription>
             )}
           </div>

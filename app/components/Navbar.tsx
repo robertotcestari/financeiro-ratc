@@ -22,6 +22,7 @@ import {
   DollarSign,
   Mail,
   FileText as FileTextIcon,
+  BookOpen,
 } from 'lucide-react';
 
 const navigation = [
@@ -54,6 +55,10 @@ const reportOptions = [
   { name: 'Arquivos Salvos', href: '/relatorios/arquivos', icon: FileTextIcon },
   { name: 'DRE', href: '/dre', icon: BarChart2 },
   { name: 'Integridade', href: '/integridade', icon: ShieldCheck },
+];
+
+const helpOptions = [
+  { name: 'Manual', href: '/manual', icon: BookOpen },
 ];
 
 // ...existing code...
@@ -110,9 +115,9 @@ export default function Navbar() {
                 <ChevronDown className="w-4 h-4 ml-1.5" />
               </Button>
 
-              {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                  <div className="py-1">
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                      <div className="py-1">
                     {/* Importação Section */}
                     <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                       Importação
@@ -203,6 +208,33 @@ export default function Navbar() {
                       Cadastro
                     </div>
                     {registrationOptions.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = pathname === item.href;
+
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setIsDropdownOpen(false)}
+                          className={`flex items-center px-4 py-2 text-sm transition-colors ${
+                            isActive
+                              ? 'text-blue-600 bg-blue-50'
+                              : 'text-gray-700 hover:bg-gray-100'
+                          }`}
+                        >
+                          <Icon className="w-4 h-4 mr-2" />
+                          {item.name}
+                        </Link>
+                      );
+                    })}
+
+                    <Separator className="my-2" />
+
+                    {/* Ajuda Section */}
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      Ajuda
+                    </div>
+                    {helpOptions.map((item) => {
                       const Icon = item.icon;
                       const isActive = pathname === item.href;
 
@@ -413,6 +445,38 @@ export default function Navbar() {
                     Cadastro
                   </div>
                   {registrationOptions.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = pathname === item.href;
+
+                    return (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        onClick={() => {
+                          setIsDropdownOpen(false);
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className={`flex items-center pl-8 pr-4 py-2 text-sm font-medium transition-colors ${
+                          isActive
+                            ? 'text-blue-600 bg-blue-50'
+                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 mr-2" />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
+
+                  <div className="px-8">
+                    <Separator className="my-2" />
+                  </div>
+
+                  {/* Ajuda Section */}
+                  <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Ajuda
+                  </div>
+                  {helpOptions.map((item) => {
                     const Icon = item.icon;
                     const isActive = pathname === item.href;
 

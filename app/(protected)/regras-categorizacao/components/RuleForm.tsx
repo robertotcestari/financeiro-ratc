@@ -79,6 +79,7 @@ const ruleFormSchema = z.object({
         operator: z
           .enum(['gt', 'gte', 'lt', 'lte', 'eq', 'between'])
           .optional(),
+        sign: z.enum(['any', 'positive', 'negative']).optional(),
       })
       .optional(),
     description: z
