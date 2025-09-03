@@ -184,8 +184,13 @@ export async function importImobziTransactions(
         // Determine transaction type and amount sign
         let amount = Math.abs(transaction.value);
         const type = transaction.type.toLowerCase();
-        
-        if (type.includes('expense') || type.includes('despesa')) {
+
+        // Expenses and transfers should be negative (money out)
+        if (
+          type.includes('expense') ||
+          type.includes('despesa') ||
+          type.includes('transfer')
+        ) {
           amount = -Math.abs(amount);
         }
 
