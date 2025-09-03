@@ -1,9 +1,11 @@
 'use client';
 
+import React from 'react';
 import { setSettled, deleteItem } from '../actions';
 import { useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
+import { formatDateStringBR } from '@/lib/utils/date-helpers';
 
 interface Item {
   id: string;
@@ -53,15 +55,7 @@ export default function InadimplentesTable({
     }).format(n);
   };
 
-  const formatDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return 'Data inválida';
-      return date.toLocaleDateString('pt-BR');
-    } catch {
-      return 'Data inválida';
-    }
-  };
+  const formatDate = (dateString: string) => formatDateStringBR(dateString);
 
   if (!items || items.length === 0) {
     return (

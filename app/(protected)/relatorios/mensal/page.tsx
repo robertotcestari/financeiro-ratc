@@ -1,6 +1,7 @@
 import { calculateFinancialIndicators } from '@/lib/core/database/dre';
 // Page view permissions removed
 import { formatCurrency, formatDate } from '@/lib/formatters';
+import { daysOverdueFrom } from '@/lib/utils/date-helpers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -35,11 +36,7 @@ async function getProperties() {
 }
 
 function calculateDaysOverdue(dueDate: string): number {
-  const due = new Date(dueDate);
-  const today = new Date();
-  const diffTime = today.getTime() - due.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return Math.max(0, diffDays); // Don't show negative days
+  return daysOverdueFrom(dueDate);
 }
 
 interface SearchParams {

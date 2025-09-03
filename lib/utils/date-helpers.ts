@@ -1,4 +1,11 @@
-import { format, isWithinInterval } from 'date-fns';
+import {
+  format,
+  isWithinInterval,
+  parse,
+  isValid,
+  parseISO,
+  differenceInCalendarDays,
+} from 'date-fns';
 
 export interface DayRange {
   start: number; // 1..31 inclusive
@@ -37,4 +44,41 @@ export function isDateInRange(date: Date, start: Date, end: Date): boolean {
  */
 export function formatTransactionDate(date: Date): string {
   return format(date, 'dd/MM/yyyy');
+}
+
+/**
+ * Parse a date string safely, handling `yyyy-MM-dd` as local date without timezone shifts.
+ * Returns null when invalid.
+ */
+export function parseDateString(dateString: string | null | undefined): Date | null {
+  if (!dateString) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+    const d = parse(dateString, 'yyyy-MM-dd', new Date());
+    return isValid(d) ? d : null;
+  }
+  try {
+    const d = parseISO(dateString);
+    return isValid(d) ? d : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Format a date string (ISO or yyyy-MM-dd) to BR format dd/MM/yyyy.
+ */
+export function formatDateStringBR(dateString: string): string {
+  const d = parseDateString(dateString);
+  return d ? format(d, 'dd/MM/yyyy') : 'Data inválida';
+}
+
+/**
+ * Calculate days overdue from a due date string using calendar days.
+ */
+export function daysOverdueFrom(dateString: string): number {
+  const due = parseDateString(dateString);
+  if (!due) return 0;
+  const today = new Date();
+  const diffDays = differenceInCalendarDays(today, due);
+  return Math.max(0, diffDays);
 }

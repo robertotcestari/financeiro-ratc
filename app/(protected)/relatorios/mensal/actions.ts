@@ -196,13 +196,8 @@ export async function sendMonthlyReportEmail(params: {
       properties.map((p) => [p.id, { code: p.code, address: p.address, city: p.city }])
     );
 
-    const calculateDaysOverdue = (dueDate: string): number => {
-      const due = new Date(dueDate);
-      const today = new Date();
-      const diffTime = today.getTime() - due.getTime();
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return Math.max(0, diffDays);
-    };
+    const { daysOverdueFrom } = await import('@/lib/utils/date-helpers');
+    const calculateDaysOverdue = (dueDate: string): number => daysOverdueFrom(dueDate);
 
     const transformedInadimplentes = inadimplentes
       .filter((item) => !item.data.settled)
