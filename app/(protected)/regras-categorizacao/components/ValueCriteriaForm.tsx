@@ -21,7 +21,9 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { DollarSign } from 'lucide-react';
-import type { RuleFormReturn } from './form-types';
+import type { RuleFormReturn, RuleFormValues } from './form-types';
+
+type ValueOperator = 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'between';
 
 interface ValueCriteriaFormProps {
   form: RuleFormReturn;
@@ -39,10 +41,10 @@ const operatorLabels = {
 export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
   const [useValue, setUseValue] = useState(false);
 
-  const criteria = form.watch('criteria') || {};
-  const valueCriteria = criteria.value || {};
-  const operator = valueCriteria.operator || 'gte';
-  const sign = valueCriteria.sign || 'any';
+  const criteria = (form.watch('criteria') || {}) as RuleFormValues['criteria'];
+  const valueCriteria = criteria?.value || {};
+  const operator = (valueCriteria.operator ?? 'gte') as ValueOperator;
+  const sign = (valueCriteria.sign ?? 'any') as 'any' | 'positive' | 'negative';
 
   // Initialize useValue state based on existing criteria
   useEffect(() => {
@@ -66,7 +68,7 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
     }
   };
 
-  const handleOperatorChange = (newOperator: 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'between') => {
+  const handleOperatorChange = (newOperator: ValueOperator) => {
     const currentValue = form.getValues('criteria.value') || {};
     let newValue = { ...currentValue, operator: newOperator };
 
@@ -109,22 +111,23 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
 
     const base = (() => {
       switch (operator) {
-      case 'gt':
-        return min != null ? `Valor maior que ${formatCurrency(min)}` : '';
-      case 'gte':
-        return min != null ? `Valor maior ou igual a ${formatCurrency(min)}` : '';
-      case 'lt':
-        return max != null ? `Valor menor que ${formatCurrency(max)}` : '';
-      case 'lte':
-        return max != null ? `Valor menor ou igual a ${formatCurrency(max)}` : '';
-      case 'eq':
-        return min != null ? `Valor igual a ${formatCurrency(min)}` : '';
-      case 'between':
-        return min != null && max != null 
-          ? `Valor entre ${formatCurrency(min)} e ${formatCurrency(max)}` 
-          : '';
-      default:
-        return '';
+        case 'gt':
+          return min != null ? `Valor maior que ${formatCurrency(min)}` : '';
+        case 'gte':
+          return min != null ? `Valor maior ou igual a ${formatCurrency(min)}` : '';
+        case 'lt':
+          return max != null ? `Valor menor que ${formatCurrency(max)}` : '';
+        case 'lte':
+          return max != null ? `Valor menor ou igual a ${formatCurrency(max)}` : '';
+        case 'eq':
+          return min != null ? `Valor igual a ${formatCurrency(min)}` : '';
+        case 'between':
+          return min != null && max != null
+            ? `Valor entre ${formatCurrency(min)} e ${formatCurrency(max)}`
+            : '';
+        default:
+          return '';
+      }
     })();
 
     if (!base) return '';
@@ -164,7 +167,7 @@ export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
             {/* Operator Selection */}
             <FormItem>
               <FormLabel>Condição</FormLabel>
-              <Select value={operator} onValueChange={handleOperatorChange}>
+              <Select value={operator} onValueChange={(val) => handleOperatorChange(val as ValueOperator)}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a condição" />

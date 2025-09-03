@@ -26,7 +26,7 @@ async function updateRoleAction(formData: FormData) {
   await auth.api.setRole({ body: { userId, role }, headers: await headers() });
 }
 
-export default async function UsersAdminPage({ params }: { params: unknown }) {
+export default async function UsersAdminPage() {
   const users = await getData();
 
   return (

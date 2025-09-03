@@ -14,8 +14,10 @@ export const statement = {
 export const ac = createAccessControl(statement);
 
 // Roles
+// Note: pass at least one resource key to avoid `never` inference on authorize()
+// Using empty action arrays means "no permissions" for that resource.
 export const roleUser = ac.newRole({
-  // No report access for regular users
+  report: [],
 });
 
 export const roleAdmin = ac.newRole({
@@ -35,5 +37,10 @@ export const roleSuperuser = ac.newRole({
 });
 
 // Common permission helpers (names consistent across app)
-export const ADMIN_PERMISSION = { admin: ["access"] } as const;
-export const REPORT_VIEW_PERMISSION = { report: ["view"] } as const;
+// Narrowed, mutable arrays to satisfy AccessControl Subset typing
+export const ADMIN_PERMISSION: { admin: (typeof statement)["admin"][number][] } = {
+  admin: ["access"],
+};
+export const REPORT_VIEW_PERMISSION: { report: (typeof statement)["report"][number][] } = {
+  report: ["view"],
+};

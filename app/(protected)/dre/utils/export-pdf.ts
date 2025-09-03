@@ -217,7 +217,13 @@ export function exportDREToPDF(
         }
         
         // Colorir valores (exceto para linha não categorizados que já tem cor branca)
-        if (rowData.id !== 'nao-categorizados' && data.column.index > 0 && data.cell.raw !== '-' && data.cell.raw !== '') {
+        if (
+          rowData.id !== 'nao-categorizados' &&
+          data.column.index > 0 &&
+          data.cell.raw != null &&
+          data.cell.raw !== '-' &&
+          data.cell.raw !== ''
+        ) {
           const value = parseFloat(data.cell.raw.toString().replace(/[^\d,-]/g, '').replace(',', '.'));
           if (value < 0) {
             data.cell.styles.textColor = [220, 38, 38]; // red-600

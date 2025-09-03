@@ -15,6 +15,7 @@ export interface RuleFormValues {
       min?: number;
       max?: number;
       operator?: 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'between';
+      sign?: 'any' | 'positive' | 'negative';
     };
     description?: {
       keywords: string[];

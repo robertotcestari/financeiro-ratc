@@ -111,11 +111,11 @@ function buildDoc(payments: RentPayment[], month: number, year: number) {
       5: { cellWidth: 25, halign: 'right' }, // Valor
       6: { cellWidth: 30 }  // Conta
     },
-    didDrawRow: (data) => {
-      // Style the total row
+    willDrawCell: (data: any) => {
+      // Style the total row before drawing
       if (data.row.index === body.length - 1) {
-        doc.setFillColor(243, 244, 246);
-        doc.setFont(undefined, 'bold');
+        data.cell.styles.fillColor = [243, 244, 246];
+        data.cell.styles.fontStyle = 'bold';
       }
     },
     margin: { top: 22, left: 14, right: 14, bottom: 10 },
