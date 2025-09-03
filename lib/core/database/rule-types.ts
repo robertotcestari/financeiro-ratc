@@ -1,4 +1,5 @@
 export type ValueOperator = 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'between';
+export type ValueSign = 'any' | 'positive' | 'negative';
 
 export interface RuleCriteria {
   date?: {
@@ -9,6 +10,7 @@ export interface RuleCriteria {
     min?: number;
     max?: number;
     operator?: ValueOperator;
+    sign?: ValueSign; // optional sign filter (default: any)
   };
   description?: {
     keywords: string[];
@@ -53,7 +55,7 @@ export function validateRuleCriteria(criteria: RuleCriteria): {
   }
 
   if (criteria.value) {
-    const { min, max, operator } = criteria.value;
+    const { min, max, operator, sign } = criteria.value;
     if (min != null && typeof min !== 'number')
       errors.push('value.min must be a number');
     if (max != null && typeof max !== 'number')
@@ -63,6 +65,9 @@ export function validateRuleCriteria(criteria: RuleCriteria): {
       !['gt', 'gte', 'lt', 'lte', 'eq', 'between'].includes(operator)
     ) {
       errors.push(`value.operator must be one of gt|gte|lt|lte|eq|between`);
+    }
+    if (sign && !['any', 'positive', 'negative'].includes(sign)) {
+      errors.push('value.sign must be one of any|positive|negative');
     }
     if (operator === 'between') {
       if (min == null || max == null)

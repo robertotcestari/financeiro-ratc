@@ -99,10 +99,18 @@ function evaluateValueCriteria(
   valueCriteria?: RuleCriteria['value']
 ): [boolean, number | null] {
   if (!valueCriteria) return [true, null];
+  const amtRaw = tx.transaction?.amount != null ? Number(tx.transaction.amount) : null;
   const a = absAmount(tx);
   if (a == null) return [false, null];
 
-  const { min, max, operator } = valueCriteria;
+  const { min, max, operator, sign } = valueCriteria;
+
+  // Enforce sign, if provided
+  if (sign && amtRaw != null) {
+    if (sign === 'positive' && !(amtRaw >= 0)) return [false, null];
+    if (sign === 'negative' && !(amtRaw < 0)) return [false, null];
+    // 'any' -> no restriction
+  }
 
   let matched = true;
   if (operator) {
