@@ -201,11 +201,10 @@ describe('useBulkOperations Hook', () => {
         await result.current.handleBulkCategorize();
       });
 
-      // Check that the action was called correctly
+      // Check that the action was called correctly (category only)
       expect(bulkCategorizeAction).toHaveBeenCalledWith({
         ids: ['trans-1', 'trans-2'],
         categoryId: 'cat-3',
-        propertyId: 'prop-1', // Should find the property ID from code
         markReviewed: false,
       });
 
@@ -213,6 +212,45 @@ describe('useBulkOperations Hook', () => {
       await waitFor(() => {
         expect(result.current.rowSelection).toEqual({});
         expect(result.current.bulkCategory).toBe('');
+        expect(result.current.bulkProperty).toBe('');
+      });
+    });
+  });
+
+  describe('handleBulkApplyProperty', () => {
+    it('should apply property only to selected transactions', async () => {
+      vi.mocked(bulkCategorizeAction).mockResolvedValue({
+        success: true,
+      });
+
+      const { result } = renderHook(() =>
+        useBulkOperations(mockProperties as any, mockTransactions as any)
+      );
+
+      // Set up selection and property
+      act(() => {
+        result.current.setRowSelection({
+          'trans-1': true,
+          'trans-2': true,
+        });
+        result.current.setBulkProperty('CAT-001');
+      });
+
+      // Call handleBulkApplyProperty
+      await act(async () => {
+        await result.current.handleBulkApplyProperty();
+      });
+
+      // Verify action was called with only propertyId
+      expect(bulkCategorizeAction).toHaveBeenCalled();
+      const firstCallArg = vi.mocked(bulkCategorizeAction).mock.calls[0][0] as any;
+      expect(firstCallArg.ids).toEqual(['trans-1', 'trans-2']);
+      expect(firstCallArg.propertyId).toBe('prop-1');
+      expect(firstCallArg.categoryId).toBeUndefined();
+
+      // Form state cleared
+      await waitFor(() => {
+        expect(result.current.rowSelection).toEqual({});
         expect(result.current.bulkProperty).toBe('');
       });
     });

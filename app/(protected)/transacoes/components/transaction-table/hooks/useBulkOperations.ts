@@ -12,6 +12,7 @@ export interface UseBulkOperationsReturn {
   setBulkCategory: (value: string) => void;
   setBulkProperty: (value: string) => void;
   handleBulkCategorize: () => Promise<void>;
+  handleBulkApplyProperty: () => Promise<void>;
   handleBulkMarkReviewed: () => Promise<void>;
   handleBulkDelete: () => Promise<void>;
   clearSelection: () => void;
@@ -30,11 +31,10 @@ export function useBulkOperations(
     if (!bulkCategory || Object.keys(rowSelection).length === 0) return;
 
     startTransition(async () => {
-      const propertyId = properties.find((p) => p.code === bulkProperty)?.id;
       await bulkCategorizeAction({
         ids: Object.keys(rowSelection),
         categoryId: bulkCategory,
-        propertyId,
+        // Não enviar propertyId aqui; ação dedicada faz isso
         markReviewed: false,
       });
       setRowSelection({});
@@ -42,6 +42,21 @@ export function useBulkOperations(
       setBulkProperty('');
     });
   }, [bulkCategory, bulkProperty, rowSelection, properties]);
+
+  const handleBulkApplyProperty = useCallback(async () => {
+    if (!bulkProperty || Object.keys(rowSelection).length === 0) return;
+
+    startTransition(async () => {
+      const propertyId = properties.find((p) => p.code === bulkProperty)?.id;
+      if (!propertyId) return;
+      await bulkCategorizeAction({
+        ids: Object.keys(rowSelection),
+        propertyId,
+      });
+      setRowSelection({});
+      setBulkProperty('');
+    });
+  }, [bulkProperty, rowSelection, properties]);
 
   const handleBulkMarkReviewed = useCallback(async () => {
     if (Object.keys(rowSelection).length === 0) return;
@@ -86,6 +101,7 @@ export function useBulkOperations(
     setBulkCategory,
     setBulkProperty,
     handleBulkCategorize,
+    handleBulkApplyProperty,
     handleBulkMarkReviewed,
     handleBulkDelete,
     clearSelection,
