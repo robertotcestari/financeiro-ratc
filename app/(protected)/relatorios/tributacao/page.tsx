@@ -97,9 +97,14 @@ export default async function TributacaoReportPage({
     aggregatedMap.set(key, base);
   }
 
-  const reportRows = Array.from(aggregatedMap.values()).sort((a, b) =>
+  const reportRowsAll = Array.from(aggregatedMap.values()).sort((a, b) =>
     a.propertyLabel.localeCompare(b.propertyLabel)
   );
+
+  const reportRows = reportRowsAll.filter((row) => {
+    const values = [row.amount, row.condominio, row.iptu, row.nonTaxable, row.taxable];
+    return values.some((value) => Math.abs(value) > 0.0001);
+  });
 
   const totals = reportRows.reduce(
     (acc, row) => {
