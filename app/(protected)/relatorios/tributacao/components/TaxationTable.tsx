@@ -15,7 +15,7 @@ import {
   type ColumnDef,
 } from '@tanstack/react-table';
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { formatCurrency } from '@/lib/formatters';
@@ -223,6 +223,22 @@ export function TaxationTable({ rows, defaults }: TaxationTableProps) {
     });
     return map;
   }, [aggregatedRows]);
+
+  const totals = useMemo(
+    () =>
+      tableData.reduce(
+        (acc, row) => {
+          acc.amount += row.amount;
+          acc.condominio += row.condominio;
+          acc.iptu += row.iptu;
+          acc.nonTaxable += row.nonTaxable;
+          acc.taxable += row.taxable;
+          return acc;
+        },
+        { amount: 0, condominio: 0, iptu: 0, nonTaxable: 0, taxable: 0 }
+      ),
+    [tableData]
+  );
 
   const updateLocalValue = useCallback((
     row: AggregatedRow,
@@ -527,6 +543,19 @@ export function TaxationTable({ rows, defaults }: TaxationTableProps) {
             ))
           )}
         </TableBody>
+        {table.getRowModel().rows.length > 0 && (
+          <TableFooter>
+            <TableRow>
+              <TableCell className="font-semibold">Total</TableCell>
+              <TableCell className="text-right font-semibold">{formatCurrency(totals.amount)}</TableCell>
+              <TableCell className="text-right font-semibold">{formatCurrency(totals.condominio)}</TableCell>
+              <TableCell className="text-right font-semibold">{formatCurrency(totals.iptu)}</TableCell>
+              <TableCell className="text-right font-semibold">{formatCurrency(totals.nonTaxable)}</TableCell>
+              <TableCell className="text-center" />
+              <TableCell className="text-right font-semibold">{formatCurrency(totals.taxable)}</TableCell>
+            </TableRow>
+          </TableFooter>
+        )}
       </Table>
     </div>
   );
