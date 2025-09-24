@@ -78,6 +78,7 @@ export async function getRentPayments(month: number, year: number) {
   return transactions.map(t => ({
     id: t.id,
     date: t.transaction?.date || new Date(),
+    propertyId: t.propertyId || t.property?.id || null,
     propertyCode: t.property?.code || '',
     propertyAddress: t.property?.address || '',
     propertyCity: t.property?.city || '',

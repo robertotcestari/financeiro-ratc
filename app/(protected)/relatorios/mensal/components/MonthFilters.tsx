@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 interface Props {
   selectedMonth: number;
   selectedYear: number;
+  basePath?: string;
 }
 
 const months = [
@@ -14,14 +15,14 @@ const months = [
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
 ];
 
-export default function MonthFilters({ selectedMonth, selectedYear }: Props) {
+export default function MonthFilters({ selectedMonth, selectedYear, basePath = '/relatorios/mensal' }: Props) {
   const router = useRouter();
 
   const pushTo = (month: number, year: number) => {
     const params = new URLSearchParams();
     params.set('mes', month.toString());
     params.set('ano', year.toString());
-    router.push(`/relatorios/mensal?${params.toString()}`);
+    router.push(`${basePath}?${params.toString()}`);
   };
 
   const handlePreviousMonth = () => {
@@ -67,4 +68,3 @@ export default function MonthFilters({ selectedMonth, selectedYear }: Props) {
     </div>
   );
 }
-

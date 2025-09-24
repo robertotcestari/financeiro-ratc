@@ -23,6 +23,7 @@ import {
   Mail,
   FileText as FileTextIcon,
   BookOpen,
+  Receipt,
 } from 'lucide-react';
 
 const navigation = [
@@ -52,6 +53,7 @@ const registrationOptions = [
 
 const reportOptions = [
   { name: 'Relatório Mensal', href: '/relatorios/mensal', icon: Mail },
+  { name: 'Relatório Tributação', href: '/relatorios/tributacao', icon: Receipt },
   { name: 'Arquivos Salvos', href: '/relatorios/arquivos', icon: FileTextIcon },
   { name: 'DRE', href: '/dre', icon: BarChart2 },
   { name: 'Integridade', href: '/integridade', icon: ShieldCheck },
