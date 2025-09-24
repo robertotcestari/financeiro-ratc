@@ -182,9 +182,12 @@ export async function sendTributacaoReportEmail(params: {
       aggregated.set(propertyKey, base);
     }
 
-    const rows = Array.from(aggregated.values()).sort((a, b) =>
-      a.propertyLabel.localeCompare(b.propertyLabel)
-    );
+    const rows = Array.from(aggregated.values())
+      .sort((a, b) => a.propertyLabel.localeCompare(b.propertyLabel))
+      .filter((row) => {
+        const values = [row.amount, row.condominio, row.iptu, row.nonTaxable, row.taxable];
+        return values.some((value) => Math.abs(value) > 0.0001);
+      });
 
     const totals = rows.reduce(
       (acc, row) => {
