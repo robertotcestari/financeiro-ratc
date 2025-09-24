@@ -1,19 +1,19 @@
 import { prisma } from './client';
-import type { SavedFile } from '@/app/generated/prisma';
+import type { Prisma, SavedFile } from '@/app/generated/prisma';
 
 export async function createSavedFile(params: {
   fileName: string;
   path: string;
-  type: 'DRE' | 'ALUGUEIS';
+  type: 'DRE' | 'ALUGUEIS' | 'TRIBUTACAO';
   savedAt?: Date;
-  metadata?: any; // Optional metadata for additional context
+  metadata?: unknown; // Optional metadata for additional context
 }): Promise<SavedFile> {
   const { fileName, path, type, savedAt } = params;
   return prisma.savedFile.create({
     data: {
       fileName,
       path,
-      type: type as any,
+      type: type as Prisma.$Enums.SavedFileType,
       ...(savedAt ? { savedAt } : {}),
     },
   });
@@ -34,7 +34,7 @@ export async function findSavedFileByDRE(year: number, month: number) {
     where: {
       fileName,
       // Use string to avoid enum codegen timing issues
-      type: 'DRE' as any,
+      type: 'DRE' as Prisma.$Enums.SavedFileType,
     },
     orderBy: { savedAt: 'desc' },
   });
@@ -48,7 +48,19 @@ export async function findSavedFileByRentPayments(year: number, month: number) {
     where: {
       fileName,
       // Use string to avoid enum codegen timing issues
-      type: 'ALUGUEIS' as any,
+      type: 'ALUGUEIS' as Prisma.$Enums.SavedFileType,
+    },
+    orderBy: { savedAt: 'desc' },
+  });
+}
+
+export async function findSavedFileByTributacao(year: number, month: number) {
+  const padded = String(month).padStart(2, '0');
+  const fileName = `Tributacao_${year}_${padded}.pdf`;
+  return prisma.savedFile.findFirst({
+    where: {
+      fileName,
+      type: 'TRIBUTACAO' as Prisma.$Enums.SavedFileType,
     },
     orderBy: { savedAt: 'desc' },
   });

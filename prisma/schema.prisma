@@ -19,12 +19,14 @@ datasource db {
 enum SavedFileType {
   DRE // Relatórios DRE
   ALUGUEIS // Relatórios de Aluguéis
+  TRIBUTACAO // Relatório de Tributação por imóvel
 }
 
 // Meta storage for arbitrary domain data
 
 enum MetaType {
   INADIMPLENTES
+  TRIBUTACAO_DEFAULTS
 }
 
 enum AccountType {
