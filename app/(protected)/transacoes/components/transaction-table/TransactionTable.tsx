@@ -32,6 +32,7 @@ export default function TransactionTable({
   currentPage,
   totalPages,
   totalCount,
+  filters,
   categories = [],
   properties = [],
 }: TransactionTableProps) {
@@ -224,6 +225,8 @@ export default function TransactionTable({
       <TransactionTableHeader
         currentPage={currentPage}
         totalPages={totalPages}
+        totalCount={totalCount}
+        filters={filters}
       />
 
       {/* Table */}

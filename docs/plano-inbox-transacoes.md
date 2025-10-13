@@ -7,7 +7,7 @@ Objetivo
 Princípios
 
 - Fonte única de verdade: [UnifiedTransaction](prisma/schema.prisma:129).
-- Somente Server Components e Server Actions, sem API routes.
+- Priorizar Server Components e Server Actions. A exportação CSV utiliza rota dedicada em `app/api/transacoes/export`.
 - Reuso dos serviços existentes: [categorizeTransaction()](lib/database/categorization.ts:23), [bulkCategorizeTransactions()](lib/database/categorization.ts:52), [findPotentialTransfers()](lib/database/transactions.ts:221).
 - Transferências não afetam DRE.
 
@@ -101,6 +101,13 @@ Taxonomia inicial sugerida
 - Despesa: Manutenção, Condomínio, IPTU, Taxas bancárias, Tarifas PJ, Juros, Outras Despesas.
 - Transferência: Entre contas.
 - Ajuste: Ajustes de saldo.
+
+Exportação CSV
+
+- Botão "Exportar CSV" no cabeçalho da tabela aciona fetch para `GET /api/transacoes/export`, respeitando filtros ativos.
+- O serviço usa `buildProcessedTransactionWhere()` para garantir equivalência de filtros entre UI e exportação.
+- Arquivo segue cabeçalhos: ID, Data, Descrição original, Detalhes, Categoria, Tipo, Propriedade, Conta, Banco, Valor, Status, Sugestões pendentes.
+- Nome padrão: `transacoes_<ano>_<mes>.csv`; quando filtros abrangem todos os meses, o sufixo fica `todos-meses`.
 
 Filtros e query server-side
 

@@ -1,3 +1,5 @@
+import type { TransactionSearchParams } from '../../types';
+
 export interface Suggestion {
   id: string;
   confidence: number;
@@ -73,6 +75,7 @@ export interface TransactionTableProps {
   currentPage: number;
   totalPages: number;
   totalCount: number;
+  filters: TransactionSearchParams;
   categories?: Category[];
   properties?: Property[];
 }

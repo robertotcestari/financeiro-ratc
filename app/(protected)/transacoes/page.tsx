@@ -5,6 +5,12 @@ import TransactionTable from './components/transaction-table';
 import { isPendingTransaction } from '@/lib/core/database/transactions';
 import type { Prisma } from '@/app/generated/prisma';
 import { redirect } from 'next/navigation';
+import {
+  buildProcessedTransactionWhere,
+  resolveTransactionFilters,
+  TRANSACTION_ORDER_BY,
+} from './utils/filters';
+import type { TransactionSearchParams } from './types';
 
 type PTWithIncludes = Prisma.ProcessedTransactionGetPayload<{
   include: {
@@ -35,26 +41,15 @@ type PTWithIncludes = Prisma.ProcessedTransactionGetPayload<{
   };
 }>;
 
-interface SearchParams {
-  categoria?: string;
-  conta?: string;
-  mes?: string;
-  ano?: string;
-  status?: string;
-  sugestoes?: string;
-  busca?: string;
-  page?: string;
-}
-
 interface Props {
-  searchParams: Promise<SearchParams>;
+  searchParams: Promise<TransactionSearchParams>;
 }
 
 export default async function TransacoesPage({ searchParams }: Props) {
   const resolvedParams = await searchParams;
 
   // Aplicar filtros padrão do Inbox (mês atual + "pendentes") quando necessário
-  const filterKeys: Array<keyof SearchParams> = [
+  const filterKeys: Array<keyof TransactionSearchParams> = [
     'categoria',
     'conta',
     'mes',
@@ -96,10 +91,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
 
   // Garantir que ano tenha valor padrão se não especificado
   const currentYear = new Date().getFullYear();
-  const effectiveFilters = {
-    ...resolvedParams,
-    ano: resolvedParams.ano || currentYear.toString(),
-  };
+  const effectiveFilters = resolveTransactionFilters(resolvedParams, currentYear);
 
   // Buscar todas as categorias para o filtro
   const categories = await prisma.category.findMany({
@@ -125,99 +117,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
   const pageSize = 200;
   const skip = (page - 1) * pageSize;
 
-  const where: Record<string, unknown> = {};
-
-  if (effectiveFilters.categoria) {
-    where.categoryId = effectiveFilters.categoria;
-  }
-
-  if (effectiveFilters.conta) {
-    where.transaction = {
-      bankAccountId: effectiveFilters.conta,
-    };
-  }
-
-  if (effectiveFilters.mes && effectiveFilters.ano) {
-    where.year = parseInt(effectiveFilters.ano);
-    where.month = parseInt(effectiveFilters.mes);
-  } else if (effectiveFilters.ano) {
-    where.year = parseInt(effectiveFilters.ano);
-  }
-
-  // Construir filtros AND e OR separadamente
-  const andConditions: Prisma.ProcessedTransactionWhereInput[] = [];
-  const orConditions: Prisma.ProcessedTransactionWhereInput[] = [];
-
-  // Filtro de Status (Pendentes = isReviewed=false OR categoryId IS NULL OR transactionId IS NULL)
-  if (effectiveFilters.status === 'pendentes') {
-    orConditions.push(
-      { isReviewed: false },
-      { categoryId: null },
-      { transactionId: null }
-    );
-  } else if (effectiveFilters.status === 'revisados') {
-    andConditions.push({ isReviewed: true });
-  }
-
-  // Filtro de Sugestões
-  if (effectiveFilters.sugestoes === 'com-sugestoes') {
-    andConditions.push({
-      suggestions: {
-        some: {
-          isApplied: false,
-        },
-      },
-    });
-  } else if (effectiveFilters.sugestoes === 'aplicado-via-regra') {
-    andConditions.push({
-      suggestions: {
-        some: {
-          isApplied: true,
-        },
-      },
-    });
-  }
-
-  // Filtro de Busca Textual
-  if (effectiveFilters.busca) {
-    const searchTerm = effectiveFilters.busca.trim();
-    const searchConditions = {
-      OR: [
-        {
-          transaction: {
-            description: {
-              contains: searchTerm,
-            },
-          },
-        },
-        {
-          details: {
-            contains: searchTerm,
-          },
-        },
-      ],
-    };
-
-    // Se houver filtro de status pendentes, combinar com AND
-    if (effectiveFilters.status === 'pendentes') {
-      where.AND = [{ OR: orConditions }, searchConditions];
-    } else {
-      andConditions.push(searchConditions);
-    }
-  } else if (orConditions.length > 0) {
-    where.OR = orConditions;
-  }
-
-  // Aplicar condições AND se não houver conflito com busca e status pendentes
-  if (andConditions.length > 0 && !effectiveFilters.busca) {
-    where.AND = andConditions;
-  } else if (
-    andConditions.length > 0 &&
-    effectiveFilters.busca &&
-    effectiveFilters.status !== 'pendentes'
-  ) {
-    where.AND = andConditions;
-  }
+  const where = buildProcessedTransactionWhere(effectiveFilters);
 
   // Buscar transações processadas com paginação
   const [transactions, totalCount] = await Promise.all([
@@ -259,10 +159,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
           orderBy: [{ confidence: 'desc' }, { createdAt: 'desc' }],
         },
       },
-      orderBy: [
-        { transaction: { date: 'desc' } },
-        { transaction: { id: 'desc' } },
-      ],
+      orderBy: TRANSACTION_ORDER_BY,
       skip,
       take: pageSize,
     }),
@@ -401,6 +298,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
               currentPage={page}
               totalPages={totalPages}
               totalCount={totalCount}
+              filters={effectiveFilters}
               categories={categories}
               properties={properties}
             />
