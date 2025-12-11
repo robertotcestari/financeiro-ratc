@@ -405,7 +405,7 @@ export default async function EmailRascunhoPage({
                 <SendEmailButton
                   month={mes}
                   year={ano}
-                  defaultEmail={process.env.MAILGUN_TO_EMAIL}
+                  defaultEmail="robertotcestari@gmail.com,alexandrecestari@gmail.com,silviatcestari@gmail.com"
                 />
               </div>
             </CardContent>
