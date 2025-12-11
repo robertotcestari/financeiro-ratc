@@ -1,4 +1,4 @@
-import type { TransactionSearchParams } from '../../types';
+import type { TransactionSearchParams } from '../../../types';
 
 export interface Suggestion {
   id: string;

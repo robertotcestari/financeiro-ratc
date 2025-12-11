@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     const stream = buildTransactionsCsvStream(rows);
     const filename = buildTransactionsExportFilename(filters);
 
-    return new Response(Readable.toWeb(stream), {
+    return new Response(Readable.toWeb(stream) as unknown as ReadableStream<Uint8Array>, {
       status: 200,
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',

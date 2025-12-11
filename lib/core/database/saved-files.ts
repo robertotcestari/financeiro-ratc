@@ -1,5 +1,5 @@
 import { prisma } from './client';
-import type { Prisma, SavedFile } from '@/app/generated/prisma';
+import type { SavedFile, SavedFileType } from '@/app/generated/prisma';
 
 export async function createSavedFile(params: {
   fileName: string;
@@ -13,7 +13,7 @@ export async function createSavedFile(params: {
     data: {
       fileName,
       path,
-      type: type as Prisma.$Enums.SavedFileType,
+      type: type as SavedFileType,
       ...(savedAt ? { savedAt } : {}),
     },
   });
@@ -34,7 +34,7 @@ export async function findSavedFileByDRE(year: number, month: number) {
     where: {
       fileName,
       // Use string to avoid enum codegen timing issues
-      type: 'DRE' as Prisma.$Enums.SavedFileType,
+      type: 'DRE' as SavedFileType,
     },
     orderBy: { savedAt: 'desc' },
   });
@@ -48,7 +48,7 @@ export async function findSavedFileByRentPayments(year: number, month: number) {
     where: {
       fileName,
       // Use string to avoid enum codegen timing issues
-      type: 'ALUGUEIS' as Prisma.$Enums.SavedFileType,
+      type: 'ALUGUEIS' as SavedFileType,
     },
     orderBy: { savedAt: 'desc' },
   });
@@ -60,7 +60,7 @@ export async function findSavedFileByTributacao(year: number, month: number) {
   return prisma.savedFile.findFirst({
     where: {
       fileName,
-      type: 'TRIBUTACAO' as Prisma.$Enums.SavedFileType,
+      type: 'TRIBUTACAO' as SavedFileType,
     },
     orderBy: { savedAt: 'desc' },
   });

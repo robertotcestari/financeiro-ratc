@@ -15,6 +15,13 @@ import {
   type ColumnDef,
 } from '@tanstack/react-table';
 
+declare module '@tanstack/react-table' {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface ColumnMeta<TData extends unknown, TValue> {
+    align?: 'left' | 'center' | 'right';
+  }
+}
+
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -419,8 +426,8 @@ export function TaxationTable({ rows, defaults }: TaxationTableProps) {
             ? 'IPTU'
             : 'Valores não tributáveis',
         accessorKey: field,
-        meta: { align: 'right' },
-        cell: ({ row }) => {
+        meta: { align: 'right' as const },
+        cell: ({ row }: { row: any }) => {
           const baseRow = rowById[row.original.id];
           if (!baseRow) return null;
           const key = makeMapKey(baseRow);

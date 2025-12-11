@@ -17,16 +17,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  eslint: {
-    ignoreDuringBuilds: skipBuildChecks,
-  },
   typescript: {
     // Only skip type errors on deploy builds when explicitly requested
     ignoreBuildErrors: skipBuildChecks,
   },
-  experimental: {
-    reactCompiler: true,
-  },
+  reactCompiler: true,
 };
 
 export default nextConfig;

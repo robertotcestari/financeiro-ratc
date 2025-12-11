@@ -105,7 +105,7 @@ function buildDocument(rows: TributacaoReportRow[], month: number, year: number)
       4: { cellWidth: 32, halign: 'right' },
       5: { cellWidth: 32, halign: 'right' },
     },
-    willDrawCell: (data: CellHookData<string>) => {
+    willDrawCell: (data: CellHookData) => {
       if (data.row.index === body.length - 1) {
         data.cell.styles.fillColor = [243, 244, 246];
         data.cell.styles.fontStyle = 'bold';

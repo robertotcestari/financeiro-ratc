@@ -13,33 +13,33 @@ const authRoutes = [
   "/auth/signin",
 ];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  
+
   // Check if it's an auth API route (allow all)
   if (path.startsWith("/api/auth")) {
     return NextResponse.next();
   }
-  
+
   // Check if current route is public
-  const isPublicRoute = publicRoutes.some(route => 
+  const isPublicRoute = publicRoutes.some(route =>
     route === "/" ? path === "/" : path.startsWith(route)
   );
-  
+
   // Check if it's an auth route (signin page)
-  const isAuthRoute = authRoutes.some(route => 
+  const isAuthRoute = authRoutes.some(route =>
     path.startsWith(route)
   );
 
   // Get session from cookie (optimistic check - no DB call)
   const sessionCookie = await getSessionCookie(request);
-  
+
   // If we have a session and user is on auth route, redirect to home
   if (sessionCookie && isAuthRoute) {
     const redirectTo = request.nextUrl.searchParams.get("redirect") || "/";
     return NextResponse.redirect(new URL(redirectTo, request.url));
   }
-  
+
   // If not a public route and no session, redirect to signin
   if (!isPublicRoute && !sessionCookie) {
     // User is not authenticated, redirect to signin
@@ -48,7 +48,7 @@ export async function middleware(request: NextRequest) {
     signInUrl.searchParams.set("redirect", path);
     return NextResponse.redirect(signInUrl);
   }
-  
+
   return NextResponse.next();
 }
 
