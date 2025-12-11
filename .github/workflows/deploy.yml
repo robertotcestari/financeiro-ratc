@@ -119,7 +119,7 @@ jobs:
           # Estes diretórios/arquivos não são estritamente necessários em runtime,
           # mas mantê-los não causa problemas e ajuda em eventuais scripts.
           for d in app src lib components hooks; do [ -d "$d" ] && cp -r "$d" "$DEPLOY_DIR/" || true; done
-          for f in next.config.* tsconfig.json middleware.ts; do [ -f "$f" ] && cp "$f" "$DEPLOY_DIR/" || true; done
+          for f in next.config.* tsconfig.json proxy.ts; do [ -f "$f" ] && cp "$f" "$DEPLOY_DIR/" || true; done
 
           tar -czf "deploy-${RELEASE_ID}.tar.gz" -C "$DEPLOY_DIR" .
           echo "Bundle criado: deploy-${RELEASE_ID}.tar.gz"
@@ -357,6 +357,9 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script_stop: true
           script: |
+            # Garante PATH completo
+            export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
+
             APP_NAME="${{ env.APP_NAME }}"
             APP_DIR="${{ env.APP_DIR }}"
             CURRENT="${APP_DIR}/current"
@@ -370,12 +373,24 @@ jobs:
             fi
             PORT="${PORT:-3000}"
 
+            # Função para fazer HTTP request (curl ou wget)
+            http_check() {
+              if command -v curl >/dev/null 2>&1; then
+                curl -fsS --max-time 5 "$1" >/dev/null 2>&1
+              elif command -v wget >/dev/null 2>&1; then
+                wget -q --timeout=5 -O /dev/null "$1" 2>/dev/null
+              else
+                # Fallback: usa /dev/tcp do bash
+                exec 3<>/dev/tcp/127.0.0.1/${PORT} 2>/dev/null && exec 3>&-
+              fi
+            }
+
             # Health-check com mais detalhes
             echo "[ETAPA 8] Health check em http://127.0.0.1:${PORT}/"
             ok=0
             for i in 1 2 3 4 5 6 7 8 9 10; do
               echo "Tentativa $i/10..."
-              if curl -fsS --max-time 5 "http://127.0.0.1:${PORT}/" >/dev/null 2>&1; then
+              if http_check "http://127.0.0.1:${PORT}/"; then
                 echo "✓ Aplicação respondendo!"
                 ok=1
                 break
@@ -383,23 +398,27 @@ jobs:
                 echo "Aguardando aplicação iniciar..."
                 # Mostra logs do PM2 para debug
                 if [ "$i" -eq 5 ]; then
-                  echo "\n[LOGS PM2 - Últimas 20 linhas]"
+                  echo ""
+                  echo "[LOGS PM2 - Últimas 20 linhas]"
                   pm2 logs "${APP_NAME}" --nostream --lines 20 || true
-                  echo "\n"
+                  echo ""
                 fi
                 sleep 3
               fi
             done
 
             if [ "$ok" -ne 1 ]; then
-              echo "\n✗ Health-check FALHOU após 10 tentativas!"
-              echo "\n[LOGS PM2 COMPLETOS]"
+              echo ""
+              echo "✗ Health-check FALHOU após 10 tentativas!"
+              echo ""
+              echo "[LOGS PM2 COMPLETOS]"
               pm2 logs "${APP_NAME}" --nostream --lines 100 || true
-              
+
               # Tenta fazer rollback
               PREV_RELEASE="$(readlink -f "${CURRENT}" 2>/dev/null || true)"
               if [ -n "${PREV_RELEASE}" ] && [ -d "${PREV_RELEASE}" ] && [ "${PREV_RELEASE}" != "${CURRENT}" ]; then
-                echo "\n[ROLLBACK] Voltando para release anterior: ${PREV_RELEASE}"
+                echo ""
+                echo "[ROLLBACK] Voltando para release anterior: ${PREV_RELEASE}"
                 ln -sfn "${PREV_RELEASE}" "${CURRENT}"
                 cd "${CURRENT}"
                 pm2 reload "${APP_NAME}" --update-env || pm2 restart "${APP_NAME}" --update-env
@@ -407,7 +426,8 @@ jobs:
               exit 1
             fi
 
-            echo "\n✓ Deploy concluído com sucesso!"
+            echo ""
+            echo "✓ Deploy concluído com sucesso!"
 
       - name: Cleanup old releases
         uses: appleboy/ssh-action@v1.0.3
