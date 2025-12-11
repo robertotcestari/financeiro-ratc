@@ -245,7 +245,7 @@ export default async function TributacaoReportPage({
               <SendTributacaoEmailButton
                 month={mes}
                 year={ano}
-                defaultEmail={process.env.MAILGUN_TO_EMAIL}
+                defaultEmail="robertotcestari@gmail.com,felipeprado25@hotmail.com,contato.contabilidade10@gmail.com"
               />
             </div>
           </CardContent>
