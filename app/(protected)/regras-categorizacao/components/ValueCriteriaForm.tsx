@@ -1,8 +1,6 @@
 'use client';
 
 import React from 'react';
-
-import { useState, useEffect } from 'react';
 import {
   FormControl,
   FormDescription,
@@ -39,25 +37,18 @@ const operatorLabels = {
 };
 
 export default function ValueCriteriaForm({ form }: ValueCriteriaFormProps) {
-  const [useValue, setUseValue] = useState(false);
-
   const criteria = (form.watch('criteria') || {}) as RuleFormValues['criteria'];
   const valueCriteria = criteria?.value || {};
   const operator = (valueCriteria.operator ?? 'gte') as ValueOperator;
   const sign = (valueCriteria.sign ?? 'any') as 'any' | 'positive' | 'negative';
-
-  // Initialize useValue state based on existing criteria
-  useEffect(() => {
-    const hasValueCriteria = criteria.value && (
-      criteria.value.operator || 
-      criteria.value.min !== undefined || 
-      criteria.value.max !== undefined
-    );
-    setUseValue(!!hasValueCriteria);
-  }, [criteria.value]);
+  const useValue = Boolean(
+    criteria.value &&
+      (criteria.value.operator ||
+        criteria.value.min !== undefined ||
+        criteria.value.max !== undefined)
+  );
 
   const handleValueToggle = (enabled: boolean) => {
-    setUseValue(enabled);
     if (!enabled) {
       const currentCriteria = form.getValues('criteria');
       const newCriteria = { ...currentCriteria };

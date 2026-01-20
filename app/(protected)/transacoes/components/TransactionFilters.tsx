@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { ChevronLeft, ChevronRight, FileText, CheckCircle, Lightbulb, Zap, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import type { TransactionSearchParams } from '../types';
 
 interface Category {
   id: string;
@@ -20,24 +21,23 @@ interface BankAccount {
   bankName: string;
 }
 
+interface Property {
+  id: string;
+  code: string;
+  city: string;
+}
+
 interface Props {
   categories: Category[];
   bankAccounts: BankAccount[];
-  searchParams: {
-    categoria?: string;
-    conta?: string;
-    mes?: string;
-    ano?: string;
-    status?: string;
-    sugestoes?: string;
-    busca?: string;
-    page?: string;
-  };
+  properties: Property[];
+  searchParams: TransactionSearchParams;
 }
 
 export default function TransactionFilters({
   categories,
   bankAccounts,
+  properties,
   searchParams,
 }: Props) {
   const router = useRouter();
@@ -51,6 +51,7 @@ export default function TransactionFilters({
   const [filters, setFilters] = useState({
     categoria: searchParams.categoria || '',
     conta: searchParams.conta || '',
+    propriedade: searchParams.propriedade || '',
     mes: searchParams.mes || defaultMonth.toString(),
     ano: searchParams.ano || defaultYear.toString(),
     status: searchParams.status || '',
@@ -101,6 +102,7 @@ export default function TransactionFilters({
     setFilters({
       categoria: '',
       conta: '',
+      propriedade: '',
       mes: '',
       ano: currentYear.toString(),
       status: '',
@@ -121,6 +123,7 @@ export default function TransactionFilters({
     return (
       filters.categoria === '' &&
       filters.conta === '' &&
+      filters.propriedade === '' &&
       filters.mes === inboxMonth.toString() &&
       filters.ano === inboxYear.toString() &&
       filters.status === '' &&
@@ -134,6 +137,7 @@ export default function TransactionFilters({
     return (
       filters.categoria === '' &&
       filters.conta === '' &&
+      filters.propriedade === '' &&
       filters.mes === '' &&
       filters.ano === currentYear.toString() &&
       filters.status === '' &&
@@ -170,6 +174,12 @@ export default function TransactionFilters({
     value: account.id,
     label: account.name,
     keywords: [account.name, account.bankName],
+  }));
+
+  const propertyOptions: ComboboxOption[] = properties.map((property) => ({
+    value: property.id,
+    label: `${property.code} - ${property.city}`,
+    keywords: [property.code, property.city],
   }));
 
   const yearOptions: ComboboxOption[] = years.map((year) => ({
@@ -413,6 +423,23 @@ export default function TransactionFilters({
             searchPlaceholder="Buscar conta..."
             emptyMessage="Nenhuma conta encontrada."
             clearLabel="Todas as contas"
+            className="w-full"
+          />
+        </div>
+
+        {/* Filtro de Propriedade */}
+        <div>
+          <label className="block text-xs font-medium text-gray-600 mb-2">
+            Propriedade
+          </label>
+          <Combobox
+            options={propertyOptions}
+            value={filters.propriedade}
+            onValueChange={(value) => updateFilter('propriedade', value)}
+            placeholder="Selecionar propriedade"
+            searchPlaceholder="Buscar propriedade..."
+            emptyMessage="Nenhuma propriedade encontrada."
+            clearLabel="Todas as propriedades"
             className="w-full"
           />
         </div>

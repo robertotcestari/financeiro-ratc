@@ -219,6 +219,9 @@ model CategorizationRule {
   propertyId String?
   property   Property? @relation(fields: [propertyId], references: [id])
 
+  // Details to apply to transaction
+  details String?
+
   // Rule criteria (JSON)
   criteria Json
 
@@ -248,6 +251,8 @@ model TransactionSuggestion {
 
   suggestedPropertyId String?
   suggestedProperty   Property? @relation(fields: [suggestedPropertyId], references: [id])
+
+  suggestedDetails String?
 
   confidence Float @default(1.0)
 

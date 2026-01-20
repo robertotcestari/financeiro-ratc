@@ -145,7 +145,7 @@ export function useRowSelection({ tableRef, editing }: UseRowSelectionProps) {
       lastSelectedIndexRef.current = currentIndex;
       clearTextSelection();
     },
-    [editing, tableRef, handleShiftSelection, handleSingleRowSelection]
+    [tableRef, handleShiftSelection, handleSingleRowSelection]
   );
 
   // Prevent text selection on mousedown

@@ -3,7 +3,10 @@ import { ImportPreviewService } from '@/lib/features/ofx/import-preview';
 import { prisma } from '@/lib/core/database/client';
 import { OFXParserService } from '@/lib/features/ofx/parser';
 import { DuplicateDetectionService } from '@/lib/features/ofx/duplicate-detection';
-import type { OFXParseResult, DuplicateDetectionResult } from '@/lib/features/ofx/types';
+import type {
+  OFXParseResult,
+  DuplicateDetectionResult,
+} from '@/lib/features/ofx/types';
 import type { BankAccount, Category, Property } from '@/app/generated/prisma';
 
 vi.mock('@/lib/logger', () => ({
@@ -15,7 +18,10 @@ vi.mock('@/lib/logger', () => ({
   },
 }));
 
-describe('ImportPreviewService Integration', () => {
+const describeDb =
+  process.env.VITEST_SKIP_DB_TESTS === 'true' ? describe.skip : describe;
+
+describeDb('ImportPreviewService Integration', () => {
   let testBankAccount: BankAccount;
   let testCategories: Category[];
   let testProperties: Property[];

@@ -1,13 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
 import type { RuleWithRelations } from '@/lib/core/database/rule-management';
-import EditRuleDialog from './EditRuleDialog';
 import type { FormData } from './CreateRuleDialog';
 import { useToast } from '@/hooks/use-toast';
 import { toggleRuleStatusAction, deleteRuleAction } from '@/lib/actions/rule-management-actions';
+
+const EditRuleDialog = dynamic(() => import('./EditRuleDialog'));
 
 interface RulesListClientProps {
   initialRules: RuleWithRelations[];

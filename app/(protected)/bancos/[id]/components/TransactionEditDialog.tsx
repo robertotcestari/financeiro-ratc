@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -31,18 +31,37 @@ export function TransactionEditDialog({
   onSave,
   isLoading,
 }: TransactionEditDialogProps) {
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        {isOpen ? (
+          <TransactionEditForm
+            key={transaction.id}
+            transaction={transaction}
+            onClose={onClose}
+            onSave={onSave}
+            isLoading={isLoading}
+          />
+        ) : null}
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function TransactionEditForm({
+  transaction,
+  onClose,
+  onSave,
+  isLoading,
+}: {
+  transaction: { id: string; description: string; amount: number };
+  onClose: () => void;
+  onSave: (id: string, description: string, amount: number) => Promise<void>;
+  isLoading: boolean;
+}) {
   const [description, setDescription] = useState(transaction.description);
   const [amount, setAmount] = useState(Math.abs(transaction.amount).toString());
   const [errors, setErrors] = useState<{description?: string; amount?: string}>({});
-
-  // Reset form when transaction changes
-  useEffect(() => {
-    if (isOpen) {
-      setDescription(transaction.description);
-      setAmount(transaction.amount.toString());
-      setErrors({});
-    }
-  }, [isOpen, transaction]);
 
   const handleSave = async () => {
     const newErrors: {description?: string; amount?: string} = {};
@@ -77,57 +96,55 @@ export function TransactionEditDialog({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md" onKeyDown={handleKeyDown}>
-        <DialogHeader>
-          <DialogTitle>Editar Transação</DialogTitle>
-        </DialogHeader>
+    <>
+      <DialogHeader>
+        <DialogTitle>Editar Transação</DialogTitle>
+      </DialogHeader>
 
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="description">Descrição</Label>
-            <Input
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className={errors.description ? 'border-red-500' : ''}
-              autoFocus
-            />
-            {errors.description && (
-              <p className="text-sm text-red-500 mt-1">{errors.description}</p>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="amount">Valor</Label>
-            <Input
-              id="amount"
-              value={amount}
-              onChange={(e) => {
-                // Allow numbers, decimal point, and minus sign at the beginning
-                const newValue = e.target.value.replace(/[^-\d.]/g, '');
-                // Ensure minus sign can only be at the beginning
-                const cleanValue = newValue.replace(/(.)-+/g, '$1').replace(/^-+/, '-');
-                setAmount(cleanValue);
-              }}
-              placeholder="0.00"
-              className={errors.amount ? 'border-red-500' : ''}
-            />
-            {errors.amount && (
-              <p className="text-sm text-red-500 mt-1">{errors.amount}</p>
-            )}
-          </div>
+      <div className="space-y-4" onKeyDown={handleKeyDown}>
+        <div>
+          <Label htmlFor="description">Descrição</Label>
+          <Input
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className={errors.description ? 'border-red-500' : ''}
+            autoFocus
+          />
+          {errors.description && (
+            <p className="text-sm text-red-500 mt-1">{errors.description}</p>
+          )}
         </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isLoading}>
-            Cancelar
-          </Button>
-          <Button onClick={handleSave} disabled={isLoading}>
-            {isLoading ? 'Salvando...' : 'Salvar'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <div>
+          <Label htmlFor="amount">Valor</Label>
+          <Input
+            id="amount"
+            value={amount}
+            onChange={(e) => {
+              // Allow numbers, decimal point, and minus sign at the beginning
+              const newValue = e.target.value.replace(/[^-\d.]/g, '');
+              // Ensure minus sign can only be at the beginning
+              const cleanValue = newValue.replace(/(.)-+/g, '$1').replace(/^-+/, '-');
+              setAmount(cleanValue);
+            }}
+            placeholder="0.00"
+            className={errors.amount ? 'border-red-500' : ''}
+          />
+          {errors.amount && (
+            <p className="text-sm text-red-500 mt-1">{errors.amount}</p>
+          )}
+        </div>
+      </div>
+
+      <DialogFooter>
+        <Button variant="outline" onClick={onClose} disabled={isLoading}>
+          Cancelar
+        </Button>
+        <Button onClick={handleSave} disabled={isLoading}>
+          {isLoading ? 'Salvando...' : 'Salvar'}
+        </Button>
+      </DialogFooter>
+    </>
   );
 }

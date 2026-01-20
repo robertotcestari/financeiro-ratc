@@ -4,8 +4,6 @@ export interface Suggestion {
   id: string;
   confidence: number;
   createdAt: Date;
-  source?: 'RULE' | 'AI';
-  reasoning?: string | null;
   rule?: {
     id: string;
     name: string;

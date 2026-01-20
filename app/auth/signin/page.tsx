@@ -1,26 +1,22 @@
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function SignInPage() {
-  const { isAuthenticated, isLoading, signInWithGoogle } = useAuth();
-  const router = useRouter();
+  const { isLoading, signInWithGoogle } = useAuth();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   // Relaxed: do not gate by role or redirect if already authenticated
-
-  useEffect(() => {
-    // Check for error parameter from middleware
-    const errorParam = searchParams.get("error");
-    if (errorParam === "unauthorized") {
-      setError("Acesso negado. Apenas usuários autorizados podem acessar o sistema.");
-    }
-  }, [searchParams]);
+  const queryError =
+    searchParams.get("error") === "unauthorized"
+      ? "Acesso negado. Apenas usuários autorizados podem acessar o sistema."
+      : null;
+  const errorMessage = error ?? queryError;
 
   // Do not auto-redirect when already authenticated; let the user stay here
 
@@ -50,9 +46,9 @@ export default function SignInPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {error && (
+          {errorMessage && (
             <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
           

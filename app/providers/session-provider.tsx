@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import { useSession } from "@/lib/core/auth/auth-client";
 
 interface SessionProviderProps {
@@ -15,14 +15,7 @@ interface SessionProviderProps {
  */
 export function SessionProvider({ children }: SessionProviderProps) {
   const session = useSession();
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  useEffect(() => {
-    // Mark as initialized once we've attempted to fetch the session
-    if (!session.isPending) {
-      setIsInitialized(true);
-    }
-  }, [session.isPending]);
+  const isInitialized = !session.isPending;
 
   // Show loading state while session is initializing
   if (!isInitialized && session.isPending) {

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import type { DRERowData } from '@/app/(protected)/dre/actions';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { saveGeneratedDREToStorage } from '../actions';
@@ -37,7 +37,7 @@ function buildDoc(rows: DRERowData[], year: number, months: number[]) {
   const headers = ['Descrição', ...months.map(m => MONTH_NAMES[m - 1])];
   const formatCurrency = (value: number) => value === 0 ? '-' : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL'}).format(value);
 
-  const body: any[] = [];
+  const body: string[][] = [];
   for (const row of rows) {
     const dataRow = [row.name];
     months.forEach(m => dataRow.push(formatCurrency(row.monthlyAmounts[m] || 0)));
@@ -61,8 +61,6 @@ export default function ExportYearDREButton({ rows, year, months, fileName }: Pr
   const [blob, setBlob] = useState<Blob | null>(null);
   const [generatedFileName, setGeneratedFileName] = useState<string>('');
   const [savedPath, setSavedPath] = useState<string | null>(null);
-
-  const generatedUrl = useMemo(() => (blob ? URL.createObjectURL(blob) : null), [blob]);
 
   const onGenerate = async () => {
     setSavedPath(null);
@@ -130,4 +128,3 @@ export default function ExportYearDREButton({ rows, year, months, fileName }: Pr
     </div>
   );
 }
-

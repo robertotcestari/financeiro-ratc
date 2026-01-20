@@ -144,7 +144,10 @@ function CategoryItem({ category, level, onEdit, onDelete }: CategoryItemProps) 
 
 export default function CategoryList({ categories, onEdit, onDelete }: CategoryListProps) {
   return (
-    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+    <div
+      className="bg-white border border-gray-200 rounded-lg overflow-hidden"
+      style={{ contentVisibility: 'auto' }}
+    >
       <table className="min-w-full">
         <thead className="bg-gray-50">
           <tr>

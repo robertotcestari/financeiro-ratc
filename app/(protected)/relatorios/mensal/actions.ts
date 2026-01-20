@@ -40,9 +40,10 @@ export async function saveGeneratedDREToStorage(params: {
     await createSavedFile({ fileName, path: pathValue, type: 'DRE' });
 
     return { ok: true, path: pathValue };
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('saveGeneratedDREToStorage error:', e);
-    return { ok: false, error: e?.message || 'unknown_error' };
+    const message = e instanceof Error ? e.message : 'unknown_error';
+    return { ok: false, error: message };
   }
 }
 
@@ -121,9 +122,10 @@ export async function saveGeneratedRentPaymentsToStorage(params: {
     await createSavedFile({ fileName, path: pathValue, type: 'ALUGUEIS', metadata: { month, year } });
 
     return { ok: true, path: pathValue };
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error('saveGeneratedRentPaymentsToStorage error:', e);
-    return { ok: false, error: e?.message || 'unknown_error' };
+    const message = e instanceof Error ? e.message : 'unknown_error';
+    return { ok: false, error: message };
   }
 }
 
@@ -268,11 +270,15 @@ export async function sendMonthlyReportEmail(params: {
     });
 
     return result;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error sending monthly report email:', error);
+    const message =
+      error instanceof Error
+        ? error.message
+        : 'Unknown error occurred while sending email';
     return {
       success: false,
-      error: error.message || 'Unknown error occurred while sending email',
+      error: message,
     };
   }
 }

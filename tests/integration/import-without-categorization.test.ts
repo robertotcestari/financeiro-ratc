@@ -13,7 +13,10 @@ vi.mock('@/lib/logger', () => ({
   },
 }));
 
-describe('Import Without Categorization', () => {
+const describeDb =
+  process.env.VITEST_SKIP_DB_TESTS === 'true' ? describe.skip : describe;
+
+describeDb('Import Without Categorization', () => {
   let importService: ImportService;
   let testBankAccountId: string;
   let testCategoryId: string;
@@ -214,12 +217,16 @@ describe('Import Without Categorization', () => {
     expect(transactions).toHaveLength(2);
 
     // Primeira transação (TEST003) - COM categoria
-    const withCategory = transactions.find(t => t.description.includes('WITH_CATEGORY'));
+    const withCategory = transactions.find((t) =>
+      t.description.includes('WITH_CATEGORY')
+    );
     expect(withCategory?.processedTransaction?.categoryId).toBe(testCategoryId);
     expect(withCategory?.processedTransaction?.isReviewed).toBe(true);
 
     // Segunda transação (TEST004) - SEM categoria
-    const withoutCategory = transactions.find(t => t.description.includes('WITHOUT_CATEGORY'));
+    const withoutCategory = transactions.find((t) =>
+      t.description.includes('WITHOUT_CATEGORY')
+    );
     expect(withoutCategory?.processedTransaction?.categoryId).toBeNull();
     expect(withoutCategory?.processedTransaction?.isReviewed).toBe(false);
   });
@@ -265,7 +272,7 @@ describe('Import Without Categorization', () => {
 
     // O preview pode ter sugestões, mas não devem ser usadas na importação
     expect(preview.transactions).toHaveLength(2);
-    
+
     // As sugestões podem existir no preview (isso é OK)
     // Mas não devem ser aplicadas na importação
 
@@ -286,10 +293,10 @@ describe('Import Without Categorization', () => {
     // Verificar que NENHUMA categoria foi aplicada automaticamente
     const transactions = await prisma.transaction.findMany({
       where: { bankAccountId: testBankAccountId },
-      include: { 
+      include: {
         processedTransaction: {
-          include: { category: true }
-        }
+          include: { category: true },
+        },
       },
     });
 
@@ -300,10 +307,12 @@ describe('Import Without Categorization', () => {
       expect(transaction.processedTransaction?.categoryId).toBeNull();
       expect(transaction.processedTransaction?.category).toBeNull();
       expect(transaction.processedTransaction?.isReviewed).toBe(false);
-      
+
       // Verificar que não é a categoria "Água" ou qualquer outra
       expect(transaction.processedTransaction?.category?.name).not.toBe('Água');
-      expect(transaction.processedTransaction?.category?.name).not.toBe('Aluguel');
+      expect(transaction.processedTransaction?.category?.name).not.toBe(
+        'Aluguel'
+      );
     }
   });
 
@@ -402,10 +411,10 @@ describe('Import Without Categorization', () => {
 
     expect(transactions).toHaveLength(4);
 
-    const cat1 = transactions.find(t => t.description.includes('CAT1'));
-    const nocat1 = transactions.find(t => t.description.includes('NOCAT1'));
-    const cat2 = transactions.find(t => t.description.includes('CAT2'));
-    const nocat2 = transactions.find(t => t.description.includes('NOCAT2'));
+    const cat1 = transactions.find((t) => t.description.includes('CAT1'));
+    const nocat1 = transactions.find((t) => t.description.includes('NOCAT1'));
+    const cat2 = transactions.find((t) => t.description.includes('CAT2'));
+    const nocat2 = transactions.find((t) => t.description.includes('NOCAT2'));
 
     // Verificar categorias aplicadas corretamente
     expect(cat1?.processedTransaction?.categoryId).toBe(testCategoryId);

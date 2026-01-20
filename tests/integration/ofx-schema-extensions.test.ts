@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { prisma } from '@/lib/core/database/client';
 
-describe('OFX Schema Extensions', () => {
+const describeDb =
+  process.env.VITEST_SKIP_DB_TESTS === 'true' ? describe.skip : describe;
+
+describeDb('OFX Schema Extensions', () => {
   beforeEach(async () => {
     // Clean up test data in correct order (respecting foreign key constraints)
     await prisma.transactionSuggestion.deleteMany();
@@ -11,7 +14,6 @@ describe('OFX Schema Extensions', () => {
     await prisma.importBatch.deleteMany();
     await prisma.bankAccount.deleteMany();
   });
-
 
   it('should create transaction with OFX fields', async () => {
     // Create a bank account first

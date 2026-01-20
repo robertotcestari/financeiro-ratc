@@ -1,8 +1,7 @@
 'use client';
 
-import React from 'react';
-
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -47,11 +46,12 @@ import {
 } from '@/lib/actions/rule-management-actions';
 import type { RuleWithRelations } from '@/lib/core/database/rule-management';
 import type { RuleCriteria } from '@/lib/core/database/rule-types';
-import EditRuleDialog from './EditRuleDialog';
-import TestRuleDialog from './TestRuleDialog';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { FormData } from './CreateRuleDialog';
+
+const EditRuleDialog = dynamic(() => import('./EditRuleDialog'));
+const TestRuleDialog = dynamic(() => import('./TestRuleDialog'));
 
 interface RulesListProps {
   initialData: {

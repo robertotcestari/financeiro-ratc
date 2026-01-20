@@ -1,9 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import autoTable, { type CellHookData } from 'jspdf-autotable';
 import { saveGeneratedRentPaymentsToStorage } from '../actions';
 import { FileDown, CloudUpload, FileText } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/formatters';
@@ -49,7 +49,7 @@ function buildDoc(payments: RentPayment[], month: number, year: number) {
 
   // Prepare data
   const headers = ['Data', 'Código', 'Imóvel', 'Cidade', 'Inquilino', 'Valor', 'Conta'];
-  const body: any[] = [];
+  const body: string[][] = [];
   
   // Sort payments by property code and date
   const sortedPayments = [...payments].sort((a, b) => {
@@ -111,7 +111,7 @@ function buildDoc(payments: RentPayment[], month: number, year: number) {
       5: { cellWidth: 25, halign: 'right' }, // Valor
       6: { cellWidth: 30 }  // Conta
     },
-    willDrawCell: (data: any) => {
+    willDrawCell: (data: CellHookData) => {
       // Style the total row before drawing
       if (data.row.index === body.length - 1) {
         data.cell.styles.fillColor = [243, 244, 246];
@@ -122,7 +122,9 @@ function buildDoc(payments: RentPayment[], month: number, year: number) {
   });
 
   // Footer
-  const finalY = (doc as any).lastAutoTable.finalY || 22;
+  const lastAutoTable = (doc as jsPDF & { lastAutoTable?: { finalY?: number } })
+    .lastAutoTable;
+  const finalY = lastAutoTable?.finalY ?? 22;
   doc.setFontSize(7);
   doc.text(`Total de ${payments.length} recebimento${payments.length !== 1 ? 's' : ''}`, 14, finalY + 5);
 
@@ -134,8 +136,6 @@ export default function ExportRentPaymentsButton({ payments, month, year, fileNa
   const [blob, setBlob] = useState<Blob | null>(null);
   const [generatedFileName, setGeneratedFileName] = useState<string>('');
   const [savedPath, setSavedPath] = useState<string | null>(null);
-
-  const generatedUrl = useMemo(() => (blob ? URL.createObjectURL(blob) : null), [blob]);
 
   const onGenerate = async () => {
     setSavedPath(null);

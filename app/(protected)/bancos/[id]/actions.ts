@@ -183,7 +183,7 @@ export async function updateTransactionAction(
     }
 
     // Update the transaction
-    const updatedTransaction = await prisma.transaction.update({
+    await prisma.transaction.update({
       where: { 
         id: transactionId,
         bankAccountId: bankAccountId // Extra safety check
@@ -247,7 +247,7 @@ export async function createTransactionAction(
     }
 
     // Create the transaction
-    const newTransaction = await prisma.transaction.create({
+    await prisma.transaction.create({
       data: {
         description: description.trim(),
         amount: amount,

@@ -1,12 +1,5 @@
 import { beforeAll, afterAll } from 'vitest';
-import { prisma } from '@/lib/core/database/client';
-
-// Only run database setup for integration tests, not component tests
-const isIntegrationTest = process.argv.some(arg => 
-  arg.includes('integration/') || 
-  arg.includes('test.ts') ||
-  process.env.VITEST_INTEGRATION === 'true'
-);
+import { PrismaClient } from '@/app/generated/prisma';
 
 // Mock ResizeObserver for all tests (needed by cmdk component)
 global.ResizeObserver = class ResizeObserver {
@@ -18,20 +11,50 @@ global.ResizeObserver = class ResizeObserver {
 // Mock scrollIntoView for all tests (needed by cmdk component)
 Element.prototype.scrollIntoView = () => {};
 
-if (isIntegrationTest) {
-  beforeAll(async () => {
-    // Limpa o banco de dados antes de todos os testes de integração
-    try {
-      await prisma.accountSnapshot.deleteMany({});
-      await prisma.transaction.deleteMany({});
-      await prisma.bankAccount.deleteMany({});
-    } catch (error) {
-      console.warn('Database cleanup failed:', error.message);
-    }
-  });
+/**
+ * DB-backed integration tests require a working DATABASE_URL.
+ * If the database is not reachable in the current environment, we mark DB tests
+ * to be skipped (they will be conditionally skipped by the integration specs).
+ */
+let prisma: PrismaClient | null = null;
 
-  afterAll(async () => {
-    // Desconecta do banco de dados após todos os testes de integração
-    await prisma.$disconnect();
-  });
+async function canConnectToDatabase(): Promise<boolean> {
+  const client = new PrismaClient();
+  try {
+    // minimal connectivity check
+    await client.$queryRaw`SELECT 1`;
+    return true;
+  } catch {
+    return false;
+  } finally {
+    await client.$disconnect().catch(() => {});
+  }
 }
+
+beforeAll(async () => {
+  const ok = await canConnectToDatabase();
+  if (!ok) {
+    process.env.VITEST_SKIP_DB_TESTS = 'true';
+    return;
+  }
+
+  prisma = new PrismaClient();
+  // Best-effort cleanup for DB integration tests. This is safe even when
+  // running only unit/component tests (tables may be empty).
+  try {
+    await prisma.accountSnapshot.deleteMany({});
+    await prisma.transaction.deleteMany({});
+    await prisma.bankAccount.deleteMany({});
+  } catch (error) {
+    console.warn(
+      'Database cleanup failed:',
+      error instanceof Error ? error.message : error
+    );
+  }
+});
+
+afterAll(async () => {
+  if (prisma) {
+    await prisma.$disconnect();
+  }
+});

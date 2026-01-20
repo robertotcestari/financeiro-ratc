@@ -13,14 +13,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import type { RowSelectionState, Table } from '@tanstack/react-table';
 import type { Transaction } from '../types';
 
 interface BulkActionsToolbarProps {
   rowSelection: RowSelectionState;
   table: Table<Transaction>;
-  isGeneratingAI: boolean;
   isPending: boolean;
   categoryOptions: ComboboxOption[];
   propertyOptions: ComboboxOption[];
@@ -29,7 +28,6 @@ interface BulkActionsToolbarProps {
   setBulkCategory: (value: string) => void;
   setBulkProperty: (value: string) => void;
   handleGenerateSuggestions: () => Promise<void>;
-  handleGenerateAISuggestions: () => Promise<void>;
   handleApplySuggestions: () => Promise<void>;
   handleDismissSuggestions: () => Promise<void>;
   handleBulkCategorize: () => Promise<void>;
@@ -42,7 +40,6 @@ interface BulkActionsToolbarProps {
 export function BulkActionsToolbar({
   rowSelection,
   table,
-  isGeneratingAI,
   isPending,
   categoryOptions,
   propertyOptions,
@@ -51,7 +48,6 @@ export function BulkActionsToolbar({
   setBulkCategory,
   setBulkProperty,
   handleGenerateSuggestions,
-  handleGenerateAISuggestions,
   handleApplySuggestions,
   handleDismissSuggestions,
   handleBulkCategorize,
@@ -83,34 +79,17 @@ export function BulkActionsToolbar({
 
           <Button
             onClick={handleGenerateSuggestions}
-            disabled={isPending || isGeneratingAI}
+            disabled={isPending}
             variant="default"
             size="sm"
           >
             Gerar Sugestões ({selectedCount})
           </Button>
 
-          <Button
-            onClick={handleGenerateAISuggestions}
-            disabled={isPending || isGeneratingAI}
-            variant="default"
-            size="sm"
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-          >
-            {isGeneratingAI ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                Processando...
-              </>
-            ) : (
-              <>Gerar Sugestões IA ({selectedCount})</>
-            )}
-          </Button>
-
           {selectedWithSuggestions.length > 0 && (
             <Button
               onClick={handleApplySuggestions}
-              disabled={isPending || isGeneratingAI}
+              disabled={isPending}
               variant="default"
               size="sm"
               className="bg-yellow-600 hover:bg-yellow-700"
@@ -122,7 +101,7 @@ export function BulkActionsToolbar({
           {selectedWithSuggestions.length > 0 && (
             <Button
               onClick={handleDismissSuggestions}
-              disabled={isPending || isGeneratingAI}
+              disabled={isPending}
               variant="outline"
               size="sm"
               className="text-red-600 border-red-300 hover:text-red-700 hover:bg-red-50"
@@ -155,7 +134,7 @@ export function BulkActionsToolbar({
 
           <Button
             onClick={handleBulkCategorize}
-            disabled={!bulkCategory || isPending || isGeneratingAI}
+            disabled={!bulkCategory || isPending}
             variant="default"
             size="sm"
           >
@@ -164,7 +143,7 @@ export function BulkActionsToolbar({
 
           <Button
             onClick={handleBulkApplyProperty}
-            disabled={!bulkProperty || isPending || isGeneratingAI}
+            disabled={!bulkProperty || isPending}
             variant="default"
             size="sm"
             className="bg-indigo-600 hover:bg-indigo-700"
@@ -174,7 +153,7 @@ export function BulkActionsToolbar({
 
           <Button
             onClick={handleBulkMarkReviewed}
-            disabled={isPending || isGeneratingAI}
+            disabled={isPending}
             variant="default"
             size="sm"
             className="bg-green-600 hover:bg-green-700"
@@ -184,7 +163,7 @@ export function BulkActionsToolbar({
 
           <Button
             onClick={() => setShowDeleteConfirm(true)}
-            disabled={isPending || isGeneratingAI}
+            disabled={isPending}
             variant="destructive"
             size="sm"
           >

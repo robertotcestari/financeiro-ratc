@@ -22,8 +22,6 @@ type PTWithIncludes = Prisma.ProcessedTransactionGetPayload<{
         id: true;
         confidence: true;
         createdAt: true;
-        source: true;
-        reasoning: true;
         rule: true;
         suggestedCategory: {
           select: {
@@ -52,6 +50,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
   const filterKeys: Array<keyof TransactionSearchParams> = [
     'categoria',
     'conta',
+    'propriedade',
     'mes',
     'ano',
     'status',
@@ -140,8 +139,6 @@ export default async function TransacoesPage({ searchParams }: Props) {
             id: true,
             confidence: true,
             createdAt: true,
-            source: true,
-            reasoning: true,
             rule: true,
             suggestedCategory: {
               select: {
@@ -155,7 +152,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
               select: { id: true, code: true, city: true },
             },
           },
-          where: { isApplied: false },
+          where: { isApplied: false, source: 'RULE' },
           orderBy: [{ confidence: 'desc' }, { createdAt: 'desc' }],
         },
       },
@@ -229,8 +226,6 @@ export default async function TransacoesPage({ searchParams }: Props) {
         id: s.id,
         confidence: s.confidence,
         createdAt: s.createdAt,
-        source: s.source,
-        reasoning: s.reasoning,
         rule: s.rule
           ? {
               id: s.rule.id,
@@ -286,6 +281,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
             <TransactionFilters
               categories={categories}
               bankAccounts={bankAccounts}
+              properties={properties}
               searchParams={effectiveFilters}
             />
           </div>

@@ -106,12 +106,21 @@ export function DRETableClient({
     }).format(value);
   };
 
-  const getCellClass = (lineType: string, isBold: boolean, rowId?: string, isLastColumn: boolean = false) => {
+  const getCellClass = (
+    lineType: string,
+    isBold: boolean,
+    level: number,
+    rowId?: string,
+    isLastColumn: boolean = false
+  ) => {
     let classes = `${isLastColumn ? 'pl-3 pr-6' : 'px-3'} text-right border-b border-gray-200 text-xs`;
 
     if (lineType === 'SEPARATOR') {
       return 'px-3 py-2 border-b border-gray-300';
     }
+
+    const isSummaryDetail = lineType === 'DETAIL' && level === 2;
+    const isChildDetail = lineType === 'DETAIL' && level >= 3;
 
     // Padding vertical maior para headers (lvl1) e totais
     if (lineType === 'HEADER' || lineType === 'TOTAL') {
@@ -139,6 +148,12 @@ export function DRETableClient({
       classes += ' bg-gray-50 font-semibold';
     } else if (lineType === 'HEADER') {
       classes += ' font-bold';
+    }
+
+    if (isSummaryDetail) {
+      classes += ' bg-gray-50 font-semibold py-2';
+    } else if (isChildDetail) {
+      classes += ' text-gray-600';
     }
 
     return classes;
@@ -147,13 +162,17 @@ export function DRETableClient({
   const getNameCellClass = (
     lineType: string,
     isBold: boolean,
+    level: number,
     rowId?: string
   ) => {
-    let classes = 'px-3 border-b border-gray-200 text-sm';
+    let classes = 'px-3 border-b border-gray-200 text-sm bg-white';
 
     if (lineType === 'SEPARATOR') {
       return 'px-3 py-2 border-b border-gray-300';
     }
+
+    const isSummaryDetail = lineType === 'DETAIL' && level === 2;
+    const isChildDetail = lineType === 'DETAIL' && level >= 3;
 
     // Padding vertical maior para headers (lvl1) e totais
     if (lineType === 'HEADER' || lineType === 'TOTAL') {
@@ -181,6 +200,12 @@ export function DRETableClient({
       classes += ' bg-gray-50 font-semibold';
     } else if (lineType === 'HEADER') {
       classes += ' font-bold';
+    }
+
+    if (isSummaryDetail) {
+      classes += ' bg-gray-50 font-semibold text-gray-900 py-2';
+    } else if (isChildDetail) {
+      classes += ' text-gray-600';
     }
 
     return classes;
@@ -465,15 +490,13 @@ export function DRETableClient({
                           ? `${getNameCellClass(
                               rowData.lineType,
                               rowData.isBold,
+                              rowData.level,
                               rowData.id
-                            )} sticky left-0 ${
-                              rowData.id === 'nao-categorizados'
-                                ? 'bg-yellow-100'
-                                : 'bg-white'
-                            }`
+                            )} sticky left-0`
                           : `${getCellClass(
                               rowData.lineType,
                               rowData.isBold,
+                              rowData.level,
                               rowData.id,
                               isLastColumn
                             )}`

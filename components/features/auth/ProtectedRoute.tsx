@@ -1,4 +1,4 @@
-import { requireAuthWithRedirect } from "@/lib/core/auth";
+import { requireAuth as requireAuthWithRedirect } from "@/lib/core/auth/auth-helpers";
 import type { ReactNode } from "react";
 
 interface ProtectedRouteProps {

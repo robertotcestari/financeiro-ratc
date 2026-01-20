@@ -8,6 +8,30 @@ const rootDir = fileURLToPath(new URL('.', import.meta.url));
 // Load test environment variables quietly
 config({ path: resolve(rootDir, '.env.test'), quiet: true });
 
+/**
+ * Local dev note (per repo docs): MySQL dev uses `root` with no password.
+ *
+ * If `.env.test` contains a passworded root URL, Prisma integration tests will fail
+ * with auth errors in such setups. For tests only, default to passwordless root
+ * unless explicitly opted out.
+ */
+const shouldKeepDbPassword = process.env.VITEST_KEEP_DB_PASSWORD === 'true';
+const databaseUrl = process.env.DATABASE_URL;
+if (!shouldKeepDbPassword && databaseUrl) {
+  try {
+    const parsed = new URL(databaseUrl);
+    if (parsed.username === 'root' && parsed.password) {
+      parsed.password = '';
+      // URL serialization keeps an empty password as `root:@` - normalize it.
+      process.env.DATABASE_URL = parsed
+        .toString()
+        .replace('://root:@', '://root@');
+    }
+  } catch {
+    // If DATABASE_URL isn't parseable by URL, leave it as-is.
+  }
+}
+
 export default defineConfig({
   resolve: {
     alias: {
@@ -15,6 +39,7 @@ export default defineConfig({
     },
   },
   test: {
+    globalSetup: ['vitest.global-setup.ts'],
     // Default to jsdom so React component tests work without per-file directives
     environment: 'jsdom',
     setupFiles: ['tests/setup.ts', 'vitest.setup.ts'],

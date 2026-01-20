@@ -1,5 +1,5 @@
 import { prisma } from './client';
-import type { ProcessedTransaction } from '@/app/generated/prisma';
+import type { Prisma, ProcessedTransaction } from '@/app/generated/prisma';
 
 /**
  * Categoriza uma transação processada por ID
@@ -19,7 +19,7 @@ export async function categorizeTransaction(
   }
 
   // Monta dinamicamente os campos a serem atualizados, respeitando undefined (não altera)
-  const data: any = { updatedAt: new Date() };
+  const data: Prisma.ProcessedTransactionUpdateInput = { updatedAt: new Date() };
   // Permitir transações sem categoria (uncategorized) - null limpa, undefined mantém
   if (overrideCategoryId !== undefined) {
     data.categoryId =

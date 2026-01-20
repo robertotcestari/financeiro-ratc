@@ -13,7 +13,7 @@ import {
 import { markReviewedAction } from '../../actions';
 import { useTransactionEditing } from './hooks/useTransactionEditing';
 import { useBulkOperations } from './hooks/useBulkOperations';
-import { useAISuggestions } from './hooks/useAISuggestions';
+import { useSuggestions } from './hooks/useSuggestions';
 import { useRowSelection } from './hooks/useRowSelection';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { applyOptimisticUpdates } from './utils/optimistic-updates';
@@ -22,6 +22,7 @@ import { TransactionTableHeader } from './components/TransactionTableHeader';
 import { TransactionTablePagination } from './components/TransactionTablePagination';
 import { TransactionTableEmptyState } from './components/TransactionTableEmptyState';
 import { createColumnDefinitions } from './utils/column-definitions';
+import { categoryRequiresProperty } from './utils/category-requires-property';
 import type { Transaction } from './types';
 import { prepareCategories } from './utils/transaction-helpers';
 import type { TransactionTableProps } from './types';
@@ -67,7 +68,7 @@ export default function TransactionTable({
   // Custom hooks for functionality
   const editing = useTransactionEditing(properties);
   const bulk = useBulkOperations(properties, transactions);
-  const ai = useAISuggestions(bulk.setRowSelection);
+  const suggestions = useSuggestions(bulk.setRowSelection);
 
   // Handle mark reviewed
   const handleMarkReviewed = useCallback(
@@ -141,6 +142,7 @@ export default function TransactionTable({
   );
 
   // Table configuration
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
@@ -166,24 +168,19 @@ export default function TransactionTable({
     typeof useReactTable<Transaction>
   >;
 
-  // Handlers for AI suggestions
+  // Handlers for suggestions
   const handleGenerateSuggestions = useCallback(async () => {
     const selectedIds = Object.keys(bulk.rowSelection);
-    await ai.handleGenerateSuggestions(selectedIds);
-  }, [bulk.rowSelection, ai]);
-
-  const handleGenerateAISuggestions = useCallback(async () => {
-    const selectedIds = Object.keys(bulk.rowSelection);
-    await ai.handleGenerateAISuggestions(selectedIds);
-  }, [bulk.rowSelection, ai]);
+    await suggestions.handleGenerateSuggestions(selectedIds);
+  }, [bulk.rowSelection, suggestions]);
 
   const handleApplySuggestions = useCallback(async () => {
-    await ai.handleApplySuggestions(table);
-  }, [table, ai]);
+    await suggestions.handleApplySuggestions(table);
+  }, [table, suggestions]);
 
   const handleDismissSuggestions = useCallback(async () => {
-    await ai.handleDismissSuggestions(table);
-  }, [table, ai]);
+    await suggestions.handleDismissSuggestions(table);
+  }, [table, suggestions]);
 
   // Keyboard shortcuts
   useKeyboardShortcuts({
@@ -203,8 +200,7 @@ export default function TransactionTable({
       <BulkActionsToolbar
         rowSelection={bulk.rowSelection}
         table={table}
-        isGeneratingAI={ai.isGeneratingAI}
-        isPending={bulk.isPending || ai.isPending}
+        isPending={bulk.isPending || suggestions.isPending}
         categoryOptions={categoryOptions}
         propertyOptions={propertyOptions}
         bulkCategory={bulk.bulkCategory}
@@ -212,7 +208,6 @@ export default function TransactionTable({
         setBulkCategory={bulk.setBulkCategory}
         setBulkProperty={bulk.setBulkProperty}
         handleGenerateSuggestions={handleGenerateSuggestions}
-        handleGenerateAISuggestions={handleGenerateAISuggestions}
         handleApplySuggestions={handleApplySuggestions}
         handleDismissSuggestions={handleDismissSuggestions}
         handleBulkCategorize={bulk.handleBulkCategorize}
@@ -230,7 +225,10 @@ export default function TransactionTable({
       />
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div
+        className="overflow-x-auto"
+        style={{ contentVisibility: 'auto' }}
+      >
         <table className="w-full text-xs border-collapse table-fixed">
           <thead className="bg-gray-50 shadow-sm">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -272,12 +270,9 @@ export default function TransactionTable({
           <tbody className="bg-white">
             {table.getRowModel().rows.map((row, index) => {
               // Check if this category requires a property and it's missing
-              const requiresProperty =
-                row.original.category.name === 'Aluguel' ||
-                row.original.category.name === 'Aluguel de Terceiros' ||
-                row.original.category.name === 'Repasse de Aluguel' ||
-                row.original.category.name === 'Aluguel Pago' ||
-                row.original.category.name === 'Manutenção';
+              const requiresProperty = categoryRequiresProperty(
+                row.original.category.name
+              );
               const isRentalWithoutProperty =
                 requiresProperty && !row.original.property;
 

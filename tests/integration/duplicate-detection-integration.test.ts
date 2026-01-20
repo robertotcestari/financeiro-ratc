@@ -8,7 +8,10 @@ import { prisma } from '@/lib/core/database/client';
 import { DuplicateDetectionService } from '@/lib/features/ofx/duplicate-detection';
 import type { OFXTransaction } from '@/lib/features/ofx/types';
 
-describe('DuplicateDetectionService Integration', () => {
+const describeDb =
+  process.env.VITEST_SKIP_DB_TESTS === 'true' ? describe.skip : describe;
+
+describeDb('DuplicateDetectionService Integration', () => {
   let service: DuplicateDetectionService;
   let testBankAccountId: string;
 

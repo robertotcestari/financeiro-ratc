@@ -65,7 +65,7 @@ export function exportDREToPDF(
   });
 
   // Filtrar e processar linhas
-  const tableData: any[] = [];
+  const tableData: string[][] = [];
   let currentSection: string | null = null;
   const SECTION_IDS = {
     SALDOS_BANCARIOS: 'saldos-bancarios-header',

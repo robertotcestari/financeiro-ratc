@@ -23,6 +23,7 @@ export function resolveTransactionFilters(
 const SEARCH_PARAM_KEYS: Array<keyof TransactionSearchParams> = [
   'categoria',
   'conta',
+  'propriedade',
   'mes',
   'ano',
   'status',
@@ -70,6 +71,10 @@ export function buildProcessedTransactionWhere(
     };
   }
 
+  if (filters.propriedade) {
+    where.propertyId = filters.propriedade;
+  }
+
   if (filters.mes && filters.ano) {
     where.year = parseInt(filters.ano, 10);
     where.month = parseInt(filters.mes, 10);
@@ -92,6 +97,7 @@ export function buildProcessedTransactionWhere(
       suggestions: {
         some: {
           isApplied: false,
+          source: 'RULE',
         },
       },
     });
@@ -100,6 +106,7 @@ export function buildProcessedTransactionWhere(
       suggestions: {
         some: {
           isApplied: true,
+          source: 'RULE',
         },
       },
     });

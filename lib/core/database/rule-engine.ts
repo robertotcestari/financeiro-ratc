@@ -27,6 +27,7 @@ interface EvaluatedSuggestion {
   ruleId: string;
   suggestedCategoryId: string | null;
   suggestedPropertyId: string | null;
+  suggestedDetails: string | null;
   confidence: number; // 0.0..1.0
 }
 
@@ -283,6 +284,7 @@ export class RuleEngine {
         ruleId: winner.rule.id,
         suggestedCategoryId: winner.rule.categoryId ?? null,
         suggestedPropertyId: winner.rule.propertyId ?? null,
+        suggestedDetails: winner.rule.details ?? null,
         confidence: winner.confidence,
       },
     ];
@@ -360,6 +362,7 @@ export class RuleEngine {
             ruleId: best.ruleId,
             suggestedCategoryId: best.suggestedCategoryId ?? null,
             suggestedPropertyId: best.suggestedPropertyId ?? null,
+            suggestedDetails: best.suggestedDetails ?? null,
             confidence: best.confidence,
             forceRegenerate: true, // Always force regenerate when user triggers via UI
           });
@@ -521,6 +524,7 @@ export class RuleEngine {
             ruleId: rule.id,
             suggestedCategoryId: rule.categoryId ?? null,
             suggestedPropertyId: rule.propertyId ?? null,
+            suggestedDetails: rule.details ?? null,
             confidence,
           });
 

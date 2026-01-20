@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Lightbulb, Check, X, ExternalLink, Bot, ChevronDown, ChevronUp } from 'lucide-react';
+import { Lightbulb, Check, X, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { applySuggestionAction, dismissSuggestionAction } from '../actions';
 import { useTransition } from 'react';
@@ -13,8 +12,6 @@ interface Suggestion {
   id: string;
   confidence: number;
   createdAt: Date;
-  source?: 'RULE' | 'AI';
-  reasoning?: string | null;
   rule?: {
     id: string;
     name: string;
@@ -44,20 +41,7 @@ interface Props {
 
 export default function SuggestionIndicator({ transaction }: Props) {
   const [isPending, startTransition] = useTransition();
-  const [expandedReasonings, setExpandedReasonings] = useState<Set<string>>(new Set());
   const { suggestions } = transaction;
-
-  const toggleReasoning = (suggestionId: string) => {
-    setExpandedReasonings(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(suggestionId)) {
-        newSet.delete(suggestionId);
-      } else {
-        newSet.add(suggestionId);
-      }
-      return newSet;
-    });
-  };
 
   if (!suggestions || suggestions.length === 0) {
     return null;
@@ -86,30 +70,11 @@ export default function SuggestionIndicator({ transaction }: Props) {
     return category.parent ? `${category.parent.name} > ${category.name}` : category.name;
   };
 
-  // const primarySuggestion = suggestions[0]; // Highest confidence suggestion
-
-  // Check if we have AI suggestions
-  // Uma sugestão é de IA se: tem source='AI' OU não tem rule associada
-  const hasAISuggestions = suggestions.some(s => s.source === 'AI' || (!s.source && !s.rule));
-  const hasRuleSuggestions = suggestions.some(s => s.source === 'RULE' || (s.rule && s.source !== 'AI'));
-
   return (
     <Popover>
       <PopoverTrigger asChild>
         <div className="flex items-center gap-1 cursor-pointer">
-          {hasAISuggestions && hasRuleSuggestions ? (
-            // Show both icons if we have both types
-            <>
-              <Bot className="h-4 w-4 text-blue-500" />
-              <Lightbulb className="h-4 w-4 text-yellow-500" />
-            </>
-          ) : hasAISuggestions ? (
-            // Show only AI icon
-            <Bot className="h-4 w-4 text-blue-500" />
-          ) : (
-            // Show only rule icon (default)
-            <Lightbulb className="h-4 w-4 text-yellow-500" />
-          )}
+          <Lightbulb className="h-4 w-4 text-yellow-500" />
           {suggestions.length > 1 && (
             <Badge variant="secondary" className="text-xs">
               {suggestions.length}
@@ -120,16 +85,7 @@ export default function SuggestionIndicator({ transaction }: Props) {
       <PopoverContent className="w-80" align="start">
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            {hasAISuggestions && hasRuleSuggestions ? (
-              <>
-                <Bot className="h-4 w-4 text-blue-500" />
-                <Lightbulb className="h-4 w-4 text-yellow-500" />
-              </>
-            ) : hasAISuggestions ? (
-              <Bot className="h-4 w-4 text-blue-500" />
-            ) : (
-              <Lightbulb className="h-4 w-4 text-yellow-500" />
-            )}
+            <Lightbulb className="h-4 w-4 text-yellow-500" />
             <h4 className="font-medium">
               {suggestions.length === 1 ? 'Sugestão' : `${suggestions.length} Sugestões`}
             </h4>
@@ -139,20 +95,9 @@ export default function SuggestionIndicator({ transaction }: Props) {
             <div key={suggestion.id} className="border border-gray-200 rounded-lg p-3 space-y-2 relative group">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  {suggestion.source === 'AI' ? (
-                    <Bot className="h-4 w-4 text-blue-500" />
-                  ) : suggestion.rule ? (
-                    <Lightbulb className="h-4 w-4 text-yellow-500" />
-                  ) : (
-                    // Se não tem source definido e não tem rule, assume que é AI
-                    <Bot className="h-4 w-4 text-blue-500" />
-                  )}
+                  <Lightbulb className="h-4 w-4 text-yellow-500" />
                   <span className="text-sm font-medium">
-                    {suggestion.source === 'AI' ? 
-                      'Sugestão IA' : 
-                      suggestion.rule?.name || 
-                      (!suggestion.source ? 'Sugestão IA' : 'Sugestão')
-                    }
+                    {suggestion.rule?.name || 'Sugestão'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -197,31 +142,6 @@ export default function SuggestionIndicator({ transaction }: Props) {
                   </div>
                 )}
               </div>
-              
-              {/* Toggle for AI reasoning */}
-              {suggestion.source === 'AI' && suggestion.reasoning && (
-                <div className="pt-2">
-                  <button
-                    onClick={() => toggleReasoning(suggestion.id)}
-                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
-                  >
-                    {expandedReasonings.has(suggestion.id) ? (
-                      <ChevronUp className="h-3 w-3" />
-                    ) : (
-                      <ChevronDown className="h-3 w-3" />
-                    )}
-                    <span>
-                      {expandedReasonings.has(suggestion.id) ? 'Ocultar' : 'Ver'} raciocínio da IA
-                    </span>
-                  </button>
-                  
-                  {expandedReasonings.has(suggestion.id) && (
-                    <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-700 border border-gray-200">
-                      {suggestion.reasoning}
-                    </div>
-                  )}
-                </div>
-              )}
               
               <div className="flex gap-2 pt-2">
                 <Button

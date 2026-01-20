@@ -131,7 +131,7 @@ export async function fetchTransactionsForExport(
       },
       property: true,
       suggestions: {
-        where: { isApplied: false },
+        where: { isApplied: false, source: 'RULE' },
         select: { id: true },
       },
     },

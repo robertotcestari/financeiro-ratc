@@ -2,7 +2,10 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { AccountSelectionService } from '@/lib/features/ofx/account-selection';
 import { PrismaClient, AccountType } from '@/app/generated/prisma';
 
-describe('AccountSelectionService Integration Tests', () => {
+const describeDb =
+  process.env.VITEST_SKIP_DB_TESTS === 'true' ? describe.skip : describe;
+
+describeDb('AccountSelectionService Integration Tests', () => {
   let service: AccountSelectionService;
   let prisma: PrismaClient;
   let testBankAccountId: string;
@@ -119,7 +122,6 @@ describe('AccountSelectionService Integration Tests', () => {
   });
 
   describe('persistAccountSelection', () => {
-
     it('should update existing OFX account mapping', async () => {
       const ofxAccountId = `TEST_OFX_UPDATE_789_${testRunId}`;
       const ofxBankId = `TEST_BANK_UPDATE_101_${testRunId}`;
@@ -208,7 +210,6 @@ describe('AccountSelectionService Integration Tests', () => {
   });
 
   describe('getAccountMappings', () => {
-
     it('should return empty array for account with no mappings', async () => {
       const result = await service.getAccountMappings(testBankAccountId);
 

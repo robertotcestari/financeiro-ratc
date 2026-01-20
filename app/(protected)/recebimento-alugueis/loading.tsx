@@ -2,15 +2,6 @@ import RentDataSkeleton from './components/RentDataSkeleton';
 import ImobziPendingRentsSkeleton from './components/ImobziPendingRentsSkeleton';
 
 export default function Loading() {
-  const currentDate = new Date();
-  const month = currentDate.getMonth() + 1;
-  const year = currentDate.getFullYear();
-  
-  const months = [
-    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">

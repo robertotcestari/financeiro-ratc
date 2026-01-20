@@ -1,8 +1,6 @@
 import { prisma } from '@/lib/core/database/client';
 import { Decimal } from '@prisma/client/runtime/library';
-import {
-  createOrUpdateSnapshot,
-} from '@/lib/core/database/account-snapshots';
+import { createOrUpdateSnapshot } from '@/lib/core/database/account-snapshots';
 import type { BankAccount } from '@/app/generated/prisma';
 
 /**
@@ -19,11 +17,15 @@ export async function getCurrentBalanceOptimized(
   transactionsProcessed: number;
 }> {
   // Busca o snapshot mais recente antes da data alvo
+  const targetYear = targetDate.getFullYear();
+  const targetMonth = targetDate.getMonth() + 1;
   const latestSnapshot = await prisma.accountSnapshot.findFirst({
     where: {
       bankAccountId,
-      year: { lte: targetDate.getFullYear() },
-      month: { lte: targetDate.getMonth() + 1 },
+      OR: [
+        { year: { lt: targetYear } },
+        { year: targetYear, month: { lte: targetMonth } },
+      ],
     },
     orderBy: [{ year: 'desc' }, { month: 'desc' }],
   });
@@ -130,7 +132,7 @@ export async function getBalanceAtDateOptimized(
  * Usa snapshot como base quando disponível
  */
 export async function calculateRunningBalanceOptimized<
-  T extends { date: Date; amount: Decimal }
+  T extends { date: Date; amount: Decimal },
 >(
   transactions: T[],
   bankAccountId: string,
@@ -282,15 +284,18 @@ export async function getSnapshotPerformanceStats(
     0
   );
 
+  const coveragePercentage =
+    transactionCount > 0
+      ? Math.round((coveredTransactions / transactionCount) * 100)
+      : 0;
+
   return {
     totalTransactions: transactionCount,
     totalSnapshots: snapshots.length,
     averageTransactionsPerSnapshot: Math.round(
       coveredTransactions / snapshots.length
     ),
-    coveragePercentage: Math.round(
-      (coveredTransactions / transactionCount) * 100
-    ),
+    coveragePercentage,
     oldestSnapshot,
     newestSnapshot,
   };

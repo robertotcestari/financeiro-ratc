@@ -56,7 +56,7 @@ export default function PaymentModal({
       } else {
         setError(result.message || 'Erro ao quitar fatura');
       }
-    } catch (err) {
+    } catch {
       setError('Erro inesperado ao processar quitação');
     } finally {
       setIsSubmitting(false);

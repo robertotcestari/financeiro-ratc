@@ -79,12 +79,12 @@ export default function InadimplentesTable({
           </tr>
         </thead>
         <tbody>
-          {items.map((item) => {
+          {items.map((item, index) => {
             // Defensive: skip if item or item.data is null/undefined
             if (!item || !item.data) {
               return (
                 <tr
-                  key={item?.id || Math.random()}
+                  key={item?.id ?? index}
                   className="border-b last:border-none"
                 >
                   <td className="py-2 pr-4">-</td>

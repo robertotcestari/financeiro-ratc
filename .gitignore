@@ -65,3 +65,4 @@ prisma/dev.db
 # Environment variables
 .env.local
 .env.production.local
+data/backups/

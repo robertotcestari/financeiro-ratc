@@ -167,8 +167,6 @@ export async function getImobziPendingInvoicesSummary(
     overdueValue: 0,
   };
 
-  const today = new Date();
-  
   invoices.forEach((invoice) => {
     summary.totalValue += invoice.value;
     

@@ -69,8 +69,6 @@ async function testSpecificTransaction() {
       console.log(`     Suggested Category: ${s.suggestedCategory?.name || 'N/A'}`);
       console.log(`     Suggested Property: ${s.suggestedProperty?.code || 'N/A'}`);
       console.log(`     Has Rule: ${s.ruleId ? 'Yes' : 'No'}`);
-      console.log(`     Has AI Metadata: ${s.aiMetadata ? 'Yes' : 'No'}`);
-      console.log(`     Reasoning: ${s.reasoning || 'N/A'}`);
       console.log(`     Is Applied: ${s.isApplied}`);
       console.log(`     Created At: ${s.createdAt.toISOString()}`);
     });

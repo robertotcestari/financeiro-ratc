@@ -252,6 +252,13 @@
     "type": "EXPENSE"
   },
   {
+    "id": "cat-despesas-nao-identificadas",
+    "name": "Despesas não Identificadas",
+    "level": 2,
+    "parentId": "cat-despesas-operacionais",
+    "type": "EXPENSE"
+  },
+  {
     "id": "cat-receitas-nao-operacionais",
     "name": "Receitas não Operacionais",
     "level": 1,

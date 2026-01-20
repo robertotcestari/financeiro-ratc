@@ -3,6 +3,7 @@
 import { Transaction } from '@/app/generated/prisma';
 import { useState, useMemo, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { processUnprocessedTransactions, deleteTransactions, createTransactionAction } from '../actions';
@@ -15,8 +16,6 @@ import {
   Plus,
 } from 'lucide-react';
 import { useTransactionEditing } from './hooks/useTransactionEditing';
-import { TransactionEditDialog } from './TransactionEditDialog';
-import { TransactionAddDialog } from './TransactionAddDialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +45,13 @@ import {
   type ColumnFiltersState,
   type RowSelectionState,
 } from '@tanstack/react-table';
+
+const TransactionEditDialog = dynamic(() =>
+  import('./TransactionEditDialog').then((mod) => mod.TransactionEditDialog)
+);
+const TransactionAddDialog = dynamic(() =>
+  import('./TransactionAddDialog').then((mod) => mod.TransactionAddDialog)
+);
 
 type SerializedTransaction = Omit<Transaction, 'amount' | 'balance'> & {
   amount: number;
@@ -351,15 +357,19 @@ export function TransactionList({
     },
   });
 
-  const totalIncome = transactions
-    .filter((t) => t.amount > 0)
-    .reduce((sum, t) => sum + t.amount, 0);
+  const totals = useMemo(() => {
+    let income = 0;
+    let expense = 0;
+    let unprocessed = 0;
 
-  const totalExpense = transactions
-    .filter((t) => t.amount < 0)
-    .reduce((sum, t) => sum + t.amount, 0);
+    for (const transaction of transactions) {
+      if (transaction.amount > 0) income += transaction.amount;
+      if (transaction.amount < 0) expense += transaction.amount;
+      if (!transaction.isProcessed) unprocessed += 1;
+    }
 
-  const unprocessedCount = transactions.filter((t) => !t.isProcessed).length;
+    return { income, expense, unprocessed };
+  }, [transactions]);
 
   const handleProcessUnprocessed = async () => {
     if (!bankAccountId) return;
@@ -577,7 +587,7 @@ export function TransactionList({
               Nova Transação
             </Button>
             
-            {unprocessedCount > 0 && bankAccountId && (
+            {totals.unprocessed > 0 && bankAccountId && (
               <Button
                 onClick={handleProcessUnprocessed}
                 disabled={isPending}
@@ -586,7 +596,7 @@ export function TransactionList({
               >
                 {isPending
                   ? 'Processando...'
-                  : `Processar ${unprocessedCount} Não Processadas`}
+                  : `Processar ${totals.unprocessed} Não Processadas`}
               </Button>
             )}
           </div>
@@ -663,25 +673,25 @@ export function TransactionList({
           <div className="text-center">
             <p className="text-sm text-gray-600">Entradas</p>
             <p className="text-lg font-semibold text-green-600">
-              {formatCurrency(totalIncome)}
+              {formatCurrency(totals.income)}
             </p>
           </div>
           <div className="text-center">
             <p className="text-sm text-gray-600">Saídas</p>
             <p className="text-lg font-semibold text-red-600">
-              {formatCurrency(totalExpense)}
+              {formatCurrency(totals.expense)}
             </p>
           </div>
           <div className="text-center">
             <p className="text-sm text-gray-600">Saldo do Período</p>
             <p
               className={`text-lg font-semibold ${
-                totalIncome + totalExpense >= 0
+                totals.income + totals.expense >= 0
                   ? 'text-green-600'
                   : 'text-red-600'
               }`}
             >
-              {formatCurrency(totalIncome + totalExpense)}
+              {formatCurrency(totals.income + totals.expense)}
             </p>
           </div>
           {searchParams?.mes && (
@@ -689,12 +699,14 @@ export function TransactionList({
               <p className="text-sm text-gray-600">Saldo Final</p>
               <p
                 className={`text-lg font-semibold ${
-                  initialBalance + totalIncome + totalExpense >= 0
+                  initialBalance + totals.income + totals.expense >= 0
                     ? 'text-green-600'
                     : 'text-red-600'
                 }`}
               >
-                {formatCurrency(initialBalance + totalIncome + totalExpense)}
+                {formatCurrency(
+                  initialBalance + totals.income + totals.expense
+                )}
               </p>
             </div>
           )}

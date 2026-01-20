@@ -1,6 +1,6 @@
 import { auth } from "@/lib/core/auth/auth";
 import { toNextJsHandler } from "better-auth/next-js";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/core/database/client";
 
 /**
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
       
       if (sessionToken) {
         // Check the user's email in the database
-        const session = await prisma.session.findUnique({
+        await prisma.session.findUnique({
           where: { token: sessionToken.value },
           include: { user: true }
         });

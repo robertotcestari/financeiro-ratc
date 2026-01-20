@@ -83,10 +83,3 @@ npm run snapshots:generate
 # or
 npx tsx scripts/database/generate-snapshots.ts
 ```
-
-### Test AI Categorization
-```bash
-npm run test:ai
-# or
-npx tsx scripts/testing/test-ai-categorization.ts
-```

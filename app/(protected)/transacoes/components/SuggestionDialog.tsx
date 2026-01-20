@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -11,12 +11,11 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { 
-  Lightbulb, 
-  Building, 
+import {
+  Lightbulb,
+  Building,
   Target,
   MapPin,
-  Bot 
 } from 'lucide-react';
 import { formatDate } from '@/lib/formatters';
 import SuggestionDetails from './SuggestionDetails';
@@ -25,7 +24,6 @@ interface Suggestion {
   id: string;
   confidence: number;
   createdAt: Date;
-  source?: 'RULE' | 'AI';
   rule?: {
     id: string;
     name: string;
@@ -234,17 +232,13 @@ export default function SuggestionDialog({
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          {suggestion.source === 'AI' ? (
-                            <Bot className="h-4 w-4 text-blue-500" />
-                          ) : (
-                            <Lightbulb className="h-4 w-4 text-yellow-500" />
-                          )}
+                          <Lightbulb className="h-4 w-4 text-yellow-500" />
                           <div>
                             <div className="font-medium text-sm">
-                              {suggestion.source === 'AI' ? 'Sugestão IA' : `Sugestão #${index + 1}`}
+                              {`Sugestão #${index + 1}`}
                             </div>
                             <div className="text-xs text-gray-600">
-                              {suggestion.source === 'AI' ? 'Inteligência Artificial' : suggestion.rule?.name || 'Regra'}
+                              {suggestion.rule?.name || 'Regra'}
                             </div>
                           </div>
                         </div>

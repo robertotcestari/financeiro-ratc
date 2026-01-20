@@ -10,6 +10,7 @@ import {
   getTypeLabel,
   getTypeFullLabel,
 } from './transaction-helpers';
+import { categoryRequiresProperty } from './category-requires-property';
 import { AlertTriangle } from 'lucide-react';
 import type { Transaction } from '../types';
 import type { Row } from '@tanstack/react-table';
@@ -406,12 +407,9 @@ export function createColumnDefinitions({
         }
 
         // Categories that require a property associated
-        const requiresProperty =
-          row.original.category.name === 'Aluguel' ||
-          row.original.category.name === 'Aluguel de Terceiros' ||
-          row.original.category.name === 'Repasse de Aluguel' ||
-          row.original.category.name === 'Aluguel Pago' ||
-          row.original.category.name === 'Manutenção';
+        const requiresProperty = categoryRequiresProperty(
+          row.original.category.name
+        );
 
         return (
           <div

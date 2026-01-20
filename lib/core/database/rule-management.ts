@@ -14,6 +14,7 @@ export interface CreateRuleRequest {
   priority?: number;
   categoryId?: string;
   propertyId?: string;
+  details?: string;
   criteria: RuleCriteria;
 }
 
@@ -23,6 +24,7 @@ export interface UpdateRuleRequest {
   priority?: number;
   categoryId?: string;
   propertyId?: string;
+  details?: string;
   criteria?: RuleCriteria;
   isActive?: boolean;
 }
@@ -51,7 +53,7 @@ export class RuleManagementService {
    * Create a new categorization rule with validation
    */
   async createRule(params: CreateRuleRequest): Promise<RuleWithRelations> {
-    const { name, description, priority = 0, categoryId, propertyId, criteria } = params;
+    const { name, description, priority = 0, categoryId, propertyId, details, criteria } = params;
 
     // Validate that category is provided (property is optional)
     if (!categoryId) {
@@ -110,6 +112,7 @@ export class RuleManagementService {
         priority,
         categoryId: categoryId || null,
         propertyId: propertyId || null,
+        details: details || null,
         criteria: criteria as Prisma.InputJsonValue, // Prisma Json type
         isActive: true,
       },
@@ -131,7 +134,7 @@ export class RuleManagementService {
    * Update an existing categorization rule
    */
   async updateRule(ruleId: string, params: UpdateRuleRequest): Promise<RuleWithRelations> {
-    const { name, description, priority, categoryId, propertyId, criteria, isActive } = params;
+    const { name, description, priority, categoryId, propertyId, details, criteria, isActive } = params;
 
     // Check if rule exists
     const existingRule = await prisma.categorizationRule.findUnique({
@@ -216,6 +219,7 @@ export class RuleManagementService {
         updateData.property = { connect: { id: propertyId } };
       }
     }
+    if (details !== undefined) updateData.details = details;
     if (criteria) updateData.criteria = criteria as Prisma.InputJsonValue;
     if (isActive !== undefined) updateData.isActive = isActive;
 

@@ -41,7 +41,7 @@ export function useBulkOperations(
       setBulkCategory('');
       setBulkProperty('');
     });
-  }, [bulkCategory, bulkProperty, rowSelection, properties]);
+  }, [bulkCategory, rowSelection]);
 
   const handleBulkApplyProperty = useCallback(async () => {
     if (!bulkProperty || Object.keys(rowSelection).length === 0) return;

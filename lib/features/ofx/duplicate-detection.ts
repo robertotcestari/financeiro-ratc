@@ -8,9 +8,18 @@
  */
 
 import { prisma } from '@/lib/core/database/client';
-import type { OFXTransaction, DuplicateDetectionResult, DuplicateMatch, DuplicatePreview } from './types';
+import type {
+  OFXTransaction,
+  DuplicateDetectionResult,
+  DuplicateMatch,
+  DuplicatePreview,
+} from './types';
 import { Prisma, type Transaction } from '@/app/generated/prisma';
 import { logger } from '@/lib/core/logger/logger';
+import {
+  matchIncomingToExisting,
+  type DuplicateMatchInput,
+} from '@/lib/features/transactions/duplicate-matcher';
 
 /**
  * Main duplicate detection service
@@ -20,6 +29,7 @@ export class DuplicateDetectionService {
   private readonly HIGH_CONFIDENCE_THRESHOLD = 0.8;
   private readonly MEDIUM_CONFIDENCE_THRESHOLD = 0.6;
   private readonly DATE_TOLERANCE_DAYS = 2;
+  private readonly AMOUNT_TOLERANCE = 0.01;
 
   /**
    * Find duplicates for a list of OFX transactions
@@ -31,18 +41,15 @@ export class DuplicateDetectionService {
     const duplicates: DuplicateMatch[] = [];
     const uniqueTransactions: OFXTransaction[] = [];
 
-    for (const transaction of transactions) {
-      const matches = await this.findMatchesForTransaction(
-        transaction,
-        bankAccountId
-      );
+    const matchesByTx = await this.findMatchesForTransactions(
+      transactions,
+      bankAccountId
+    );
 
-      if (matches.length > 0) {
-        // Add all matches for this transaction
-        duplicates.push(...matches);
-      } else {
-        uniqueTransactions.push(transaction);
-      }
+    for (const tx of transactions) {
+      const matches = matchesByTx.get(tx) ?? [];
+      if (matches.length > 0) duplicates.push(...matches);
+      else uniqueTransactions.push(tx);
     }
 
     const exactMatches = duplicates.filter((d) => d.isExactMatch).length;
@@ -84,23 +91,176 @@ export class DuplicateDetectionService {
   ): Promise<DuplicatePreview[]> {
     const previews: DuplicatePreview[] = [];
 
-    for (const transaction of transactions) {
-      const matches = await this.findMatchesForTransaction(
-        transaction,
-        bankAccountId
-      );
+    const matchesByTx = await this.findMatchesForTransactions(
+      transactions,
+      bankAccountId
+    );
 
-      const preview: DuplicatePreview = {
-        transaction,
+    for (const tx of transactions) {
+      const matches = matchesByTx.get(tx) ?? [];
+      previews.push({
+        transaction: tx,
         matches,
         recommendation: this.getRecommendation(matches),
         reason: this.getRecommendationReason(matches),
-      };
-
-      previews.push(preview);
+      });
     }
 
     return previews;
+  }
+
+  /**
+   * Batch match lookup to avoid N+1 queries.
+   * Returns a Map keyed by the OFXTransaction object reference.
+   */
+  private async findMatchesForTransactions(
+    transactions: OFXTransaction[],
+    bankAccountId: string
+  ): Promise<Map<OFXTransaction, DuplicateMatch[]>> {
+    const results = new Map<OFXTransaction, DuplicateMatch[]>();
+    if (transactions.length === 0) return results;
+
+    // 1) Exact matches (single query with IN)
+    const txIds = Array.from(
+      new Set(
+        transactions
+          .map((t) => t.transactionId)
+          .filter((id): id is string => !!id)
+      )
+    );
+
+    let exactMatches: Transaction[] = [];
+    let exactResult: Transaction[] | undefined | null;
+    if (txIds.length > 0) {
+      try {
+        exactResult = await prisma.transaction.findMany({
+          where: {
+            bankAccountId,
+            ofxTransId: { in: txIds },
+          },
+        });
+      } catch (error) {
+        logger.error('DuplicateDetectionService.findExactBatch failed', {
+          event: 'duplicate_detection_exact_batch_error',
+          bankAccountId,
+          error,
+        });
+        exactResult = [];
+      }
+    }
+    if (Array.isArray(exactResult)) {
+      exactMatches = exactResult;
+    }
+    if (!exactResult && txIds.length === 1) {
+      try {
+        const fallback = await prisma.transaction.findFirst({
+          where: {
+            bankAccountId,
+            ofxTransId: txIds[0],
+          },
+        });
+        if (fallback) exactMatches = [fallback];
+      } catch (error) {
+        logger.error('DuplicateDetectionService.findExactSingle failed', {
+          event: 'duplicate_detection_exact_single_error',
+          bankAccountId,
+          error,
+        });
+      }
+    }
+
+    const exactByOfxId = new Map<string, Transaction>();
+    for (const ex of exactMatches) {
+      if (ex.ofxTransId) exactByOfxId.set(ex.ofxTransId, ex);
+    }
+
+    const fuzzyCandidates: OFXTransaction[] = [];
+    for (const tx of transactions) {
+      const ofxId = tx.transactionId;
+      if (ofxId && exactByOfxId.has(ofxId)) {
+        const existing = exactByOfxId.get(ofxId)!;
+        results.set(tx, [
+          {
+            ofxTransaction: tx,
+            existingTransaction: existing,
+            confidence: this.EXACT_MATCH_THRESHOLD,
+            matchCriteria: ['ofx_transaction_id'],
+            isExactMatch: true,
+          },
+        ]);
+      } else {
+        fuzzyCandidates.push(tx);
+      }
+    }
+
+    if (fuzzyCandidates.length === 0) {
+      return results;
+    }
+
+    // 2) Fuzzy candidates: fetch once by date range (still bounded by tolerance)
+    const minDate = new Date(
+      Math.min(...fuzzyCandidates.map((t) => t.date.getTime()))
+    );
+    const maxDate = new Date(
+      Math.max(...fuzzyCandidates.map((t) => t.date.getTime()))
+    );
+    const startDate = new Date(minDate);
+    startDate.setDate(startDate.getDate() - this.DATE_TOLERANCE_DAYS);
+    const endDate = new Date(maxDate);
+    endDate.setDate(endDate.getDate() + this.DATE_TOLERANCE_DAYS);
+
+    let existingInRange: Transaction[] = [];
+    try {
+      const fuzzyResult = await prisma.transaction.findMany({
+        where: {
+          bankAccountId,
+          date: { gte: startDate, lte: endDate },
+        },
+      });
+      existingInRange = Array.isArray(fuzzyResult) ? fuzzyResult : [];
+    } catch (error) {
+      logger.error('DuplicateDetectionService.findFuzzyBatch failed', {
+        event: 'duplicate_detection_fuzzy_batch_error',
+        bankAccountId,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        error,
+      });
+      existingInRange = [];
+    }
+
+    const matched = matchIncomingToExisting({
+      incoming: fuzzyCandidates as unknown as DuplicateMatchInput[],
+      existing: existingInRange,
+      options: {
+        dateToleranceDays: this.DATE_TOLERANCE_DAYS,
+        amountTolerance: this.AMOUNT_TOLERANCE,
+      },
+    });
+
+    // Group matches by incoming OFXTransaction reference
+    const grouped = new Map<OFXTransaction, DuplicateMatch[]>();
+    for (const m of matched) {
+      const incomingTx = m.incoming as unknown as OFXTransaction;
+      const arr = grouped.get(incomingTx) ?? [];
+      arr.push({
+        ofxTransaction: incomingTx,
+        existingTransaction: m.existing,
+        confidence: m.confidence,
+        matchCriteria: m.matchCriteria,
+        isExactMatch: false,
+      });
+      grouped.set(incomingTx, arr);
+    }
+
+    for (const tx of fuzzyCandidates) {
+      const txMatches = (grouped.get(tx) ?? [])
+        .filter((m) => m.confidence >= this.MEDIUM_CONFIDENCE_THRESHOLD)
+        .sort((a, b) => b.confidence - a.confidence);
+      results.set(tx, txMatches);
+    }
+
+    return results;
   }
 
   /**
@@ -110,25 +270,11 @@ export class DuplicateDetectionService {
     ofxTransaction: OFXTransaction,
     bankAccountId: string
   ): Promise<DuplicateMatch[]> {
-    // First, check for exact OFX transaction ID match
-    const exactMatch = await this.findExactOFXMatch(
-      ofxTransaction,
+    const map = await this.findMatchesForTransactions(
+      [ofxTransaction],
       bankAccountId
     );
-    if (exactMatch) {
-      return [exactMatch];
-    }
-
-    // Then check for fuzzy matches based on date, amount, and description
-    const fuzzyMatches = await this.findFuzzyMatches(
-      ofxTransaction,
-      bankAccountId
-    );
-
-    // Filter matches by confidence threshold
-    return fuzzyMatches.filter(
-      (match) => match.confidence >= this.MEDIUM_CONFIDENCE_THRESHOLD
-    );
+    return map.get(ofxTransaction) ?? [];
   }
 
   /**
@@ -187,7 +333,7 @@ export class DuplicateDetectionService {
     const endDate = new Date(ofxTransaction.date);
     endDate.setDate(endDate.getDate() + this.DATE_TOLERANCE_DAYS);
 
-    // Find potential matches within date range and same absolute amount
+    // Find potential matches within date range
     const ofxAmount = new Prisma.Decimal(ofxTransaction.amount);
     let potentialMatches: Transaction[] = [];
     try {
@@ -198,8 +344,8 @@ export class DuplicateDetectionService {
             gte: startDate,
             lte: endDate,
           },
-          // Match by absolute amount equality to handle debit/credit sign normalization
-          OR: [{ amount: ofxAmount }, { amount: ofxAmount.neg().abs() }],
+          // Match by same magnitude, allowing sign inversion (debit/credit normalization)
+          OR: [{ amount: ofxAmount }, { amount: ofxAmount.neg() }],
         },
       });
     } catch (error) {
@@ -266,12 +412,15 @@ export class DuplicateDetectionService {
     }
     maxScore += dateWeight;
 
-    // Amount match (weight: 40%)
+    // Amount match (weight: 40%) - compare magnitude
     const amountWeight = 0.4;
-    const ofxAmount = Number(ofxTransaction.amount);
+    const ofxAmountNumber = Number(ofxTransaction.amount);
     const existingAmount = Number(existingTransaction.amount);
 
-    if (Math.abs(ofxAmount - existingAmount) < 0.01) {
+    if (
+      Math.abs(Math.abs(ofxAmountNumber) - Math.abs(existingAmount)) <
+      this.AMOUNT_TOLERANCE
+    ) {
       score += amountWeight;
     }
     maxScore += amountWeight;
@@ -357,11 +506,14 @@ export class DuplicateDetectionService {
       criteria.push('similar_date');
     }
 
-    // Check amount match
-    const ofxAmount = Number(ofxTransaction.amount);
+    // Check amount match (magnitude)
+    const ofxAmountNumber = Number(ofxTransaction.amount);
     const existingAmount = Number(existingTransaction.amount);
 
-    if (Math.abs(ofxAmount - existingAmount) < 0.01) {
+    if (
+      Math.abs(Math.abs(ofxAmountNumber) - Math.abs(existingAmount)) <
+      this.AMOUNT_TOLERANCE
+    ) {
       criteria.push('exact_amount');
     }
 

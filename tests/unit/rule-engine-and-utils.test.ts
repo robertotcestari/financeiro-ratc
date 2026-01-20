@@ -416,12 +416,14 @@ describe('suggestions service (prisma mocked)', () => {
         ruleId: 'rule-2',
         suggestedCategoryId: null,
         suggestedPropertyId: 'prop-2',
+        suggestedDetails: null,
         confidence: 0.8,
         source: 'RULE',
       },
       update: {
         suggestedCategoryId: null,
         suggestedPropertyId: 'prop-2',
+        suggestedDetails: null,
         confidence: 0.8,
       },
       include: {
@@ -447,6 +449,7 @@ describe('suggestions service (prisma mocked)', () => {
             processedTransactionId: 'ptx-3',
             suggestedCategoryId: 'cat-3',
             suggestedPropertyId: null,
+            suggestedDetails: null,
             isApplied: false,
           }),
           update: vi.fn().mockResolvedValue({}),
@@ -473,6 +476,7 @@ describe('suggestions service (prisma mocked)', () => {
         processedTransactionId: true,
         suggestedCategoryId: true,
         suggestedPropertyId: true,
+        suggestedDetails: true,
         isApplied: true,
       },
     });

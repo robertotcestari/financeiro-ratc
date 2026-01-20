@@ -95,19 +95,24 @@ export default function DRESummaryEmailTableMulti({ months }: DRESummaryEmailTab
         await navigator.clipboard.writeText(buildMarkdown());
       } else {
         const html = buildHTML();
-        if (typeof window !== 'undefined' && 'ClipboardItem' in window) {
-          const item = new (window as any).ClipboardItem({
+        const ClipboardItemCtor =
+          typeof window !== 'undefined'
+            ? (window as Window & { ClipboardItem?: typeof ClipboardItem })
+                .ClipboardItem
+            : undefined;
+        if (ClipboardItemCtor) {
+          const item = new ClipboardItemCtor({
             'text/html': new Blob([html], { type: 'text/html' }),
             'text/plain': new Blob([html], { type: 'text/plain' }),
           });
-          await (navigator as any).clipboard.write([item]);
+          await navigator.clipboard.write([item]);
         } else {
           await navigator.clipboard.writeText(html);
         }
       }
       setCopied(type);
       setTimeout(() => setCopied(null), 2000);
-    } catch (e) {
+    } catch {
       // noop
     }
   };

@@ -1,6 +1,7 @@
 export interface TransactionSearchParams {
   categoria?: string;
   conta?: string;
+  propriedade?: string;
   mes?: string;
   ano?: string;
   status?: string;
