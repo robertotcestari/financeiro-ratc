@@ -102,6 +102,7 @@ export class RuleTestingService {
       priority: 0,
       categoryId: categoryId || null,
       propertyId: propertyId || null,
+      details: null,
       criteria: JSON.parse(JSON.stringify(criteria)) as Prisma.JsonValue,
       createdAt: new Date(),
       updatedAt: new Date(),

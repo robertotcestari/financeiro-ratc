@@ -51,8 +51,8 @@ describe('Inline Edit Categorization', () => {
     expect(prisma.processedTransaction.update).toHaveBeenCalledWith({
       where: { id: 'test-id' },
       data: {
-        categoryId: null,
-        propertyId: null,
+        category: { disconnect: true },
+        property: { disconnect: true },
         updatedAt: expect.any(Date),
       },
       include: {
@@ -109,8 +109,8 @@ describe('Inline Edit Categorization', () => {
     expect(prisma.processedTransaction.update).toHaveBeenCalledWith({
       where: { id: 'test-id' },
       data: {
-        categoryId: 'rent-category-id',
-        propertyId: null,
+        category: { connect: { id: 'rent-category-id' } },
+        property: { disconnect: true },
         updatedAt: expect.any(Date),
       },
       include: {
@@ -202,8 +202,8 @@ describe('Inline Edit Categorization', () => {
     expect(prisma.processedTransaction.update).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({
-          categoryId: null,
-          propertyId: null,
+          category: { disconnect: true },
+          property: { disconnect: true },
         }),
       })
     );

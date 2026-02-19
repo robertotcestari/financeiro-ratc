@@ -6,6 +6,7 @@ const publicRoutes = [
   "/",
   "/auth/signin",
   "/api/auth", // All auth API routes
+  "/api/v1",   // REST API (uses own Bearer token auth)
 ];
 
 // Define routes that should redirect authenticated users

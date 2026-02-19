@@ -428,7 +428,7 @@ export function TaxationTable({ rows, defaults }: TaxationTableProps) {
             : 'Valores não tributáveis',
         accessorKey: field,
         meta: { align: 'right' as const },
-        cell: ({ row }: { row: Row<TributacaoRow> }) => {
+        cell: ({ row }: { row: Row<TableRowData> }) => {
           const baseRow = rowById[row.original.id];
           if (!baseRow) return null;
           const key = makeMapKey(baseRow);
