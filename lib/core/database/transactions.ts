@@ -173,22 +173,32 @@ export async function getAccountBalances(
     orderBy: { name: 'asc' },
   });
 
-  // For each account, find the latest transaction with a non-null balance up to the target date
+  // For each account, compute balance as the sum of all transaction amounts up to the target date
   const results: AccountBalanceResult[] = [];
   for (const ba of bankAccounts) {
     const latestTx = await prisma.transaction.findFirst({
       where: {
         bankAccountId: ba.id,
         date: { lte: targetDate },
-        balance: { not: null },
       },
       orderBy: [{ date: 'desc' }, { id: 'desc' }],
+      select: { date: true },
     });
+
+    const sumResult = await prisma.transaction.aggregate({
+      where: {
+        bankAccountId: ba.id,
+        date: { lte: targetDate },
+      },
+      _sum: { amount: true },
+    });
+
+    const balance = sumResult._sum.amount != null ? Number(sumResult._sum.amount) : null;
 
     results.push({
       bankAccountId: ba.id,
       date: latestTx?.date ?? targetDate,
-      balance: latestTx?.balance != null ? Number(latestTx.balance) : null,
+      balance,
       bankAccount: ba,
     });
   }

@@ -61,7 +61,7 @@ echo ""
 echo "=== Step 3: Importing $UNIQUE transactions ==="
 
 # Build transactionActions: import all non-duplicates
-ACTIONS=$(echo "$PREVIEW_RESULT" | jq '[.transactions[] | {key: .id, value: (if .isDuplicate then "skip" else "import" end)}] | from_entries')
+ACTIONS=$(echo "$PREVIEW_RESULT" | jq '[.transactions[] | {key: .transactionId, value: (if .isDuplicate then "skip" else "import" end)}] | from_entries')
 
 IMPORT_RESULT=$(curl -s -X POST -H "$AUTH" -H "$CT" \
   -d "{\"fileContent\": $JSON_CONTENT, \"bankAccountId\": \"$BANK_ACCOUNT_ID\", \"transactionActions\": $ACTIONS}" \
