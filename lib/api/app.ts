@@ -10,6 +10,7 @@ import ofxRoutes from './routes/ofx'
 import suggestionsRoutes from './routes/suggestions'
 import transfersRoutes from './routes/transfers'
 import rulesRoutes from './routes/rules'
+import reportsRoutes from './routes/reports'
 
 const app = new OpenAPIHono().basePath('/api/v1')
 
@@ -60,6 +61,8 @@ app.use('/transfers/*', apiKeyAuth)
 app.use('/transfers', apiKeyAuth)
 app.use('/rules/*', apiKeyAuth)
 app.use('/rules', apiKeyAuth)
+app.use('/reports/*', apiKeyAuth)
+app.use('/reports', apiKeyAuth)
 
 // --- Route modules ---
 
@@ -72,6 +75,7 @@ app.route('/ofx', ofxRoutes)
 app.route('/suggestions', suggestionsRoutes)
 app.route('/transfers', transfersRoutes)
 app.route('/rules', rulesRoutes)
+app.route('/reports', reportsRoutes)
 
 // --- OpenAPI spec ---
 

@@ -51,6 +51,10 @@ export const TransactionListQuerySchema = z.object({
   month: z.coerce.number().int().min(1).max(12).default(new Date().getMonth() + 1).openapi({ example: 12 }),
   bankAccountId: z.string().optional().openapi({ description: 'Filtrar por conta bancária' }),
   categoryId: z.string().optional().openapi({ description: 'Filtrar por categoria' }),
+  hasCategory: z
+    .enum(['true', 'false'])
+    .optional()
+    .openapi({ description: 'Filtrar por ter categoria (true) ou não-categorizado (false)' }),
   isReviewed: z
     .enum(['true', 'false'])
     .optional()
@@ -122,3 +126,15 @@ export const BulkDeleteResponseSchema = z
     message: z.string(),
   })
   .openapi('BulkDeleteResponse')
+
+export const CreateTransactionInputSchema = z
+  .object({
+    bankAccountId: z.string().openapi({ description: 'ID da conta bancária' }),
+    date: z.string().openapi({ example: '2025-12-31', description: 'Data da transação (YYYY-MM-DD)' }),
+    description: z.string().openapi({ example: 'Rendimentos SicrediInvest', description: 'Descrição da transação' }),
+    amount: z.number().openapi({ example: 150.50, description: 'Valor (positivo = crédito, negativo = débito)' }),
+    categoryId: z.string().nullable().optional().openapi({ description: 'ID da categoria (opcional)' }),
+    propertyId: z.string().nullable().optional().openapi({ description: 'ID do imóvel (opcional)' }),
+    details: z.string().nullable().optional().openapi({ description: 'Notas/detalhes adicionais' }),
+  })
+  .openapi('CreateTransactionInput')

@@ -12,11 +12,13 @@ import {
   BulkDeleteInputSchema,
   SuccessResponseSchema,
   BulkDeleteResponseSchema,
+  CreateTransactionInputSchema,
 } from '../schemas/transactions'
 import { ErrorSchema } from '../schemas/common'
 import { getProcessedTransactionsByPeriod } from '@/lib/core/database/transactions'
 import { categorizeTransaction, bulkCategorizeTransactions } from '@/lib/core/database/categorization'
 import { prisma } from '@/lib/core/database/client'
+import { Decimal } from '@prisma/client/runtime/library'
 
 const app = new OpenAPIHono()
 
@@ -44,7 +46,7 @@ const listRoute = createRoute({
 })
 
 app.openapi(listRoute, async (c) => {
-  const { year, month, bankAccountId, categoryId, isReviewed, page, limit } =
+  const { year, month, bankAccountId, categoryId, hasCategory, isReviewed, page, limit } =
     c.req.valid('query')
 
   const allTransactions = await getProcessedTransactionsByPeriod(year, month)
@@ -58,6 +60,10 @@ app.openapi(listRoute, async (c) => {
   if (categoryId) {
     filtered = filtered.filter((t) => t.categoryId === categoryId)
   }
+  if (hasCategory !== undefined) {
+    const hasCat = hasCategory === 'true'
+    filtered = filtered.filter((t) => hasCat ? t.categoryId !== null : t.categoryId === null)
+  }
   if (isReviewed !== undefined) {
     const reviewedBool = isReviewed === 'true'
     filtered = filtered.filter((t) => t.isReviewed === reviewedBool)
@@ -70,6 +76,82 @@ app.openapi(listRoute, async (c) => {
   const data = paginated.map(serializeTransaction)
 
   return c.json({ data, meta: { page, limit, total } }, 200)
+})
+
+// POST /transactions (create manual transaction)
+const createTxRoute = createRoute({
+  method: 'post',
+  path: '/',
+  tags: ['Transações'],
+  summary: 'Criar transação manual',
+  description: 'Cria uma transação manualmente (ex: rendimentos de investimento, ajustes). Cria tanto o registro raw (Transaction) quanto o processado (ProcessedTransaction).',
+  security: [{ Bearer: [] }],
+  request: {
+    body: { content: { 'application/json': { schema: CreateTransactionInputSchema } } },
+  },
+  responses: {
+    201: { content: { 'application/json': { schema: TransactionDetailResponseSchema } }, description: 'Transação criada' },
+    400: { content: { 'application/json': { schema: ErrorSchema } }, description: 'Erro de validação' },
+    401: { content: { 'application/json': { schema: ErrorSchema } }, description: 'Não autorizado' },
+  },
+})
+
+app.openapi(createTxRoute, async (c) => {
+  const { bankAccountId, date, description, amount, categoryId, propertyId, details } = c.req.valid('json')
+
+  try {
+    const txDate = new Date(date)
+    if (isNaN(txDate.getTime())) {
+      return c.json({ error: 'Data inválida. Use formato YYYY-MM-DD.', status: 400 }, 400)
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+      // Create raw transaction
+      const rawTx = await tx.transaction.create({
+        data: {
+          bankAccountId,
+          date: txDate,
+          description,
+          amount: new Decimal(amount),
+          ofxTransId: `manual_${Date.now()}`,
+          ofxAccountId: 'MANUAL',
+        },
+      })
+
+      // Build ProcessedTransaction data
+      const ptData: {
+        transactionId: string
+        year: number
+        month: number
+        details?: string | null
+        categoryId?: string | null
+        propertyId?: string | null
+      } = {
+        transactionId: rawTx.id,
+        year: txDate.getFullYear(),
+        month: txDate.getMonth() + 1,
+      }
+
+      if (details !== undefined) ptData.details = details
+      if (categoryId !== undefined) ptData.categoryId = categoryId
+      if (propertyId !== undefined) ptData.propertyId = propertyId
+
+      const processedTx = await tx.processedTransaction.create({
+        data: ptData,
+        include: {
+          transaction: { include: { bankAccount: true } },
+          category: true,
+          property: true,
+        },
+      })
+
+      return processedTx
+    })
+
+    return c.json({ data: serializeTransaction(result) }, 201)
+  } catch (error) {
+    return c.json({ error: error instanceof Error ? error.message : 'Erro ao criar transação', status: 400 }, 400)
+  }
 })
 
 // GET /transactions/:id
