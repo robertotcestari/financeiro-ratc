@@ -47,8 +47,8 @@ export const TransactionSchema = z
   .openapi('Transaction')
 
 export const TransactionListQuerySchema = z.object({
-  year: z.coerce.number().int().min(2000).max(2100).openapi({ example: 2025 }),
-  month: z.coerce.number().int().min(1).max(12).optional().openapi({ example: 12 }),
+  year: z.coerce.number().int().min(2000).max(2100).default(new Date().getFullYear()).openapi({ example: 2025 }),
+  month: z.coerce.number().int().min(1).max(12).default(new Date().getMonth() + 1).openapi({ example: 12 }),
   bankAccountId: z.string().optional().openapi({ description: 'Filtrar por conta bancária' }),
   categoryId: z.string().optional().openapi({ description: 'Filtrar por categoria' }),
   isReviewed: z
