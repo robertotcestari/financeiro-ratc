@@ -11,6 +11,7 @@ import suggestionsRoutes from './routes/suggestions'
 import transfersRoutes from './routes/transfers'
 import rulesRoutes from './routes/rules'
 import reportsRoutes from './routes/reports'
+import imobziRoutes from './routes/imobzi'
 
 const app = new OpenAPIHono().basePath('/api/v1')
 
@@ -63,6 +64,8 @@ app.use('/rules/*', apiKeyAuth)
 app.use('/rules', apiKeyAuth)
 app.use('/reports/*', apiKeyAuth)
 app.use('/reports', apiKeyAuth)
+app.use('/imobzi/*', apiKeyAuth)
+app.use('/imobzi', apiKeyAuth)
 
 // --- Route modules ---
 
@@ -76,6 +79,7 @@ app.route('/suggestions', suggestionsRoutes)
 app.route('/transfers', transfersRoutes)
 app.route('/rules', rulesRoutes)
 app.route('/reports', reportsRoutes)
+app.route('/imobzi', imobziRoutes)
 
 // --- OpenAPI spec ---
 
