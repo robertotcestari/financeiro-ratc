@@ -182,7 +182,7 @@ export async function importImobziTransactions(
     let imported = 0;
     let duplicates = 0;
     let errors = 0;
-    const importedTransactions = [];
+    const importedTransactions: Array<{ id: string; date: Date; description: string; amount: number }> = [];
     const skippedTransactions = [];
     const failedTransactions = [];
 

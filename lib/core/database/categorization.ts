@@ -22,14 +22,15 @@ export async function categorizeTransaction(
   const data: Prisma.ProcessedTransactionUpdateInput = { updatedAt: new Date() };
   // Permitir transações sem categoria (uncategorized) - null limpa, undefined mantém
   if (overrideCategoryId !== undefined) {
-    data.categoryId =
-      overrideCategoryId && overrideCategoryId !== 'uncategorized'
-        ? overrideCategoryId
-        : null;
+    const catId = overrideCategoryId && overrideCategoryId !== 'uncategorized'
+      ? overrideCategoryId
+      : null;
+    data.category = catId ? { connect: { id: catId } } : { disconnect: true };
   }
   // Propriedade: null limpa, undefined mantém
   if (overridePropertyId !== undefined) {
-    data.propertyId = overridePropertyId ?? null;
+    const propId = overridePropertyId ?? null;
+    data.property = propId ? { connect: { id: propId } } : { disconnect: true };
   }
 
   // Atualiza a ProcessedTransaction existente apenas com campos fornecidos
