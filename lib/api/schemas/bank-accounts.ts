@@ -9,6 +9,8 @@ export const BankAccountSchema = z
     isActive: z.boolean().openapi({ example: true }),
     balance: z.number().nullable().openapi({ example: 45000.0, description: 'Saldo mais recente' }),
     balanceDate: z.string().nullable().openapi({ example: '2025-12-31', description: 'Data do saldo' }),
+    lastTransactionDate: z.string().nullable().openapi({ example: '2026-01-30', description: 'Data da última transação' }),
+    lastTransactionAmount: z.number().nullable().openapi({ example: -1500.0, description: 'Valor da última transação' }),
   })
   .openapi('BankAccount')
 

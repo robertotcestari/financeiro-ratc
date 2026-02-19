@@ -32,7 +32,7 @@ app.openapi(listRoute, async (c) => {
   ])
 
   const balanceMap = new Map(
-    balances.map((b) => [b.bankAccountId, { balance: b.balance, date: b.date }])
+    balances.map((b) => [b.bankAccountId, { balance: b.balance, date: b.date, lastTransactionDate: b.lastTransactionDate, lastTransactionAmount: b.lastTransactionAmount }])
   )
 
   const data = accounts.map((acc) => {
@@ -45,6 +45,8 @@ app.openapi(listRoute, async (c) => {
       isActive: acc.isActive,
       balance: bal?.balance ?? null,
       balanceDate: bal?.date ? bal.date.toISOString().split('T')[0] : null,
+      lastTransactionDate: bal?.lastTransactionDate ? bal.lastTransactionDate.toISOString().split('T')[0] : null,
+      lastTransactionAmount: bal?.lastTransactionAmount ?? null,
     }
   })
 

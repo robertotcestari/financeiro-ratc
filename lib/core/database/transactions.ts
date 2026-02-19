@@ -13,6 +13,8 @@ export interface AccountBalanceResult {
   date: Date;
   balance: number | null;
   bankAccount: BankAccount;
+  lastTransactionDate: Date | null;
+  lastTransactionAmount: number | null;
 }
 
 type CategoryWithParent = Category & { parent?: Category | null };
@@ -182,7 +184,7 @@ export async function getAccountBalances(
         date: { lte: targetDate },
       },
       orderBy: [{ date: 'desc' }, { id: 'desc' }],
-      select: { date: true },
+      select: { date: true, amount: true },
     });
 
     const sumResult = await prisma.transaction.aggregate({
@@ -200,6 +202,8 @@ export async function getAccountBalances(
       date: latestTx?.date ?? targetDate,
       balance,
       bankAccount: ba,
+      lastTransactionDate: latestTx?.date ?? null,
+      lastTransactionAmount: latestTx?.amount != null ? Number(latestTx.amount) : null,
     });
   }
 
