@@ -359,7 +359,16 @@ const bulkDeleteRoute = createRoute({
 
 app.openapi(bulkDeleteRoute, async (c) => {
   const { ids } = c.req.valid('json')
+  // Collect raw transaction IDs before deleting processed records
+  const processedTxs = await prisma.processedTransaction.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, transactionId: true },
+  })
+  const rawTxIds = processedTxs.map((pt) => pt.transactionId).filter((id): id is string => id !== null)
   const result = await prisma.processedTransaction.deleteMany({ where: { id: { in: ids } } })
+  if (rawTxIds.length > 0) {
+    await prisma.transaction.deleteMany({ where: { id: { in: rawTxIds } } })
+  }
   return c.json({ success: true, deletedCount: result.count, message: `${result.count} transações deletadas` }, 200)
 })
 
