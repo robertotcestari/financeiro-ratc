@@ -41,7 +41,7 @@
     "hooks/**/*.tsx",
     "components/**/*.ts",
     "components/**/*.tsx",
-    "middleware.ts",
+    "proxy.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
