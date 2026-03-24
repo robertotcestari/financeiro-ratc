@@ -3,6 +3,7 @@
 ## Contents
 
 - Transactions
+- Inadimplentes
 - Backups
 - OFX Import
 - Suggestions
@@ -65,6 +66,40 @@ Body: { details: string|null }
 ```
 POST /transactions/bulk-delete
 Body: { ids: string[] }
+```
+
+## Inadimplentes
+
+### List Inadimplentes
+```
+GET /inadimplentes
+Returns: { data: [{ id, data: { propertyId, tenant, amount, dueDate, settled } }] }
+```
+
+### Get Inadimplente Detail
+```
+GET /inadimplentes/{id}
+Returns: { data: { id, data: { propertyId, tenant, amount, dueDate, settled } } }
+```
+
+### Create Inadimplente
+```
+POST /inadimplentes
+Body: { propertyId, tenant, amount, dueDate: "YYYY-MM-DD", settled }
+Returns: { data: { id, data: { ... } } }
+```
+
+### Update Inadimplente
+```
+PUT /inadimplentes/{id}
+Body: { propertyId, tenant, amount, dueDate: "YYYY-MM-DD", settled }
+Returns: { data: { id, data: { ... } } }
+```
+
+### Delete Inadimplente
+```
+DELETE /inadimplentes/{id}
+Returns: { success: true }
 ```
 
 ## Backups

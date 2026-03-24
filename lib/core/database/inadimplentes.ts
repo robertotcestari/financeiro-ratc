@@ -70,6 +70,13 @@ export async function listInadimplentes(): Promise<
   }));
 }
 
+export async function getInadimplenteById(
+  id: string
+): Promise<{ id: string; data: InadimplenteData } | null> {
+  const items = await listInadimplentes();
+  return items.find((item) => item.id === id) ?? null;
+}
+
 export async function createInadimplente(data: InadimplenteData) {
   const newItem: InadimplenteItem = { id: crypto.randomUUID(), data };
   const container = await getContainerRow();
@@ -91,6 +98,36 @@ export async function createInadimplente(data: InadimplenteData) {
     )}, updatedAt = NOW() WHERE id = ${container.id}
   `;
   return { id: newItem.id };
+}
+
+export async function updateInadimplente(id: string, data: InadimplenteData) {
+  const container = await getContainerRow();
+  if (container) {
+    const idx = container.items.findIndex((it) => it.id === id);
+    if (idx === -1) throw new Error('not_found');
+
+    const nextItems = container.items.slice();
+    nextItems[idx] = { id, data };
+
+    await prisma.$executeRaw`
+      UPDATE meta SET data = ${JSON.stringify(
+        nextItems
+      )}, updatedAt = NOW() WHERE id = ${container.id}
+    `;
+    return;
+  }
+
+  const rows = await prisma.$queryRaw<Array<{ data: unknown }>>`
+    SELECT data FROM meta WHERE id = ${id} LIMIT 1
+  `;
+  const row = rows[0];
+  if (!row) throw new Error('not_found');
+
+  await prisma.$executeRaw`
+    UPDATE meta SET data = ${JSON.stringify(
+      data
+    )}, updatedAt = NOW() WHERE id = ${id}
+  `;
 }
 
 export async function toggleInadimplenteSettled(id: string, settled: boolean) {

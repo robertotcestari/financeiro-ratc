@@ -27,10 +27,11 @@
 | 5 | Sugestões automáticas | pendente | |
 | 6 | Categorização manual | pendente | |
 | 7 | Contas de investimento | pendente | |
-| 8 | Checks finais | pendente | |
-| 9 | Envio do relatório | pendente | |
-| 10 | Checar relatório de tributação | pendente | |
-| 11 | Enviar relatório de tributação | pendente | |
+| 8 | Verificação de inadimplentes | pendente | |
+| 9 | Checks finais | pendente | |
+| 10 | Envio do relatório | pendente | |
+| 11 | Checar relatório de tributação | pendente | |
+| 12 | Enviar relatório de tributação | pendente | |
 
 ## Task List Operacional
 
@@ -48,6 +49,11 @@
 | Balancear CI - SicrediInvest | pendente | |
 | Balancear CI - BTG | pendente | |
 | Balancear CI - XP | pendente | |
+| Verificar inadimplentes atuais do sistema | pendente | |
+| Levantar pendentes do Imobzi | pendente | |
+| Revisar correspondência pendentes x depósitos | pendente | |
+| Marcar pagamentos aprovados como pagos no Imobzi | pendente | |
+| Atualizar lista de inadimplentes do sistema | pendente | |
 | Verificações finais (checks) | pendente | |
 | Enviar relatório mensal por email | pendente | |
 | Checar relatório de tributação | pendente | |
@@ -242,7 +248,61 @@
 - Usuário confirmou saldo: `nao`
 - Observações:
 
-## Step 8 - Checks Finais
+## Step 8 - Verificação De Inadimplentes
+
+### Definição De Feito
+
+- [ ] Os inadimplentes ativos do sistema foram listados
+- [ ] Os pendentes do Imobzi do mês foram listados
+- [ ] O usuário viu os três blocos: lista anterior, pendentes do Imobzi e novo estado proposto
+- [ ] Foi gerada uma lista de matches e possíveis matches
+- [ ] Nenhum match foi fechado sem aprovação explícita do usuário
+- [ ] Os pagamentos aprovados foram marcados como pagos no Imobzi quando aplicável
+- [ ] As inclusões e remoções finais da lista do sistema foram registradas
+
+### Inadimplentes Atuais Do Sistema
+
+| ID | Inquilino | Imóvel | Valor | Vencimento | Status | Observações |
+|---|---|---|---|---|---|---|
+| | | | | | ativo | |
+
+### Pendentes Do Imobzi
+
+| Invoice ID | Inquilino | Imóvel | Vencimento | Valor | Método | Situação |
+|---|---|---|---|---|---|---|
+| | | | | | inconclusivo | pendente |
+
+### Correspondência Com Depósitos/Recebimentos
+
+| Invoice ID | Conta/Depósito candidato | Evidência | Força do match | Precisa aprovação do usuário | Decisão |
+|---|---|---|---|---|---|
+| | | | possivel | sim | pendente |
+
+### Casos Sem Match
+
+| Invoice ID | Inquilino | Imóvel | Valor | Candidato a inadimplente novo | Observações |
+|---|---|---|---|---|---|
+| | | | | sim | |
+
+### Aprovações Do Usuário
+
+| Caso | Pergunta | Resposta do usuário | Decisão operacional |
+|---|---|---|---|
+| | | | |
+
+### Quitações No Imobzi
+
+| Invoice ID | Marcada como paga no Imobzi | Data usada | Observações |
+|---|---|---|---|
+| | nao | | |
+
+### Atualizações Na Lista Do Sistema
+
+- Inclusões feitas:
+- Remoções feitas:
+- Observações:
+
+## Step 9 - Checks Finais
 
 ### Definição De Feito
 
@@ -262,7 +322,7 @@
 - Falhas encontradas:
 - Correções feitas:
 
-## Step 9 - Envio Do Relatório
+## Step 10 - Envio Do Relatório
 
 ### Definição De Feito
 
@@ -278,7 +338,7 @@
 - Horário:
 - Observações:
 
-## Step 10 - Checar Relatório De Tributação
+## Step 11 - Checar Relatório De Tributação
 
 ### Definição De Feito
 
@@ -292,7 +352,7 @@
 - O usuário aprovou: `nao`
 - Observações:
 
-## Step 11 - Envio Do Relatório De Tributação
+## Step 12 - Envio Do Relatório De Tributação
 
 ### Definição De Feito
 

@@ -61,6 +61,7 @@ Regras:
 
 - Não avance para a próxima etapa sem registrar a validação da etapa atual.
 - Se houver bloqueio, registre no arquivo de memória e mantenha visível para a próxima etapa.
+- Nunca sobrescreva o arquivo de memória mensal se ele já existir.
 - Nunca crie ajustes ou transferências fictícias para forçar o balanceamento.
 - Não pare até concluir todos os checks finais.
 
@@ -83,10 +84,11 @@ Esta é a fonte única de verdade do fluxo:
 5. Gerar e aplicar sugestões automáticas.
 6. Categorizar manualmente o que restar.
 7. Balancear contas de investimento.
-8. Rodar checks finais e corrigir falhas.
-9. Enviar o relatório mensal por email.
-10. Checar o relatório de tributação com o usuário.
-11. Enviar o email de relatório de tributação.
+8. Verificar inadimplentes do mês e atualizar a lista do sistema.
+9. Rodar checks finais e corrigir falhas.
+10. Enviar o relatório mensal por email.
+11. Checar o relatório de tributação com o usuário.
+12. Enviar o email de relatório de tributação.
 
 ## Step 0 — Confirmar Mês
 
@@ -94,8 +96,16 @@ Esta é a fonte única de verdade do fluxo:
 - Se o usuário não especificar, proponha o mês anterior.
 - Normalize em `YEAR`, `MONTH` e `YYYY-MM`.
 - Antes de seguir para o Step 1, confirme que `RATC_API_URL` e `RATC_API_KEY` estão carregadas no shell atual.
+- Quando esta etapa estiver concluída e validada, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
 
 ## Step 1 — Criar Arquivo De Memória
+
+Se `data/monthly-report-memory/YYYY-MM.md` já existir:
+
+- não crie outro arquivo
+- continue usando o arquivo existente como memória operacional do mês
+
+Se o arquivo ainda não existir:
 
 ```bash
 mkdir -p data/monthly-report-memory
@@ -107,29 +117,35 @@ Depois:
 - substitua placeholders do template
 - registre o mês confirmado
 - use esse arquivo como memória operacional até o fim do workflow
+- Quando esta etapa estiver concluída e validada, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
 
 ## Step 2 — Criar Task List Na Ferramenta De Todo-List
 
 Registre as tarefas derivadas do workflow principal na ferramenta de todo-list do agente usando estes títulos:
 
-| Step | Tarefa                                     |
-| ---- | ------------------------------------------ |
-| 3    | Backup do banco de dados                   |
-| 4    | Importar OFX: CC - Sicredi                 |
-| 4    | Confirmar saldo: CC - Sicredi              |
-| 4    | Importar Imobzi: CC - PJBank               |
-| 4    | Confirmar saldo: CC - PJBank               |
-| 4    | Importar OFX/CSV: CC - BTG                 |
-| 4    | Confirmar saldo: CC - BTG                  |
-| 5    | Gerar e aplicar sugestões de categorização |
-| 6    | Categorizar transações restantes           |
-| 7    | Balancear CI - SicrediInvest               |
-| 7    | Balancear CI - BTG                         |
-| 7    | Balancear CI - XP                          |
-| 8    | Verificações finais (checks)               |
-| 9    | Enviar relatório mensal por email          |
-| 10   | Checar relatório de tributação             |
-| 11   | Enviar relatório de tributação por email   |
+| Step | Tarefa                                        |
+| ---- | --------------------------------------------- |
+| 3    | Backup do banco de dados                      |
+| 4    | Importar OFX: CC - Sicredi                    |
+| 4    | Confirmar saldo: CC - Sicredi                 |
+| 4    | Importar Imobzi: CC - PJBank                  |
+| 4    | Confirmar saldo: CC - PJBank                  |
+| 4    | Importar OFX/CSV: CC - BTG                    |
+| 4    | Confirmar saldo: CC - BTG                     |
+| 5    | Gerar e aplicar sugestões de categorização    |
+| 6    | Categorizar transações restantes              |
+| 7    | Balancear CI - SicrediInvest                  |
+| 7    | Balancear CI - BTG                            |
+| 7    | Balancear CI - XP                             |
+| 8    | Verificar inadimplentes atuais do sistema     |
+| 8    | Levantar pendentes do Imobzi                  |
+| 8    | Revisar correspondência pendentes x depósitos |
+| 8    | Marcar pagamentos aprovados como pagos no Imobzi |
+| 8    | Atualizar lista de inadimplentes do sistema   |
+| 9    | Verificações finais (checks)                  |
+| 10   | Enviar relatório mensal por email             |
+| 11   | Checar relatório de tributação                |
+| 12   | Enviar relatório de tributação por email      |
 
 Regras:
 
@@ -140,15 +156,31 @@ Regras:
 - mantenha a todo-list sincronizada com o andamento real do workflow
 - se houver bloqueio, registre no arquivo de memória e mantenha visível para a próxima etapa
 
+Quando a todo-list inicial do mês estiver criada e revisada, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
+
 ## Step 3 — Backup
 
-Use este comando:
+Use a API de backup como caminho padrão:
 
 ```bash
-ssh robertotcestari@64.176.5.254 "cd /opt/financeiro-ratc/current && npm run cli -- backup"
+curl -X POST "$RATC_API_URL/backups" \
+  -H "Authorization: Bearer $RATC_API_KEY"
 ```
 
-Se precisar de produção, logs ou validação de serviços, abra `references/production-access.md`.
+Validação mínima desta etapa:
+
+- confirme que a resposta da API retornou `success: true`
+- registre `filename`, `filepath`, `sizeBytes` ou `sizeHuman` no arquivo de memória
+- trate a etapa como concluída apenas depois de confirmar que o backup foi realmente criado
+
+Se a chamada da API falhar ou travar:
+
+- não invente um fallback automaticamente
+- abra `references/production-access.md`
+- use SSH apenas para diagnóstico, logs e validação do que aconteceu em produção
+- só use um comando alternativo de backup se houver necessidade operacional clara e isso ficar registrado no arquivo de memória
+
+Quando o backup estiver concluído e validado, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
 
 ## Step 4 — Importações E Conciliações
 
@@ -164,6 +196,8 @@ Referências:
 - `references/api-endpoints.md`
 - `references/checks-and-validation.md`
 
+Quando cada subfluxo desta etapa estiver concluído e validado, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
+
 ## Step 5 — Sugestões Automáticas
 
 Use:
@@ -173,6 +207,8 @@ Use:
 ```
 
 Depois valide a etapa com a checklist de `references/checks-and-validation.md`.
+
+Quando a etapa estiver concluída e validada, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
 
 ## Step 6 — Categorização Manual
 
@@ -190,6 +226,8 @@ Referências:
 - `references/categories.md`
 - `references/api-endpoints.md`
 
+Quando a categorização manual estiver concluída e validada, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
+
 ## Step 7 — Contas De Investimento
 
 Siga `references/investments.md`.
@@ -200,7 +238,55 @@ Cobertura mínima:
 - `CI - BTG`
 - `CI - XP`
 
-## Step 8 — Checks Finais
+Quando cada conta de investimento estiver balanceada e validada, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
+
+## Step 8 — Verificação De Inadimplentes
+
+Objetivo desta etapa:
+
+1. verificar quais inadimplentes já estão cadastrados no sistema e vieram do mês anterior
+2. levantar os pagamentos pendentes do Imobzi para o mês
+3. cruzar os pendentes do Imobzi com os depósitos/recebimentos do sistema financeiro
+4. apresentar ao usuário a revisão completa em três blocos fixos
+5. decidir, sempre com aprovação explícita do usuário, quais inadimplentes devem entrar ou sair da lista do sistema
+
+Fluxo mínimo:
+
+1. Liste os inadimplentes atuais do sistema via `GET /inadimplentes`.
+2. Busque os pendentes do Imobzi do mês na fonte operacional atual.
+3. Gere uma lista de correspondência entre pendentes do Imobzi e depósitos/recebimentos nas contas correntes.
+4. Mostre sempre ao usuário, de forma separada e explícita:
+   - os inadimplentes que vieram do mês anterior
+   - os pendentes do Imobzi
+   - o novo estado proposto dos inadimplentes
+5. Apresente todos os matches e possíveis matches ao usuário antes de fechar qualquer correspondência.
+6. Para casos que pareçam pagos fora do fluxo do Imobzi, peça aprovação explícita do usuário antes de remover ou deixar de adicionar à lista.
+7. Para casos sem correspondência confiável, trate como candidato a inadimplente novo.
+8. Só considere um match fechado depois que o usuário aprovar explicitamente aquele caso.
+9. Se o usuário aprovar que um pendente foi pago fora do fluxo do Imobzi, marque a invoice como paga no Imobzi via API antes de atualizar o estado final da etapa.
+10. Se um inadimplente antigo tiver pagamento confirmado, remova-o da lista ativa do sistema.
+11. Se houver inadimplente novo confirmado, adicione-o à lista do sistema.
+
+Regras críticas desta etapa:
+
+- a fonte de verdade da lista ativa é o sistema `financeiro.ratc.com.br`
+- não atualize a lista de inadimplentes sem registrar a evidência no arquivo de memória
+- não trate correspondência fraca como confirmação automática
+- não feche nenhum match sem aprovação explícita do usuário
+- sempre apresente os matches e possíveis matches ao usuário antes de decidir
+- sempre mostre ao usuário os três blocos: lista anterior, pendentes do Imobzi e novo estado proposto
+- se um match aprovado implicar quitação fora do fluxo normal, marque a invoice como paga no Imobzi antes de fechar a etapa
+- para casos de boleto, a ausência de pagamento no Imobzi é só um indício; ainda assim cheque se houve depósito na conta corrente
+- para casos não-boleto, faça a checagem um a um contra depósitos/recebimentos do sistema
+
+Referência operacional:
+
+- `references/inadimplentes.md`
+- `references/api-endpoints.md`
+
+Quando a etapa estiver concluída e validada, marque as tarefas correspondentes como `completed` na ferramenta de todo-list do agente.
+
+## Step 9 — Checks Finais
 
 Use:
 
@@ -216,7 +302,9 @@ Se falhar:
 
 Use a checklist em `references/checks-and-validation.md`.
 
-## Step 9 — Envio Do Relatório
+Quando todos os checks passarem, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
+
+## Step 10 — Envio Do Relatório
 
 Use:
 
@@ -226,7 +314,9 @@ Use:
 
 Só envie depois que os checks finais passarem.
 
-## Step 10 — Checar Relatório De Tributação
+Quando o envio do relatório mensal estiver concluído e registrado, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
+
+## Step 11 — Checar Relatório De Tributação
 
 Abra o relatório em `/relatorios/tributacao` para o mês de referência e revise o preview com o usuário.
 
@@ -240,14 +330,18 @@ Se o usuário não aprovar:
 - não avance para o envio do email de tributação
 - registre a pendência no arquivo de memória
 
-## Step 11 — Enviar Relatório De Tributação
+Se o usuário aprovar e a etapa estiver validada, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
 
-Depois da aprovação do usuário no Step 10:
+## Step 12 — Enviar Relatório De Tributação
+
+Depois da aprovação do usuário no Step 11:
 
 - envie o email de relatório de tributação pelo fluxo existente da tela `/relatorios/tributacao`
 - registre destinatários e resultado no arquivo de memória
 
-Só envie depois da aprovação explícita do usuário no Step 10.
+Só envie depois da aprovação explícita do usuário no Step 11.
+
+Quando o envio do relatório de tributação estiver concluído e registrado, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
 
 ## Checklists De Validação
 
@@ -273,6 +367,14 @@ Só envie depois da aprovação explícita do usuário no Step 10.
 - [ ] O DRE foi gerado sem erro
 - [ ] Qualquer falha foi corrigida antes do envio
 
+### Inadimplentes
+
+- [ ] Os inadimplentes atuais do sistema foram listados
+- [ ] Os pendentes do Imobzi do mês foram listados
+- [ ] Foi gerada uma lista de matches e possíveis matches com depósitos/recebimentos
+- [ ] Nenhum match foi fechado sem aprovação explícita do usuário
+- [ ] As inclusões e remoções finais da lista do sistema foram registradas
+
 ### Relatório De Tributação
 
 - [ ] O relatório de tributação foi aberto para o mês correto
@@ -287,6 +389,7 @@ Só envie depois da aprovação explícita do usuário no Step 10.
 - `references/investments.md`: espelhamento, rendimentos e validação das contas CI
 - `references/checks-and-validation.md`: critérios de parada, validação e rerun
 - `references/production-access.md`: SSH, backup, logs e checks de produção
+- `references/inadimplentes.md`: heurísticas, matching, aprovação do usuário e atualização da lista
 - `references/categories.md`: categorias e hierarquia
 - `references/categorization-guide.md`: heurísticas de categorização
 
