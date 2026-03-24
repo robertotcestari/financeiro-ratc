@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "skills": {
+    "Production SSH Access": {
+      "source": "/Users/robertotcestari/Programming/projetos/ratc/financeiro-ratc",
+      "sourceType": "local",
+      "computedHash": "3e704cb1b441bf4a47a4a79a79010f261ef9c97fd7537c50588a636d71a93a91"
+    },
+    "Sicredi OFX Download": {
+      "source": "/Users/robertotcestari/Programming/projetos/ratc/financeiro-ratc",
+      "sourceType": "local",
+      "computedHash": "569ea32204b6564ec8ce8a123255a77be91b8e023f21a8aff2683d4d7bdd990d"
+    },
+    "relatorio-mensal": {
+      "source": "/Users/robertotcestari/Programming/projetos/ratc/financeiro-ratc",
+      "sourceType": "local",
+      "computedHash": "a0a0d319dba2f75159ea0b236c938d27053b85a806874af0f8aa54b461030a17"
+    }
+  }
+}
