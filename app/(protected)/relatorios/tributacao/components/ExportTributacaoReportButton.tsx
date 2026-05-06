@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/formatters';
 import { saveGeneratedTributacaoReportToStorage } from '../actions';
 
+const NON_ZERO_AMOUNT_THRESHOLD = 0.0001;
+
 export interface TributacaoReportRow {
   propertyId: string | null;
   propertyCode: string;
@@ -46,7 +48,10 @@ function buildDocument(rows: TributacaoReportRow[], month: number, year: number)
   doc.setFontSize(7);
   doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, 19);
 
-  const sortedRows = [...rows].sort((a, b) => a.propertyCode.localeCompare(b.propertyCode));
+  const taxableRows = rows.filter((row) => Math.abs(row.taxable) > NON_ZERO_AMOUNT_THRESHOLD);
+  const sortedRows = [...taxableRows].sort((a, b) =>
+    a.propertyCode.localeCompare(b.propertyCode)
+  );
 
   const head = [
     ['Imóvel', 'Valor Recebido', 'Condomínio', 'IPTU', 'Não Tributável', 'Receita Tributável'],
@@ -117,7 +122,7 @@ function buildDocument(rows: TributacaoReportRow[], month: number, year: number)
   const finalY = (doc as jsPDF & { lastAutoTable?: { finalY?: number } })
     .lastAutoTable?.finalY ?? 22;
   doc.setFontSize(7);
-  doc.text(`Total de ${rows.length} imóveis`, 14, finalY + 5);
+  doc.text(`Total de ${sortedRows.length} imóveis`, 14, finalY + 5);
 
   return doc;
 }
