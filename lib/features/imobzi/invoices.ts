@@ -75,7 +75,17 @@ export async function getImobziPendingInvoices(
       endDate: endDateStr
     });
     
-    const url = `https://my.imobzi.com/v1/invoices?order_by=date&sort_by=asc&status=pending&payment_methods_available=all_payments&payment_method=all_payments&start_at=${startDateStr}&end_at=${endDateStr}&page=1&contract_type=all`;
+    const params = new URLSearchParams({
+      order_by: 'due_date',
+      sort_by: 'asc',
+      status: 'pending',
+      start_at: startDateStr,
+      end_at: endDateStr,
+      page: '1',
+      contract_type: 'all',
+    });
+
+    const url = `https://my.imobzi.com/v1/invoices?${params.toString()}`;
     
     const response = await fetch(url, {
       headers: {
