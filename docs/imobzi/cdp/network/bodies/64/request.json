@@ -1,0 +1,11 @@
+{
+  "id": "64",
+  "method": "GET",
+  "url": "https://my.imobzi.com/v1/real-estate?",
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "content-type": "application/json",
+    "authorization": "<redacted>"
+  },
+  "body": null
+}

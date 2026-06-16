@@ -11,6 +11,12 @@
       "sourceType": "local",
       "computedHash": "569ea32204b6564ec8ce8a123255a77be91b8e023f21a8aff2683d4d7bdd990d"
     },
+    "browser-to-api": {
+      "source": "browserbase/skills",
+      "sourceType": "github",
+      "skillPath": "skills/browser-to-api/SKILL.md",
+      "computedHash": "0c6b12fadc5ebe23dbaa8a37df240cbd84c9b5a00e653c5a926036834e478f97"
+    },
     "relatorio-mensal": {
       "source": "/Users/robertotcestari/Programming/projetos/ratc/financeiro-ratc",
       "sourceType": "local",

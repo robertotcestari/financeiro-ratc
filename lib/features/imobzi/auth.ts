@@ -18,16 +18,22 @@ interface AuthResponse {
 export async function getImobziAuthToken(): Promise<string> {
   const email = process.env.IMOBZI_EMAIL;
   const password = process.env.IMOBZI_PASSWORD;
+  const firebaseApiKey = process.env.IMOBZI_FIREBASE_API_KEY;
 
-  if (!email || !password) {
+  if (!email || !password || !firebaseApiKey) {
     throw new Error(
-      'IMOBZI_EMAIL and IMOBZI_PASSWORD environment variables are required'
+      'IMOBZI_EMAIL, IMOBZI_PASSWORD and IMOBZI_FIREBASE_API_KEY environment variables are required'
     );
   }
 
   try {
+    const authUrl = new URL(
+      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword'
+    );
+    authUrl.searchParams.set('key', firebaseApiKey);
+
     const response = await fetch(
-      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyAFwmj0iszcf433EvcZ2bxs-XrK49ma4xA',
+      authUrl,
       {
         method: 'POST',
         headers: {

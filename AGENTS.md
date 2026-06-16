@@ -39,3 +39,7 @@
 ## Security & Configuration
 - Copy `.env.example` to `.env`; set `DATABASE_URL` for MySQL. Use `.env.test` for tests.
 - Do not commit secrets, `logs/`, database dumps, or personal data. Use `npm run db:backup` for local backups.
+- `DATABASE_URL` aponta para o banco local; `DATABASE_URL_REMOTE` aponta para produção. Scripts que precisam dos dados de produção (ex.: artefatos do relatório mensal) devem rodar com `DATABASE_URL="$DATABASE_URL_REMOTE"`.
+
+## Fechamento Mensal
+- O workflow de relatório/fechamento mensal está na skill `relatorio-mensal` (`.agents/skills/relatorio-mensal/`, espelhada em `skills/`). Ela é a fonte de verdade do processo (importações OFX/Imobzi, categorização, investimentos, inadimplentes, checks e envio). Edições na skill devem ser replicadas nas duas cópias.

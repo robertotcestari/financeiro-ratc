@@ -54,6 +54,14 @@ Interpretação:
 
 Use a fonte operacional atual do projeto para aluguéis pendentes do Imobzi.
 
+Isso **roda localmente, sem SSH** — veja a seção "Autenticação Imobzi" em `pjbank-imobzi.md`. Após autenticar, consulte:
+
+```
+GET https://my.imobzi.com/v1/invoices?order_by=due_date&sort_by=asc&status=pending&start_at=YYYY-MM-01&end_at=YYYY-MM-31&page=1&contract_type=all
+Headers: authorization: <ID_TOKEN>, accept: application/json, Referer: https://my.imobzi.com/
+Returns: { invoices[], count, total, total_pending, total_overdue }
+```
+
 Campos mínimos para a etapa:
 
 - `tenantName`
@@ -197,3 +205,15 @@ Fevereiro de 2026 revelou estes edge cases:
    - Agrícola Moreno de Nipoã / Cosmorama
    - Maria José Nadruz / Brasilusa 669 ap 21
 5. Esses casos precisam de aprovação explícita do usuário antes de entrar na lista.
+
+## Regra Fixa - Usina/Sítio Sales E Agrícola Moreno/Cosmorama
+
+Para `Usina / Sítio Sales` e `Agrícola Moreno de Nipoã / Cosmorama`, não tente forçar match contra recebimentos do Financeiro RATC: esses pagamentos caem em outra conta fora do fluxo conferido no sistema.
+
+Regra operacional:
+
+- liste as invoices pendentes no bloco de pendentes do Imobzi
+- registre que elas caem em outra conta
+- peça aprovação explícita ao usuário antes de quitar
+- se o usuário aprovar a quitação, marque como pago no Imobzi
+- não cadastre esses casos como inadimplentes apenas por falta de match nas contas do Financeiro RATC

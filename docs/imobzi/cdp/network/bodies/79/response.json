@@ -1,0 +1,9 @@
+{
+  "id": "79",
+  "status": 404,
+  "headers": {
+    "content-type": "application/json"
+  },
+  "mimeType": "application/json",
+  "body": "{\"message\":\"Lease not found\"}"
+}

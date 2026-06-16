@@ -1,0 +1,11 @@
+{
+  "id": "72",
+  "method": "GET",
+  "url": "https://my.imobzi.com/v1/user/CWLAFmKOHLOIPDr9hOSRCvDx2Aa2/rules?",
+  "headers": {
+    "accept": "application/json, text/plain, */*",
+    "content-type": "application/json",
+    "authorization": "<redacted>"
+  },
+  "body": null
+}

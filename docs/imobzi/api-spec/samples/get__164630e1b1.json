@@ -1,0 +1,69 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/lease/checklist",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": [
+      {
+        "checked": false,
+        "description": "Assim que for aprovada, iremos notificá-lo                     por e-mail/WhatsApp, para Assinatura Eletrônica do Contrato",
+        "details": null,
+        "name": "<redacted>",
+        "order": 1
+      },
+      {
+        "checked": false,
+        "description": "Transfira para seu nome as contas de consumo como água, luz e/ou gás",
+        "details": null,
+        "name": "<redacted>",
+        "order": 6
+      },
+      {
+        "checked": false,
+        "description": "Você tem 10 dias para ler e assinar eletronicamente a vistoria do imóvel",
+        "details": null,
+        "name": "<redacted>",
+        "order": 5
+      },
+      {
+        "checked": false,
+        "description": "Seu contrato está pronto para assinatura. Assine agora eletronicamente",
+        "details": null,
+        "name": "<redacted>",
+        "order": 2
+      },
+      {
+        "checked": false,
+        "description": "Quando você receber as contas já em seu nome, envie uma foto para nós",
+        "details": null,
+        "name": "<redacted>",
+        "order": 7
+      },
+      {
+        "checked": false,
+        "description": "Contratação obrigatória conforme artigo 22, inciso VIII da lei do Inquilinato",
+        "details": null,
+        "name": "<redacted>",
+        "order": 3
+      },
+      {
+        "checked": false,
+        "description": "Agende a retirada das suas chaves na imobiliária ou direto no imóvel",
+        "details": null,
+        "name": "<redacted>",
+        "order": 4
+      }
+    ]
+  }
+}

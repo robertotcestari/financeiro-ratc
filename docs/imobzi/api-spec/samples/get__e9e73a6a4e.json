@@ -1,0 +1,96 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/real-estate",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "address": "<redacted>",
+      "address_complement": "<redacted>",
+      "business_type": "real_estate",
+      "cities": [],
+      "city": "Catanduva",
+      "company_name": "<redacted>",
+      "company_type": "legal_entity",
+      "country": "Brasil",
+      "database": "ac-tlna233176iwe",
+      "db_id": "ac-tlna233176iwe",
+      "description": "",
+      "email": "<redacted>",
+      "legal_information": [
+        {
+          "validate": "\\d{3}\\.*\\d{3}\\.*\\d{3}-*\\d{2}",
+          "required": false,
+          "company_type": "individual",
+          "name": "<redacted>"
+        },
+        {
+          "validate": "\\d{2}\\.*\\d{3}\\.*\\d{3}\\/*\\d{4}-*\\d{2}",
+          "required": false,
+          "company_type": "legal_entity",
+          "name": "<redacted>",
+          "value": "<redacted>"
+        },
+        {
+          "required": false,
+          "company_type": "all",
+          "name": "<redacted>",
+          "value": "<redacted>"
+        },
+        {
+          "required": false,
+          "company_type": "all",
+          "name": "<redacted>",
+          "value": "<redacted>"
+        },
+        {
+          "validate": "\\d{3}\\.*\\d{3}\\.*\\d{3}-*\\d{2}",
+          "required": false,
+          "company_type": "all",
+          "name": "<redacted>",
+          "value": "<redacted>"
+        }
+      ],
+      "logotype_image_url": "<redacted>",
+      "namespace_administrator": "CWLAFmKOHLOIPDr9hOSRCvDx2Aa2",
+      "neighborhood": "<redacted>",
+      "open_at": "09:00",
+      "closed_at": "18:00",
+      "phone": "<redacted>",
+      "site": "",
+      "social_networks": [],
+      "state": "SP",
+      "trade_mark": "<redacted>",
+      "zip_code": "<redacted>",
+      "locale": "pt-BR",
+      "regional_settings": {
+        "country": "Brasil",
+        "language": "pt-BR",
+        "currency": "real",
+        "timezone": "America/Sao_Paulo"
+      },
+      "latitude": -21.1452323,
+      "longitude": -48.9829911,
+      "users": [
+        {
+          "fullname": "<redacted>",
+          "profile_image_url": "<redacted>",
+          "db_id": "CWLAFmKOHLOIPDr9hOSRCvDx2Aa2",
+          "email": "<redacted>",
+          "function": ""
+        }
+      ],
+      "new_posts": 0
+    }
+  }
+}

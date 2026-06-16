@@ -64,6 +64,12 @@ Regras:
 - Nunca sobrescreva o arquivo de memória mensal se ele já existir.
 - Nunca crie ajustes ou transferências fictícias para forçar o balanceamento.
 - Não pare até concluir todos os checks finais.
+- **Shell não persiste entre comandos**: cada chamada Bash é um shell novo. Re-exporte o `.env` em TODO comando que usa a API: `set -a && source ./.env && set +a && curl ...`. Sintoma de esquecimento: `curl: (3) URL rejected: No host part in the URL`.
+- **`bulk-categorize` retorna `{"success":true}` mesmo com IDs inexistentes/truncados (no-op silencioso)**. Use SEMPRE o ID COMPLETO da transação e CONFIRME com `GET /transactions/{id}` que a categoria foi aplicada. Não confie só no `success:true`.
+- **Backup (`POST /backups`) quase sempre responde `504 Gateway Time-out` (nginx)**, mas o backup conclui no servidor. Valide via SSH (`ls -lht /opt/financeiro-ratc/shared/backups`) — exige autorização explícita do usuário para o SSH. Não trate o 504 como falha.
+- **Propriedades inativas/vendidas não aparecem em `GET /properties`** (ex.: `CAT - Terreno Dahma`, `GUA - Apartamento Guarujá`), mas ainda são usadas em categorizações. Pegue o `propertyId` delas a partir de transações históricas que já as usam.
+- **O patrimônio do print da corretora pode ser de qualquer conta CI** — confirme com o usuário QUAL conta (BTG, XP, etc.) antes de balancear. Em maio/2026 o print "Ratc" era o BTG, não a XP.
+- **Imobzi não exige SSH**: pendentes, quitação, preview e import podem ser feitos a partir do ambiente local pelo fluxo de auth já existente no projeto (`lib/features/imobzi/auth.ts`). Veja `references/pjbank-imobzi.md`.
 
 ## Guardrails Críticos
 
@@ -220,6 +226,15 @@ Fluxo:
 4. Pergunte ao usuário apenas o que continuar sem histórico ou ambíguo.
 5. Categorize sem marcar `reviewed`.
 
+Regra fixa de imóvel:
+
+- Recebimentos de `Santa Maria Tem Negocios Imobiliarios` / `Santa Maria Tem` / CNPJ `64.508.005/0001-02` devem ser categorizados como `Aluguel` no imóvel `RIB - Av. Independência 1589`. Nunca use `POA - Protásio Alves Porto Alegre` para esse pagador/CNPJ.
+- Recebimentos de `Painew Propaganda e Publicidade` / `Painew Propaganda` devem ser categorizados como `Aluguel` no imóvel `RIB - Totem`.
+- Recebimentos de `Ilha da Madeira Gestao Hoteis` / `Ilha da Madeira` / CNPJ `10.706.625/0001-27` devem ser categorizados como `Aluguel` no imóvel `BER - Riviera de São Lourenço`.
+- Recebimentos de `Instituto de Olhos de Catanduva` / CNPJ `00.579.873/0001-09` devem ser categorizados como `Aluguel` no imóvel `CAT - Otica - Casa ao Fundo`.
+- Recebimentos de `Agatha Brandini Fernandes` / `Agatha Brandini` devem ser categorizados como `Aluguel` no imóvel `CAT - Rua Bahia Sala 4`.
+- Boleto/saída `Village Damha` via `PJBANK PAGAMENTOS` no valor de `550,00` deve ser categorizado como `Condomínios` no imóvel `CAT - Terreno Dahma`.
+
 Referências:
 
 - `references/categorization-guide.md`
@@ -306,7 +321,16 @@ Quando todos os checks passarem, marque a tarefa correspondente como `completed`
 
 ## Step 10 — Envio Do Relatório
 
-Use:
+O envio é uma ação externa (email para a família/sócios): **só envie com confirmação explícita do usuário** e com os destinatários confirmados por ele.
+
+**Pré-envio — gerar os anexos (DRE e Aluguéis):** o email referencia os PDFs salvos; se não existirem para o mês, eles não vão no email. Os dados do fechamento ficam em PRODUÇÃO (via API), mas `scripts/reports/save-monthly-artifacts.ts` usa o banco LOCAL por padrão — então aponte para o banco remoto:
+
+```bash
+set -a && source ./.env && set +a
+DATABASE_URL="$DATABASE_URL_REMOTE" npx tsx scripts/reports/save-monthly-artifacts.ts $YEAR $MONTH
+```
+
+Isso gera `DRE_YYYY_MM.pdf` e `Alugueis_YYYY_MM.pdf`, sobe no S3 e registra em `saved_files`. Depois envie:
 
 ```bash
 ./scripts/send-report.sh $YEAR $MONTH "<destinatarios>"

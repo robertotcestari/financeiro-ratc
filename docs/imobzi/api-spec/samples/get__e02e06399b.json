@@ -1,0 +1,19 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/lease/code/:code",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": null,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": null
+  }
+}

@@ -29,6 +29,8 @@ Fechar as contas de investimento do mês com:
 Regras adicionais:
 - aplicações em `CC - Sicredi` precisam de espelho individual positivo em `CI - SicrediInvest`
 - resgates em `CC - Sicredi` precisam de espelho individual negativo em `CI - SicrediInvest`
+- os espelhos são categoria `Transferência Entre Contas`; o rendimento é `Rendimentos Financeiros`
+- **rendimento líquido = Rendimentos pagos − IRRF − IOF** (todos no extrato). Lance UM ajuste de rendimento pela diferença para o saldo bater. Confira: `saldo_anterior + aplicações − resgates + rendimento_líquido = saldo_atual`.
 
 ## CI - BTG E CI - XP
 
@@ -38,6 +40,11 @@ Use o mesmo fluxo padrão:
 - pedir saldo real ao usuário
 - lançar rendimentos, se houver diferença
 - validar saldo final
+
+Cuidados aprendidos:
+- **Confirme com o usuário a QUAL conta CI o print da corretora se refere** antes de balancear. O print às vezes diz só "Ratc" e pode ser BTG ou XP. Em maio/2026 o print era do BTG (a XP seguiu inativa).
+- Aportes via TED para `RATC GERENCIAMENTO` (saindo do `CC - Sicredi`) costumam ser a entrada de capital na conta de investimento; confirme o destino com o usuário e crie o espelho positivo na conta CI correspondente. O rendimento (que pode ser negativo) é a diferença até o saldo real.
+- Conta inativa (ex.: XP): não criar transações nem ativar sem o usuário pedir.
 
 ## Comandos E Endpoints
 

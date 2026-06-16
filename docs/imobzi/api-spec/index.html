@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Imobzi Leases and Invoices observed API — API Report</title>
+<style>
+  :root {
+    --brand: #F03603;
+    --black: #100D0D;
+    --gray: #514F4F;
+    --border: #edebeb;
+    --bg: #F9F6F4;
+    --card: #ffffff;
+    --text: #100D0D;
+    --muted: #514F4F;
+    --green: #22863a;
+    --code-bg: #f6f5f5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 15px; }
+  .container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  header { margin-bottom: 2rem; }
+  header h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+  header .meta { color: var(--muted); font-size: 0.875rem; }
+
+  .summary { display: flex; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.25rem; flex: 1; min-width: 120px; }
+  .stat .label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; margin-bottom: 0.25rem; }
+  .stat .value { font-size: 1.5rem; font-weight: 700; color: var(--black); }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 0.5rem; overflow: hidden; }
+  .card-header { padding: 0.875rem 1.25rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+  .card-header:hover { background: #faf9f8; }
+  .card-title { display: flex; align-items: center; gap: 0.75rem; }
+  .card-meta { display: flex; align-items: center; gap: 0.75rem; }
+  .method { background: var(--green); color: white; font-size: 0.6875rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.03em; }
+  .op-name { font-weight: 600; font-size: 0.9375rem; }
+  .fn-name { font-size: 0.8125rem; color: var(--muted); background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 3px; }
+  .badge { font-size: 0.75rem; color: var(--muted); background: var(--code-bg); padding: 0.15rem 0.5rem; border-radius: 10px; }
+
+  .card-body { display: none; padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border); }
+  .card.open .card-body { display: block; padding-top: 1rem; }
+  .card-body h4 { font-size: 0.8125rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin: 1.25rem 0 0.5rem; }
+  .card-body h4:first-child { margin-top: 0; }
+  .endpoint-line { font-size: 0.875rem; margin-bottom: 0.25rem; }
+
+  .var-table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
+  .var-table th { text-align: left; font-weight: 600; color: var(--muted); padding: 0.4rem 0.75rem; border-bottom: 1px solid var(--border); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .var-table td { padding: 0.35rem 0.75rem; border-bottom: 1px solid #f5f4f3; }
+  .var-table code { font-size: 0.8125rem; }
+
+  pre { background: var(--code-bg); border-radius: 4px; padding: 0.75rem 1rem; overflow-x: auto; font-size: 0.8125rem; line-height: 1.5; }
+  pre.scrollable { max-height: 400px; overflow-y: auto; }
+  code { font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace; font-size: 0.875em; }
+
+  .client-section { margin-top: 2rem; }
+  .client-section h2 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.75rem; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Imobzi Leases and Invoices observed API</h1>
+    <p class="meta">https://my.imobzi.com · 10 operations discovered from browser trace</p>
+  </header>
+
+  <div class="summary">
+    <div class="stat"><div class="label">Operations</div><div class="value">10</div></div>
+    <div class="stat"><div class="label">Endpoint</div><div class="value" style="font-size:0.875rem">/v1/financial/accounts</div></div>
+    <div class="stat"><div class="label">Protocol</div><div class="value" style="font-size:0.875rem">REST</div></div>
+    <div class="stat"><div class="label">Total samples</div><div class="value">11</div></div>
+  </div>
+
+  
+    <div class="card" id="op-0">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /v1/financial/accounts</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">1 sample</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+        <h4>Response</h4>
+        <pre class="scrollable"><code>{
+  &quot;accounts&quot;: [
+    {
+      &quot;account_number&quot;: &quot;44319-0&quot;,
+      &quot;account_type&quot;: &quot;others&quot;,
+      &quot;active&quot;: true,
+      &quot;agency&quot;: &quot;3003&quot;,
+      &quot;balance&quot;: 3253838.53,
+      &quot;bank&quot;: {
+        &quot;bank_slip_fee&quot;: null,
+        &quot;code&quot;: &quot;748&quot;,
+        &quot;db_id&quot;: 5759180434571264,
+        &quot;integration_name&quot;: null,
+        &quot;logo_url&quot;: null,
+        &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;resources&quot;: null,
+        &quot;transference_fee&quot;: null,
+        &quot;transference_split&quot;: null
+      },
+      &quot;bank_integrations&quot;: null,
+      &quot;bank_integration_active&quot;: [],
+      &quot;created_at&quot;: &quot;2023-03-23T12:03:11.825866Z&quot;,
+      &quot;db_id&quot;: 5253871883517952,
+      &quot;default&quot;: false,
+      &quot;description&quot;: &quot;Sicredi&quot;,
+      &quot;favorite&quot;: false,
+      &quot;has_integration&quot;: false,
+      &quot;has_transactions&quot;: true,
+      &quot;initial_value&quot;: 38994.74,
+      &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;start_at&quot;: &quot;&lt;redacted&gt;&quot;
+    },
+    {
+      &quot;account_number&quot;: &quot;&quot;,
+      &quot;account_type&quot;: &quot;others&quot;,
+      &quot;active&quot;: true,
+      &quot;agency&quot;: &quot;&quot;,
+      &quot;balance&quot;: -10,
+      &quot;bank&quot;: {},
+      &quot;bank_integrations&quot;: null,
+      &quot;bank_integration_active&quot;: [],
+      &quot;created_at&quot;: &quot;2026-02-19T14:29:02.416320Z&quot;,
+      &quot;db_id&quot;: 5348325597904896,
+      &quot;default&quot;: false,
+      &quot;description&quot;: &quot;&quot;,
+      &quot;favorite&quot;: false,
+      &quot;has_integration&quot;: false,
+      &quot;has_transactions&quot;: true,
+      &quot;initial_value&quot;: 0,
+      &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;start_at&quot;: &quot;&lt;redacted&gt;&quot;
+    },
+    {
+      &quot;account_number&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;account_type&quot;: &quot;digital_account&quot;,
+      &quot;active&quot;: true,
+      &quot;agency&quot;: &quot;0001&quot;,
+      &quot;balance&quot;: 319441.75,
+      &quot;bank&quot;: {
+        &quot;bank_slip_fee&quot;: null,
+        &quot;code&quot;: &quot;301&quot;,
+        &quot;db_id&quot;: 5762824273920000,
+        &quot;integration_name&quot;: null,
+        &quot;logo_url&quot;: null,
+        &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;resources&quot;: null,
+        &quot;transference_fee&quot;: null,
+        &quot;transference_split&quot;: null
+      },
+      &quot;bank_integrations&quot;: [
+        {
+          &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+          &quot;active&quot;: true,
+          &quot;transference_fee&quot;: 2,
+          &quot;tran
+  ...</code></pre>
+      </div>
+    </div>
+
+    <div class="card" id="op-1">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /v1/network-group/</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">1 sample</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+        <h4>Response</h4>
+        <pre class="scrollable"><code>{
+  &quot;networks_active&quot;: {
+    &quot;networks&quot;: []
+  },
+  &quot;networks_pending&quot;: {
+    &quot;networks&quot;: []
+  }
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="card" id="op-2">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /v1/subscription</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">1 sample</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+        <h4>Response</h4>
+        <pre class="scrollable"><code>{
+  &quot;namespace&quot;: &quot;ac-tlna233176iwe&quot;,
+  &quot;namespace_administrator&quot;: {
+    &quot;db_key&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;db_id&quot;: &quot;CWLAFmKOHLOIPDr9hOSRCvDx2Aa2&quot;,
+    &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;email&quot;: &quot;&lt;redacted&gt;&quot;
+  },
+  &quot;payment_type&quot;: &quot;bank_slip&quot;,
+  &quot;value_per_user&quot;: 44,
+  &quot;value_plan&quot;: 274.72,
+  &quot;due_date&quot;: 17,
+  &quot;expiration_at&quot;: null,
+  &quot;membership_date&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;created_at&quot;: &quot;2023-03-17T13:48:02.837586&quot;,
+  &quot;updated_at&quot;: &quot;2023-03-17T13:48:02.837586&quot;,
+  &quot;canceled_at&quot;: &quot;2025-07-02T02:14:56.168967&quot;,
+  &quot;invoice_payment_status&quot;: &quot;&quot;,
+  &quot;status&quot;: &quot;active&quot;,
+  &quot;promo_codes&quot;: [],
+  &quot;resale&quot;: false,
+  &quot;users_amount&quot;: 1,
+  &quot;users_active&quot;: 1,
+  &quot;value_total&quot;: 274.72,
+  &quot;plan_name&quot;: &quot;Free&quot;,
+  &quot;plan_display_name&quot;: &quot;Free&quot;,
+  &quot;plans_package&quot;: [
+    {
+      &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;display_name&quot;: &quot;Free&quot;,
+      &quot;limitations&quot;: {
+        &quot;api_third_party_access&quot;: false,
+        &quot;calendar_sync&quot;: false,
+        &quot;contact_count&quot;: 50,
+        &quot;report_create&quot;: false,
+        &quot;network_group_create&quot;: false,
+        &quot;image_save_original&quot;: false,
+        &quot;lead_count&quot;: 50,
+        &quot;advert&quot;: false,
+        &quot;nota_fiscal&quot;: false,
+        &quot;property_clone_building&quot;: false,
+        &quot;mail&quot;: false,
+        &quot;whatsapp&quot;: false,
+        &quot;access_offline&quot;: false,
+        &quot;deal_count&quot;: 30,
+        &quot;watermark&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;storage_size&quot;: 0,
+        &quot;site&quot;: true,
+        &quot;pipeline_group_create&quot;: false,
+        &quot;profile_picture&quot;: false,
+        &quot;mail_auto_send&quot;: false,
+        &quot;imobzi_erp&quot;: false,
+        &quot;report&quot;: false,
+        &quot;dwv&quot;: false,
+        &quot;mailchimp&quot;: false,
+        &quot;deal_create&quot;: false,
+        &quot;erp&quot;: false,
+        &quot;client_area&quot;: false,
+        &quot;property_social_sharing&quot;: false,
+        &quot;text_template_personalized&quot;: false,
+        &quot;devolus_vistoria&quot;: false,
+        &quot;digital_real_estate&quot;: false,
+        &quot;orulo&quot;: false,
+        &quot;google_analytics&quot;: false,
+        &quot;openai&quot;: false,
+        &quot;property_count&quot;: 30,
+        &quot;crm&quot;: &quot;real_estate&quot;,
+        &quot;whatsapp_description_ai&quot;: false
+      },
+      &quot;va
+  ...</code></pre>
+      </div>
+    </div>
+
+    <div class="card" id="op-3">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /v1/real-estate</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">1 sample</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+        <h4>Response</h4>
+        <pre class="scrollable"><code>{
+  &quot;address&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;address_complement&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;business_type&quot;: &quot;real_estate&quot;,
+  &quot;cities&quot;: [],
+  &quot;city&quot;: &quot;Catanduva&quot;,
+  &quot;company_name&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;company_type&quot;: &quot;legal_entity&quot;,
+  &quot;country&quot;: &quot;Brasil&quot;,
+  &quot;database&quot;: &quot;ac-tlna233176iwe&quot;,
+  &quot;db_id&quot;: &quot;ac-tlna233176iwe&quot;,
+  &quot;description&quot;: &quot;&quot;,
+  &quot;email&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;legal_information&quot;: [
+    {
+      &quot;validate&quot;: &quot;\\d{3}\\.*\\d{3}\\.*\\d{3}-*\\d{2}&quot;,
+      &quot;required&quot;: false,
+      &quot;company_type&quot;: &quot;individual&quot;,
+      &quot;name&quot;: &quot;&lt;redacted&gt;&quot;
+    },
+    {
+      &quot;validate&quot;: &quot;\\d{2}\\.*\\d{3}\\.*\\d{3}\\/*\\d{4}-*\\d{2}&quot;,
+      &quot;required&quot;: false,
+      &quot;company_type&quot;: &quot;legal_entity&quot;,
+      &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;value&quot;: &quot;&lt;redacted&gt;&quot;
+    },
+    {
+      &quot;required&quot;: false,
+      &quot;company_type&quot;: &quot;all&quot;,
+      &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;value&quot;: &quot;&lt;redacted&gt;&quot;
+    },
+    {
+      &quot;required&quot;: false,
+      &quot;company_type&quot;: &quot;all&quot;,
+      &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;value&quot;: &quot;&lt;redacted&gt;&quot;
+    },
+    {
+      &quot;validate&quot;: &quot;\\d{3}\\.*\\d{3}\\.*\\d{3}-*\\d{2}&quot;,
+      &quot;required&quot;: false,
+      &quot;company_type&quot;: &quot;all&quot;,
+      &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;value&quot;: &quot;&lt;redacted&gt;&quot;
+    }
+  ],
+  &quot;logotype_image_url&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;namespace_administrator&quot;: &quot;CWLAFmKOHLOIPDr9hOSRCvDx2Aa2&quot;,
+  &quot;neighborhood&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;open_at&quot;: &quot;09:00&quot;,
+  &quot;closed_at&quot;: &quot;18:00&quot;,
+  &quot;phone&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;site&quot;: &quot;&quot;,
+  &quot;social_networks&quot;: [],
+  &quot;state&quot;: &quot;SP&quot;,
+  &quot;trade_mark&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;zip_code&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;locale&quot;: &quot;pt-BR&quot;,
+  &quot;regional_settings&quot;: {
+    &quot;country&quot;: &quot;Brasil&quot;,
+    &quot;language&quot;: &quot;pt-BR&quot;,
+    &quot;currency&quot;: &quot;real&quot;,
+    &quot;timezone&quot;: &quot;America/Sao_Paulo&quot;
+  },
+  &quot;latitude&quot;: -21.1452323,
+  &quot;longitude&quot;: -48.9829911,
+  &quot;users&quot;: [
+    {
+      &quot;fullname&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;profile_image_url&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;db_id&quot;: &quot;CWLAFmKOHLOIPDr9hOSRCvDx2Aa2&quot;,
+      &quot;email&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;function&quot;: &quot;&quot;
+    }
+  ],
+  &quot;new_posts&quot;: 0
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="card" id="op-4">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /v1/parameters</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">1 sample</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+        <h4>Response</h4>
+        <pre class="scrollable"><code>{
+  &quot;database&quot;: &quot;ac-tlna233176iwe&quot;,
+  &quot;db_id&quot;: &quot;ac-tlna233176iwe&quot;,
+  &quot;block_duplicate_contacts&quot;: false,
+  &quot;namespace_administrator&quot;: &quot;CWLAFmKOHLOIPDr9hOSRCvDx2Aa2&quot;,
+  &quot;real_estate_data&quot;: {
+    &quot;address&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;address_complement&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;business_type&quot;: &quot;real_estate&quot;,
+    &quot;cities&quot;: [],
+    &quot;city&quot;: &quot;Catanduva&quot;,
+    &quot;company_name&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;company_type&quot;: &quot;legal_entity&quot;,
+    &quot;country&quot;: &quot;Brasil&quot;,
+    &quot;database&quot;: &quot;ac-tlna233176iwe&quot;,
+    &quot;db_id&quot;: &quot;ac-tlna233176iwe&quot;,
+    &quot;description&quot;: &quot;&quot;,
+    &quot;email&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;legal_information&quot;: [
+      {
+        &quot;validate&quot;: &quot;\\d{3}\\.*\\d{3}\\.*\\d{3}-*\\d{2}&quot;,
+        &quot;required&quot;: false,
+        &quot;company_type&quot;: &quot;individual&quot;,
+        &quot;name&quot;: &quot;&lt;redacted&gt;&quot;
+      },
+      {
+        &quot;validate&quot;: &quot;\\d{2}\\.*\\d{3}\\.*\\d{3}\\/*\\d{4}-*\\d{2}&quot;,
+        &quot;required&quot;: false,
+        &quot;company_type&quot;: &quot;legal_entity&quot;,
+        &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;value&quot;: &quot;&lt;redacted&gt;&quot;
+      },
+      {
+        &quot;required&quot;: false,
+        &quot;company_type&quot;: &quot;all&quot;,
+        &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;value&quot;: &quot;&lt;redacted&gt;&quot;
+      },
+      {
+        &quot;required&quot;: false,
+        &quot;company_type&quot;: &quot;all&quot;,
+        &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;value&quot;: &quot;&lt;redacted&gt;&quot;
+      },
+      {
+        &quot;validate&quot;: &quot;\\d{3}\\.*\\d{3}\\.*\\d{3}-*\\d{2}&quot;,
+        &quot;required&quot;: false,
+        &quot;company_type&quot;: &quot;all&quot;,
+        &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;value&quot;: &quot;&lt;redacted&gt;&quot;
+      }
+    ],
+    &quot;logotype_image_url&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;namespace_administrator&quot;: &quot;CWLAFmKOHLOIPDr9hOSRCvDx2Aa2&quot;,
+    &quot;neighborhood&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;open_at&quot;: &quot;09:00&quot;,
+    &quot;closed_at&quot;: &quot;18:00&quot;,
+    &quot;phone&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;site&quot;: &quot;&quot;,
+    &quot;social_networks&quot;: [],
+    &quot;state&quot;: &quot;SP&quot;,
+    &quot;trade_mark&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;zip_code&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;locale&quot;: &quot;pt-BR&quot;,
+    &quot;regional_settings&quot;: {
+      &quot;country&quot;: &quot;Brasil&quot;,
+      &quot;language&quot;: &quot;pt-BR&quot;,
+      &quot;currency&quot;: &quot;real&quot;,
+      &quot;timezone&quot;: &quot;America/Sao_Paulo&quot;
+    },
+    &quot;latitude&quot;: -21.1452323,
+    &quot;longitude&quot;: -48.9829911
+ 
+  ...</code></pre>
+      </div>
+    </div>
+
+    <div class="card" id="op-5">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /v1/user/{id}/rules</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">1 sample</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+        <h4>Response</h4>
+        <pre class="scrollable"><code>{
+  &quot;adverts&quot;: true,
+  &quot;analysis&quot;: {
+    &quot;commission&quot;: null,
+    &quot;hide_property_address&quot;: null,
+    &quot;hide_property_owner&quot;: null,
+    &quot;ignore_reassign_manager&quot;: false,
+    &quot;other&quot;: &quot;read_write&quot;,
+    &quot;other_private&quot;: null,
+    &quot;own&quot;: &quot;read_write_delete&quot;,
+    &quot;pending&quot;: null,
+    &quot;share_filter&quot;: &quot;without_permission&quot;,
+    &quot;updated_property_revision&quot;: false,
+    &quot;without_link&quot;: null
+  },
+  &quot;building&quot;: {
+    &quot;commission&quot;: null,
+    &quot;hide_building_address&quot;: false,
+    &quot;hide_building_owner&quot;: false,
+    &quot;other&quot;: &quot;read&quot;,
+    &quot;other_private&quot;: null,
+    &quot;own&quot;: &quot;read&quot;,
+    &quot;pending&quot;: false,
+    &quot;without_link&quot;: &quot;read&quot;
+  },
+  &quot;calendar&quot;: {
+    &quot;commission&quot;: null,
+    &quot;hide_property_address&quot;: null,
+    &quot;hide_property_owner&quot;: null,
+    &quot;ignore_reassign_manager&quot;: false,
+    &quot;other&quot;: &quot;read&quot;,
+    &quot;other_private&quot;: null,
+    &quot;own&quot;: &quot;read_write&quot;,
+    &quot;pending&quot;: null,
+    &quot;share_filter&quot;: &quot;without_permission&quot;,
+    &quot;updated_property_revision&quot;: false,
+    &quot;without_link&quot;: null
+  },
+  &quot;cards_dashboard&quot;: {
+    &quot;deals_done&quot;: &quot;read&quot;,
+    &quot;ranking&quot;: &quot;read&quot;
+  },
+  &quot;contact&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;contract&quot;: {
+    &quot;contract_management&quot;: &quot;without_permission&quot;,
+    &quot;contract_report&quot;: &quot;without_permission&quot;
+  },
+  &quot;database&quot;: &quot;ac-tlna233176iwe&quot;,
+  &quot;db_id&quot;: 5295778282078208,
+  &quot;deal&quot;: {
+    &quot;commission&quot;: &quot;read_write_delete&quot;,
+    &quot;hide_property_address&quot;: null,
+    &quot;hide_property_owner&quot;: null,
+    &quot;ignore_reassign_manager&quot;: false,
+    &quot;other&quot;: &quot;read&quot;,
+    &quot;other_private&quot;: null,
+    &quot;own&quot;: &quot;read_write&quot;,
+    &quot;pending&quot;: null,
+    &quot;share_filter&quot;: &quot;without_permission&quot;,
+    &quot;updated_property_revision&quot;: false,
+    &quot;without_link&quot;: null
+  },
+  &quot;deal_rotation&quot;: {
+    &quot;commission&quot;: null,
+    &quot;hide_property_address&quot;: null,
+    &quot;hide_property_owner&quot;: null,
+    &quot;ignore_reassign_manager&quot;: false,
+    &quot;other&quot;: null,
+    &quot;other_private&quot;: null,
+    &quot;own&quot;: null,
+    &quot;pending&quot;: null,
+    &quot;share_filter&quot;: &quot;without_permission&quot;,
+    &quot;updated_property_revision&quot;: false,
+    &quot;without_link&quot;: null
+  },
+  &quot;document&quot;: &quot;&lt;redacted&gt;&quot;,
+  &quot;federal_in
+  ...</code></pre>
+      </div>
+    </div>
+
+    <div class="card" id="op-6">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /v1/lease/code/:code</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">2 samples</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+      </div>
+    </div>
+
+    <div class="card" id="op-7">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /v1/leases</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">1 sample</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+        <h4>Response</h4>
+        <pre class="scrollable"><code>{
+  &quot;leases&quot;: [
+    {
+      &quot;db_id&quot;: 5865318252019712,
+      &quot;key&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;code&quot;: &quot;52&quot;,
+      &quot;lease_type&quot;: &quot;commercial&quot;,
+      &quot;value&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;irrf&quot;: false,
+      &quot;property&quot;: {
+        &quot;address&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;address_complement&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;city&quot;: &quot;Catanduva&quot;,
+        &quot;code&quot;: &quot;1&quot;,
+        &quot;db_id&quot;: 4945494104080384,
+        &quot;neighborhood&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;state&quot;: &quot;SP&quot;,
+        &quot;zipcode&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;owners&quot;: &quot;&lt;redacted&gt;&quot;
+      },
+      &quot;status&quot;: &quot;active&quot;,
+      &quot;start_at&quot;: &quot;2026-04-07T00:00:00.000000Z&quot;,
+      &quot;end_at&quot;: &quot;2029-04-06T00:00:00.000000Z&quot;,
+      &quot;management_fee&quot;: {
+        &quot;management_type&quot;: &quot;own_properties&quot;,
+        &quot;percent&quot;: 0,
+        &quot;value&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;first_rent_percent&quot;: 0,
+        &quot;first_rent_value&quot;: 0
+      },
+      &quot;tenants&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;owners&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;beneficiaries&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;source&quot;: &quot;imobzi&quot;,
+      &quot;in_progress&quot;: true,
+      &quot;next_invoice_start_at&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;next_invoice_end_at&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;insurances&quot;: [],
+      &quot;invoice_items_value&quot;: 0,
+      &quot;items_management_fee&quot;: 0,
+      &quot;termination_date&quot;: &quot;&quot;,
+      &quot;next_invoice_due_date&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;items&quot;: [],
+      &quot;account&quot;: {
+        &quot;db_id&quot;: 6029003447074816
+      },
+      &quot;receipt_methods&quot;: {
+        &quot;bank_slip&quot;: {
+          &quot;receipt_type&quot;: &quot;bank_slip&quot;,
+          &quot;integration_name&quot;: &quot;pjbank&quot;,
+          &quot;payment_default&quot;: false,
+          &quot;account&quot;: {
+            &quot;db_id&quot;: 6029003447074816
+          }
+        },
+        &quot;pix&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;credit_card&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;payment_default&quot;: null
+      }
+    },
+    {
+      &quot;db_id&quot;: 5992887244816384,
+      &quot;key&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;code&quot;: &quot;51&quot;,
+      &quot;lease_type&quot;: &quot;residential&quot;,
+      &quot;value&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;irrf&quot;: false,
+      &quot;property&quot;: {
+        &quot;address&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;address_complement&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;city&quot;: &quot;Catanduva&quot;,
+        &quot;code&quot;: &quot;12&quot;,
+        &quot;db_id&quot;
+  ...</code></pre>
+      </div>
+    </div>
+
+    <div class="card" id="op-8">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /v1/lease/checklist</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">1 sample</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+        <h4>Response</h4>
+        <pre class="scrollable"><code>[
+  {
+    &quot;checked&quot;: false,
+    &quot;description&quot;: &quot;Assim que for aprovada, iremos notificá-lo                     por e-mail/WhatsApp, para Assinatura Eletrônica do Contrato&quot;,
+    &quot;details&quot;: null,
+    &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;order&quot;: 1
+  },
+  {
+    &quot;checked&quot;: false,
+    &quot;description&quot;: &quot;Transfira para seu nome as contas de consumo como água, luz e/ou gás&quot;,
+    &quot;details&quot;: null,
+    &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;order&quot;: 6
+  },
+  {
+    &quot;checked&quot;: false,
+    &quot;description&quot;: &quot;Você tem 10 dias para ler e assinar eletronicamente a vistoria do imóvel&quot;,
+    &quot;details&quot;: null,
+    &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;order&quot;: 5
+  },
+  {
+    &quot;checked&quot;: false,
+    &quot;description&quot;: &quot;Seu contrato está pronto para assinatura. Assine agora eletronicamente&quot;,
+    &quot;details&quot;: null,
+    &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;order&quot;: 2
+  },
+  {
+    &quot;checked&quot;: false,
+    &quot;description&quot;: &quot;Quando você receber as contas já em seu nome, envie uma foto para nós&quot;,
+    &quot;details&quot;: null,
+    &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;order&quot;: 7
+  },
+  {
+    &quot;checked&quot;: false,
+    &quot;description&quot;: &quot;Contratação obrigatória conforme artigo 22, inciso VIII da lei do Inquilinato&quot;,
+    &quot;details&quot;: null,
+    &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;order&quot;: 3
+  },
+  {
+    &quot;checked&quot;: false,
+    &quot;description&quot;: &quot;Agende a retirada das suas chaves na imobiliária ou direto no imóvel&quot;,
+    &quot;details&quot;: null,
+    &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+    &quot;order&quot;: 4
+  }
+]</code></pre>
+      </div>
+    </div>
+
+    <div class="card" id="op-9">
+      <div class="card-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="card-title">
+          <span class="method">POST</span>
+          <span class="op-name">GET /v1/invoices</span>
+        </div>
+        <div class="card-meta">
+          <span class="badge">1 sample</span>
+          
+        </div>
+      </div>
+      <div class="card-body">
+        
+        
+
+        
+
+        
+
+        
+
+        
+        <h4>Response</h4>
+        <pre class="scrollable"><code>{
+  &quot;invoices&quot;: [
+    {
+      &quot;total_value&quot;: 5881.73,
+      &quot;invoice_id&quot;: &quot;e43ae1be504d11f191ea42004e494300&quot;,
+      &quot;status&quot;: &quot;pending&quot;,
+      &quot;due_date&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;description&quot;: &quot;Aluguel ref. 25/04/2026 a 24/05/2026&quot;,
+      &quot;charge_fee_value&quot;: 0,
+      &quot;payment_method&quot;: null,
+      &quot;paid_at&quot;: null,
+      &quot;payments_methods_available&quot;: {
+        &quot;bank_slip&quot;: null,
+        &quot;pix&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;credit_card&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;payment_default&quot;: &quot;transference&quot;
+      },
+      &quot;payment_maximum_installments&quot;: null,
+      &quot;interest_value&quot;: 0,
+      &quot;difference_value&quot;: 0,
+      &quot;invoice_url&quot;: &quot;https://fatura.imobzi.com/ac-tlna233176iwe/e43ae1be504d11f191ea42004e494300-bb3d&quot;,
+      &quot;contact&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;info_contract&quot;: null,
+      &quot;property&quot;: {
+        &quot;db_id&quot;: 4820701908303872,
+        &quot;address&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;address_complement&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;neighborhood&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;city&quot;: &quot;Ribeirão Preto&quot;,
+        &quot;state&quot;: &quot;SP&quot;,
+        &quot;code&quot;: &quot;40&quot;,
+        &quot;zipcode&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;cover_photo&quot;: {
+          &quot;db_id&quot;: 986041384,
+          &quot;url&quot;: &quot;https://lh3.googleusercontent.com/x5-osuoSqY3ju89tg8uOQKpL0UQjHDrtkyiCOk_A8NLUWvKK0s7Fe88eJmPCeDMZ3145S9fzb_tlrT2u8XbbuVUWhC4YwP1KvpE5A3kHNJ-Wwo9iMvajk8o=s0&quot;
+        },
+        &quot;owners&quot;: &quot;&lt;redacted&gt;&quot;
+      },
+      &quot;account&quot;: {
+        &quot;name&quot;: &quot;&lt;redacted&gt;&quot;,
+        &quot;db_id&quot;: 6029003447074816
+      },
+      &quot;bank_slip_id&quot;: null,
+      &quot;bank_slip_url&quot;: null,
+      &quot;onlending_split&quot;: false,
+      &quot;category&quot;: &quot;Terceiros (Administração)&quot;,
+      &quot;subcategory&quot;: &quot;Recebimento de Aluguel&quot;,
+      &quot;reference_start_at&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;reference_end_at&quot;: &quot;&lt;redacted&gt;&quot;,
+      &quot;lease&quot;: {
+        &quot;contract_type&quot;: &quot;lease&quot;,
+        &quot;code&quot;: &quot;40&quot;
+      },
+      &quot;onlendings_and_fees&quot;: {
+        &quot;onlendings&quot;: [],
+        &quot;onlending_value&quot;: 0,
+        &quot;predicted_onlending_value&quot;: 5293.56,
+        &quot;predicted_onlendings&quot;: [
+          {
+            &quot;landlord_transaction_id&quot;: &quot;&quot;,
+            &quot;land
+  ...</code></pre>
+      </div>
+    </div>
+
+  
+  <div class="client-section">
+    <h2>Generated client</h2>
+    <p style="color:var(--muted);font-size:0.875rem;margin-bottom:0.75rem;">Copy <code>client.mjs</code> into your project. Zero dependencies — uses native <code>fetch</code>.</p>
+    <pre class="scrollable"><code>// Auto-generated API client from browser-trace capture.
+// Usage: import {  } from './client.mjs';
+
+const BASE = 'https://my.imobzi.com';
+
+const defaultHeaders = {
+  'Content-Type': 'application/json',
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
+};
+
+async function request(path, { method = 'GET', body, query, headers } = {}) {
+  let url = BASE + path;
+  if (query) {
+    const qs = new URLSearchParams(Object.entries(query).filter(([, v]) =&gt; v != null));
+    if (qs.toString()) url += '?' + qs;
+  }
+  const res = await fetch(url, {
+    method,
+    headers: { ...defaultHeaders, ...headers },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}: ${await res.text()}`);
+  const ct = res.headers.get('content-type') || '';
+  return ct.includes('json') ? res.json() : res.text();
+}
+
+export async function getv1_financial_accounts(options = {}) {
+  return request('/v1/financial/accounts', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_network_group(options = {}) {
+  return request('/v1/network-group/', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_subscription(options = {}) {
+  return request('/v1/subscription', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_real_estate(options = {}) {
+  return request('/v1/real-estate', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_parameters(options = {}) {
+  return request('/v1/parameters', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_user_id_rules(options = {}) {
+  return request('/v1/user/{id}/rules', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_lease_code__code(options = {}) {
+  return request('/v1/lease/code/:code', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_leases(options = {}) {
+  return request('/v1/leases', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_lease_checklist(options = {}) {
+  return request('/v1/lease/checklist', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_invoices(options = {}) {
+  return request('/v1/invoices', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+</code></pre>
+  </div>
+</div>
+</body>
+</html>

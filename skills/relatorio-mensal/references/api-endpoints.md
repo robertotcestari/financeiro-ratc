@@ -49,6 +49,8 @@ Body: { categoryId?: string|null, propertyId?: string|null, markReviewed?: boole
 POST /transactions/bulk-categorize
 Body: { ids: string[], categoryId?, propertyId?, markReviewed? }
 ```
+⚠️ Retorna `{"success":true}` mesmo quando nenhum `id` casa (no-op silencioso). Use o ID COMPLETO da transação e confirme com `GET /transactions/{id}` que a categoria foi aplicada. NÃO passe `markReviewed: true` neste workflow.
+Obs.: `details` (ex.: detalhe "IA") não é setado por este endpoint — use `PUT /transactions/{id}/details`.
 
 ### Mark Reviewed
 ```
@@ -138,6 +140,25 @@ Body: {
 }
 Returns: { success, importBatchId, importedCount, skippedCount, failedCount }
 ```
+
+## Imobzi Import (REST, roda em produção com as credenciais do servidor)
+
+Estes endpoints existem no `/api/v1` e usam as credenciais Imobzi do servidor — úteis para importar os boletos do PJBank sem SSH.
+
+### Preview Imobzi
+```
+POST /imobzi/preview
+Body: { startDate: "YYYY-MM-DD", endDate: "YYYY-MM-DD", bankAccountId: string }
+Returns: { success, summary: { total, income, expense, transfer, duplicates, new }, transactions[] }
+```
+
+### Import Imobzi
+```
+POST /imobzi/import
+Body: { startDate: "YYYY-MM-DD", endDate: "YYYY-MM-DD", bankAccountId: string }
+Returns: { success, importBatchId, importedCount, skippedCount, failedCount }
+```
+Observação: o import traz apenas créditos (boletos de aluguel) e tarifas bancárias. As saídas Pix (varredura do PJBank para a conta principal) NÃO vêm no Imobzi — crie-as manualmente como `Transferência Entre Contas` (ver `pjbank-imobzi.md`).
 
 ## Suggestions
 

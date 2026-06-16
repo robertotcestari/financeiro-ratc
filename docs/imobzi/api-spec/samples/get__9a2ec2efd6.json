@@ -1,0 +1,2414 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/invoices",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "invoices": [
+        {
+          "total_value": 5881.73,
+          "invoice_id": "e43ae1be504d11f191ea42004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 25/04/2026 a 24/05/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": null,
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": "transference"
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/e43ae1be504d11f191ea42004e494300-bb3d",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 4820701908303872,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Ribeirão Preto",
+            "state": "SP",
+            "code": "40",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 986041384,
+              "url": "https://lh3.googleusercontent.com/x5-osuoSqY3ju89tg8uOQKpL0UQjHDrtkyiCOk_A8NLUWvKK0s7Fe88eJmPCeDMZ3145S9fzb_tlrT2u8XbbuVUWhC4YwP1KvpE5A3kHNJ-Wwo9iMvajk8o=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "40"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 5293.56,
+            "predicted_onlendings": [
+              {
+                "landlord_transaction_id": "",
+                "landlord_account_id": "<redacted>",
+                "description": null,
+                "group_id": null,
+                "contact_key": "<redacted>",
+                "guaranteed_rental": null,
+                "guaranteed_rental_is_paid": null,
+                "paid_at": null,
+                "repeat_frequency": null,
+                "repeat_type": null,
+                "repeat_total": null,
+                "transaction_type": "onlending",
+                "value": "<redacted>",
+                "invoice_id": null,
+                "created_at": null,
+                "invoice_onlending_split": null,
+                "account_debit": null,
+                "pix_key": null,
+                "pix_key_type": null,
+                "account_credit": {
+                  "name": "<redacted>"
+                },
+                "category": null,
+                "subcategory": null,
+                "status": null,
+                "nota_fiscal_key": null,
+                "financial_transaction_id": null,
+                "lease_item_index": null,
+                "lease_item_description": null,
+                "lease": {
+                  "code": "40",
+                  "db_id": 5532730560348160
+                },
+                "transaction_paid": null,
+                "transaction_operation_id": null,
+                "custom_json": {},
+                "contact": "<redacted>",
+                "beneficiary_parent_ids": []
+              }
+            ],
+            "management_fee_value": 588.17,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1666,
+          "invoice_id": "898198f04ebb11f1ad1342004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 23/04/2026 a 22/05/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": null,
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": "transference"
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/898198f04ebb11f1ad1342004e494300-ebc7",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 5937259833458688,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "2",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 986031280,
+              "url": "https://lh3.googleusercontent.com/85jQu43sMRNtNgQ3LxTA0zUngMpEjLjMdB0vCmnLmzI3FjnEP8u7fpyXrNiblwx8-iIPqu7NLovW4LldstZ06Wrx-bxWxfrk-sZFrBw0HnyRUCDKhHS22g4=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "48"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1070.26,
+          "invoice_id": "796cf3fc4df211f1bfbe42004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 22/04/2026 a 21/05/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/0b949c2cdf01670b1c65b35d3a2695ee3cb647be",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/796cf3fc4df211f1bfbe42004e494300-edc1",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6343983916646400,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Cosmorama",
+            "state": "SP",
+            "code": "43",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 0,
+              "url": ""
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "34"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 332.35,
+          "invoice_id": "9a8629984c6011f1930d42004e494300",
+          "status": "paid",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 3.96,
+          "payment_method": "bank_slip",
+          "paid_at": "<redacted>",
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/128f7929bab64d1cb09d835691db64746efcc3d0",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/9a8629984c6011f1930d42004e494300-01f2",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 5420167673675776,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "São Paulo",
+            "state": "SP",
+            "code": "38",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 986000607,
+              "url": "https://lh3.googleusercontent.com/TwR2F3ggx1TEQiNsr-xgaiKn4dt2LX5WbxqFtgu_k3Zzj98iT6f91JAzJSHb0gOAZsrl0u4OTaWvxLeCq1QI07QW6x5cloMrpMRd0Y3vBobd8MazUlXa1dMp=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "https://api.pjbank.com.br/boletos/128f7929bab64d1cb09d835691db64746efcc3d0",
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "15"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 515.56,
+          "invoice_id": "994999f24c6011f1abdd42004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": null,
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": "transference"
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/994999f24c6011f1abdd42004e494300-b2eb",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6507952539172864,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "4",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 986030235,
+              "url": "https://lh3.googleusercontent.com/kzaPeALGVcZmW1FjoqPo66ojvSqiqvlnFsVd66glx7NZ1dy0Wd-5FbWlQ1nuGLOIFDlJJLOpnsX7dXFu_JpkI8Rp1Ag22ztU_JV7DZOjvjjETt9i9OM45Q=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "30"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 759.57,
+          "invoice_id": "9bdcb46a4c6011f196da42004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/d34763f2fc76f283394e0cb230f4198ea13a9a65",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/9bdcb46a4c6011f196da42004e494300-5ddf",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 5383735387095040,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "6",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 952760248,
+              "url": "https://lh3.googleusercontent.com/Rz7VYpB_7Dh-0kM6rV8l12ebPkcAWV8vw-m1JcqilU7OJED7QabrZ7eLnYNiDDAx2kaGH7mU60huxvjc6Tb8na4-Y9bnhDhpU_wb0030QBqgyk2l3t_9j6Fn=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "13"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1369.29,
+          "invoice_id": "99d5daa24c6011f1978542004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 20/04/2026 a 19/05/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": null,
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": "transference"
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/99d5daa24c6011f1978542004e494300-1634",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6583503966699520,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "São José do Rio Preto",
+            "state": "SP",
+            "code": "28",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 984140068,
+              "url": "https://lh3.googleusercontent.com/5tmR34FyxeGmVp-hJhR87ByBxqz-KFIJXaH8s28Ye-PODzXhCtsQmKSrjPxnzHDY9dtqzxcJ11z5Gou4Q1swgrA4UcCqvrby7aXoJbW6X2mwGPxlOgaZwsBT=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "27"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1720.39,
+          "invoice_id": "96feacfa4c6011f1996e42004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/74de4263c8a7b608db062668b6c5026c6ea25564",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/96feacfa4c6011f1996e42004e494300-979c",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6125482480238592,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "5",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 972190058,
+              "url": "https://lh3.googleusercontent.com/2tidTZKbTuXPddE-wZQXiKcJhO1tUNxFDLg60hf0rYK0fpOSFXicXVBZBOYiJIYRRXFMbTViPftzp1cywzQTdSstPkWhMkvSdGL9XcjPYAOxL_3Bbeb4uw4=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "23"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1921.63,
+          "invoice_id": "983941fc4c6011f192d442004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": null,
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": "transference"
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/983941fc4c6011f192d442004e494300-4462",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6018107828076544,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "São Vicente",
+            "state": "SP",
+            "code": "27",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 979800235,
+              "url": "https://lh3.googleusercontent.com/6rNMpdGSV-gYbvX4Q1kMmuRO90h1Mgm3FezLnakAQqBIM8AyjD5CzXLLklUhLxNOlMlVN7lsFBH6cMDfqil4Rxj6rqUddQRbazKokK0fWC3VElL1LYKtow=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "28"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 5897.86,
+          "invoice_id": "98f883464c6011f1a49442004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/e37264b02ada9ee6c5b6f2912a0b725b17062428",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/98f883464c6011f1a49442004e494300-6416",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6035636218757120,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "São Paulo",
+            "state": "SP",
+            "code": "37",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 970630670,
+              "url": "https://lh3.googleusercontent.com/Yl4vaFgEiAN8VtyTlqB-ch0g8tQWOxrEpqT-E6W9UKuWZMzTy9JW0iEXGSwooZ09bvmli1KEix7wI9GI-hofpuy_3uwRi9n3g6C2HA0FvNMOShwp1C_Yj5-H=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "16"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 6500,
+          "invoice_id": "9a098a0a4c6011f191e042004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/536242074e2675763333b3c1e04da1cca2678047",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/9a098a0a4c6011f191e042004e494300-698d",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6661357305856000,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Ribeirão Preto",
+            "state": "SP",
+            "code": "45",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 0,
+              "url": ""
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "45"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 436.88,
+          "invoice_id": "fe1a99d24f8311f1bd3d42004e494300",
+          "status": "paid",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 até 30/04/2026",
+          "charge_fee_value": 3.96,
+          "payment_method": "bank_slip",
+          "paid_at": "<redacted>",
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/c9c99ba26b7fab41e4f70073ac3fd7067a3bc75f",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/fe1a99d24f8311f1bd3d42004e494300-37ea",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6287236585750528,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "14",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 976200010,
+              "url": "https://lh3.googleusercontent.com/d45CpkygG9j5ZdmOpfTBgPBmkHtVa1qIIdyUiVtnULoWUHWdFsCzQqPtSrRfNZh9uq3PvxVDkbAtQbEBbV3TvVM0dqjglICtaE5--SnirILizxP8aYAN6Q=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "https://api.pjbank.com.br/boletos/c9c99ba26b7fab41e4f70073ac3fd7067a3bc75f",
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "7"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1265,
+          "invoice_id": "f4a729f0487211f18aa242004e494300",
+          "status": "paid",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 3.96,
+          "payment_method": "bank_slip",
+          "paid_at": "<redacted>",
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/935c6519dd1c3f3997e05041768085dde2194772",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/f4a729f0487211f18aa242004e494300-3a92",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6644711780515840,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "16",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 981910008,
+              "url": "https://lh3.googleusercontent.com/qgZkZV0g1YWHWoRAP1PDq78eoXGp9vyeCodLSMbFkyAi1zoc4tsrEkDuxAzVyNBfHqQ2dHHaqHKJ0dF_7aqyr1CuMv2oru-LogLgLAJcOcI7z7OtoTn67g=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "https://api.pjbank.com.br/boletos/935c6519dd1c3f3997e05041768085dde2194772",
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "50"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1738,
+          "invoice_id": "f693c4e4487211f1a5e342004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 15/04/2026 a 14/05/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": null,
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": "transference"
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/f693c4e4487211f1a5e342004e494300-1a2d",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 5285117032398848,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "9",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 979790581,
+              "url": "https://lh3.googleusercontent.com/xydWvBDwKDb7Q9iPBPHVXFsYTmFyhbqfpZWxIiTCsKh5pRbbgP9WdmmgZHRoQYaGI1qczhOzcN1n4qr_lah9V1sX-WsL2Z6lHWRS4R2vommK69Xr8YQBQg=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "42"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 1726.2,
+            "predicted_onlendings": [
+              {
+                "landlord_transaction_id": "",
+                "landlord_account_id": "<redacted>",
+                "description": null,
+                "group_id": null,
+                "contact_key": "<redacted>",
+                "guaranteed_rental": null,
+                "guaranteed_rental_is_paid": null,
+                "paid_at": null,
+                "repeat_frequency": null,
+                "repeat_type": null,
+                "repeat_total": null,
+                "transaction_type": "onlending",
+                "value": "<redacted>",
+                "invoice_id": null,
+                "created_at": null,
+                "invoice_onlending_split": null,
+                "account_debit": null,
+                "pix_key": null,
+                "pix_key_type": null,
+                "account_credit": {
+                  "name": "<redacted>"
+                },
+                "category": null,
+                "subcategory": null,
+                "status": null,
+                "nota_fiscal_key": null,
+                "financial_transaction_id": null,
+                "lease_item_index": null,
+                "lease_item_description": null,
+                "lease": {
+                  "code": "42",
+                  "db_id": 5368892825272320
+                },
+                "transaction_paid": null,
+                "transaction_operation_id": null,
+                "custom_json": {},
+                "contact": "<redacted>",
+                "beneficiary_parent_ids": []
+              }
+            ],
+            "management_fee_value": 191.8,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 3377.93,
+          "invoice_id": "f439eea8487211f1bd4942004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/20a0c51af696ef2b6d07316e4169a7081b68211a",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/f439eea8487211f1bd4942004e494300-c42f",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6337102632452096,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Ribeirão Preto",
+            "state": "SP",
+            "code": "25",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 993500111,
+              "url": "https://lh3.googleusercontent.com/T_VPC-DA9z_OHcZugPDOqGCpprCNU9oBguH0CBlGyx09O_FdLeV5L_20Dvn0mWAmlMNfBcZazlCtBHGT0y_YcnyT3yKWeJVwk0UAGnhXM9h4K0Ekfji1o8w=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "18"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 7400,
+          "invoice_id": "083fb95c47a911f18d8c42004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 14/04/2026 a 13/05/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": null,
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": "transference"
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/083fb95c47a911f18d8c42004e494300-205f",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6343983916646400,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Cosmorama",
+            "state": "SP",
+            "code": "43",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 0,
+              "url": ""
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "37"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1200,
+          "invoice_id": "86aaa3224d8211f1b11b42004e494300",
+          "status": "paid",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 31/03/2026 a 30/04/2026",
+          "charge_fee_value": 3.96,
+          "payment_method": "bank_slip",
+          "paid_at": "<redacted>",
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/e2375f6d5d994e7ed52dee284099f2b4154aa0ae",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/86aaa3224d8211f1b11b42004e494300-c2ce",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 4945494104080384,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "1",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 946270008,
+              "url": "https://lh3.googleusercontent.com/kkpQeD7tKIpVLJvakd6ePglHMOi7qMHnTjA38MOmEArqJw4qWP2nwraPNOXbGDM7_G9qMRHVuomqOWHbXn2_tVbpfCpca2c-a1dPJFRf3wnanTzRNbyi9hw=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "https://api.pjbank.com.br/boletos/e2375f6d5d994e7ed52dee284099f2b4154aa0ae",
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": null,
+          "reference_end_at": null,
+          "lease": {
+            "contract_type": "lease",
+            "code": "52"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 321.08,
+          "invoice_id": "ea937f48456311f180d142004e494300",
+          "status": "paid",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 10/04/2026 a 09/05/2026",
+          "charge_fee_value": 3.96,
+          "payment_method": "bank_slip",
+          "paid_at": "<redacted>",
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/243e3903577f483fde54e0190b6c1498aea650a4",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/ea937f48456311f180d142004e494300-83ad",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6125152245907456,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Cosmorama",
+            "state": "SP",
+            "code": "44",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 0,
+              "url": ""
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "https://api.pjbank.com.br/boletos/243e3903577f483fde54e0190b6c1498aea650a4",
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "35"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1125,
+          "invoice_id": "cdce4532456311f1b06342004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 10/04/2026 a 09/05/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": null,
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": "transference"
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/cdce4532456311f1b06342004e494300-6aaf",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 5053777611587584,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "12",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 995420401,
+              "url": "https://lh3.googleusercontent.com/FckVNjnq7XgEoJsSim7LNOEYQgxmW53Pef9LTAkctv3mG782pq-HWibrt6vg7t0hFbEb1AOCTclDW8MvGebCnuwxiDnKv04HIzpUgqIwbhhXCjqxmWpnLr7h=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "51"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 1012.5,
+            "predicted_onlendings": [
+              {
+                "landlord_transaction_id": "",
+                "landlord_account_id": "<redacted>",
+                "description": null,
+                "group_id": null,
+                "contact_key": "<redacted>",
+                "guaranteed_rental": null,
+                "guaranteed_rental_is_paid": null,
+                "paid_at": null,
+                "repeat_frequency": null,
+                "repeat_type": null,
+                "repeat_total": null,
+                "transaction_type": "onlending",
+                "value": "<redacted>",
+                "invoice_id": null,
+                "created_at": null,
+                "invoice_onlending_split": null,
+                "account_debit": null,
+                "pix_key": null,
+                "pix_key_type": null,
+                "account_credit": {
+                  "name": "<redacted>"
+                },
+                "category": null,
+                "subcategory": null,
+                "status": null,
+                "nota_fiscal_key": null,
+                "financial_transaction_id": null,
+                "lease_item_index": null,
+                "lease_item_description": null,
+                "lease": {
+                  "code": "51",
+                  "db_id": 5992887244816384
+                },
+                "transaction_paid": null,
+                "transaction_operation_id": null,
+                "custom_json": {},
+                "contact": "<redacted>",
+                "beneficiary_parent_ids": []
+              }
+            ],
+            "management_fee_value": 112.5,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1371,
+          "invoice_id": "ecdfa29a456311f1aa9d42004e494300",
+          "status": "paid",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 3.96,
+          "payment_method": "bank_slip",
+          "paid_at": "<redacted>",
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/4d3511a0892ca6ba5e5aa081258c7a819c647f15",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/ecdfa29a456311f1aa9d42004e494300-619e",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 5065229873446912,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "19",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 995390083,
+              "url": "https://lh3.googleusercontent.com/j3zAHdhPijDWxsno7QAfU3fBFkzuMeUUxBdLJZ6J9YMexmAs5_uWeOBHfDDcVpq5M-oAx67gWxHGP9_fH6fOG5-C-MkDhEUqf6WfrdOGA6HPGmpYQsF3CaY=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "https://api.pjbank.com.br/boletos/4d3511a0892ca6ba5e5aa081258c7a819c647f15",
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "19"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 1828.13,
+          "invoice_id": "e4f5d8ce456311f19a5442004e494300",
+          "status": "paid",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 3.96,
+          "payment_method": "bank_slip",
+          "paid_at": "<redacted>",
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/d40eb011073571d004546753f4e5fa3e3a93ca28",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/e4f5d8ce456311f19a5442004e494300-5ada",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6515407058894848,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "22",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 976220010,
+              "url": "https://lh3.googleusercontent.com/huhQAUZq3zJ6dXJjU76uZrzzk-wGZCjkP1ZyvpVEAAEWfXxVJZE01x0idb16IKTXITiVPyzGqr9yvcuj-gamT-Qu-Ecf8tCz_k6BhgzXyGoPcUF5Ce-mFXg=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "https://api.pjbank.com.br/boletos/d40eb011073571d004546753f4e5fa3e3a93ca28",
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "24"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 2019.45,
+          "invoice_id": "d7cb14b6456311f1a54042004e494300",
+          "status": "paid",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 3.96,
+          "payment_method": "bank_slip",
+          "paid_at": "<redacted>",
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/efb2ac74ff7a4721cfd96dfeef1c208ddc7b7e9c",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/d7cb14b6456311f1a54042004e494300-02ba",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 4866829261471744,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "São José do Rio Preto",
+            "state": "SP",
+            "code": "21",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 946230080,
+              "url": "https://lh3.googleusercontent.com/t-zVXEWFks-JcXLsyRffg0G2s8PtWMqKIVW9LP2T3AyRU5fjSr8zlsEq1UycmVS_npkoOJTcYtgJ7l6weoYVLslRAez7wvQokXCRBB5F6c8rFmMEuCqUKA6T=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "https://api.pjbank.com.br/boletos/efb2ac74ff7a4721cfd96dfeef1c208ddc7b7e9c",
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "8"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 2047,
+          "invoice_id": "d0c0db10456311f18b4a42004e494300",
+          "status": "paid",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 3.96,
+          "payment_method": "bank_slip",
+          "paid_at": "<redacted>",
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/e0f2d932801b7dba1da5087799ef318e6667a336",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/d0c0db10456311f18b4a42004e494300-5b8d",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 6274458923827200,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "13",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 956310333,
+              "url": "https://lh3.googleusercontent.com/XHluc0eZAom8tj8eQ02WR4go2ZG86nGPYHlX8j6tZ1OD5cb6N_R1VR-9bZC94RedTOnuPv7bOAAHguOtPkxM3hujXt7_8E2a0qy3yHxFcUzsDPGVtLXI-TU=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "https://api.pjbank.com.br/boletos/e0f2d932801b7dba1da5087799ef318e6667a336",
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "6"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 2103.82,
+          "invoice_id": "f572b258456311f1a88d42004e494300",
+          "status": "paid",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 3.96,
+          "payment_method": "bank_slip",
+          "paid_at": "<redacted>",
+          "payments_methods_available": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "account": {
+                "name": "<redacted>",
+                "db_id": 6029003447074816
+              },
+              "integration_name": "pjbank",
+              "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+              "bank_integration": {
+                "name": "<redacted>",
+                "active": true,
+                "transference_fee": 2,
+                "transference_split": 1.5,
+                "credential": "c96d6f68aa4b93b0097435d6106cbff9d18a05af",
+                "webhook_key": "0038c0f71d92304051266dbe16f4a1debb3c434f",
+                "api_key": "<redacted>",
+                "account_type": "digital_account",
+                "show_trading_name": true,
+                "categories": {
+                  "bank_fee": {
+                    "name": "<redacted>",
+                    "subcategory": "Tarifa Bancária",
+                    "category_type": "expense",
+                    "db_id": "<redacted>",
+                    "created_at": "2023-03-17T13:48:09.021376Z",
+                    "updated_at": "2026-03-27T17:23:32.732224Z"
+                  }
+                },
+                "has_resources": {
+                  "bank_slip": true,
+                  "ted": true,
+                  "pix": "<redacted>",
+                  "bar_code": "<redacted>",
+                  "extract_financial": true,
+                  "bank_slip_pix": true
+                },
+                "get_conciliations": true,
+                "selected_for_payments": true,
+                "split_receipt_account": false
+              },
+              "bank_slip_id": "<redacted>",
+              "bank_slip_url": "https://api.pjbank.com.br/boletos/22ba2264c376b89b09f145930ff7d426b03612dc",
+              "barcode": "<redacted>"
+            },
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": null
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/f572b258456311f1a88d42004e494300-4442",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 5706853225857024,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "3",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 995340286,
+              "url": "https://lh3.googleusercontent.com/NCp2ePUWiM78Slw2P0RZ6YeW2TFj1WeEuxki0yWwk9TXAhaRSiJFimS7Fw3kuFXzkIUuUhSQLCrjGNRZPX2tBMlzsiomp5w5ngOlizkhuUFG8iqhaPzijQ=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "https://api.pjbank.com.br/boletos/22ba2264c376b89b09f145930ff7d426b03612dc",
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "9"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        },
+        {
+          "total_value": 3147.68,
+          "invoice_id": "eb95ef66456311f192b042004e494300",
+          "status": "pending",
+          "due_date": "<redacted>",
+          "description": "Aluguel ref. 01/04/2026 a 30/04/2026",
+          "charge_fee_value": 0,
+          "payment_method": null,
+          "paid_at": null,
+          "payments_methods_available": {
+            "bank_slip": null,
+            "pix": "<redacted>",
+            "credit_card": "<redacted>",
+            "payment_default": "transference"
+          },
+          "payment_maximum_installments": null,
+          "interest_value": 0,
+          "difference_value": 0,
+          "invoice_url": "https://fatura.imobzi.com/ac-tlna233176iwe/eb95ef66456311f192b042004e494300-8af8",
+          "contact": "<redacted>",
+          "info_contract": null,
+          "property": {
+            "db_id": 4513626753859584,
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Catanduva",
+            "state": "SP",
+            "code": "10",
+            "zipcode": "<redacted>",
+            "cover_photo": {
+              "db_id": 979810146,
+              "url": "https://lh3.googleusercontent.com/c0i0tgZENXEvLz0FwUhWrKy2WKfhXxvTc6MbbkT5p1XyGJO9bKguQ-e2IlpknCVDbNwQCAYtzIkMR-gqU5rBRIfqpmaCJulIeIhiHRvKb4tje7rPWwIPxAg=s0"
+            },
+            "owners": "<redacted>"
+          },
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "bank_slip_id": null,
+          "bank_slip_url": null,
+          "onlending_split": false,
+          "category": "Terceiros (Administração)",
+          "subcategory": "Recebimento de Aluguel",
+          "reference_start_at": "<redacted>",
+          "reference_end_at": "<redacted>",
+          "lease": {
+            "contract_type": "lease",
+            "code": "5"
+          },
+          "onlendings_and_fees": {
+            "onlendings": [],
+            "onlending_value": 0,
+            "predicted_onlending_value": 0,
+            "predicted_onlendings": [],
+            "management_fee_value": 0,
+            "first_management_fee_value": 0,
+            "managed_expenses_value": 0,
+            "charge_landlord": 0
+          }
+        }
+      ],
+      "count": 31,
+      "next_page": 2,
+      "total": 141237.06,
+      "total_paid": 77459.61,
+      "total_pending": 63777.45,
+      "total_overdue": 31359.23,
+      "receipt_methods_available": {
+        "bank_slips": [
+          {
+            "account": {
+              "name": "<redacted>",
+              "db_id": 6029003447074816
+            },
+            "receipt_type": "bank_slip",
+            "integration_name": "pjbank",
+            "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg"
+          }
+        ],
+        "pixs": [
+          {
+            "account": {
+              "name": "<redacted>",
+              "db_id": 6029003447074816
+            },
+            "receipt_type": "pix",
+            "integration_name": "pjbank",
+            "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg"
+          }
+        ],
+        "credit_cards": []
+      }
+    }
+  }
+}

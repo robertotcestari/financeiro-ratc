@@ -6,6 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Financial management system for automating financial control by importing OFX bank files, automatically categorizing transactions, and generating financial statements (DRE). Built with Next.js 15 and Prisma ORM.
 
+## Fechamento Mensal (skill `relatorio-mensal`)
+
+Para o relatório/fechamento mensal, use a skill `relatorio-mensal` (em `.agents/skills/relatorio-mensal/`, espelhada em `skills/`). Pontos que valem para qualquer sessão neste repo:
+
+- **Dados de produção via API**: o fechamento opera na produção via REST (`$RATC_API_URL`, `$RATC_API_KEY` do `.env`). O banco LOCAL (`DATABASE_URL`) normalmente NÃO tem esses dados. Scripts que usam Prisma (ex.: `scripts/reports/save-monthly-artifacts.ts`) precisam de `DATABASE_URL="$DATABASE_URL_REMOTE"` para ler/escrever produção.
+- **Cada comando Bash é um shell novo**: re-exporte o `.env` (`set -a && source ./.env && set +a`) em todo comando que usa a API.
+- **`POST /transactions/bulk-categorize` retorna `success:true` mesmo em no-op** (ID inexistente/truncado). Use ID completo e confirme com `GET /transactions/{id}`.
+- **Imobzi** (pendentes, quitação, import) pode ser operado a partir do ambiente local pelo fluxo de `lib/features/imobzi/auth.ts` — não precisa de SSH. Ver `references/pjbank-imobzi.md` da skill.
+
 ## Development Commands
 
 ### Core Development

@@ -1,0 +1,9 @@
+{
+  "id": "55",
+  "status": 200,
+  "headers": {
+    "content-type": "application/json"
+  },
+  "mimeType": "application/json",
+  "body": "{\"networks_active\":{\"networks\":[]},\"networks_pending\":{\"networks\":[]}}"
+}

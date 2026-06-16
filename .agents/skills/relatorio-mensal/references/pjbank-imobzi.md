@@ -41,6 +41,24 @@ Fluxo mínimo:
 - importar depois
 - registrar `importBatchId`, contagens e divergências no arquivo de memória
 
+Caminho recomendado: use os endpoints REST `POST /imobzi/preview` e `POST /imobzi/import` (rodam em produção com as credenciais do servidor). Eles trazem só créditos (boletos) + tarifas; as saídas Pix da varredura precisam ser lançadas manualmente (ver abaixo).
+
+## Autenticação Imobzi (pode rodar localmente, sem SSH)
+
+O projeto já autentica no Imobzi via `lib/features/imobzi/auth.ts` (`getImobziAuthToken`), usando `IMOBZI_EMAIL`/`IMOBZI_PASSWORD` do `.env` e uma chave Firebase Web. Pontos práticos descobertos:
+
+- A chave Firebase é uma **client key pública** (não é segredo): fica embutida no bundle do app web do Imobzi (campo `apiKey` em `my.imobzi.com/build/main.js`). Se faltar `IMOBZI_FIREBASE_API_KEY` no `.env` local, a chave do app pode ser usada.
+- Cuidado: o `index.html` expõe a chave do **Google Maps** (restrita); a chave do **Firebase Auth** está no `build/main.js`.
+- A chave tem **restrição de HTTP referrer**. Ao chamar a API de fora do navegador, envie o header `Referer: https://my.imobzi.com/` na autenticação e nas chamadas a `https://my.imobzi.com/v1/*`.
+- Com isso, as funções já existentes (`getImobziPendingInvoices`, `markInvoiceAsPaid` em `lib/features/imobzi/invoices.ts`) funcionam a partir do ambiente local — não é preciso SSH em produção para levantar pendentes nem para quitar faturas.
+
+## Saídas Pix da varredura (lançar manualmente)
+
+O Imobzi traz só os créditos (boletos) e as tarifas. As transferências Pix de saída do PJBank para a conta principal (RATC/Sicredi) NÃO aparecem no Imobzi. Para cada saída do PDF:
+- crie a transação manual no PJBank com valor negativo;
+- categorize como `Transferência Entre Contas` (a contraparte é o crédito PIX correspondente no CC - Sicredi);
+- isso fecha o saldo final do PJBank e zera o check de transferências.
+
 ## Validação Antes De Avançar
 
 - [ ] O PDF do PJBank foi recebido
