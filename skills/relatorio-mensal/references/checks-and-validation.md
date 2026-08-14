@@ -40,6 +40,7 @@ Use esta referência para decidir quando uma etapa pode avançar e quando precis
 - [ ] `Transferência Entre Contas` soma zero no mês
 - [ ] Não restam transações sem categoria
 - [ ] O DRE foi gerado com sucesso
+- [ ] As contas a pagar em aberto/atrasadas do mês foram listadas (informativo; não bloqueia o DRE)
 - [ ] O resultado foi registrado no arquivo de memória
 
 ### Se falhar

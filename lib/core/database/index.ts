@@ -11,3 +11,8 @@ export * from './rule-testing';
 export * from './rule-types';
 export * from './suggestions';
 export * from './transactions';
+export * from './vendors';
+export * from './payables';
+export * from './payable-settlements';
+export * from './payable-recurrences';
+export * from './payable-attachments';

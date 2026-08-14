@@ -4,6 +4,7 @@
 
 - Transactions
 - Inadimplentes
+- Contas a Pagar
 - Backups
 - OFX Import
 - Suggestions
@@ -263,6 +264,59 @@ Body: { startDate: "YYYY-MM-DD", endDate: "YYYY-MM-DD" }
 ```
 POST /transfers/confirm
 Body: { originTransactionId, destinationTransactionId }
+```
+
+## Contas a Pagar
+
+Operacional (não lança no DRE). Parcelas em aberto do mês entram no check informativo do fechamento.
+
+### Listar parcelas
+```
+GET /payables?year=YYYY&month=MM&status=OPEN
+Query: status, vendorId, propertyId, categoryId, dueFrom, dueTo, overdue=true|false, year, month
+Returns: { data: [{ id, payableId, dueDate, amount, remainingAmount, status, isOverdue, vendorName, description, propertyCode }] }
+```
+
+### Criar título
+```
+POST /payables
+Body: { vendorId, description, categoryId?, propertyId?, installments: [{ dueDate, amount, paymentMethod?, boletoLine? }] }
+```
+
+### Detalhar / atualizar / cancelar
+```
+GET /payables/{id}
+PATCH /payables/{id}
+POST /payables/{id}/cancel
+Body: { reason? }
+```
+
+### Agenda
+```
+GET /payables/agenda?from=YYYY-MM-DD&to=YYYY-MM-DD
+```
+
+### Baixa e estorno
+```
+POST /payable-installments/{id}/settlements
+Body: { bankAccountId, paidAt, amount?, method?, transactionId?, notes? }
+
+POST /payable-settlements/{id}/reverse
+Body: { reason? }
+```
+
+### Fornecedores
+```
+GET /vendors
+POST /vendors
+PATCH /vendors/{id}
+GET /vendors/{id}
+```
+
+### Gerar recorrência
+```
+POST /payables/recurrences/{id}/generate
+Body: { year, month }
 ```
 
 ## Health Check (no auth)

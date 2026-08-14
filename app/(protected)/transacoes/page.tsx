@@ -3,6 +3,7 @@ import Link from 'next/link';
 import TransactionFilters from './components/TransactionFilters';
 import TransactionTable from './components/transaction-table';
 import { isPendingTransaction } from '@/lib/core/database/transactions';
+import { getSettlementsByTransactionIds } from '@/lib/core/database/payable-settlements';
 import type { Prisma } from '@/app/generated/prisma';
 import { redirect } from 'next/navigation';
 import {
@@ -179,6 +180,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
           date: t.transaction.date,
           description: t.transaction.description,
           amount: Number(t.transaction.amount),
+          bankAccountId: t.transaction.bankAccountId,
           bankAccount: {
             name: t.transaction.bankAccount.name,
             bankName: t.transaction.bankAccount.bankName,
@@ -189,6 +191,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
           date: new Date(0),
           description: '(sem transação bancária)',
           amount: 0,
+          bankAccountId: undefined,
           bankAccount: {
             name: 'N/D',
             bankName: 'N/D',
@@ -254,6 +257,24 @@ export default async function TransacoesPage({ searchParams }: Props) {
     };
   });
 
+  const transactionIds = safeTransactions
+    .map((item) => item.transaction.id)
+    .filter((id) => id && id !== '—');
+  const settlements = await getSettlementsByTransactionIds(transactionIds);
+  const settlementByTx = new Map(
+    settlements.map((settlement) => [
+      settlement.transactionId as string,
+      {
+        payableId: settlement.installment.payableId,
+        description: settlement.installment.payable.description,
+      },
+    ])
+  );
+  const transactionsWithPayables = safeTransactions.map((item) => ({
+    ...item,
+    payableLink: settlementByTx.get(item.transaction.id) ?? null,
+  }));
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="py-8 pb-24">
@@ -290,7 +311,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
         <div className="px-4">
           <div className="bg-white shadow-sm border border-gray-200 rounded-lg">
             <TransactionTable
-              transactions={safeTransactions}
+              transactions={transactionsWithPayables}
               currentPage={page}
               totalPages={totalPages}
               totalCount={totalCount}

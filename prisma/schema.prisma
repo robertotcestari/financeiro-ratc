@@ -54,6 +54,43 @@ enum SuggestionSource {
   AI // Sugestão baseada em IA
 }
 
+enum PayableStatus {
+  OPEN
+  PARTIALLY_PAID
+  PAID
+  CANCELED
+}
+
+enum PayableInstallmentStatus {
+  OPEN
+  PARTIALLY_PAID
+  PAID
+  CANCELED
+}
+
+enum PayableSettlementStatus {
+  RECORDED
+  REVERSED
+}
+
+enum PayablePaymentMethod {
+  BOLETO
+  PIX
+  BANK_TRANSFER
+  AUTO_DEBIT
+  OTHER
+}
+
+enum PayableRecurrenceFrequency {
+  MONTHLY
+  YEARLY
+}
+
+enum PayableAttachmentPurpose {
+  SOURCE_DOCUMENT
+  SUPPORTING_DOCUMENT
+}
+
 // 1. BankAccount (Contas Bancárias)
 
 model BankAccount {
@@ -68,6 +105,7 @@ model BankAccount {
   transactions       Transaction[]
   ofxAccountMappings OFXAccountMapping[]
   accountSnapshots   AccountSnapshot[]
+  payableSettlements PayableSettlement[]
 
   @@map("bank_accounts")
 }
@@ -90,6 +128,9 @@ model Category {
   transactions        ProcessedTransaction[]
   categorizationRules CategorizationRule[]
   suggestions         TransactionSuggestion[]
+  payables            Payable[]
+  vendorDefaults      Vendor[]              @relation("VendorDefaultCategory")
+  recurrences         PayableRecurrence[]
 
   @@map("categories")
 }
@@ -126,6 +167,9 @@ model Property {
   transactions          ProcessedTransaction[]
   CategorizationRule    CategorizationRule[]
   TransactionSuggestion TransactionSuggestion[]
+  payables              Payable[]
+  vendorDefaults        Vendor[]              @relation("VendorDefaultProperty")
+  recurrences           PayableRecurrence[]
 
   @@map("properties")
 }
@@ -150,6 +194,7 @@ model Transaction {
   updatedAt     DateTime     @updatedAt
 
   processedTransaction ProcessedTransaction?
+  payableSettlement    PayableSettlement?
 
   // Allow legitimate duplicates: uniqueness includes running balance snapshot
   @@unique([bankAccountId, date, amount, balance])
@@ -354,6 +399,11 @@ model User {
   banReason  String?   @db.Text
   banExpires DateTime?
 
+  createdPayables          Payable[]            @relation("PayableCreatedBy")
+  createdPayableSettlements PayableSettlement[] @relation("PayableSettlementCreatedBy")
+  reversedPayableSettlements PayableSettlement[] @relation("PayableSettlementReversedBy")
+  createdPayableAttachments PayableAttachment[] @relation("PayableAttachmentCreatedBy")
+
   @@map("users")
 }
 
@@ -448,4 +498,172 @@ model Meta {
 
   @@index([type, createdAt])
   @@map("meta")
+}
+
+// ===========================
+// Accounts Payable
+// ===========================
+
+model Vendor {
+  id                String    @id @default(cuid())
+  name              String
+  document          String?   @unique
+  email             String?
+  phone             String?
+  notes             String?   @db.Text
+  isActive          Boolean   @default(true)
+  defaultCategoryId String?
+  defaultCategory   Category? @relation("VendorDefaultCategory", fields: [defaultCategoryId], references: [id])
+  defaultPropertyId String?
+  defaultProperty   Property? @relation("VendorDefaultProperty", fields: [defaultPropertyId], references: [id])
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  payables    Payable[]
+  recurrences PayableRecurrence[]
+
+  @@index([name])
+  @@index([isActive])
+  @@map("vendors")
+}
+
+model Payable {
+  id                 String        @id @default(cuid())
+  vendorId           String
+  vendor             Vendor        @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  description        String
+  documentNumber     String?
+  issueDate          DateTime?     @db.Date
+  competenceDate     DateTime?     @db.Date
+  categoryId         String?
+  category           Category?     @relation(fields: [categoryId], references: [id])
+  propertyId         String?
+  property           Property?     @relation(fields: [propertyId], references: [id])
+  status             PayableStatus @default(OPEN)
+  totalAmount        Decimal       @db.Decimal(15, 2)
+  totalPaidAmount    Decimal       @default(0) @db.Decimal(15, 2)
+  totalBalanceAmount Decimal       @db.Decimal(15, 2)
+  notes              String?       @db.Text
+  recurrenceId       String?
+  recurrence         PayableRecurrence? @relation(fields: [recurrenceId], references: [id], onDelete: SetNull)
+  canceledAt         DateTime?
+  cancelReason       String?
+  createdById        String?
+  createdBy          User?         @relation("PayableCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  installments PayableInstallment[]
+  attachments  PayableAttachment[]
+
+  @@index([vendorId])
+  @@index([status])
+  @@index([competenceDate])
+  @@index([categoryId])
+  @@index([propertyId])
+  @@index([recurrenceId, competenceDate])
+  @@map("payables")
+}
+
+model PayableInstallment {
+  id                String                    @id @default(cuid())
+  payableId         String
+  payable           Payable                   @relation(fields: [payableId], references: [id], onDelete: Cascade)
+  installmentNumber Int
+  dueDate           DateTime                  @db.Date
+  amount            Decimal                   @db.Decimal(15, 2)
+  paidAmount        Decimal                   @default(0) @db.Decimal(15, 2)
+  remainingAmount   Decimal                   @db.Decimal(15, 2)
+  paymentMethod     PayablePaymentMethod      @default(BOLETO)
+  boletoLine        String?                   @db.VarChar(60)
+  boletoBarcode     String?
+  status            PayableInstallmentStatus  @default(OPEN)
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+
+  settlements PayableSettlement[]
+  attachments PayableAttachment[]
+
+  @@unique([payableId, installmentNumber])
+  @@index([status, dueDate])
+  @@index([dueDate])
+  @@map("payable_installments")
+}
+
+model PayableSettlement {
+  id            String                  @id @default(cuid())
+  installmentId String
+  installment   PayableInstallment      @relation(fields: [installmentId], references: [id], onDelete: Cascade)
+  transactionId String?                 @unique
+  transaction   Transaction?            @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  bankAccountId String
+  bankAccount   BankAccount             @relation(fields: [bankAccountId], references: [id], onDelete: Restrict)
+  amount        Decimal                 @db.Decimal(15, 2)
+  paidAt        DateTime                @db.Date
+  method        PayablePaymentMethod    @default(BANK_TRANSFER)
+  status        PayableSettlementStatus @default(RECORDED)
+  notes         String?                 @db.Text
+  createdById   String?
+  createdBy     User?                   @relation("PayableSettlementCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  reversedAt    DateTime?
+  reversedById  String?
+  reversedBy    User?                   @relation("PayableSettlementReversedBy", fields: [reversedById], references: [id], onDelete: SetNull)
+  reverseReason String?
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+
+  @@index([installmentId])
+  @@index([bankAccountId])
+  @@index([paidAt])
+  @@index([status])
+  @@map("payable_settlements")
+}
+
+model PayableRecurrence {
+  id            String                      @id @default(cuid())
+  vendorId      String
+  vendor        Vendor                      @relation(fields: [vendorId], references: [id], onDelete: Restrict)
+  description   String
+  categoryId    String?
+  category      Category?                   @relation(fields: [categoryId], references: [id])
+  propertyId    String?
+  property      Property?                   @relation(fields: [propertyId], references: [id])
+  amount        Decimal                     @db.Decimal(15, 2)
+  paymentMethod PayablePaymentMethod        @default(BOLETO)
+  frequency     PayableRecurrenceFrequency  @default(MONTHLY)
+  dayOfMonth    Int
+  startDate     DateTime                    @db.Date
+  endDate       DateTime?                   @db.Date
+  nextRunDate   DateTime                    @db.Date
+  isActive      Boolean                     @default(true)
+  createdAt     DateTime                    @default(now())
+  updatedAt     DateTime                    @updatedAt
+
+  payables Payable[]
+
+  @@index([vendorId])
+  @@index([isActive, nextRunDate])
+  @@map("payable_recurrences")
+}
+
+model PayableAttachment {
+  id            String                    @id @default(cuid())
+  payableId     String
+  payable       Payable                   @relation(fields: [payableId], references: [id], onDelete: Cascade)
+  installmentId String?
+  installment   PayableInstallment?       @relation(fields: [installmentId], references: [id], onDelete: SetNull)
+  title         String
+  fileName      String
+  contentType   String?
+  sizeBytes     Int?
+  storageKey    String?
+  referenceUrl  String
+  purpose       PayableAttachmentPurpose  @default(SUPPORTING_DOCUMENT)
+  createdById   String?
+  createdBy     User?                     @relation("PayableAttachmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime                  @default(now())
+
+  @@index([payableId])
+  @@index([installmentId])
+  @@map("payable_attachments")
 }

@@ -14,6 +14,11 @@ import reportsRoutes from './routes/reports'
 import imobziRoutes from './routes/imobzi'
 import backupsRoutes from './routes/backups'
 import inadimplentesRoutes from './routes/inadimplentes'
+import vendorsRoutes from './routes/vendors'
+import payablesRoutes, {
+  installmentSettlementsApp,
+  settlementReverseApp,
+} from './routes/payables'
 
 const app = new OpenAPIHono().basePath('/api/v1')
 
@@ -72,6 +77,12 @@ app.use('/backups/*', apiKeyAuth)
 app.use('/backups', apiKeyAuth)
 app.use('/inadimplentes/*', apiKeyAuth)
 app.use('/inadimplentes', apiKeyAuth)
+app.use('/vendors/*', apiKeyAuth)
+app.use('/vendors', apiKeyAuth)
+app.use('/payables/*', apiKeyAuth)
+app.use('/payables', apiKeyAuth)
+app.use('/payable-installments/*', apiKeyAuth)
+app.use('/payable-settlements/*', apiKeyAuth)
 
 // --- Route modules ---
 
@@ -88,6 +99,10 @@ app.route('/reports', reportsRoutes)
 app.route('/imobzi', imobziRoutes)
 app.route('/backups', backupsRoutes)
 app.route('/inadimplentes', inadimplentesRoutes)
+app.route('/vendors', vendorsRoutes)
+app.route('/payables', payablesRoutes)
+app.route('/payable-installments', installmentSettlementsApp)
+app.route('/payable-settlements', settlementReverseApp)
 
 // --- OpenAPI spec ---
 

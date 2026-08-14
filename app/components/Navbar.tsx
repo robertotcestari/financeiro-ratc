@@ -31,6 +31,7 @@ const navigation = [
   { name: 'Bancos', href: '/bancos', icon: CreditCard },
   { name: 'Transações', href: '/transacoes', icon: FileText },
   { name: 'Aluguéis', href: '/recebimento-alugueis', icon: DollarSign },
+  { name: 'Contas a Pagar', href: '/contas-a-pagar', icon: Receipt },
   // Inadimplentes, Integridade and DRE moved to Mais
 ];
 
@@ -48,6 +49,8 @@ const registrationOptions = [
   { name: 'Contas Bancárias', href: '/cadastros/contas', icon: CreditCard },
   { name: 'Cidades', href: '/cidades', icon: MapPin },
   { name: 'Imóveis', href: '/imoveis', icon: Building2 },
+  { name: 'Fornecedores', href: '/contas-a-pagar/fornecedores', icon: FileText },
+  { name: 'Recorrentes', href: '/contas-a-pagar/recorrentes', icon: Receipt },
   { name: 'Inadimplentes', href: '/inadimplentes', icon: FileText },
 ];
 

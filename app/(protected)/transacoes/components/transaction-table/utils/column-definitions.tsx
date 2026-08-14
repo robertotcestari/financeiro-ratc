@@ -5,6 +5,7 @@ import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import { Button } from '@/components/ui/button';
 import { Pencil, Check, X, Save } from 'lucide-react';
 import SuggestionIndicator from '../../SuggestionIndicator';
+import { LinkPayableCell } from '../../LinkPayableCell';
 import {
   getTypeColor,
   getTypeLabel,
@@ -506,7 +507,7 @@ export function createColumnDefinitions({
       header: 'Ações',
       cell: ({ row }) => (
         <div className="flex items-center justify-center">
-          <div className="grid grid-cols-2 gap-2 w-[72px] justify-items-center">
+          <div className="grid grid-cols-3 gap-1 w-[96px] justify-items-center">
             {editingId === row.id ? (
               <>
                 <Button
@@ -567,6 +568,7 @@ export function createColumnDefinitions({
                     <Check className="h-4 w-4" />
                   </Button>
                 )}
+                <LinkPayableCell transaction={row.original} />
               </>
             )}
           </div>

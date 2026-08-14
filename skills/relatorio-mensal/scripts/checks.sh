@@ -94,6 +94,25 @@ fi
 
 echo ""
 
+# --- Check 4: Open payables due in the month (informational) ---
+echo "--- Check 4: Open payables due in month (informational) ---"
+
+PAYABLES=$(curl -s -H "$AUTH" \
+  "$API/payables?year=$YEAR&month=$MONTH&status=OPEN&limit=500")
+PARTIAL=$(curl -s -H "$AUTH" \
+  "$API/payables?year=$YEAR&month=$MONTH&status=PARTIALLY_PAID")
+
+OPEN_COUNT=$(echo "$PAYABLES" | jq '[.data[]?] | length' 2>/dev/null || echo 0)
+PARTIAL_COUNT=$(echo "$PARTIAL" | jq '[.data[]?] | length' 2>/dev/null || echo 0)
+OVERDUE_COUNT=$(echo "$PAYABLES" "$PARTIAL" | jq -s '[.[].data[]? | select(.isOverdue == true)] | length' 2>/dev/null || echo 0)
+
+echo "INFO: $OPEN_COUNT em aberto, $PARTIAL_COUNT parciais, $OVERDUE_COUNT atrasada(s) no mês"
+echo "$PAYABLES" | jq -r '.data[:10][]? | "  \(.dueDate) | \(.vendorName) | \(.description) | R$ \(.remainingAmount)"' 2>/dev/null || true
+echo "NOTE: Contas a pagar não bloqueiam o DRE (regime de caixa). Registre as pendências na memória do mês."
+PASS=$((PASS + 1))
+
+echo ""
+
 # --- Summary ---
 echo "========================================"
 echo "  Results: $PASS passed, $FAIL failed"

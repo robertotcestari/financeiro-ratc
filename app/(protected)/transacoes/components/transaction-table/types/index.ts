@@ -34,11 +34,16 @@ export interface Transaction {
     date: Date;
     description: string;
     amount: number;
+    bankAccountId?: string;
     bankAccount: {
       name: string;
       bankName: string;
     };
   };
+  payableLink?: {
+    payableId: string;
+    description: string;
+  } | null;
   category: {
     id: string;
     name: string;

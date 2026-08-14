@@ -389,6 +389,7 @@ Quando o envio do relatório de tributação estiver concluído e registrado, ma
 - [ ] `Transferência Entre Contas` soma zero no mês
 - [ ] Não restam transações sem categoria
 - [ ] O DRE foi gerado sem erro
+- [ ] Contas a pagar em aberto/atrasadas do mês foram registradas na memória (não bloqueiam o envio)
 - [ ] Qualquer falha foi corrigida antes do envio
 
 ### Inadimplentes
