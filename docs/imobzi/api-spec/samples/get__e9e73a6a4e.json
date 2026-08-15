@@ -26,51 +26,61 @@
       "database": "ac-tlna233176iwe",
       "db_id": "ac-tlna233176iwe",
       "description": "",
-      "email": "<redacted>",
+      "email": [
+        "<redacted>"
+      ],
       "legal_information": [
         {
-          "validate": "\\d{3}\\.*\\d{3}\\.*\\d{3}-*\\d{2}",
+          "validate": "<redacted>",
           "required": false,
-          "company_type": "individual",
+          "company_type": "<redacted>",
           "name": "<redacted>"
         },
         {
-          "validate": "\\d{2}\\.*\\d{3}\\.*\\d{3}\\/*\\d{4}-*\\d{2}",
+          "validate": "<redacted>",
           "required": false,
-          "company_type": "legal_entity",
+          "company_type": "<redacted>",
           "name": "<redacted>",
           "value": "<redacted>"
         },
         {
           "required": false,
-          "company_type": "all",
+          "company_type": "<redacted>",
           "name": "<redacted>",
           "value": "<redacted>"
         },
         {
           "required": false,
-          "company_type": "all",
+          "company_type": "<redacted>",
           "name": "<redacted>",
           "value": "<redacted>"
         },
         {
-          "validate": "\\d{3}\\.*\\d{3}\\.*\\d{3}-*\\d{2}",
+          "validate": "<redacted>",
           "required": false,
-          "company_type": "all",
+          "company_type": "<redacted>",
           "name": "<redacted>",
           "value": "<redacted>"
         }
       ],
-      "logotype_image_url": "<redacted>",
+      "logotype_image_url": "https://lh3.googleusercontent.com/O-d6DXGurGh6HFGtthskFf63C8b9AKyQYZMoFxDvIFNy3JoaaG8C_waTHdlc5yabKfoCh-RCYPeoX5V-JeAikIYWFNSiXbytqkqtVvQ7wIXrPwUYKRmlmw",
       "namespace_administrator": "CWLAFmKOHLOIPDr9hOSRCvDx2Aa2",
       "neighborhood": "<redacted>",
       "open_at": "09:00",
       "closed_at": "18:00",
-      "phone": "<redacted>",
+      "phone": [
+        {
+          "type": "<redacted>",
+          "number": "<redacted>",
+          "country_code": "<redacted>",
+          "alpha2Code": "<redacted>",
+          "sector": null
+        }
+      ],
       "site": "",
       "social_networks": [],
       "state": "SP",
-      "trade_mark": "<redacted>",
+      "trade_mark": "RATC Imóveis",
       "zip_code": "<redacted>",
       "locale": "pt-BR",
       "regional_settings": {
@@ -85,9 +95,9 @@
         {
           "fullname": "<redacted>",
           "profile_image_url": "<redacted>",
-          "db_id": "CWLAFmKOHLOIPDr9hOSRCvDx2Aa2",
+          "db_id": "<redacted>",
           "email": "<redacted>",
-          "function": ""
+          "function": "<redacted>"
         }
       ],
       "new_posts": 0

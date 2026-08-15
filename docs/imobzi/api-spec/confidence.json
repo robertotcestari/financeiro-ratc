@@ -1,7 +1,198 @@
 {
   "endpoints": [
     {
+      "key": "GET https://my.imobzi.com/v1/invoices",
+      "samples": 31,
+      "statusCodes": [
+        200,
+        400,
+        401,
+        422,
+        500
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "high",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/invoice/{id}",
+      "samples": 4,
+      "statusCodes": [
+        200,
+        404
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "medium",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/landlord/account/onlending/{id}",
+      "samples": 2,
+      "statusCodes": [
+        200
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/leases",
+      "samples": 15,
+      "statusCodes": [
+        200,
+        500
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "high",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/lease/checklist",
+      "samples": 2,
+      "statusCodes": [
+        200
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/lease/{id}",
+      "samples": 3,
+      "statusCodes": [
+        200,
+        500
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "medium",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/lease/code/{id}",
+      "samples": 3,
+      "statusCodes": [
+        200,
+        404
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "medium",
+      "includedInSpec": true
+    },
+    {
       "key": "GET https://my.imobzi.com/v1/financial/accounts",
+      "samples": 3,
+      "statusCodes": [
+        200,
+        401
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "medium",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/account/{id}",
+      "samples": 3,
+      "statusCodes": [
+        200,
+        500
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "medium",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/transactions",
+      "samples": 23,
+      "statusCodes": [
+        200,
+        422,
+        500
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "high",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/transaction/{id}",
+      "samples": 3,
+      "statusCodes": [
+        200,
+        404
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "medium",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/categories",
+      "samples": 2,
+      "statusCodes": [
+        200
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/tags",
+      "samples": 2,
+      "statusCodes": [
+        200
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/organization",
+      "samples": 2,
+      "statusCodes": [
+        200
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/banks",
       "samples": 1,
       "statusCodes": [
         200
@@ -16,22 +207,21 @@
       "includedInSpec": true
     },
     {
-      "key": "GET https://my.imobzi.com/v1/network-group/",
-      "samples": 1,
+      "key": "GET https://my.imobzi.com/v1/financial/landlord/accounts",
+      "samples": 7,
       "statusCodes": [
         200
       ],
       "requestBodyKnown": false,
       "responseBodyKnown": true,
       "normalizationFlags": [
-        "single-sample",
         "single-status"
       ],
       "confidence": "low",
       "includedInSpec": true
     },
     {
-      "key": "GET https://my.imobzi.com/v1/subscription",
+      "key": "GET https://my.imobzi.com/v1/parameters",
       "samples": 1,
       "statusCodes": [
         200
@@ -61,7 +251,105 @@
       "includedInSpec": true
     },
     {
-      "key": "GET https://my.imobzi.com/v1/parameters",
+      "key": "GET https://my.imobzi.com/v1/subscription",
+      "samples": 1,
+      "statusCodes": [
+        200
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-sample",
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/landlord/account/{id}",
+      "samples": 3,
+      "statusCodes": [
+        200,
+        400
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "medium",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/landlord/account/{id}/transactions",
+      "samples": 6,
+      "statusCodes": [
+        200
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/landlord/account/{id}/onlending",
+      "samples": 4,
+      "statusCodes": [
+        200,
+        400
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [],
+      "confidence": "medium",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/financial/landlord/account/individual-onlending/{id}",
+      "samples": 2,
+      "statusCodes": [
+        400
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/reports/landlord/account/onlending",
+      "samples": 2,
+      "statusCodes": [
+        405
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/commission/onlending",
+      "samples": 1,
+      "statusCodes": [
+        400
+      ],
+      "requestBodyKnown": false,
+      "responseBodyKnown": true,
+      "normalizationFlags": [
+        "single-sample",
+        "single-status"
+      ],
+      "confidence": "low",
+      "includedInSpec": true
+    },
+    {
+      "key": "GET https://my.imobzi.com/v1/network-group/",
       "samples": 1,
       "statusCodes": [
         200
@@ -77,65 +365,6 @@
     },
     {
       "key": "GET https://my.imobzi.com/v1/user/{id}/rules",
-      "samples": 1,
-      "statusCodes": [
-        200
-      ],
-      "requestBodyKnown": false,
-      "responseBodyKnown": true,
-      "normalizationFlags": [
-        "single-sample",
-        "single-status"
-      ],
-      "confidence": "low",
-      "includedInSpec": true
-    },
-    {
-      "key": "GET https://my.imobzi.com/v1/lease/code/:code",
-      "samples": 2,
-      "statusCodes": [
-        404
-      ],
-      "requestBodyKnown": false,
-      "responseBodyKnown": true,
-      "normalizationFlags": [
-        "single-status"
-      ],
-      "confidence": "low",
-      "includedInSpec": true
-    },
-    {
-      "key": "GET https://my.imobzi.com/v1/leases",
-      "samples": 1,
-      "statusCodes": [
-        200
-      ],
-      "requestBodyKnown": false,
-      "responseBodyKnown": true,
-      "normalizationFlags": [
-        "single-sample",
-        "single-status"
-      ],
-      "confidence": "low",
-      "includedInSpec": true
-    },
-    {
-      "key": "GET https://my.imobzi.com/v1/lease/checklist",
-      "samples": 1,
-      "statusCodes": [
-        200
-      ],
-      "requestBodyKnown": false,
-      "responseBodyKnown": true,
-      "normalizationFlags": [
-        "single-sample",
-        "single-status"
-      ],
-      "confidence": "low",
-      "includedInSpec": true
-    },
-    {
-      "key": "GET https://my.imobzi.com/v1/invoices",
       "samples": 1,
       "statusCodes": [
         200

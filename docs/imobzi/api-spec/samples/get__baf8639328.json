@@ -1,0 +1,554 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/financial/categories",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "expense": {
+        "Impostos & Contribuições": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.017733Z",
+            "updated_at": "2026-03-27T17:23:31.447411Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "INSS",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.018166Z",
+            "updated_at": "2026-03-27T17:23:31.621967Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "IPTU",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.018297Z",
+            "updated_at": "2026-03-27T17:23:31.658161Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "ISS",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.018416Z",
+            "updated_at": "2026-03-27T17:23:31.696962Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Contribuição Sindical",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.017840Z",
+            "updated_at": "2026-03-27T17:23:31.505141Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "DAS",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.017951Z",
+            "updated_at": "2026-03-27T17:23:31.547169Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "FGTS",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.018059Z",
+            "updated_at": "2026-03-27T17:23:31.586701Z"
+          }
+        ],
+        "Alimentação": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.019782Z",
+            "updated_at": "2026-03-27T17:23:32.184412Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Restaurante",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.019914Z",
+            "updated_at": "2026-03-27T17:23:32.227080Z"
+          }
+        ],
+        "Ativo Imobilizado": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.018525Z",
+            "updated_at": "2026-03-27T17:23:31.732071Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Máquinas e Equipamentos",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.018636Z",
+            "updated_at": "2026-03-27T17:23:31.772930Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Móveis e Utensílios",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.018742Z",
+            "updated_at": "2026-03-27T17:23:31.817242Z"
+          }
+        ],
+        "Departamento Pessoal": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.016516Z",
+            "updated_at": "2026-03-27T17:23:31.010295Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Comissão / Prêmio",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.016628Z",
+            "updated_at": "2026-03-27T17:23:31.051405Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Convênio Médico",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.016739Z",
+            "updated_at": "2026-03-27T17:23:31.093850Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Décimo Terceiro Salário",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.016849Z",
+            "updated_at": "2026-03-27T17:23:31.134215Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Eventos e Cursos",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.016957Z",
+            "updated_at": "2026-03-27T17:23:31.170031Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Férias",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.017065Z",
+            "updated_at": "2026-03-27T17:23:31.211092Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Pró-Labore",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.017175Z",
+            "updated_at": "2026-03-27T17:23:31.245856Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Salário",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.017282Z",
+            "updated_at": "2026-03-27T17:23:31.296334Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Vale Alimentação",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.017405Z",
+            "updated_at": "2026-03-27T17:23:31.329713Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Vale Refeição",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.017515Z",
+            "updated_at": "2026-03-27T17:23:31.373076Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Vale Transporte",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.017624Z",
+            "updated_at": "2026-03-27T17:23:31.411812Z"
+          }
+        ],
+        "Despesas com Imóvel": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.015930Z",
+            "updated_at": "2026-03-27T17:23:30.803850Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Aluguel",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.016053Z",
+            "updated_at": "2026-03-27T17:23:30.844897Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Condomínio",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.016164Z",
+            "updated_at": "2026-03-27T17:23:30.886158Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Manutenção",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.016284Z",
+            "updated_at": "2026-03-27T17:23:30.923466Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Seguro",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.016403Z",
+            "updated_at": "2026-03-27T17:23:30.967525Z"
+          }
+        ],
+        "Despesas com Transporte": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.020025Z",
+            "updated_at": "2026-03-27T17:23:32.262168Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Combustível",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.020143Z",
+            "updated_at": "2026-03-27T17:23:32.308275Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Estacionamento",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.020253Z",
+            "updated_at": "2026-03-27T17:23:32.347409Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Manutenção",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.020374Z",
+            "updated_at": "2026-03-27T17:23:32.385235Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Seguro",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.020496Z",
+            "updated_at": "2026-03-27T17:23:32.420648Z"
+          }
+        ],
+        "Despesas Financeiras": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.021153Z",
+            "updated_at": "2026-03-27T17:23:32.651141Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Juros Passivos",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.021259Z",
+            "updated_at": "2026-03-27T17:23:32.692720Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Tarifa Bancária",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.021376Z",
+            "updated_at": "2026-03-27T17:23:32.732224Z"
+          }
+        ],
+        "Marketing": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.020607Z",
+            "updated_at": "2026-03-27T17:23:32.455748Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Impressos",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.021044Z",
+            "updated_at": "2026-03-27T17:23:32.609374Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Anúncios em  Sites",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.020717Z",
+            "updated_at": "2026-03-27T17:23:32.500213Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Brindes",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.020938Z",
+            "updated_at": "2026-03-27T17:23:32.575657Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Criação de Banners",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.020825Z",
+            "updated_at": "2026-03-27T17:23:32.542691Z"
+          }
+        ],
+        "Materiais e Suprimentos": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.021485Z",
+            "updated_at": "2026-03-27T17:23:32.772570Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Material de Consumo",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.021596Z",
+            "updated_at": "2026-03-27T17:23:32.814885Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Material de Escritório",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.021703Z",
+            "updated_at": "2026-03-27T17:23:32.872430Z"
+          }
+        ],
+        "Terceiros (Administração)": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.019294Z",
+            "updated_at": "2026-03-27T17:23:32.018188Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Despesas Administradas",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.019418Z",
+            "updated_at": "2026-03-27T17:23:32.063850Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Outras Despesas",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.019528Z",
+            "updated_at": "2026-03-27T17:23:32.102771Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Repasse de Aluguel",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.019655Z",
+            "updated_at": "2026-03-27T17:23:32.144741Z"
+          }
+        ],
+        "Utilidades e Serviços": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.018852Z",
+            "updated_at": "2026-03-27T17:23:31.853441Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Água",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.018960Z",
+            "updated_at": "2026-03-27T17:23:31.891374Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Energia Elétrica",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.019067Z",
+            "updated_at": "2026-03-27T17:23:31.930116Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Telefone",
+            "category_type": "expense",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.019182Z",
+            "updated_at": "2026-03-27T17:23:31.974033Z"
+          }
+        ]
+      },
+      "revenue": {
+        "Receitas": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.013666Z",
+            "updated_at": "2026-03-27T17:23:30.388096Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Aplicações Financeiras",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.013861Z",
+            "updated_at": "2026-03-27T17:23:30.420095Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Comissão de Locação",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.013991Z",
+            "updated_at": "2026-03-27T17:23:30.457710Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Comissão de Venda",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.014114Z",
+            "updated_at": "2026-03-27T17:23:30.492768Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Lucros e Dividendos",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.014230Z",
+            "updated_at": "2026-03-27T17:23:30.529178Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Tarifa de Cobrança",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.014468Z",
+            "updated_at": "2026-03-27T17:23:30.604132Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Taxa de Administração",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.014355Z",
+            "updated_at": "2026-03-27T17:23:30.567335Z"
+          }
+        ],
+        "Terceiros (Administração)": [
+          {
+            "name": "<redacted>",
+            "subcategory": "",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.014582Z",
+            "updated_at": "2026-03-27T17:23:30.643754Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Assinaturas & Vendas",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.015639Z",
+            "updated_at": "2026-03-27T17:23:30.721246Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Recebimento de Aluguel",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.015240Z",
+            "updated_at": "2026-03-27T17:23:30.684716Z"
+          },
+          {
+            "name": "<redacted>",
+            "subcategory": "Reembolso de Despesas Administradas",
+            "category_type": "revenue",
+            "db_id": "<redacted>",
+            "created_at": "2023-03-17T13:48:09.015795Z",
+            "updated_at": "2026-03-27T17:23:30.762492Z"
+          }
+        ]
+      }
+    }
+  }
+}

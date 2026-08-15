@@ -56,7 +56,19 @@
         "deals_done": "read",
         "ranking": "read"
       },
-      "contact": "<redacted>",
+      "contact": {
+        "commission": null,
+        "hide_property_address": null,
+        "hide_property_owner": null,
+        "ignore_reassign_manager": false,
+        "other": "read_write_delete",
+        "other_private": "read_write_delete",
+        "own": "read_write_delete",
+        "pending": null,
+        "share_filter": "without_permission",
+        "updated_property_revision": false,
+        "without_link": "read_write_delete"
+      },
       "contract": {
         "contract_management": "without_permission",
         "contract_report": "without_permission"
@@ -89,7 +101,19 @@
         "updated_property_revision": false,
         "without_link": null
       },
-      "document": "<redacted>",
+      "document": {
+        "commission": null,
+        "hide_property_address": null,
+        "hide_property_owner": null,
+        "ignore_reassign_manager": false,
+        "other": "<redacted>",
+        "other_private": null,
+        "own": "<redacted>",
+        "pending": null,
+        "share_filter": "<redacted>",
+        "updated_property_revision": false,
+        "without_link": null
+      },
       "federal_income": {
         "federal_income_management": "without_permission"
       },

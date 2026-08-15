@@ -1,0 +1,76 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/financial/transaction/{id}",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "id": 1824,
+      "account": {
+        "name": "<redacted>",
+        "db_id": 5253871883517952
+      },
+      "account_credit": null,
+      "lease": null,
+      "invoice_id": "ee54adf4842a11f1b0a142004e494300",
+      "bank_slip_id": null,
+      "bank_type": null,
+      "deal_key": null,
+      "bar_code": null,
+      "value": 541.12,
+      "discount_value": 0,
+      "interest_value": 0,
+      "additional_value": 0,
+      "category": "Terceiros (Administração)",
+      "subcategory": "Recebimento de Aluguel",
+      "description": "Aluguel ref. 01/07/2026 a 31/07/2026, da locação 41 - Fatura: ee54adf4842a11f1b0a142004e494300",
+      "due_date": "<redacted>",
+      "group_id": null,
+      "paid": true,
+      "paid_at": "<redacted>",
+      "pix_key_type": null,
+      "pix_key": null,
+      "qrcode": null,
+      "payment_method": "transference",
+      "repeat_type": "unique",
+      "repeat_index": 1,
+      "repeat_total": 1,
+      "repeat_frequency": "",
+      "tags": [],
+      "landlord_transaction_id": null,
+      "landlord_transaction_type": null,
+      "nota_fiscal_key": null,
+      "transaction_type": "income",
+      "transaction_id": "923d5900988c11f1a49a42004e494300",
+      "created_at": "2026-08-15T09:34:54.000000Z",
+      "updated_at": null,
+      "financial_conciliation_transaction_id": null,
+      "operation_id": null,
+      "contact": {
+        "db_id": 6089643998052352,
+        "type": "organization",
+        "name": "<redacted>"
+      },
+      "sum_type": null,
+      "status": null,
+      "attachments": [],
+      "property_key": "ahtwfmltb2J6aS1hcHAtcHJvZHVjdGlvbi1hcGlyFQsSCFByb3BlcnR5GICAwOqv7MgLDKIBEGFjLXRsbmEyMzMxNzZpd2U",
+      "property": {
+        "db_id": "<redacted>",
+        "code": "7",
+        "address": "<redacted>",
+        "address_complement": "<redacted>"
+      }
+    }
+  }
+}

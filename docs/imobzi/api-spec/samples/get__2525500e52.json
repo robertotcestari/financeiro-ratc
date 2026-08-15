@@ -1,5 +1,5 @@
 {
-  "endpoint": "GET https://my.imobzi.com/v1/lease/code/:code",
+  "endpoint": "GET https://my.imobzi.com/v1/commission/onlending",
   "request": {
     "status": null,
     "headers": {

@@ -24,50 +24,22 @@ async function request(path, { method = 'GET', body, query, headers } = {}) {
   return ct.includes('json') ? res.json() : res.text();
 }
 
-export async function getv1_financial_accounts(options = {}) {
-  return request('/v1/financial/accounts', {
+export async function getv1_invoices(options = {}) {
+  return request('/v1/invoices', {
     method: 'GET',
     ...options,
   });
 }
 
-export async function getv1_network_group(options = {}) {
-  return request('/v1/network-group/', {
+export async function getv1_invoice_id(options = {}) {
+  return request('/v1/invoice/{id}', {
     method: 'GET',
     ...options,
   });
 }
 
-export async function getv1_subscription(options = {}) {
-  return request('/v1/subscription', {
-    method: 'GET',
-    ...options,
-  });
-}
-
-export async function getv1_real_estate(options = {}) {
-  return request('/v1/real-estate', {
-    method: 'GET',
-    ...options,
-  });
-}
-
-export async function getv1_parameters(options = {}) {
-  return request('/v1/parameters', {
-    method: 'GET',
-    ...options,
-  });
-}
-
-export async function getv1_user_id_rules(options = {}) {
-  return request('/v1/user/{id}/rules', {
-    method: 'GET',
-    ...options,
-  });
-}
-
-export async function getv1_lease_code__code(options = {}) {
-  return request('/v1/lease/code/:code', {
+export async function getv1_financial_landlord_account_onlending_id(options = {}) {
+  return request('/v1/financial/landlord/account/onlending/{id}', {
     method: 'GET',
     ...options,
   });
@@ -87,8 +59,155 @@ export async function getv1_lease_checklist(options = {}) {
   });
 }
 
-export async function getv1_invoices(options = {}) {
-  return request('/v1/invoices', {
+export async function getv1_lease_id(options = {}) {
+  return request('/v1/lease/{id}', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_lease_code_id(options = {}) {
+  return request('/v1/lease/code/{id}', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_accounts(options = {}) {
+  return request('/v1/financial/accounts', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_account_id(options = {}) {
+  return request('/v1/financial/account/{id}', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_transactions(options = {}) {
+  return request('/v1/financial/transactions', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_transaction_id(options = {}) {
+  return request('/v1/financial/transaction/{id}', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_categories(options = {}) {
+  return request('/v1/financial/categories', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_tags(options = {}) {
+  return request('/v1/financial/tags', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_organization(options = {}) {
+  return request('/v1/financial/organization', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_banks(options = {}) {
+  return request('/v1/banks', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_landlord_accounts(options = {}) {
+  return request('/v1/financial/landlord/accounts', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_parameters(options = {}) {
+  return request('/v1/parameters', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_real_estate(options = {}) {
+  return request('/v1/real-estate', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_subscription(options = {}) {
+  return request('/v1/subscription', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_landlord_account_id(options = {}) {
+  return request('/v1/financial/landlord/account/{id}', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_landlord_account_id_transactions(options = {}) {
+  return request('/v1/financial/landlord/account/{id}/transactions', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_landlord_account_id_onlending(options = {}) {
+  return request('/v1/financial/landlord/account/{id}/onlending', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_financial_landlord_account_individual_onlending_id(options = {}) {
+  return request('/v1/financial/landlord/account/individual-onlending/{id}', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_reports_landlord_account_onlending(options = {}) {
+  return request('/v1/reports/landlord/account/onlending', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_commission_onlending(options = {}) {
+  return request('/v1/commission/onlending', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_network_group(options = {}) {
+  return request('/v1/network-group/', {
+    method: 'GET',
+    ...options,
+  });
+}
+
+export async function getv1_user_id_rules(options = {}) {
+  return request('/v1/user/{id}/rules', {
     method: 'GET',
     ...options,
   });

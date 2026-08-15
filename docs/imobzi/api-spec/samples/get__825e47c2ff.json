@@ -24,7 +24,7 @@
       },
       "payment_type": "bank_slip",
       "value_per_user": 44,
-      "value_plan": 274.72,
+      "value_plan": 286.09,
       "due_date": 17,
       "expiration_at": null,
       "membership_date": "<redacted>",
@@ -37,7 +37,7 @@
       "resale": false,
       "users_amount": 1,
       "users_active": 1,
-      "value_total": 274.72,
+      "value_total": 286.10999999999996,
       "plan_name": "Free",
       "plan_display_name": "Free",
       "plans_package": [
@@ -59,7 +59,7 @@
             "whatsapp": false,
             "access_offline": false,
             "deal_count": 30,
-            "watermark": "<redacted>",
+            "watermark": false,
             "storage_size": 0,
             "site": true,
             "pipeline_group_create": false,
@@ -83,7 +83,7 @@
             "crm": "real_estate",
             "whatsapp_description_ai": false
           },
-          "value": "<redacted>",
+          "value": 0,
           "plan_key": "ahtwfmltb2J6aS1hcHAtcHJvZHVjdGlvbi1hcGlyHQsSEFN1YnNjcmlwdGlvblBsYW4YgICAwKzJlAoM",
           "plan_type": "free"
         },
@@ -107,7 +107,7 @@
             "mail": true,
             "access_offline": true,
             "deal_count": null,
-            "watermark": "<redacted>",
+            "watermark": true,
             "storage_size": 0.5,
             "contact_count": null,
             "pipeline_group_create": false,
@@ -130,7 +130,7 @@
             "invoice_mail": true,
             "erp_type": "real_estate"
           },
-          "value": "<redacted>",
+          "value": 286.09,
           "plan_key": "ahtwfmltb2J6aS1hcHAtcHJvZHVjdGlvbi1hcGlyHQsSEFN1YnNjcmlwdGlvblBsYW4YgICArqiMjwgM",
           "plan_type": "paid"
         }
@@ -143,17 +143,35 @@
         "address_complement": "<redacted>",
         "city": "Catanduva",
         "company_type": "legal_entity",
-        "country": null,
+        "country": "",
         "email": "<redacted>",
         "firstname": "<redacted>",
         "fullname": "<redacted>",
         "lastname": "<redacted>",
-        "legal_identification": "<redacted>",
+        "legal_identification": "00.000.000/0001-00",
         "neighborhood": "<redacted>",
         "state": "SP",
-        "zipcode": "<redacted>"
+        "zipcode": "<redacted>",
+        "phone": {
+          "alpha2Code": "<redacted>",
+          "country_code": null,
+          "number": "<redacted>",
+          "sector": null,
+          "type": null
+        }
       },
-      "integrations": []
+      "integrations": [],
+      "invoice_pending": {
+        "value": 286.09,
+        "due_date": "<redacted>",
+        "invoice_url": "<redacted>",
+        "invoice_id": "4c136f92924b11f1be6342004e494300",
+        "nfe_url": "",
+        "created_at": "2026-08-07T10:45:47.266370",
+        "updated_at": "2026-08-07T10:45:47.266377",
+        "status": "pending",
+        "db_id": 5944391438434304
+      }
     }
   }
 }

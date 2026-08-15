@@ -2,6 +2,10 @@
 
 Use esta referência na etapa de `CC - PJBank`.
 
+Para a API do Imobzi em si — autenticação, endpoints, parâmetros validados e schemas —
+veja `docs/imobzi/README.md` no repositório. Em especial, `GET /invoices` aceita
+`period=paid_at`, que filtra por data de pagamento em vez de vencimento.
+
 ## Objetivo
 
 Garantir que:

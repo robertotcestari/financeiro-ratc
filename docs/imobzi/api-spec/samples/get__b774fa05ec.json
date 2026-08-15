@@ -31,51 +31,61 @@
         "database": "ac-tlna233176iwe",
         "db_id": "ac-tlna233176iwe",
         "description": "",
-        "email": "<redacted>",
+        "email": [
+          "<redacted>"
+        ],
         "legal_information": [
           {
-            "validate": "\\d{3}\\.*\\d{3}\\.*\\d{3}-*\\d{2}",
+            "validate": "<redacted>",
             "required": false,
-            "company_type": "individual",
+            "company_type": "<redacted>",
             "name": "<redacted>"
           },
           {
-            "validate": "\\d{2}\\.*\\d{3}\\.*\\d{3}\\/*\\d{4}-*\\d{2}",
+            "validate": "<redacted>",
             "required": false,
-            "company_type": "legal_entity",
+            "company_type": "<redacted>",
             "name": "<redacted>",
             "value": "<redacted>"
           },
           {
             "required": false,
-            "company_type": "all",
+            "company_type": "<redacted>",
             "name": "<redacted>",
             "value": "<redacted>"
           },
           {
             "required": false,
-            "company_type": "all",
+            "company_type": "<redacted>",
             "name": "<redacted>",
             "value": "<redacted>"
           },
           {
-            "validate": "\\d{3}\\.*\\d{3}\\.*\\d{3}-*\\d{2}",
+            "validate": "<redacted>",
             "required": false,
-            "company_type": "all",
+            "company_type": "<redacted>",
             "name": "<redacted>",
             "value": "<redacted>"
           }
         ],
-        "logotype_image_url": "<redacted>",
+        "logotype_image_url": "https://lh3.googleusercontent.com/O-d6DXGurGh6HFGtthskFf63C8b9AKyQYZMoFxDvIFNy3JoaaG8C_waTHdlc5yabKfoCh-RCYPeoX5V-JeAikIYWFNSiXbytqkqtVvQ7wIXrPwUYKRmlmw",
         "namespace_administrator": "CWLAFmKOHLOIPDr9hOSRCvDx2Aa2",
         "neighborhood": "<redacted>",
         "open_at": "09:00",
         "closed_at": "18:00",
-        "phone": "<redacted>",
+        "phone": [
+          {
+            "type": "<redacted>",
+            "number": "<redacted>",
+            "country_code": "<redacted>",
+            "alpha2Code": "<redacted>",
+            "sector": null
+          }
+        ],
         "site": "",
         "social_networks": [],
         "state": "SP",
-        "trade_mark": "<redacted>",
+        "trade_mark": "RATC Imóveis",
         "zip_code": "<redacted>",
         "locale": "pt-BR",
         "regional_settings": {
@@ -120,9 +130,27 @@
         "site_show_decimal_places": false,
         "site_show_decimal_areas": false,
         "show_total_value": false,
-        "show_building_button": false
+        "show_building_button": false,
+        "site_translation_selected_languages": [],
+        "site_translation_show_more_languages": true
       },
-      "watermark": "<redacted>",
+      "watermark": {
+        "density": 35,
+        "position": "BOTTOM_RIGHT",
+        "url": "https://lh3.googleusercontent.com/IkBbclU5dtMq2hZ2hIWMtPn5ZQALGotPBQ18V_Rjc9RMJ5RSvBRsdeF4HNMCPXiQfqFYDYh_Cugmad9nzZL7uqNk7uucDQgh82OT2wg2a9mpqKZwk-l_JKc"
+      },
+      "realtor": {
+        "show_whatsapp_modal": true,
+        "show_realtor_whatsapp": false,
+        "site_show_email": true,
+        "show_real_estate_whatsapp_if_not_realtor": false,
+        "show_real_estate_whatsapp": false,
+        "show_realtor_phone": false,
+        "show_real_estate_phone_if_not_realtor": false,
+        "show_real_estate_phone": false,
+        "show_owner_whatsapp": false,
+        "show_owner_phone": false
+      },
       "rental": {
         "billing_days": 10,
         "fine": true,
@@ -133,7 +161,7 @@
         "onlending_report_auto_send_by_email": true,
         "onlending_report_auto_send_by_whatsapp": false,
         "user_default": {
-          "db_id": "CWLAFmKOHLOIPDr9hOSRCvDx2Aa2",
+          "db_id": "<redacted>",
           "fullname": "<redacted>",
           "email": "<redacted>",
           "profile_image_url": "<redacted>"
@@ -191,18 +219,6 @@
         "onlending_report_show_overdue_rent": false,
         "no_auto_adjustment": false
       },
-      "realtor": {
-        "show_whatsapp_modal": true,
-        "show_realtor_whatsapp": false,
-        "site_show_email": true,
-        "show_real_estate_whatsapp_if_not_realtor": false,
-        "show_real_estate_whatsapp": false,
-        "show_realtor_phone": false,
-        "show_real_estate_phone_if_not_realtor": false,
-        "show_real_estate_phone": false,
-        "show_owner_whatsapp": false,
-        "show_owner_phone": false
-      },
       "contract": {
         "billing_days": 10,
         "fine": true,
@@ -211,7 +227,7 @@
         "late_payment_fine_percent": 10,
         "invoice_sending_suspend_days": 60,
         "user_default": {
-          "db_id": "CWLAFmKOHLOIPDr9hOSRCvDx2Aa2",
+          "db_id": "<redacted>",
           "fullname": "<redacted>",
           "email": "<redacted>",
           "profile_image_url": "<redacted>"
@@ -232,6 +248,11 @@
         "no_auto_adjustment": false
       },
       "digital_real_estate": {
+        "logo_url": null,
+        "internal_logo": null,
+        "favicon_url": null,
+        "color_primary": null,
+        "color_secondary": null,
         "enabled": false,
         "active": false,
         "simulation_mode": false,
@@ -251,11 +272,12 @@
           "all"
         ],
         "take_off_keys_text": "De segunda à sexta das 9 às 18h\nSábado das 9 às 12h\nFalar com o Depto. de Locações\nO endereço da Imobiliária está no nosso site",
+        "visiting_anticipation": 2,
         "user_default": {
           "db_id": null,
-          "fullname": "<redacted>",
-          "email": "<redacted>",
-          "profile_image_url": "<redacted>"
+          "fullname": null,
+          "email": null,
+          "profile_image_url": null
         },
         "agreement_residential_default": {
           "title": null
@@ -302,6 +324,20 @@
         "privacy_policy": {
           "type": "link",
           "url": ""
+        },
+        "whatsapp_popup": {
+          "enabled": true,
+          "phone": null,
+          "message": null,
+          "phones": [
+            {
+              "type": "<redacted>",
+              "number": "<redacted>",
+              "country_code": "<redacted>",
+              "alpha2Code": "<redacted>",
+              "sector": null
+            }
+          ]
         }
       },
       "invoice": {
@@ -330,7 +366,7 @@
         "active": [
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "most_relevant",
             "active": true,
             "order": "desc",
             "position": 1,
@@ -338,7 +374,7 @@
           },
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "site_view_count",
             "active": true,
             "order": "desc",
             "position": 2,
@@ -346,7 +382,7 @@
           },
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "lower_value",
             "active": true,
             "order": "asc",
             "position": 3,
@@ -354,7 +390,7 @@
           },
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "highest_value",
             "active": true,
             "order": "desc",
             "position": 4,
@@ -362,7 +398,7 @@
           },
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "useful_area",
             "active": true,
             "order": "asc",
             "position": 5,
@@ -370,7 +406,7 @@
           },
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "created_at",
             "active": true,
             "order": "desc",
             "position": 11,
@@ -380,7 +416,7 @@
         "inactive": [
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "neighborhood",
             "active": false,
             "order": "asc",
             "position": 6,
@@ -388,7 +424,7 @@
           },
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "city",
             "active": false,
             "order": "asc",
             "position": 7,
@@ -396,7 +432,7 @@
           },
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "bedroom",
             "active": false,
             "order": "asc",
             "position": 8,
@@ -404,7 +440,7 @@
           },
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "suite",
             "active": false,
             "order": "asc",
             "position": 9,
@@ -412,7 +448,7 @@
           },
           {
             "name": "<redacted>",
-            "value": "<redacted>",
+            "value": "garage",
             "active": false,
             "order": "asc",
             "position": 10,
@@ -430,13 +466,13 @@
           "id": 4697643956568064,
           "code_type": "property",
           "auto_generate": true,
-          "code": 46
+          "code": 47
         },
         {
           "id": 4979118933278720,
           "code_type": "lease",
           "auto_generate": true,
-          "code": 52
+          "code": 53
         },
         {
           "id": 5260593909989376,
@@ -454,7 +490,7 @@
           "id": 5823543863410688,
           "code_type": "person",
           "auto_generate": true,
-          "code": 64
+          "code": 68
         },
         {
           "id": 6105018840121344,

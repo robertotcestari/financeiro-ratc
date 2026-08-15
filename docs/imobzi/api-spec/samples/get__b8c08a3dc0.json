@@ -1,0 +1,138 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/financial/landlord/account/{id}/transactions",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "next_page": null,
+      "has_invoice_overdue": false,
+      "transactions": [
+        {
+          "date": "<redacted>",
+          "balance": 267035.14,
+          "transactions": [
+            {
+              "landlord_transaction_id": "537076b090be11f1a6f242004e494300",
+              "landlord_account_id": 1,
+              "description": "",
+              "group_id": null,
+              "contact_key": "<redacted>",
+              "guaranteed_rental": false,
+              "guaranteed_rental_is_paid": false,
+              "paid_at": "<redacted>",
+              "repeat_frequency": "",
+              "repeat_type": "unique",
+              "repeat_total": 1,
+              "transaction_type": "management_fee",
+              "value": -191.8,
+              "invoice_id": "531632ea90be11f1a6f242004e494300",
+              "created_at": "2026-08-05T11:10:54.000000Z",
+              "invoice_onlending_split": null,
+              "account_debit": null,
+              "pix_key": null,
+              "pix_key_type": null,
+              "account_credit": null,
+              "category": "Receitas",
+              "subcategory": "Taxa de Administração",
+              "status": null,
+              "nota_fiscal_key": null,
+              "financial_transaction_id": null,
+              "lease_item_index": null,
+              "lease_item_description": null,
+              "lease": {
+                "code": "42",
+                "db_id": 5368892825272320
+              },
+              "transaction_paid": null,
+              "transaction_operation_id": null,
+              "custom_json": {},
+              "contact": {
+                "db_id": 6089643998052352,
+                "type": "organization",
+                "name": "<redacted>",
+                "profile_image_url": null
+              },
+              "property_address": "Rua Monte Aprazível, 115",
+              "property_address_complement": "",
+              "property_code": "9",
+              "property_id": 5285117032398848,
+              "invoice_items": []
+            },
+            {
+              "landlord_transaction_id": "534ec42090be11f1a6f242004e494300",
+              "landlord_account_id": 1,
+              "description": "",
+              "group_id": null,
+              "contact_key": "<redacted>",
+              "guaranteed_rental": false,
+              "guaranteed_rental_is_paid": false,
+              "paid_at": "<redacted>",
+              "repeat_frequency": "",
+              "repeat_type": "unique",
+              "repeat_total": 1,
+              "transaction_type": "invoice",
+              "value": 1918,
+              "invoice_id": "531632ea90be11f1a6f242004e494300",
+              "created_at": "2026-08-05T11:10:54.000000Z",
+              "invoice_onlending_split": null,
+              "account_debit": null,
+              "pix_key": null,
+              "pix_key_type": null,
+              "account_credit": null,
+              "category": "Terceiros (Administração)",
+              "subcategory": "Recebimento de Aluguel",
+              "status": null,
+              "nota_fiscal_key": null,
+              "financial_transaction_id": null,
+              "lease_item_index": null,
+              "lease_item_description": null,
+              "lease": {
+                "code": "42",
+                "db_id": 5368892825272320
+              },
+              "transaction_paid": null,
+              "transaction_operation_id": null,
+              "custom_json": {},
+              "contact": {
+                "db_id": 6089643998052352,
+                "type": "organization",
+                "name": "<redacted>",
+                "profile_image_url": null
+              },
+              "property_address": "Rua Monte Aprazível, 115",
+              "property_address_complement": "",
+              "property_code": "9",
+              "property_id": 5285117032398848,
+              "invoice_items": [
+                {
+                  "contact": null,
+                  "description": "Aluguel ref. 15/07/2026 a 14/08/2026",
+                  "invoice_item_id": "5319e2b490be11f1a6f242004e494300",
+                  "value": 1918,
+                  "include_in_dimob": true,
+                  "until_due_date": false,
+                  "behavior": "charge_tenant_and_onlend",
+                  "charge_management_fee": true,
+                  "item_type": "lease_value",
+                  "landlords": []
+                }
+              ],
+              "invoice_is_paid": false
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,789 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/lease/code/{id}",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "account": null,
+      "additional_guests": null,
+      "additional_value_guest": null,
+      "agreements": [],
+      "annual_readjustment": {
+        "name": "<redacted>",
+        "db_id": "<redacted>"
+      },
+      "beneficiaries": [],
+      "billing_mode": "normal",
+      "category": "Terceiros (Administração)",
+      "checklist": [
+        {
+          "checked": false,
+          "description": "Assim que for aprovada, iremos notificá-lo                     por e-mail/WhatsApp, para Assinatura Eletrônica do Contrato",
+          "details": null,
+          "name": "<redacted>",
+          "order": 1
+        },
+        {
+          "checked": false,
+          "description": "Seu contrato está pronto para assinatura. Assine agora eletronicamente",
+          "details": null,
+          "name": "<redacted>",
+          "order": 2
+        },
+        {
+          "checked": false,
+          "description": "Contratação obrigatória conforme artigo 22, inciso VIII da lei do Inquilinato",
+          "details": null,
+          "name": "<redacted>",
+          "order": 3
+        },
+        {
+          "checked": false,
+          "description": "Agende a retirada das suas chaves na imobiliária ou direto no imóvel",
+          "details": null,
+          "name": "<redacted>",
+          "order": 4
+        },
+        {
+          "checked": false,
+          "description": "Você tem 10 dias para ler e assinar eletronicamente a vistoria do imóvel",
+          "details": null,
+          "name": "<redacted>",
+          "order": 5
+        },
+        {
+          "checked": false,
+          "description": "Transfira para seu nome as contas de consumo como água, luz e/ou gás",
+          "details": null,
+          "name": "<redacted>",
+          "order": 6
+        },
+        {
+          "checked": false,
+          "description": "Quando você receber as contas já em seu nome, envie uma foto para nós",
+          "details": null,
+          "name": "<redacted>",
+          "order": 7
+        }
+      ],
+      "code": "53",
+      "create_onlending_item": false,
+      "created_at": "2026-08-07T00:25:33.801766Z",
+      "credit_card_installment_percentage": 5.49,
+      "credit_card_pass_on_fixed_rate": false,
+      "credit_card_pass_on_installments_fee": false,
+      "credit_card_percentage": 2.99,
+      "daily_value": 0,
+      "db_id": 5332861076373504,
+      "deal_key": null,
+      "due_day": "3",
+      "duration": 30,
+      "duration_type": "month",
+      "end_at": "2029-01-02T00:00:00.000000Z",
+      "files": [],
+      "fine_charge": true,
+      "fine_percent_late_payment": 10,
+      "first_rental_in_next_invoice": false,
+      "first_rental_installment": [],
+      "guarantee": {
+        "details": {
+          "guarantor_type": "Imovel",
+          "value": 0,
+          "description": "Apartamento 81, Edifício Atlântica, Rua Atibaia, 100, Ribeirão Preto/SP, matrícula 79.887, 2º Oficial de Registro de Imóveis."
+        },
+        "end_at": "<redacted>",
+        "guarantee_type": "guarantor",
+        "sponsor_key": null,
+        "sponsors": [
+          {
+            "active": true,
+            "birthday": null,
+            "code": "67",
+            "created_at": "<redacted>",
+            "crisp_people_id": null,
+            "db_id": 6065281312489472,
+            "email": "<redacted>",
+            "favorite": false,
+            "firstname": "<redacted>",
+            "has_deal": false,
+            "ignore_reassign_manager": false,
+            "integrations": [],
+            "lastname": "<redacted>",
+            "media_source": null,
+            "network_group_member_shared": false,
+            "password": "<redacted>",
+            "phone": [],
+            "pix": [],
+            "private": false,
+            "profile_image_key": null,
+            "profile_image_url": null,
+            "review_pending": false,
+            "social_network": [],
+            "tags": [
+              "contact",
+              "guarantor"
+            ],
+            "updated_at": "<redacted>",
+            "user_db_id": null,
+            "fullname": "<redacted>",
+            "cpf": "<redacted>",
+            "rg": "<redacted>",
+            "gender": "Feminino",
+            "marital_status": "Casado",
+            "nationality": "Brasileira",
+            "profession": "Advogada",
+            "address": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Ribeirão Preto",
+            "state": "SP",
+            "country": "Brasil",
+            "emails": [
+              "<redacted>"
+            ],
+            "db_key": "<redacted>",
+            "latitude": -15.77972,
+            "longitude": -47.92972,
+            "type": "person"
+          },
+          {
+            "active": true,
+            "birthday": null,
+            "code": "68",
+            "created_at": "<redacted>",
+            "crisp_people_id": null,
+            "db_id": 4925266968707072,
+            "email": "<redacted>",
+            "favorite": false,
+            "firstname": "<redacted>",
+            "has_deal": false,
+            "ignore_reassign_manager": false,
+            "integrations": [],
+            "lastname": "<redacted>",
+            "media_source": null,
+            "network_group_member_shared": false,
+            "password": "<redacted>",
+            "phone": [],
+            "pix": [],
+            "private": false,
+            "profile_image_key": null,
+            "profile_image_url": null,
+            "review_pending": false,
+            "social_network": [],
+            "tags": [
+              "contact",
+              "guarantor"
+            ],
+            "updated_at": "<redacted>",
+            "user_db_id": null,
+            "fullname": "<redacted>",
+            "cpf": "<redacted>",
+            "rg": "<redacted>",
+            "gender": "Masculino",
+            "marital_status": "Casado",
+            "nationality": "Brasileira",
+            "profession": "Advogado",
+            "address": "<redacted>",
+            "neighborhood": "<redacted>",
+            "city": "Ribeirão Preto",
+            "state": "SP",
+            "country": "Brasil",
+            "emails": [
+              "<redacted>"
+            ],
+            "db_key": "<redacted>",
+            "latitude": -15.77972,
+            "longitude": -47.92972,
+            "type": "person"
+          }
+        ],
+        "sponsor": {
+          "active": true,
+          "birthday": null,
+          "code": "67",
+          "created_at": "<redacted>",
+          "crisp_people_id": null,
+          "db_id": 6065281312489472,
+          "email": "<redacted>",
+          "favorite": false,
+          "firstname": "<redacted>",
+          "has_deal": false,
+          "ignore_reassign_manager": false,
+          "integrations": [],
+          "lastname": "<redacted>",
+          "media_source": null,
+          "network_group_member_shared": false,
+          "password": "<redacted>",
+          "phone": [],
+          "pix": [],
+          "private": false,
+          "profile_image_key": null,
+          "profile_image_url": null,
+          "review_pending": false,
+          "social_network": [],
+          "tags": [
+            "contact",
+            "guarantor"
+          ],
+          "updated_at": "<redacted>",
+          "user_db_id": null,
+          "fullname": "<redacted>",
+          "cpf": "<redacted>",
+          "rg": "<redacted>",
+          "gender": "Feminino",
+          "marital_status": "Casado",
+          "nationality": "Brasileira",
+          "profession": "Advogada",
+          "address": "<redacted>",
+          "neighborhood": "<redacted>",
+          "city": "Ribeirão Preto",
+          "state": "SP",
+          "country": "Brasil",
+          "emails": [
+            "<redacted>"
+          ],
+          "db_key": "<redacted>",
+          "latitude": -15.77972,
+          "longitude": -47.92972,
+          "type": "person"
+        },
+        "start_at": "<redacted>"
+      },
+      "guarantee_amount_months": null,
+      "guaranteed": false,
+      "guests": null,
+      "in_progress": true,
+      "include_in_dimob": false,
+      "indeterminate": false,
+      "initial_value": 9000,
+      "insurances": [],
+      "interest_charge": true,
+      "interest_percent_late_payment": 0.033,
+      "irrf": false,
+      "irrf_management_fee_discount": false,
+      "irrf_simplified_discount": false,
+      "items": [],
+      "last_annual_readjustment_at": "<redacted>",
+      "lease_type": "residential",
+      "management_fee": {
+        "first_rent_percent": 0,
+        "first_rent_value": 0,
+        "management_type": "own_properties",
+        "percent": 0,
+        "value": 0
+      },
+      "next_invoice_due_date": "<redacted>",
+      "next_invoice_end_at": "<redacted>",
+      "next_invoice_start_at": "<redacted>",
+      "next_invoice_value": 9000,
+      "nota_fiscal": false,
+      "nota_fiscal_product": null,
+      "notification": {
+        "send_due_notification_to_landlord": false,
+        "send_due_notification_to_sponsor": false,
+        "send_guarantee_closeduedate_to_tenant": false,
+        "send_insurance_closeduedate_to_tenant": false,
+        "send_invoice_to_tenant": true,
+        "send_invoice_to_tenant_whatsapp": false,
+        "send_landlord_onlending_whatsapp": false,
+        "send_notification_readjustment": false,
+        "send_onlending_to_landlord": false,
+        "send_overdue_notification_to_tenant": true,
+        "send_whatsapp_notification_readjustment": false
+      },
+      "onlending": {
+        "amount_days": 1,
+        "fixed_day": "1",
+        "mode": "fixed_day",
+        "onlending_mode": "without_debit_balance_discount",
+        "onlending_type": "manual"
+      },
+      "onlending_charge": false,
+      "payment_maximum_installments": 1,
+      "property": {
+        "db_id": 6633730468216832,
+        "address": "<redacted>",
+        "address_complement": "<redacted>",
+        "code": "47",
+        "owners": [
+          {
+            "name": "<redacted>",
+            "active": true,
+            "code": "<redacted>",
+            "created_at": "<redacted>",
+            "crisp_people_id": null,
+            "db_id": 5880332491423744,
+            "email": "<redacted>",
+            "favorite": false,
+            "has_deal": false,
+            "integrations": [],
+            "media_source": "<redacted>",
+            "network_group_member_shared": false,
+            "password": "<redacted>",
+            "phone": [
+              {
+                "alpha2Code": "<redacted>",
+                "country_code": "<redacted>",
+                "number": "<redacted>",
+                "sector": null,
+                "type": "<redacted>"
+              }
+            ],
+            "pix": [
+              {
+                "default": true,
+                "pix_key": "<redacted>",
+                "pix_key_type": "<redacted>"
+              }
+            ],
+            "private": false,
+            "profile_image_key": null,
+            "profile_image_url": null,
+            "review_pending": false,
+            "social_network": [],
+            "tags": [
+              "<redacted>",
+              "<redacted>",
+              "<redacted>",
+              "<redacted>"
+            ],
+            "updated_at": "<redacted>",
+            "country": "<redacted>",
+            "cnpj": "<redacted>",
+            "trading_name": "<redacted>",
+            "landlord_account_id": "<redacted>",
+            "4719039000608768": "<redacted>",
+            "emails": [
+              "<redacted>"
+            ],
+            "db_key": "<redacted>",
+            "latitude": -14.235004,
+            "longitude": -51.92528,
+            "bank_data": {
+              "account": "<redacted>",
+              "account_type": "<redacted>",
+              "agency": "<redacted>",
+              "bank_name": "<redacted>",
+              "db_id": 6566770035916800,
+              "notes": "<redacted>",
+              "id": 6566770035916800
+            },
+            "type": "<redacted>",
+            "percentage": 100,
+            "person_id": null,
+            "rate": null
+          }
+        ],
+        "neighborhood": "<redacted>",
+        "city": "Ribeirão Preto",
+        "state": "SP",
+        "zipcode": "<redacted>",
+        "cover_photo": {
+          "db_id": 0,
+          "url": "<redacted>"
+        },
+        "property_type": "Casa",
+        "fields": {
+          "additional_values": [
+            [
+              {
+                "field_id": "iptu",
+                "name": "<redacted>",
+                "active": true,
+                "group_name": "additional_values",
+                "group_position": 2,
+                "value": null,
+                "configuration": {
+                  "typeresidential": false,
+                  "typerural": false,
+                  "typecommercial": false,
+                  "typelandlot": false,
+                  "typebox": false,
+                  "inactive": false,
+                  "require_value": null,
+                  "url": null,
+                  "link": null,
+                  "description": "",
+                  "multiple": false,
+                  "read_only": false,
+                  "type": "Input",
+                  "values": [
+                    ""
+                  ],
+                  "typevalue": "",
+                  "mask": "",
+                  "validate": "[\\.0-9_-]*",
+                  "showingroup": true
+                },
+                "position": "1",
+                "default": true,
+                "required": false,
+                "show_on_website": true,
+                "show_only_on_edit": false,
+                "show_real_time": null,
+                "url_link": null,
+                "url_header": null
+              }
+            ],
+            [
+              {
+                "field_id": "condominium",
+                "name": "<redacted>",
+                "active": true,
+                "group_name": "additional_values",
+                "group_position": 2,
+                "value": null,
+                "configuration": {
+                  "typeresidential": false,
+                  "typerural": false,
+                  "typecommercial": false,
+                  "typelandlot": false,
+                  "typebox": false,
+                  "inactive": false,
+                  "require_value": null,
+                  "url": null,
+                  "link": null,
+                  "description": "",
+                  "multiple": false,
+                  "read_only": false,
+                  "type": "Input",
+                  "values": [
+                    ""
+                  ],
+                  "typevalue": "",
+                  "mask": "",
+                  "validate": "[\\.0-9_-]*",
+                  "showingroup": true
+                },
+                "position": "2",
+                "default": true,
+                "required": false,
+                "show_on_website": true,
+                "show_only_on_edit": false,
+                "show_real_time": null,
+                "url_link": null,
+                "url_header": null
+              }
+            ],
+            [
+              {
+                "field_id": "water",
+                "name": "<redacted>",
+                "active": true,
+                "group_name": "additional_values",
+                "group_position": 2,
+                "value": null,
+                "configuration": {
+                  "typeresidential": false,
+                  "typerural": false,
+                  "typecommercial": false,
+                  "typelandlot": false,
+                  "typebox": false,
+                  "inactive": false,
+                  "require_value": null,
+                  "url": null,
+                  "link": null,
+                  "description": "",
+                  "multiple": false,
+                  "read_only": false,
+                  "type": "Input",
+                  "values": [
+                    ""
+                  ],
+                  "typevalue": "",
+                  "mask": "",
+                  "validate": "[\\.0-9_-]*",
+                  "showingroup": true
+                },
+                "position": "3",
+                "default": true,
+                "required": false,
+                "show_on_website": true,
+                "show_only_on_edit": false,
+                "show_real_time": null,
+                "url_link": null,
+                "url_header": null
+              }
+            ],
+            [
+              {
+                "field_id": "gas",
+                "name": "<redacted>",
+                "active": true,
+                "group_name": "additional_values",
+                "group_position": 2,
+                "value": null,
+                "configuration": {
+                  "typeresidential": false,
+                  "typerural": false,
+                  "typecommercial": false,
+                  "typelandlot": false,
+                  "typebox": false,
+                  "inactive": false,
+                  "require_value": null,
+                  "url": null,
+                  "link": null,
+                  "description": "",
+                  "multiple": false,
+                  "read_only": false,
+                  "type": "Input",
+                  "values": [
+                    ""
+                  ],
+                  "typevalue": "",
+                  "mask": "",
+                  "validate": "[\\.0-9_-]*",
+                  "showingroup": true
+                },
+                "position": "4",
+                "default": true,
+                "required": false,
+                "show_on_website": true,
+                "show_only_on_edit": false,
+                "show_real_time": null,
+                "url_link": null,
+                "url_header": null
+              }
+            ],
+            [
+              {
+                "field_id": "light",
+                "name": "<redacted>",
+                "active": true,
+                "group_name": "additional_values",
+                "group_position": 2,
+                "value": null,
+                "configuration": {
+                  "typeresidential": false,
+                  "typerural": false,
+                  "typecommercial": false,
+                  "typelandlot": false,
+                  "typebox": false,
+                  "inactive": false,
+                  "require_value": null,
+                  "url": null,
+                  "link": null,
+                  "description": "",
+                  "multiple": false,
+                  "read_only": false,
+                  "type": "Input",
+                  "values": [
+                    ""
+                  ],
+                  "typevalue": "",
+                  "mask": "",
+                  "validate": "[\\.0-9_-]*",
+                  "showingroup": true
+                },
+                "position": "5",
+                "default": true,
+                "required": false,
+                "show_on_website": true,
+                "show_only_on_edit": false,
+                "show_real_time": null,
+                "url_link": null,
+                "url_header": null
+              }
+            ],
+            [
+              {
+                "field_id": "cleaning_fee",
+                "name": "<redacted>",
+                "active": true,
+                "group_name": "additional_values",
+                "group_position": 2,
+                "value": null,
+                "configuration": {
+                  "typeresidential": false,
+                  "typerural": false,
+                  "typecommercial": false,
+                  "typelandlot": false,
+                  "typebox": false,
+                  "inactive": false,
+                  "require_value": null,
+                  "url": null,
+                  "link": null,
+                  "description": "",
+                  "multiple": false,
+                  "read_only": false,
+                  "type": "Input",
+                  "values": [
+                    ""
+                  ],
+                  "typevalue": "",
+                  "mask": "",
+                  "validate": "[\\.0-9_-]*",
+                  "showingroup": true
+                },
+                "position": "6",
+                "default": true,
+                "required": false,
+                "show_on_website": false,
+                "show_only_on_edit": false,
+                "show_real_time": null,
+                "url_link": null,
+                "url_header": null
+              }
+            ]
+          ]
+        }
+      },
+      "receipt_method": null,
+      "receipt_methods": {
+        "bank_slip": {
+          "receipt_type": "bank_slip",
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "integration_name": "pjbank",
+          "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+          "bank_integration": {
+            "name": "<redacted>",
+            "active": true,
+            "transference_fee": 2,
+            "transference_split": 1.5,
+            "account_type": "digital_account",
+            "show_trading_name": true,
+            "categories": {
+              "bank_fee": {
+                "name": "<redacted>",
+                "subcategory": "Tarifa Bancária",
+                "category_type": "expense",
+                "db_id": "<redacted>",
+                "created_at": "2023-03-17T13:48:09.021376Z",
+                "updated_at": "2026-03-27T17:23:32.732224Z"
+              }
+            },
+            "has_resources": {
+              "bank_slip": true,
+              "payment_ted": true,
+              "payment_pix": true,
+              "pix": true,
+              "bar_code": true,
+              "extract_financial": true,
+              "bank_slip_pix": true
+            },
+            "get_conciliations": true,
+            "selected_for_payments": true,
+            "split_receipt_account": false
+          }
+        },
+        "pix": {
+          "receipt_type": "pix",
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "integration_name": "pjbank",
+          "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+          "bank_integration": {
+            "name": "<redacted>",
+            "active": true,
+            "transference_fee": 2,
+            "transference_split": 1.5,
+            "account_type": "digital_account",
+            "show_trading_name": true,
+            "categories": {
+              "bank_fee": {
+                "name": "<redacted>",
+                "subcategory": "Tarifa Bancária",
+                "category_type": "expense",
+                "db_id": "<redacted>",
+                "created_at": "2023-03-17T13:48:09.021376Z",
+                "updated_at": "2026-03-27T17:23:32.732224Z"
+              }
+            },
+            "has_resources": {
+              "bank_slip": true,
+              "payment_ted": true,
+              "payment_pix": true,
+              "pix": true,
+              "bar_code": true,
+              "extract_financial": true,
+              "bank_slip_pix": true
+            },
+            "get_conciliations": true,
+            "selected_for_payments": true,
+            "split_receipt_account": false
+          }
+        },
+        "credit_card": "<redacted>",
+        "payment_default": null
+      },
+      "send_nota_fiscal_in_invoice_create": false,
+      "service_fee": null,
+      "source": "imobzi",
+      "start_at": "2026-07-03T00:00:00.000000Z",
+      "status": "active",
+      "subcategory": "Recebimento de Aluguel",
+      "tenants": [
+        {
+          "active": true,
+          "birthday": null,
+          "code": "<redacted>",
+          "created_at": "<redacted>",
+          "crisp_people_id": null,
+          "db_id": 5512287630131200,
+          "email": "<redacted>",
+          "favorite": false,
+          "firstname": "<redacted>",
+          "has_deal": false,
+          "ignore_reassign_manager": false,
+          "integrations": [],
+          "lastname": "<redacted>",
+          "media_source": null,
+          "network_group_member_shared": false,
+          "password": "<redacted>",
+          "phone": [],
+          "pix": [],
+          "private": false,
+          "profile_image_key": null,
+          "profile_image_url": null,
+          "review_pending": false,
+          "social_network": [],
+          "tags": [
+            "<redacted>",
+            "<redacted>"
+          ],
+          "updated_at": null,
+          "user_db_id": null,
+          "fullname": "<redacted>",
+          "cpf": "<redacted>",
+          "rg": "<redacted>",
+          "gender": "<redacted>",
+          "marital_status": "<redacted>",
+          "nationality": "<redacted>",
+          "profession": "<redacted>",
+          "emails": [],
+          "db_key": "<redacted>",
+          "latitude": -15.77972,
+          "longitude": -47.92972,
+          "type": "<redacted>",
+          "payer": true
+        }
+      ],
+      "termination": null,
+      "updated_at": "2026-08-07T00:26:30.632052Z",
+      "vacation_rental_receipt_option": {
+        "installments": [],
+        "method": "in_cash"
+      },
+      "value": 9000,
+      "has_invoice": false,
+      "next_invoice_generate_days_before": 10,
+      "next_invoice_generate_in": "<redacted>",
+      "custom_fields": {}
+    }
+  }
+}

@@ -17,11 +17,135 @@
     "body": {
       "leases": [
         {
+          "db_id": 5332861076373504,
+          "key": null,
+          "code": "53",
+          "lease_type": "residential",
+          "value": 9000,
+          "irrf": false,
+          "property": {
+            "address": "<redacted>",
+            "address_complement": "<redacted>",
+            "city": "Ribeirão Preto",
+            "code": "47",
+            "db_id": 6633730468216832,
+            "neighborhood": "<redacted>",
+            "state": "SP",
+            "zipcode": "<redacted>",
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
+          },
+          "status": "active",
+          "start_at": "2026-07-03T00:00:00.000000Z",
+          "end_at": "2029-01-02T00:00:00.000000Z",
+          "management_fee": {
+            "management_type": "own_properties",
+            "percent": 0,
+            "value": 0,
+            "first_rent_percent": 0,
+            "first_rent_value": 0
+          },
+          "tenants": [
+            {
+              "emails": [],
+              "firstname": "<redacted>",
+              "db_id": 5512287630131200,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": null
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
+          "source": "imobzi",
+          "in_progress": true,
+          "next_invoice_start_at": "<redacted>",
+          "next_invoice_end_at": "<redacted>",
+          "insurances": [],
+          "invoice_items_value": 0,
+          "items_management_fee": 0,
+          "termination_date": "",
+          "next_invoice_due_date": "<redacted>",
+          "items": [],
+          "account": null,
+          "receipt_methods": {
+            "bank_slip": {
+              "receipt_type": "bank_slip",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
+            "pix": {
+              "receipt_type": "pix",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
+            "credit_card": "<redacted>",
+            "payment_default": null
+          }
+        },
+        {
           "db_id": 5865318252019712,
-          "key": "<redacted>",
+          "key": null,
           "code": "52",
           "lease_type": "commercial",
-          "value": "<redacted>",
+          "value": 1500,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -32,7 +156,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2026-04-07T00:00:00.000000Z",
@@ -40,13 +187,60 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 5171873485160448,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": {
+                "alpha2Code": "<redacted>",
+                "country_code": "<redacted>",
+                "number": "<redacted>",
+                "sector": "<redacted>",
+                "type": "<redacted>",
+                "number_plain": "<redacted>"
+              }
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -69,17 +263,24 @@
                 "db_id": 6029003447074816
               }
             },
-            "pix": "<redacted>",
+            "pix": {
+              "receipt_type": "pix",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
             "credit_card": "<redacted>",
             "payment_default": null
           }
         },
         {
           "db_id": 5992887244816384,
-          "key": "<redacted>",
+          "key": null,
           "code": "51",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 1125,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -90,7 +291,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2025-12-10T00:00:00.000000Z",
@@ -98,13 +322,66 @@
           "management_fee": {
             "management_type": "from_going_rent",
             "percent": 10,
-            "value": "<redacted>",
+            "value": 112.5,
             "first_rent_percent": 100,
             "first_rent_value": 1125
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 6736532980367360,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": null
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "onlending_mode": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "percent": 100,
+              "email": "<redacted>"
+            }
+          ],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -120,17 +397,17 @@
           },
           "receipt_methods": {
             "bank_slip": null,
-            "pix": "<redacted>",
+            "pix": null,
             "credit_card": "<redacted>",
             "payment_default": "transference"
           }
         },
         {
           "db_id": 5526787797286912,
-          "key": "<redacted>",
+          "key": null,
           "code": "50",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 1265,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -141,7 +418,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2026-01-01T00:00:00.000000Z",
@@ -149,13 +449,60 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 6191209037430784,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": {
+                "alpha2Code": "<redacted>",
+                "country_code": "<redacted>",
+                "number": "<redacted>",
+                "sector": "<redacted>",
+                "type": "<redacted>",
+                "number_plain": "<redacted>"
+              }
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -178,17 +525,24 @@
                 "db_id": 6029003447074816
               }
             },
-            "pix": "<redacted>",
+            "pix": {
+              "receipt_type": "pix",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
             "credit_card": "<redacted>",
             "payment_default": null
           }
         },
         {
           "db_id": 6116908066144256,
-          "key": "<redacted>",
+          "key": null,
           "code": "49",
           "lease_type": "no_residential",
-          "value": "<redacted>",
+          "value": 28000,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -199,7 +553,83 @@
             "neighborhood": "<redacted>",
             "state": "RS",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "firstname": "<redacted>",
+                "code": null,
+                "db_key": "<redacted>",
+                "type": "<redacted>",
+                "lastname": "<redacted>",
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5944529889263616,
+                "rate": null,
+                "percentage": 33.33,
+                "cpf": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "fullname": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "alpha2Code": "<redacted>",
+                  "country_code": "<redacted>",
+                  "number": "<redacted>",
+                  "sector": "<redacted>",
+                  "type": "<redacted>",
+                  "number_plain": "<redacted>"
+                }
+              },
+              {
+                "firstname": "<redacted>",
+                "code": null,
+                "db_key": "<redacted>",
+                "type": "<redacted>",
+                "lastname": "<redacted>",
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 6526974162370560,
+                "rate": null,
+                "percentage": 33.33,
+                "cpf": null,
+                "landlord_account_id": "<redacted>",
+                "fullname": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "alpha2Code": "<redacted>",
+                  "country_code": "<redacted>",
+                  "number": "<redacted>",
+                  "sector": "<redacted>",
+                  "type": "<redacted>",
+                  "number_plain": "<redacted>"
+                }
+              },
+              {
+                "firstname": "<redacted>",
+                "code": null,
+                "db_key": "<redacted>",
+                "type": "<redacted>",
+                "lastname": "<redacted>",
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5795429730484224,
+                "rate": null,
+                "percentage": 33.34,
+                "cpf": null,
+                "landlord_account_id": "<redacted>",
+                "fullname": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "alpha2Code": "<redacted>",
+                  "country_code": "<redacted>",
+                  "number": "<redacted>",
+                  "sector": "<redacted>",
+                  "type": "<redacted>",
+                  "number_plain": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2025-11-01T00:00:00.000000Z",
@@ -207,13 +637,111 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5289976873353216,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": {
+                "country_code": "<redacted>",
+                "number": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "type": "<redacted>",
+                "number_plain": "<redacted>",
+                "sector": "<redacted>"
+              }
+            }
+          ],
+          "owners": [
+            {
+              "firstname": "<redacted>",
+              "code": null,
+              "db_key": "<redacted>",
+              "type": "<redacted>",
+              "lastname": "<redacted>",
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5944529889263616,
+              "rate": null,
+              "percentage": 33.33,
+              "cpf": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "fullname": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "alpha2Code": "<redacted>",
+                "country_code": "<redacted>",
+                "number": "<redacted>",
+                "sector": "<redacted>",
+                "type": "<redacted>",
+                "number_plain": "<redacted>"
+              }
+            },
+            {
+              "firstname": "<redacted>",
+              "code": null,
+              "db_key": "<redacted>",
+              "type": "<redacted>",
+              "lastname": "<redacted>",
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 6526974162370560,
+              "rate": null,
+              "percentage": 33.33,
+              "cpf": null,
+              "landlord_account_id": "<redacted>",
+              "fullname": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "alpha2Code": "<redacted>",
+                "country_code": "<redacted>",
+                "number": "<redacted>",
+                "sector": "<redacted>",
+                "type": "<redacted>",
+                "number_plain": "<redacted>"
+              }
+            },
+            {
+              "firstname": "<redacted>",
+              "code": null,
+              "db_key": "<redacted>",
+              "type": "<redacted>",
+              "lastname": "<redacted>",
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5795429730484224,
+              "rate": null,
+              "percentage": 33.34,
+              "cpf": null,
+              "landlord_account_id": "<redacted>",
+              "fullname": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "alpha2Code": "<redacted>",
+                "country_code": "<redacted>",
+                "number": "<redacted>",
+                "sector": "<redacted>",
+                "type": "<redacted>",
+                "number_plain": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -236,17 +764,24 @@
                 "db_id": 6029003447074816
               }
             },
-            "pix": "<redacted>",
+            "pix": {
+              "receipt_type": "pix",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
             "credit_card": "<redacted>",
             "payment_default": null
           }
         },
         {
           "db_id": 4586758459621376,
-          "key": "<redacted>",
+          "key": null,
           "code": "48",
           "lease_type": "commercial",
-          "value": "<redacted>",
+          "value": 1666,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -257,7 +792,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2024-12-10T00:00:00.000000Z",
@@ -265,13 +823,74 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 6100968845344768,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": null
+            },
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 6524428660244480,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": null,
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": false,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": {
+                "alpha2Code": "<redacted>",
+                "country_code": "<redacted>",
+                "number": "<redacted>",
+                "sector": "<redacted>",
+                "type": "<redacted>",
+                "number_plain": "<redacted>"
+              }
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -287,17 +906,17 @@
           },
           "receipt_methods": {
             "bank_slip": null,
-            "pix": "<redacted>",
+            "pix": null,
             "credit_card": "<redacted>",
             "payment_default": "transference"
           }
         },
         {
           "db_id": 4531989600796672,
-          "key": "<redacted>",
+          "key": null,
           "code": "46",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 6500,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -308,7 +927,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2025-01-01T00:00:00.000000Z",
@@ -316,13 +958,59 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 4922017661321216,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": null,
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": {
+                "alpha2Code": "<redacted>",
+                "country_code": "<redacted>",
+                "number": "<redacted>",
+                "type": "<redacted>",
+                "number_plain": "<redacted>"
+              }
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -338,17 +1026,17 @@
           },
           "receipt_methods": {
             "bank_slip": null,
-            "pix": "<redacted>",
+            "pix": null,
             "credit_card": "<redacted>",
             "payment_default": "transference"
           }
         },
         {
           "db_id": 6549480991096832,
-          "key": "<redacted>",
+          "key": null,
           "code": "45",
           "lease_type": "commercial",
-          "value": "<redacted>",
+          "value": 6177.68,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -359,7 +1047,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2024-05-30T00:00:00.000000Z",
@@ -367,13 +1078,57 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 6125160569503744,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": {
+                "alpha2Code": "<redacted>",
+                "country_code": "<redacted>",
+                "number": "<redacted>",
+                "type": "<redacted>",
+                "number_plain": "<redacted>"
+              }
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -393,12 +1148,12 @@
               "until_due_date": false,
               "contact_key": null,
               "autopay_on_due_date": false,
-              "bar_code": "<redacted>",
+              "bar_code": null,
               "behavior": "charge_tenant",
               "include_in_dimob": false,
-              "value": "<redacted>",
+              "value": 322.32,
               "recurrent": true,
-              "repeat_index": 10
+              "repeat_index": 13
             }
           ],
           "account": {
@@ -413,17 +1168,24 @@
                 "db_id": 6029003447074816
               }
             },
-            "pix": "<redacted>",
+            "pix": {
+              "receipt_type": "pix",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
             "credit_card": "<redacted>",
             "payment_default": null
           }
         },
         {
           "db_id": 5368892825272320,
-          "key": "<redacted>",
+          "key": null,
           "code": "42",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 1918,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -434,7 +1196,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2023-11-07T00:00:00.000000Z",
@@ -442,13 +1227,66 @@
           "management_fee": {
             "management_type": "from_going_rent",
             "percent": 10,
-            "value": "<redacted>",
+            "value": 191.8,
             "first_rent_percent": 100,
             "first_rent_value": 1800
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 6089643998052352,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": null
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "onlending_mode": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "percent": 100,
+              "email": "<redacted>"
+            }
+          ],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -468,12 +1306,12 @@
               "until_due_date": false,
               "contact_key": null,
               "autopay_on_due_date": false,
-              "bar_code": "<redacted>",
+              "bar_code": null,
               "behavior": "credit_tenant",
               "include_in_dimob": false,
-              "value": "<redacted>",
+              "value": -180,
               "recurrent": true,
-              "repeat_index": 26
+              "repeat_index": 29
             }
           ],
           "account": {
@@ -481,17 +1319,17 @@
           },
           "receipt_methods": {
             "bank_slip": null,
-            "pix": "<redacted>",
+            "pix": null,
             "credit_card": "<redacted>",
             "payment_default": "transference"
           }
         },
         {
           "db_id": 4746569243951104,
-          "key": "<redacted>",
+          "key": null,
           "code": "41",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 591.12,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -502,7 +1340,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2023-10-25T00:00:00.000000Z",
@@ -510,13 +1371,66 @@
           "management_fee": {
             "management_type": "from_going_rent",
             "percent": 10,
-            "value": "<redacted>",
+            "value": 59.112,
             "first_rent_percent": 100,
             "first_rent_value": 550
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 6089643998052352,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": null
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "onlending_mode": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "percent": 100,
+              "email": "<redacted>"
+            }
+          ],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -536,12 +1450,12 @@
               "until_due_date": false,
               "contact_key": null,
               "autopay_on_due_date": false,
-              "bar_code": "<redacted>",
+              "bar_code": null,
               "behavior": "credit_tenant",
               "include_in_dimob": false,
-              "value": "<redacted>",
+              "value": -50,
               "recurrent": true,
-              "repeat_index": 26
+              "repeat_index": 29
             }
           ],
           "account": {
@@ -549,17 +1463,17 @@
           },
           "receipt_methods": {
             "bank_slip": null,
-            "pix": "<redacted>",
+            "pix": null,
             "credit_card": "<redacted>",
             "payment_default": "transference"
           }
         },
         {
           "db_id": 5532730560348160,
-          "key": "<redacted>",
+          "key": null,
           "code": "40",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 6068.63,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -570,7 +1484,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2023-07-14T00:00:00.000000Z",
@@ -578,13 +1515,72 @@
           "management_fee": {
             "management_type": "from_going_rent",
             "percent": 10,
-            "value": "<redacted>",
+            "value": 606.863,
             "first_rent_percent": 100,
             "first_rent_value": 5500
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5167803630878720,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": {
+                "number_plain": "<redacted>",
+                "type": "<redacted>",
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>"
+              }
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "onlending_mode": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "percent": 100,
+              "email": "<redacted>"
+            }
+          ],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -600,17 +1596,17 @@
           },
           "receipt_methods": {
             "bank_slip": null,
-            "pix": "<redacted>",
+            "pix": null,
             "credit_card": "<redacted>",
             "payment_default": "transference"
           }
         },
         {
           "db_id": 5844181749596160,
-          "key": "<redacted>",
+          "key": null,
           "code": "38",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 4404.3,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -621,7 +1617,32 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "firstname": "<redacted>",
+                "code": null,
+                "db_key": "<redacted>",
+                "type": "<redacted>",
+                "lastname": "<redacted>",
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5862668037521408,
+                "rate": null,
+                "percentage": 100,
+                "cpf": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "fullname": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2023-09-11T00:00:00.000000Z",
@@ -629,13 +1650,78 @@
           "management_fee": {
             "management_type": "from_going_rent",
             "percent": 10,
-            "value": "<redacted>",
+            "value": 440.43,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 5423946422812672,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "owners": [
+            {
+              "firstname": "<redacted>",
+              "code": null,
+              "db_key": "<redacted>",
+              "type": "<redacted>",
+              "lastname": "<redacted>",
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5862668037521408,
+              "rate": null,
+              "percentage": 100,
+              "cpf": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "fullname": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 5862668037521408,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "onlending_mode": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "percent": 100,
+              "email": "<redacted>",
+              "lastname": "<redacted>"
+            }
+          ],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -655,12 +1741,12 @@
               "until_due_date": false,
               "contact_key": null,
               "autopay_on_due_date": false,
-              "bar_code": "<redacted>",
+              "bar_code": null,
               "behavior": "charge_tenant_and_onlend",
               "include_in_dimob": false,
-              "value": "<redacted>",
+              "value": 396.06,
               "recurrent": true,
-              "repeat_index": 33
+              "repeat_index": 36
             },
             {
               "charge_management_fee": false,
@@ -671,12 +1757,12 @@
               "until_due_date": false,
               "contact_key": null,
               "autopay_on_due_date": false,
-              "bar_code": "<redacted>",
+              "bar_code": null,
               "behavior": "credit_tenant_and_charge_landlord",
               "include_in_dimob": false,
-              "value": "<redacted>",
+              "value": -146.81,
               "recurrent": true,
-              "repeat_index": 29
+              "repeat_index": 32
             }
           ],
           "account": {
@@ -691,17 +1777,24 @@
                 "db_id": 6029003447074816
               }
             },
-            "pix": "<redacted>",
+            "pix": {
+              "receipt_type": "pix",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
             "credit_card": "<redacted>",
             "payment_default": null
           }
         },
         {
           "db_id": 6655220909080576,
-          "key": "<redacted>",
+          "key": null,
           "code": "37",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 7400,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -712,7 +1805,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2021-12-01T00:00:00.000000Z",
@@ -720,13 +1836,57 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 6211296897794048,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": {
+                "number_plain": "<redacted>",
+                "type": "<redacted>",
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>"
+              }
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -742,75 +1902,17 @@
           },
           "receipt_methods": {
             "bank_slip": null,
-            "pix": "<redacted>",
+            "pix": null,
             "credit_card": "<redacted>",
             "payment_default": "transference"
           }
         },
         {
-          "db_id": 6418705643732992,
-          "key": "<redacted>",
-          "code": "35",
-          "lease_type": "residential",
-          "value": "<redacted>",
-          "irrf": false,
-          "property": {
-            "address": "<redacted>",
-            "address_complement": "<redacted>",
-            "city": "Cosmorama",
-            "code": "44",
-            "db_id": 6125152245907456,
-            "neighborhood": "<redacted>",
-            "state": "SP",
-            "zipcode": "<redacted>",
-            "owners": "<redacted>"
-          },
-          "status": "active",
-          "start_at": "2023-06-14T00:00:00.000000Z",
-          "end_at": "2025-06-13T00:00:00.000000Z",
-          "management_fee": {
-            "management_type": "own_properties",
-            "percent": 0,
-            "value": "<redacted>",
-            "first_rent_percent": 0,
-            "first_rent_value": 0
-          },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
-          "source": "imobzi",
-          "in_progress": true,
-          "next_invoice_start_at": "<redacted>",
-          "next_invoice_end_at": "<redacted>",
-          "insurances": [],
-          "invoice_items_value": 0,
-          "items_management_fee": 0,
-          "termination_date": "",
-          "next_invoice_due_date": "<redacted>",
-          "items": [],
-          "account": {
-            "db_id": 6029003447074816
-          },
-          "receipt_methods": {
-            "bank_slip": {
-              "receipt_type": "bank_slip",
-              "integration_name": "pjbank",
-              "payment_default": false,
-              "account": {
-                "db_id": 6029003447074816
-              }
-            },
-            "pix": "<redacted>",
-            "credit_card": "<redacted>",
-            "payment_default": null
-          }
-        },
-        {
           "db_id": 6021535220367360,
-          "key": "<redacted>",
+          "key": null,
           "code": "34",
           "lease_type": "no_residential",
-          "value": "<redacted>",
+          "value": 1091.29,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -821,7 +1923,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2023-06-14T00:00:00.000000Z",
@@ -829,13 +1954,75 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 5871399471153152,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": null,
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            },
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 6549431395549184,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": false,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": null
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -858,17 +2045,24 @@
                 "db_id": 6029003447074816
               }
             },
-            "pix": "<redacted>",
+            "pix": {
+              "receipt_type": "pix",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
             "credit_card": "<redacted>",
             "payment_default": null
           }
         },
         {
           "db_id": 6268211558350848,
-          "key": "<redacted>",
+          "key": null,
           "code": "30",
           "lease_type": "commercial",
-          "value": "<redacted>",
+          "value": 1065.56,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -879,7 +2073,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2022-11-21T00:00:00.000000Z",
@@ -887,13 +2104,73 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 5243613756784640,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": false,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            },
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 6089643998052352,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": null
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -913,12 +2190,12 @@
               "until_due_date": false,
               "contact_key": null,
               "autopay_on_due_date": false,
-              "bar_code": "<redacted>",
+              "bar_code": null,
               "behavior": "credit_tenant",
               "include_in_dimob": false,
-              "value": "<redacted>",
+              "value": -450,
               "recurrent": true,
-              "repeat_index": 39
+              "repeat_index": 42
             },
             {
               "charge_management_fee": false,
@@ -929,12 +2206,12 @@
               "until_due_date": false,
               "contact_key": null,
               "autopay_on_due_date": false,
-              "bar_code": "<redacted>",
+              "bar_code": null,
               "behavior": "credit_tenant",
               "include_in_dimob": false,
-              "value": "<redacted>",
+              "value": -100,
               "recurrent": true,
-              "repeat_index": 39
+              "repeat_index": 42
             }
           ],
           "account": {
@@ -942,17 +2219,17 @@
           },
           "receipt_methods": {
             "bank_slip": null,
-            "pix": "<redacted>",
+            "pix": null,
             "credit_card": "<redacted>",
             "payment_default": "transference"
           }
         },
         {
           "db_id": 6518347861590016,
-          "key": "<redacted>",
+          "key": null,
           "code": "28",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 2000.23,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -963,7 +2240,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2021-08-27T00:00:00.000000Z",
@@ -971,13 +2271,73 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 4532034471985152,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": false,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            },
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 6109679039021056,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": null
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -997,12 +2357,12 @@
               "until_due_date": false,
               "contact_key": null,
               "autopay_on_due_date": false,
-              "bar_code": "<redacted>",
+              "bar_code": null,
               "behavior": "credit_tenant",
               "include_in_dimob": false,
-              "value": "<redacted>",
+              "value": -78.6,
               "recurrent": true,
-              "repeat_index": 39
+              "repeat_index": 42
             }
           ],
           "account": {
@@ -1010,17 +2370,17 @@
           },
           "receipt_methods": {
             "bank_slip": null,
-            "pix": "<redacted>",
+            "pix": null,
             "credit_card": "<redacted>",
             "payment_default": "transference"
           }
         },
         {
           "db_id": 6032227063300096,
-          "key": "<redacted>",
+          "key": null,
           "code": "27",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 1517.64,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -1031,7 +2391,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2022-05-22T00:00:00.000000Z",
@@ -1039,13 +2422,73 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 100,
             "first_rent_value": 1390
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 4831101634740224,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": false,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            },
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 6608155359313920,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "phone": null
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -1065,12 +2508,12 @@
               "until_due_date": false,
               "contact_key": null,
               "autopay_on_due_date": false,
-              "bar_code": "<redacted>",
+              "bar_code": null,
               "behavior": "credit_tenant",
               "include_in_dimob": false,
-              "value": "<redacted>",
+              "value": -139,
               "recurrent": true,
-              "repeat_index": 39
+              "repeat_index": 42
             }
           ],
           "account": {
@@ -1078,17 +2521,17 @@
           },
           "receipt_methods": {
             "bank_slip": null,
-            "pix": "<redacted>",
+            "pix": null,
             "credit_card": "<redacted>",
             "payment_default": "transference"
           }
         },
         {
           "db_id": 4807045095096320,
-          "key": "<redacted>",
+          "key": null,
           "code": "24",
           "lease_type": "commercial",
-          "value": "<redacted>",
+          "value": 1828.13,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -1099,7 +2542,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2013-08-01T00:00:00.000000Z",
@@ -1107,13 +2573,59 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 5161198057160704,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -1136,17 +2648,24 @@
                 "db_id": 6029003447074816
               }
             },
-            "pix": "<redacted>",
+            "pix": {
+              "receipt_type": "pix",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
             "credit_card": "<redacted>",
             "payment_default": null
           }
         },
         {
           "db_id": 4636736891125760,
-          "key": "<redacted>",
+          "key": null,
           "code": "23",
           "lease_type": "commercial",
-          "value": "<redacted>",
+          "value": 1720.39,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -1157,7 +2676,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2009-12-16T00:00:00.000000Z",
@@ -1165,13 +2707,69 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 4676398900838400,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": null
+            },
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 5043263087050752,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": false,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": null
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -1194,17 +2792,24 @@
                 "db_id": 6029003447074816
               }
             },
-            "pix": "<redacted>",
+            "pix": {
+              "receipt_type": "pix",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
             "credit_card": "<redacted>",
             "payment_default": null
           }
         },
         {
           "db_id": 6644514212020224,
-          "key": "<redacted>",
+          "key": null,
           "code": "19",
           "lease_type": "residential",
-          "value": "<redacted>",
+          "value": 1371,
           "irrf": false,
           "property": {
             "address": "<redacted>",
@@ -1215,7 +2820,30 @@
             "neighborhood": "<redacted>",
             "state": "SP",
             "zipcode": "<redacted>",
-            "owners": "<redacted>"
+            "owners": [
+              {
+                "emails": [
+                  "<redacted>"
+                ],
+                "db_id": 5880332491423744,
+                "code": null,
+                "rate": null,
+                "percentage": 100,
+                "db_key": "<redacted>",
+                "name": "<redacted>",
+                "landlord_account_id": "<redacted>",
+                "cnpj": "<redacted>",
+                "type": "<redacted>",
+                "email": "<redacted>",
+                "phone": {
+                  "number": "<redacted>",
+                  "country_code": "<redacted>",
+                  "alpha2Code": "<redacted>",
+                  "number_plain": "<redacted>",
+                  "type": "<redacted>"
+                }
+              }
+            ]
           },
           "status": "active",
           "start_at": "2013-08-01T00:00:00.000000Z",
@@ -1223,13 +2851,53 @@
           "management_fee": {
             "management_type": "own_properties",
             "percent": 0,
-            "value": "<redacted>",
+            "value": 0,
             "first_rent_percent": 0,
             "first_rent_value": 0
           },
-          "tenants": "<redacted>",
-          "owners": "<redacted>",
-          "beneficiaries": "<redacted>",
+          "tenants": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "firstname": "<redacted>",
+              "db_id": 4509391404400640,
+              "code": "<redacted>",
+              "db_key": "<redacted>",
+              "cpf": "<redacted>",
+              "fullname": "<redacted>",
+              "type": "<redacted>",
+              "payer": true,
+              "email": "<redacted>",
+              "lastname": "<redacted>",
+              "phone": null
+            }
+          ],
+          "owners": [
+            {
+              "emails": [
+                "<redacted>"
+              ],
+              "db_id": 5880332491423744,
+              "code": null,
+              "rate": null,
+              "percentage": 100,
+              "db_key": "<redacted>",
+              "name": "<redacted>",
+              "landlord_account_id": "<redacted>",
+              "cnpj": "<redacted>",
+              "type": "<redacted>",
+              "email": "<redacted>",
+              "phone": {
+                "number": "<redacted>",
+                "country_code": "<redacted>",
+                "alpha2Code": "<redacted>",
+                "number_plain": "<redacted>",
+                "type": "<redacted>"
+              }
+            }
+          ],
+          "beneficiaries": [],
           "source": "imobzi",
           "in_progress": true,
           "next_invoice_start_at": "<redacted>",
@@ -1252,7 +2920,14 @@
                 "db_id": 6029003447074816
               }
             },
-            "pix": "<redacted>",
+            "pix": {
+              "receipt_type": "pix",
+              "integration_name": "pjbank",
+              "payment_default": false,
+              "account": {
+                "db_id": 6029003447074816
+              }
+            },
             "credit_card": "<redacted>",
             "payment_default": null
           }
@@ -1262,33 +2937,8 @@
       "count": 31,
       "count_lease_digital_real_estate": 0,
       "count_lease_with_invoices_not_generated": 0,
-      "value_total": 130740.44,
-      "management_fee_total": 1392.015,
-      "receipt_methods_available": {
-        "bank_slips": [
-          {
-            "account": {
-              "name": "<redacted>",
-              "db_id": 6029003447074816
-            },
-            "receipt_type": "bank_slip",
-            "integration_name": "pjbank",
-            "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg"
-          }
-        ],
-        "pixs": [
-          {
-            "account": {
-              "name": "<redacted>",
-              "db_id": 6029003447074816
-            },
-            "receipt_type": "pix",
-            "integration_name": "pjbank",
-            "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg"
-          }
-        ],
-        "credit_cards": []
-      }
+      "value_total": 139862.2,
+      "management_fee_total": 1410.705
     }
   }
 }

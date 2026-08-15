@@ -1,0 +1,259 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/invoice/{id}",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "invoice_id": "e9da5146708611f1866b42004e494300",
+      "category": "Terceiros (Administração)",
+      "subcategory": "Recebimento de Aluguel",
+      "due_date": "<redacted>",
+      "paid_at": "<redacted>",
+      "payment_authentication": null,
+      "status": "paid",
+      "invoice_url": "<redacted>",
+      "send_overdue_notification": true,
+      "payment_method": "bank_slip",
+      "payments_methods_available": {
+        "bank_slip": {
+          "receipt_type": "bank_slip",
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "integration_name": "pjbank",
+          "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+          "bank_integration": {
+            "name": "<redacted>",
+            "active": true,
+            "transference_fee": 2,
+            "transference_split": 1.5,
+            "account_type": "digital_account",
+            "show_trading_name": true,
+            "categories": {
+              "bank_fee": {
+                "name": "<redacted>",
+                "subcategory": "Tarifa Bancária",
+                "category_type": "expense",
+                "db_id": "<redacted>",
+                "created_at": "2023-03-17T13:48:09.021376Z",
+                "updated_at": "2026-03-27T17:23:32.732224Z"
+              }
+            },
+            "has_resources": {
+              "bank_slip": true,
+              "payment_ted": true,
+              "payment_pix": true,
+              "pix": true,
+              "bar_code": true,
+              "extract_financial": true,
+              "bank_slip_pix": true
+            },
+            "get_conciliations": true,
+            "selected_for_payments": true,
+            "split_receipt_account": false
+          },
+          "bank_slip_id": "<redacted>",
+          "bank_slip_url": "<redacted>",
+          "bank_slip_protocol": null,
+          "barcode": "<redacted>",
+          "id_impression": null
+        },
+        "pix": {
+          "receipt_type": "pix",
+          "account": {
+            "name": "<redacted>",
+            "db_id": 6029003447074816
+          },
+          "integration_name": "pjbank",
+          "logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+          "bank_integration": {
+            "name": "<redacted>",
+            "active": true,
+            "transference_fee": 2,
+            "transference_split": 1.5,
+            "account_type": "digital_account",
+            "show_trading_name": true,
+            "categories": {
+              "bank_fee": {
+                "name": "<redacted>",
+                "subcategory": "Tarifa Bancária",
+                "category_type": "expense",
+                "db_id": "<redacted>",
+                "created_at": "2023-03-17T13:48:09.021376Z",
+                "updated_at": "2026-03-27T17:23:32.732224Z"
+              }
+            },
+            "has_resources": {
+              "bank_slip": true,
+              "payment_ted": true,
+              "payment_pix": true,
+              "pix": true,
+              "bar_code": true,
+              "extract_financial": true,
+              "bank_slip_pix": true
+            },
+            "get_conciliations": true,
+            "selected_for_payments": true,
+            "split_receipt_account": false
+          }
+        },
+        "credit_card": "<redacted>",
+        "payment_default": null
+      },
+      "payment_maximum_installments": null,
+      "charge_fee_value": 3.96,
+      "difference_value": 0,
+      "interest_value": 0,
+      "installments": null,
+      "value": 28000,
+      "total_value": 28000,
+      "bank_slip_id": "<redacted>",
+      "bank_slip_url": "<redacted>",
+      "bank_type": "pjbank",
+      "reference_start_at": "<redacted>",
+      "reference_end_at": "<redacted>",
+      "contact": {
+        "db_id": 5289976873353216,
+        "type": "organization",
+        "name": "<redacted>",
+        "code": "27",
+        "email": [
+          "<redacted>"
+        ],
+        "cpf": null,
+        "cnpj": "<redacted>",
+        "phone": [
+          "<redacted>"
+        ]
+      },
+      "property": {
+        "db_id": 5422485204369408,
+        "address": "<redacted>",
+        "address_complement": "<redacted>",
+        "neighborhood": "<redacted>",
+        "city": "Porto Alegre",
+        "state": "RS",
+        "code": "46",
+        "zipcode": "<redacted>",
+        "cover_photo": {
+          "db_id": 0,
+          "url": "<redacted>"
+        },
+        "owners": [
+          {
+            "db_id": 5944529889263616,
+            "name": "<redacted>"
+          },
+          {
+            "db_id": 6526974162370560,
+            "name": "<redacted>"
+          },
+          {
+            "db_id": 5795429730484224,
+            "name": "<redacted>"
+          }
+        ]
+      },
+      "lease": {
+        "status": "active",
+        "db_id": 6116908066144256,
+        "code": "49",
+        "contract_type": "lease",
+        "account": {
+          "name": "<redacted>",
+          "db_id": 6029003447074816
+        },
+        "management_fee": {
+          "management_type": "own_properties"
+        }
+      },
+      "barcode": null,
+      "account": {
+        "name": "<redacted>",
+        "db_id": 6029003447074816
+      },
+      "bank_logo_url": "https://storage.googleapis.com/imobzi/image/pj-bank.svg",
+      "created_at": "<redacted>",
+      "created_manually": false,
+      "onlendings_and_fees": {
+        "onlendings": [],
+        "onlending_value": 0,
+        "predicted_onlending_value": 0,
+        "predicted_onlendings": [],
+        "management_fee_value": 0,
+        "first_management_fee_value": 0,
+        "managed_expenses_value": 0,
+        "charge_landlord": 0
+      },
+      "onlending_split": false,
+      "credit_card_percentage": 0,
+      "credit_card_installment_percentage": 0,
+      "invoice_paid_manual": null,
+      "items": [
+        {
+          "contact": null,
+          "description": "Aluguel ref. 01/06/2026 a 30/06/2026",
+          "invoice_item_id": "e9de111e708611f1866b42004e494300",
+          "value": 28000,
+          "include_in_dimob": true,
+          "until_due_date": false,
+          "behavior": "charge_tenant_and_onlend",
+          "charge_management_fee": true,
+          "item_type": "lease_value",
+          "landlords": []
+        }
+      ],
+      "beneficiaries": [],
+      "history": [
+        {
+          "description": "<redacted>",
+          "history_type": "<redacted>",
+          "created_at": "<redacted>"
+        },
+        {
+          "description": "<redacted>",
+          "history_type": "<redacted>",
+          "created_at": "<redacted>"
+        },
+        {
+          "description": "<redacted>",
+          "history_type": "<redacted>",
+          "created_at": "<redacted>"
+        },
+        {
+          "description": "<redacted>",
+          "history_type": "<redacted>",
+          "created_at": "<redacted>"
+        },
+        {
+          "description": "<redacted>",
+          "history_type": "<redacted>",
+          "created_at": "<redacted>"
+        }
+      ],
+      "receipt_items": [
+        {
+          "due_date": "<redacted>",
+          "paid": true,
+          "paid_at": "<redacted>",
+          "repeat_index": 1,
+          "transaction_id": "acd85f9e798811f1a91f42004e494300",
+          "value": 28000,
+          "fee_values": 0
+        }
+      ]
+    }
+  }
+}

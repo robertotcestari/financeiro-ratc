@@ -1,0 +1,81 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/financial/landlord/accounts",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "total": 269522.06,
+      "total_credit_balance": 269522.06,
+      "total_debit_balance": 0,
+      "debit_balance": [],
+      "credit_balance": [
+        {
+          "landlord_account_id": "1264085ec4dd11ed966675e7aa50eead",
+          "contact_key": "<redacted>",
+          "contact_id": 5880332491423744,
+          "contact_type": "organization",
+          "contact_name": "<redacted>",
+          "contact_profile_image": null,
+          "balance": 265308.94,
+          "onlendings_overdue": 0
+        },
+        {
+          "landlord_account_id": "54cd09e1fa6e11edb0b447d56d5fc94a",
+          "contact_key": "<redacted>",
+          "contact_id": 5862668037521408,
+          "contact_type": "person",
+          "contact_name": "<redacted>",
+          "contact_profile_image": null,
+          "balance": 4213.12,
+          "onlendings_overdue": -4051.25
+        }
+      ],
+      "without_balance": [
+        {
+          "landlord_account_id": "2fb3487cbe7011f0b24042004e494300",
+          "contact_key": "<redacted>",
+          "contact_id": 6526974162370560,
+          "contact_type": "person",
+          "contact_name": "<redacted>",
+          "contact_profile_image": null,
+          "balance": 0,
+          "onlendings_overdue": 0
+        },
+        {
+          "landlord_account_id": "2fa267b4be7011f0b24042004e494300",
+          "contact_key": "<redacted>",
+          "contact_id": 5944529889263616,
+          "contact_type": "person",
+          "contact_name": "<redacted>",
+          "contact_profile_image": null,
+          "balance": 0,
+          "onlendings_overdue": 0
+        },
+        {
+          "landlord_account_id": "2fc53d84be7011f0b24042004e494300",
+          "contact_key": "<redacted>",
+          "contact_id": 5795429730484224,
+          "contact_type": "person",
+          "contact_name": "<redacted>",
+          "contact_profile_image": null,
+          "balance": 0,
+          "onlendings_overdue": 0
+        }
+      ],
+      "debit_balance_next_page": null,
+      "credit_balance_next_page": null,
+      "without_balance_next_page": null
+    }
+  }
+}

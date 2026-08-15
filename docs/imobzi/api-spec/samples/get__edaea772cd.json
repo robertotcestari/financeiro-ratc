@@ -1,0 +1,56 @@
+{
+  "endpoint": "GET https://my.imobzi.com/v1/financial/account/{id}",
+  "request": {
+    "status": null,
+    "headers": {
+      "accept": "application/json, text/plain, */*",
+      "content-type": "application/json",
+      "authorization": "<redacted>"
+    },
+    "body": null
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "account_number": "44319-0",
+      "account_type": "others",
+      "active": true,
+      "agency": "3003",
+      "balance": 3337893.06,
+      "bank": {
+        "bank_slip_fee": null,
+        "code": "748",
+        "db_id": 5759180434571264,
+        "integration_name": "sicredi",
+        "logo_url": "https://storage.googleapis.com/imobzi/image/sicredi.svg",
+        "name": "<redacted>",
+        "resources": {
+          "bank_slip": true,
+          "bank_slip_pix": true,
+          "bar_code": false,
+          "extract_financial": false,
+          "payment_pix": false,
+          "payment_ted": false,
+          "pix": true
+        },
+        "transference_fee": 1.49,
+        "transference_split": 1.49
+      },
+      "bank_integrations": null,
+      "bank_integration_active": [],
+      "created_at": "2023-03-23T12:03:11.825866Z",
+      "db_id": 5253871883517952,
+      "default": false,
+      "description": "Sicredi",
+      "favorite": false,
+      "has_integration": false,
+      "has_transactions": true,
+      "initial_value": 38994.74,
+      "name": "<redacted>",
+      "start_at": "<redacted>"
+    }
+  }
+}

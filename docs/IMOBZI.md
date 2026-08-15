@@ -1,5 +1,9 @@
 ## Imobzi
 
+> Referência completa da API (autenticação, endpoints, parâmetros validados, schemas):
+> [docs/imobzi/README.md](imobzi/README.md). Este arquivo guarda apenas as variáveis de ambiente e
+> o exemplo de quitação, que é a única operação de escrita em uso.
+
 ### Variáveis de ambiente
 
 - `IMOBZI_EMAIL`
