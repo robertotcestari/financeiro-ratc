@@ -1,6 +1,6 @@
 ---
-name: Sicredi OFX Download
-description: Automatiza o download do extrato bancário em formato OFX do Sicredi Internet Banking PJ. Use esta skill no início de cada mês para baixar o extrato do mês anterior.
+name: sicredi-ofx-download
+description: Automatiza a consulta e o download do extrato bancário em formato OFX do Sicredi Internet Banking PJ após login manual. Use esta skill no início de cada mês, para baixar o mês anterior ou para obter outro período informado pelo usuário.
 ---
 
 # Sicredi OFX Download
@@ -92,6 +92,46 @@ Na página de Extrato, dentro da aba **"Movimentações Recentes"**:
 3. **Solicitar confirmação do usuário** antes de clicar no botão de download
 4. Clicar no botão **"Gerar OFX"** usando **JavaScript** (ver seção Workaround abaixo)
 5. O arquivo será baixado automaticamente
+
+### Método programático confirmado após o login
+
+Depois que o usuário fizer login manualmente, preferir executar a consulta e o download na mesma sessão autenticada do navegador. Não copiar cookies, tokens ou credenciais para scripts externos.
+
+1. Consultar o período com `GET /ib-view/contacorrente/extrato/informacoes.html` e os parâmetros:
+   - `tipoExtrato=0` para movimentações recentes;
+   - `dataInicialExtrato=DD/MM/AAAA`;
+   - `dataFinalExtrato=DD/MM/AAAA`;
+   - `cachePrevent=<timestamp>`.
+2. Validar a resposta JSON antes de exportar. Ela contém `saldoAnterior`, `listaMovimentacoes`, `dataInicialExtrato` e `dataFinalExtrato`. Cada item de `listaMovimentacoes` contém `data`, `descricao`, `documento`, `valor`, `saldo` e `dataFormatada`.
+3. Gerar o OFX somente após a confirmação explícita do usuário. A página envia `GET /ib-view/contacorrente/extrato/exportar.html?tipoDocumento=OFX`; a exportação depende do último período consultado na sessão do servidor.
+4. No Chrome controlado, aguardar o evento de download e clicar em `#botaoGerarDocumentoOFX`. Se o clique semântico falhar, usar o workaround JavaScript abaixo.
+5. Localizar o `.ofx` recém-criado na pasta de downloads pelo horário de modificação, pois o navegador pode acrescentar um sufixo como `extrato (5).ofx`.
+6. Antes de mover, validar que o arquivo não está vazio, que a quantidade de blocos `<STMTTRN>` corresponde à quantidade de movimentações do JSON e que todas as datas `<DTPOSTED>` pertencem ao período solicitado.
+7. Mover para `data/ofx/sicredi-{mes}-{ano}.ofx`, sem sobrescrever um arquivo existente sem autorização.
+
+Exemplo de consulta no console da página autenticada:
+
+```javascript
+const params = new URLSearchParams({
+  tipoExtrato: "0",
+  dataInicialExtrato: "01/07/2026",
+  dataFinalExtrato: "31/07/2026",
+  cachePrevent: Date.now(),
+});
+
+const response = await fetch(
+  `/ib-view/contacorrente/extrato/informacoes.html?${params}`,
+  {
+    credentials: "same-origin",
+    headers: { "X-Requested-With": "XMLHttpRequest" },
+  },
+);
+
+if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+const extrato = await response.json();
+console.table(extrato.listaMovimentacoes);
+```
 
 **IMPORTANTE - Workaround para Clique:**
 Os cliques diretos (coordenadas ou ref) podem não funcionar nos botões de exportação do Sicredi.
