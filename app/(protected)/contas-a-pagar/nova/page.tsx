@@ -9,7 +9,7 @@ export default async function NovaContaAPagarPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto space-y-6 px-4 py-8">
+      <div className="container mx-auto flex flex-col gap-6 px-4 py-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Novo título</h1>
           <p className="text-gray-600">Cadastre boleto, NF ou despesa a pagar</p>
