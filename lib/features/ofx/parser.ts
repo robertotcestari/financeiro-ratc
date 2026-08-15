@@ -728,7 +728,7 @@ export class OFXParserService {
     const date = this.parseOFXDate(dateStr);
     const amount = parseFloat(amountStr);
 
-    if (!date || isNaN(amount)) {
+    if (!date || Number.isNaN(amount)) {
       return null;
     }
 
@@ -769,7 +769,7 @@ export class OFXParserService {
     const date = this.parseOFXDate(dateStr);
     const amount = parseFloat(amountStr);
 
-    if (!date || isNaN(amount)) {
+    if (!date || Number.isNaN(amount)) {
       return null;
     }
 
@@ -897,7 +897,7 @@ export class OFXParserService {
     const date = this.parseOFXDate(dateStr);
     const amount = parseFloat(amountStr);
 
-    if (!date || isNaN(amount)) {
+    if (!date || Number.isNaN(amount)) {
       return null;
     }
 
@@ -936,7 +936,7 @@ export class OFXParserService {
     const date = this.parseOFXDate(dateStr);
     const amount = parseFloat(amountStr);
 
-    if (!date || isNaN(amount)) {
+    if (!date || Number.isNaN(amount)) {
       return null;
     }
 
@@ -1056,8 +1056,11 @@ export class OFXParserService {
 
     // Validate date components
     if (
+      Number.
       isNaN(year) ||
+      Number.
       isNaN(month) ||
+      Number.
       isNaN(day) ||
       year < 1900 ||
       year > 2100 ||
@@ -1349,7 +1352,7 @@ export class OFXParserService {
     const date = this.parseOFXDate(dateStr);
     const amount = parseFloat(amountStr);
 
-    if (!date || isNaN(amount)) {
+    if (!date || Number.isNaN(amount)) {
       return null;
     }
 
@@ -1385,7 +1388,7 @@ export class OFXParserService {
     const date = this.parseOFXDate(dateStr);
     const amount = parseFloat(amountStr);
 
-    if (!date || isNaN(amount)) {
+    if (!date || Number.isNaN(amount)) {
       return null;
     }
 
@@ -1404,7 +1407,7 @@ export class OFXParserService {
    * Extract value from XML data using tag name
    */
   private extractXMLValue(data: string, tagName: string): string | null {
-    const pattern = new RegExp(`<${tagName}>(.*?)<\/${tagName}>`, 'is');
+    const pattern = new RegExp(`<${tagName}>(.*?)</${tagName}>`, 'is');
     const match = pattern.exec(data);
     return match ? match[1].trim() : null;
   }

@@ -107,7 +107,7 @@ async function getAccountBalancesForDRE(
   const missingSnapshotIds = bankAccounts
     .filter((acc) => {
       const snap = snapshotMap.get(acc.id);
-      return !snap || !snap.closingBalance;
+      return !snap?.closingBalance;
     })
     .map((acc) => acc.id);
 

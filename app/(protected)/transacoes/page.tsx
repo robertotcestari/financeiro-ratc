@@ -113,7 +113,7 @@ export default async function TransacoesPage({ searchParams }: Props) {
   });
 
   // Construir filtros da query usando effectiveFilters
-  const page = parseInt(effectiveFilters.page || '1');
+  const page = parseInt(effectiveFilters.page || '1', 10);
   const pageSize = 200;
   const skip = (page - 1) * pageSize;
 

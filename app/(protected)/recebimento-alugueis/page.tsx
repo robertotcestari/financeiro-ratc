@@ -22,8 +22,8 @@ export default async function RecebimentoAlugueisPage({ searchParams }: Props) {
   const previousMonth = currentDate.getMonth(); // getMonth() retorna 0-11, então já é o mês anterior
   const previousYear = previousMonth === 0 ? currentDate.getFullYear() - 1 : currentDate.getFullYear();
   
-  const month = params.mes ? parseInt(params.mes) : (previousMonth === 0 ? 12 : previousMonth);
-  const year = params.ano ? parseInt(params.ano) : previousYear;
+  const month = params.mes ? parseInt(params.mes, 10) : (previousMonth === 0 ? 12 : previousMonth);
+  const year = params.ano ? parseInt(params.ano, 10) : previousYear;
 
   return (
     <div className="min-h-screen bg-gray-50">

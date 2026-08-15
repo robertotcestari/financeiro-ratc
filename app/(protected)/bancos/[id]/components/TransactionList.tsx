@@ -1,6 +1,6 @@
 'use client';
 
-import { Transaction } from '@/app/generated/prisma/browser';
+import type { Transaction } from '@/app/generated/prisma/browser';
 import { useState, useMemo, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -253,7 +253,7 @@ export function TransactionList({
         },
       },
     ],
-    [openEditDialog]
+    [openEditDialog, formatDate, formatCurrency]
   );
 
   // Filter data based on type
@@ -275,9 +275,9 @@ export function TransactionList({
         id: 'initial-balance',
         date: new Date(
           searchParams.ano
-            ? parseInt(searchParams.ano)
+            ? parseInt(searchParams.ano, 10)
             : new Date().getFullYear(),
-          searchParams.mes ? parseInt(searchParams.mes) - 1 : 0,
+          searchParams.mes ? parseInt(searchParams.mes, 10) - 1 : 0,
           0,
           23,
           59,
@@ -304,9 +304,9 @@ export function TransactionList({
         id: 'final-balance',
         date: new Date(
           searchParams.ano
-            ? parseInt(searchParams.ano)
+            ? parseInt(searchParams.ano, 10)
             : new Date().getFullYear(),
-          searchParams.mes ? parseInt(searchParams.mes) : 0,
+          searchParams.mes ? parseInt(searchParams.mes, 10) : 0,
           0,
           23,
           59,
@@ -452,10 +452,10 @@ export function TransactionList({
 
     const now = new Date();
     const currentMonth = searchParams?.mes
-      ? parseInt(searchParams.mes)
+      ? parseInt(searchParams.mes, 10)
       : now.getMonth() + 1;
     const currentYear = searchParams?.ano
-      ? parseInt(searchParams.ano)
+      ? parseInt(searchParams.ano, 10)
       : now.getFullYear();
 
     let newMonth = currentMonth;
@@ -486,7 +486,7 @@ export function TransactionList({
 
   // Get current month name
   const getCurrentMonthName = () => {
-    const monthNum = searchParams?.mes ? parseInt(searchParams.mes) : null;
+    const monthNum = searchParams?.mes ? parseInt(searchParams.mes, 10) : null;
     if (!monthNum) return 'Todos os meses';
 
     const monthNames = [

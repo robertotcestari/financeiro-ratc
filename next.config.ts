@@ -27,6 +27,10 @@ const nextConfig: NextConfig = {
     // Only skip type errors on deploy builds when explicitly requested
     ignoreBuildErrors: skipBuildChecks,
   },
+  experimental: {
+    // TypeScript 7 has no JS compiler API; next build uses the local tsc CLI.
+    useTypeScriptCli: true,
+  },
   reactCompiler: true,
 };
 

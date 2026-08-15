@@ -123,7 +123,7 @@ export default function DateCriteriaForm({ form }: DateCriteriaFormProps) {
                       min="1"
                       max="31"
                       value={dateCriteria.dayRange?.start || 1}
-                      onChange={(e) => handleDayRangeChange('start', parseInt(e.target.value) || 1)}
+                      onChange={(e) => handleDayRangeChange('start', parseInt(e.target.value, 10) || 1)}
                     />
                   </FormControl>
                 </FormItem>
@@ -136,7 +136,7 @@ export default function DateCriteriaForm({ form }: DateCriteriaFormProps) {
                       min="1"
                       max="31"
                       value={dateCriteria.dayRange?.end || 31}
-                      onChange={(e) => handleDayRangeChange('end', parseInt(e.target.value) || 31)}
+                      onChange={(e) => handleDayRangeChange('end', parseInt(e.target.value, 10) || 31)}
                     />
                   </FormControl>
                 </FormItem>

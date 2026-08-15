@@ -146,15 +146,14 @@ export function useRowSelection({ tableRef, editing }: UseRowSelectionProps) {
       lastSelectedIndexRef.current = currentIndex;
       clearTextSelection();
     },
-    [tableRef, handleShiftSelection, handleSingleRowSelection]
+    [tableRef, handleShiftSelection, handleSingleRowSelection, clearTextSelection]
   );
 
   // Prevent text selection on mousedown
   const handleRowMouseDown = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const target = e.target as HTMLElement | null;
     if (
-      target &&
-      target.closest(
+      target?.closest(
         'button, a, input, select, textarea, [role="button"], [contenteditable="true"], .no-row-select'
       )
     ) {

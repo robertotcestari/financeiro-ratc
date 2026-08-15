@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Category, CategoryType } from '@/app/generated/prisma/browser'
+import { type Category, CategoryType } from '@/app/generated/prisma/browser'
 import { deleteCategory } from '../actions'
 import { Button } from '@/components/ui/button'
 

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 import { Readable } from 'node:stream';
 import { getCurrentUser } from '@/lib/core/auth/auth-utils';
 import {

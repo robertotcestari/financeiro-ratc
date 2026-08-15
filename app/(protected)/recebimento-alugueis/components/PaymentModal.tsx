@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { type ImobziInvoiceFormatted } from '@/lib/features/imobzi/invoices';
+import type { ImobziInvoiceFormatted } from '@/lib/features/imobzi/invoices';
 import { markImobziInvoiceAsPaid } from '../actions';
 import {
   Dialog,

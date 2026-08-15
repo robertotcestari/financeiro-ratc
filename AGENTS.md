@@ -12,7 +12,7 @@
 ## Build, Test, and Development Commands
 - `npm run dev`: Start Next.js with Turbopack at `http://localhost:3000`.
 - `npm run build` / `npm start`: Build and serve production bundle.
-- `npm run lint`: ESLint (Next + TS rules).
+- `npm run lint`: Biome lint (Next + React recommended rules).
 - `npm test` / `npm run test:run`: Run Vitest (jsdom by default).
 - `npm run test:coverage`: Vitest with coverage.
 - `npm run test:e2e` (`:ui`): Playwright E2E (UI runner optional).
@@ -24,7 +24,7 @@
 - **React components**: PascalCase files/exports (e.g., `TransactionsTable.tsx`).
 - **Tests**: `*.test.ts(x)` or `*.spec.ts`. Place under `tests/*` or `e2e/*` as appropriate.
 - **Imports**: Use `@/` alias for repo root (see `tsconfig.json`).
-- **Linting**: Keep code passing `npm run lint`. No Prettier config is enforced; match existing style.
+- **Linting**: Keep code passing `npm run lint` (Biome). Format with `npm run format` when needed.
 
 ## Testing Guidelines
 - **Frameworks**: Vitest (+ Testing Library) for unit/integration; Playwright for E2E.

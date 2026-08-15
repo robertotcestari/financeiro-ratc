@@ -69,8 +69,8 @@ function InlineDetailsEditor({
   // Keep parent live ref updated without thrashing renders
   useEffect(() => {
     onChangeLive(value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: column helpers are stable
+  }, [value, onChangeLive]);
 
   const commitLive = (next: string) => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);

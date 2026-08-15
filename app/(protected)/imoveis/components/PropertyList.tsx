@@ -1,6 +1,6 @@
 'use client'
 
-import { Property } from '@/app/generated/prisma/browser'
+import type { Property } from '@/app/generated/prisma/browser'
 import { getCityName } from '@/lib/constants/cities'
 import { Button } from '@/components/ui/button'
 

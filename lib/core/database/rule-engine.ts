@@ -6,7 +6,7 @@ import type {
 } from '@/app/generated/prisma/client';
 
 import {
-  RuleCriteria,
+  type RuleCriteria,
   validateRuleCriteria,
   prepareKeywords,
   containsSubstring,
@@ -414,7 +414,7 @@ export class RuleEngine {
       where: { id: ruleId },
     });
 
-    if (!rule || !rule.isActive || !hasTarget(rule)) {
+    if (!rule?.isActive || !hasTarget(rule)) {
       // If rule unavailable, mark all as failed in a consistent way
       return processedTransactionIds.map((id) => ({
         processedTransactionId: id,

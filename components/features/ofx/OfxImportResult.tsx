@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/formatters';
@@ -285,7 +284,7 @@ function Stat({
 
 function truncate(text: string, max: number) {
   if (text.length <= max) return text;
-  return text.slice(0, max - 1) + '…';
+  return `${text.slice(0, max - 1)}…`;
 }
 
 export default OfxImportResult;

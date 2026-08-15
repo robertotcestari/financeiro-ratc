@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -192,7 +191,7 @@ export default function RuleForm({
                     max="100"
                     {...field}
                     onChange={(e) =>
-                      field.onChange(parseInt(e.target.value) || 0)
+                      field.onChange(parseInt(e.target.value, 10) || 0)
                     }
                   />
                 </FormControl>

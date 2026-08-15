@@ -62,7 +62,7 @@ function TransactionAddForm({
     }
 
     const numericAmount = parseFloat(amount);
-    if (isNaN(numericAmount) || numericAmount === 0) {
+    if (Number.isNaN(numericAmount) || numericAmount === 0) {
       newErrors.amount = 'Valor inválido';
     }
 
@@ -76,7 +76,7 @@ function TransactionAddForm({
     }
 
     setErrors({});
-    const transactionDate = new Date(date + 'T12:00:00');
+    const transactionDate = new Date(`${date}T12:00:00`);
     await onSave(description.trim(), numericAmount, transactionDate);
   };
 

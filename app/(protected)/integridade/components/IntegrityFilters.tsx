@@ -78,8 +78,8 @@ export function IntegrityFilters() {
 
   // Funções para navegação de mês
   const navigateMonth = (direction: 'prev' | 'next') => {
-    const currentYearNum = parseInt(currentYear);
-    const currentMonthNum = parseInt(currentMonth) || 1;
+    const currentYearNum = parseInt(currentYear, 10);
+    const currentMonthNum = parseInt(currentMonth, 10) || 1;
 
     let newMonth = currentMonthNum;
     let newYear = currentYearNum;

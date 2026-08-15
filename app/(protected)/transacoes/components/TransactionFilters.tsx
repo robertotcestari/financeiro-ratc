@@ -199,8 +199,8 @@ export default function TransactionFilters({
 
   // Funções para navegação de mês
   const navigateMonth = (direction: 'prev' | 'next') => {
-    const currentMonth = parseInt(filters.mes) || 1;
-    const currentYear = parseInt(filters.ano);
+    const currentMonth = parseInt(filters.mes, 10) || 1;
+    const currentYear = parseInt(filters.ano, 10);
 
     let newMonth = currentMonth;
     let newYear = currentYear;
@@ -227,7 +227,7 @@ export default function TransactionFilters({
 
   // Obter nome do mês atual
   const getCurrentMonthName = () => {
-    const monthNum = parseInt(filters.mes);
+    const monthNum = parseInt(filters.mes, 10);
     if (!monthNum) return 'Todos os meses';
 
     const monthNames = [

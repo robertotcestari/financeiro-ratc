@@ -1,8 +1,8 @@
-import fs from 'fs'
-import path from 'path'
-import { pipeline } from 'stream/promises'
-import { createGzip } from 'zlib'
-import { spawn } from 'child_process'
+import fs from 'node:fs'
+import path from 'node:path'
+import { pipeline } from 'node:stream/promises'
+import { createGzip } from 'node:zlib'
+import { spawn } from 'node:child_process'
 
 export interface DatabaseBackupResult {
   filename: string

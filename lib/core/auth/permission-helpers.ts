@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { auth } from "./auth";
-import { ADMIN_PERMISSION, statement } from "./permissions";
+import { ADMIN_PERMISSION, type statement } from "./permissions";
 
 // Map of resource -> allowed actions, constrained by our access control statement
 export type Permissions = {

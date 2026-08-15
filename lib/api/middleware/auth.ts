@@ -7,7 +7,7 @@ export const apiKeyAuth = createMiddleware(async (c, next) => {
   }
 
   const authHeader = c.req.header('Authorization')
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!authHeader?.startsWith('Bearer ')) {
     return c.json({ error: 'Não autorizado', status: 401 }, 401)
   }
 

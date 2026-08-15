@@ -18,8 +18,8 @@ export function prepareCategories(categories: Category[]) {
   }, {} as Record<number, Array<Category & { displayName: string }>>);
 
   const sortedCategories = Object.keys(groupedCategories)
-    .sort((a, b) => parseInt(a) - parseInt(b))
-    .flatMap((level) => groupedCategories[parseInt(level)]);
+    .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+    .flatMap((level) => groupedCategories[parseInt(level, 10)]);
 
   return sortedCategories;
 }

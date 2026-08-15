@@ -71,7 +71,7 @@ function TransactionEditForm({
     }
 
     const numericAmount = parseFloat(amount);
-    if (isNaN(numericAmount) || numericAmount === 0) {
+    if (Number.isNaN(numericAmount) || numericAmount === 0) {
       newErrors.amount = 'Valor inválido';
     }
 

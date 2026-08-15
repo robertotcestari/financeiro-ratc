@@ -175,7 +175,7 @@ export async function updateTransactionAction(
       }
     }
 
-    if (isNaN(amount) || amount === 0) {
+    if (Number.isNaN(amount) || amount === 0) {
       return {
         success: false,
         error: 'Valor inválido'
@@ -232,7 +232,7 @@ export async function createTransactionAction(
       }
     }
 
-    if (isNaN(amount) || amount === 0) {
+    if (Number.isNaN(amount) || amount === 0) {
       return {
         success: false,
         error: 'Valor inválido'

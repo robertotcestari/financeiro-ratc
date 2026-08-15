@@ -191,7 +191,7 @@ export function exportDREToPDF(
     margin: { top: 22, left: 10, right: 10, bottom: 10 }, // Margens ajustadas
     tableWidth: 'auto', // Tabela se ajusta automaticamente
     showHead: 'firstPage',
-    didParseCell: function(data) {
+    didParseCell: (data) => {
       // Aplicar estilos especiais para linhas específicas
       const rowData = rows[data.row.index];
       if (rowData) {
@@ -236,6 +236,6 @@ export function exportDREToPDF(
   });
 
   // Salvar o PDF
-  const fileName = `DRE_${year}_${selectedMonths.join('-')}_${new Date().getTime()}.pdf`;
+  const fileName = `DRE_${year}_${selectedMonths.join('-')}_${Date.now()}.pdf`;
   doc.save(fileName);
 }

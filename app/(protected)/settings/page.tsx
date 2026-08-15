@@ -13,7 +13,10 @@ export default async function SettingsPage() {
   });
 
   // Session will always exist here because middleware protects this route
-  const user = session!.user;
+  const user = session?.user;
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -102,7 +105,7 @@ export default async function SettingsPage() {
                     return "Data não disponível";
                   }
                   
-                  if (isNaN(date.getTime())) {
+                  if (Number.isNaN(date.getTime())) {
                     return "Data não disponível";
                   }
                   

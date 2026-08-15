@@ -5,7 +5,6 @@ import {
   TransactionListQuerySchema,
   TransactionListResponseSchema,
   TransactionDetailResponseSchema,
-  TransactionSchema,
   CategorizeInputSchema,
   BulkCategorizeInputSchema,
   ReviewInputSchema,
@@ -102,7 +101,7 @@ app.openapi(createTxRoute, async (c) => {
 
   try {
     const txDate = new Date(date)
-    if (isNaN(txDate.getTime())) {
+    if (Number.isNaN(txDate.getTime())) {
       return c.json({ error: 'Data inválida. Use formato YYYY-MM-DD.', status: 400 }, 400)
     }
 

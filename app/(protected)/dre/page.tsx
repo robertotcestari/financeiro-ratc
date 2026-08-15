@@ -10,7 +10,7 @@ export default async function DREPage({
 }) {
   const currentYear = new Date().getFullYear();
   const params = await searchParams;
-  const year = params.year ? parseInt(params.year) : currentYear;
+  const year = params.year ? parseInt(params.year, 10) : currentYear;
   const monthsParam = params.months || '';
   const selectedMonths = monthsParam
     ? monthsParam.split(',').map(Number).filter(m => m >= 1 && m <= 12)

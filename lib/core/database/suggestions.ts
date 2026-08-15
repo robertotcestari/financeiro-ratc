@@ -80,7 +80,7 @@ export async function setBestSuggestionForTransaction(params: {
         },
       });
 
-      if (existingApplied && existingApplied.isApplied) {
+      if (existingApplied?.isApplied) {
         return null;
       }
     }

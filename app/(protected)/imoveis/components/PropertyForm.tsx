@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Property, City } from '@/app/generated/prisma/browser'
+import type { Property, City } from '@/app/generated/prisma/browser'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 

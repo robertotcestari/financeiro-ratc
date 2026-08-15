@@ -1,4 +1,4 @@
-import React from 'react';
+
 import OfxImportWizard from '@/components/features/ofx/OfxImportWizard';
 import { getBankAccounts } from '@/app/(protected)/cadastros/contas/actions';
 import { getCategoriesHierarchy } from '@/app/(protected)/categorias/actions';

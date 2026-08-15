@@ -1,4 +1,4 @@
-import { PrismaClient, BankAccount, AccountType } from '@/app/generated/prisma/client';
+import type { PrismaClient, BankAccount, AccountType } from '@/app/generated/prisma/client';
 import { prisma as defaultPrisma } from '@/lib/core/database/client';
 
 export interface CreateBankAccountData {
@@ -41,7 +41,6 @@ export class AccountSelectionService {
    * Returns active accounts first, ordered by bank name and account name
    */
   async getAllBankAccounts(): Promise<BankAccount[]> {
-    try {
       const accounts = await this.prisma.bankAccount.findMany({
         orderBy: [{ isActive: 'desc' }, { bankName: 'asc' }, { name: 'asc' }],
         include: {
@@ -55,9 +54,6 @@ export class AccountSelectionService {
       });
 
       return accounts;
-    } catch (error) {
-      throw error;
-    }
   }
 
   /**
@@ -254,7 +250,6 @@ export class AccountSelectionService {
     ofxAccountId: string,
     ofxBankId?: string
   ): Promise<BankAccount | null> {
-    try {
       const mapping = await this.prisma.oFXAccountMapping.findUnique({
         where: {
           ofxAccountId_ofxBankId: {
@@ -268,9 +263,6 @@ export class AccountSelectionService {
       });
 
       return mapping?.bankAccount || null;
-    } catch (error) {
-      throw error;
-    }
   }
 
   /**
@@ -278,16 +270,12 @@ export class AccountSelectionService {
    * @param bankAccountId - The bank account ID
    */
   async getAccountMappings(bankAccountId: string): Promise<{ id: string; ofxAccountId: string; ofxBankId: string | null; bankAccountId: string; createdAt: Date; updatedAt: Date; }[]> {
-    try {
       const mappings = await this.prisma.oFXAccountMapping.findMany({
         where: { bankAccountId },
         orderBy: { createdAt: 'desc' },
       });
 
       return mappings;
-    } catch (error) {
-      throw error;
-    }
   }
 }
 

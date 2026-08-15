@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/core/database/client'
-import { Property } from '@/app/generated/prisma/client'
+import type { Property } from '@/app/generated/prisma/client'
 import { revalidatePath } from 'next/cache'
 
 export async function getProperties(): Promise<Property[]> {

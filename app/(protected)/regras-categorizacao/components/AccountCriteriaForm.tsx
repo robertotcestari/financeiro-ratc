@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { FormDescription, FormLabel } from '@/components/ui/form';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';

@@ -367,14 +367,15 @@ export function DRETableClient({
     });
 
     return cols;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedMonths, year]);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: table config is intentionally static
+  }, [selectedMonths, year, renderToggleButton, // Name column
+      columnHelper.accessor, getValueColor, formatCurrency]);
 
   // Filter rows based on visibility settings
   const filteredData = useMemo(() => {
     return getVisibleRows();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, expandedSections, showZeroValues]);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: table config is intentionally static
+  }, [getVisibleRows]);
 
   // Create table instance
   // Provide the row type generic so the table types align with the column helpers

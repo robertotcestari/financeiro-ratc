@@ -1,6 +1,6 @@
 'use server';
 
-import { AccountType } from '@/app/generated/prisma/client';
+import type { AccountType } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/core/database/client';
 import { revalidatePath } from 'next/cache';
 

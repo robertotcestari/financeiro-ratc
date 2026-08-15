@@ -17,7 +17,7 @@ import {
 } from '@tanstack/react-table/legacy';
 
 declare module '@tanstack/react-table' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // biome-ignore lint/correctness/noUnusedVariables: reserved for future table options
   interface ColumnMeta<TFeatures, TData, TValue> {
     align?: 'left' | 'center' | 'right';
   }
@@ -351,7 +351,7 @@ export function TaxationTable({ rows, defaults }: TaxationTableProps) {
         setPendingField(null);
       }
     });
-  }, [defaults, startTransition]);
+  }, [defaults]);
 
   const toggleZero = useCallback(
     (row: AggregatedRow, forceZero: boolean) => {
@@ -396,7 +396,7 @@ export function TaxationTable({ rows, defaults }: TaxationTableProps) {
         }
       });
     },
-    [defaults, startTransition]
+    [defaults]
   );
 
   const columns = useMemo<LegacyColumnDef<TableRowData>[]>(

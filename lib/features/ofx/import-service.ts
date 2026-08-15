@@ -449,11 +449,11 @@ export class ImportService {
           let userCategoryId: string | null = null;
           let userPropertyId: string | null = null;
           
-          if (options.transactionCategories && options.transactionCategories[transaction.transactionId]) {
+          if (options.transactionCategories?.[transaction.transactionId]) {
             userCategoryId = options.transactionCategories[transaction.transactionId];
           }
           
-          if (options.transactionProperties && options.transactionProperties[transaction.transactionId]) {
+          if (options.transactionProperties?.[transaction.transactionId]) {
             userPropertyId = options.transactionProperties[transaction.transactionId];
           }
 
@@ -503,18 +503,6 @@ export class ImportService {
     }
 
     return true;
-  }
-
-  /**
-   * Filter transactions for import based on options
-   */
-  private filterTransactionsForImport(
-    transactions: TransactionPreview[],
-    options: ImportOptions
-  ): TransactionPreview[] {
-    return transactions.filter((transaction) =>
-      this.shouldProcessTransaction(transaction, options)
-    );
   }
 
   /**

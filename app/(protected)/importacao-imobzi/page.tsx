@@ -1,4 +1,4 @@
-import React from 'react';
+
 import ImobziImportWizard from '@/components/features/imobzi/ImobziImportWizard';
 import { getBankAccounts } from '@/app/(protected)/cadastros/contas/actions';
 import type { BankAccount } from '@/app/generated/prisma/client';

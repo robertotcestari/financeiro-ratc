@@ -22,7 +22,7 @@ Para o relatório/fechamento mensal, use a skill `relatorio-mensal` (em `.agents
 - `npm run dev` - Start development server with Turbopack
 - `npm run build` - Build production application (without Turbopack for production)
 - `npm start` - Start production server
-- `npm run lint` - Run ESLint
+- `npm run lint` - Run Biome lint
 
 ### Database Operations
 

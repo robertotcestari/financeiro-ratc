@@ -1,6 +1,6 @@
 'use client'
 
-import { City } from '@/app/generated/prisma/browser'
+import type { City } from '@/app/generated/prisma/browser'
 import { Button } from '@/components/ui/button'
 
 type CityWithCount = City & { _count?: { properties: number } }
