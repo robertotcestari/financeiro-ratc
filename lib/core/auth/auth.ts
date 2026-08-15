@@ -20,9 +20,12 @@ export const auth = betterAuth({
     },
   },
 
-  // Email & Password disabled (using only Google OAuth)
+  // Email & password for admin-created users. Public sign-up stays closed.
   emailAndPassword: {
-    enabled: false,
+    enabled: true,
+    disableSignUp: true,
+    minPasswordLength: 8,
+    autoSignIn: false,
   },
 
   // Session configuration

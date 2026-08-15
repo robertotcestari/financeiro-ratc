@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { User, LogOut, Settings } from "lucide-react";
+import { User, LogOut, Settings, Users } from "lucide-react";
+import { isAdminRole } from "@/lib/core/auth/user-management";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -98,6 +99,17 @@ export default function UserMenu() {
               <Settings className="mr-3 h-4 w-4" />
               Configurações
             </Link>
+
+            {isAdminRole(user?.role) && (
+              <Link
+                href="/admin/users"
+                onClick={() => setIsOpen(false)}
+                className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                <Users className="mr-3 h-4 w-4" />
+                Usuários
+              </Link>
+            )}
 
             <Separator />
 

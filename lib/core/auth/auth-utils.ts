@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Session, User } from "./auth";
 import { ADMIN_PERMISSION } from "./permissions";
+import { isPermissionGranted } from "./user-management";
 
 /**
  * Get the current session from server components
@@ -53,14 +54,14 @@ export async function isAdmin(): Promise<boolean> {
   const session = await getServerSession();
   if (!session) return false;
   try {
-    const has = await auth.api.userHasPermission({
+    const result = await auth.api.userHasPermission({
       body: {
         userId: session.session.userId,
         permissions: ADMIN_PERMISSION,
       },
       headers: await headers(),
     });
-    return !!has;
+    return isPermissionGranted(result);
   } catch {
     return false;
   }

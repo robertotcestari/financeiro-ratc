@@ -17,9 +17,11 @@ export const auth = betterAuth({
     },
   },
 
-  // Email & Password disabled (using only Google OAuth)
   emailAndPassword: {
-    enabled: false,
+    enabled: true,
+    disableSignUp: true,
+    minPasswordLength: 8,
+    autoSignIn: false,
   },
 
   // Session configuration

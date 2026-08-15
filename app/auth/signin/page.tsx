@@ -2,30 +2,48 @@
 
 import { useAuth } from "@/hooks/use-auth";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function SignInPage() {
-  const { isLoading, signInWithGoogle } = useAuth();
+  const { isLoading, signInWithGoogle, signInWithEmail } = useAuth();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
-  // Relaxed: do not gate by role or redirect if already authenticated
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const queryError =
     searchParams.get("error") === "unauthorized"
       ? "Acesso negado. Apenas usuários autorizados podem acessar o sistema."
       : null;
   const errorMessage = error ?? queryError;
 
-  // Do not auto-redirect when already authenticated; let the user stay here
+  const handleEmailSignIn = async (event: FormEvent) => {
+    event.preventDefault();
+    try {
+      setError(null);
+      setSubmitting(true);
+      await signInWithEmail(email, password);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Erro ao fazer login. Por favor, tente novamente.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
-  const handleSignIn = async () => {
+  const handleGoogleSignIn = async () => {
     try {
       setError(null);
       await signInWithGoogle();
     } catch (err: unknown) {
-      // Handle authentication errors
       if (err instanceof Error && err.message.includes("Acesso negado")) {
         setError("Acesso negado. Apenas usuários autorizados podem acessar o sistema.");
       } else {
@@ -33,8 +51,6 @@ export default function SignInPage() {
       }
     }
   };
-
-  // Relaxed: still show sign-in page even if authenticated
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
@@ -51,10 +67,57 @@ export default function SignInPage() {
               <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
+
+          <form onSubmit={handleEmailSignIn} className="space-y-3">
+            <div className="space-y-2">
+              <Label htmlFor="signin-email">E-mail</Label>
+              <Input
+                id="signin-email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="seu@email.com"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="signin-password">Senha</Label>
+              <Input
+                id="signin-password"
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Sua senha"
+                required
+                minLength={8}
+              />
+            </div>
+            <Button
+              type="submit"
+              disabled={isLoading || submitting}
+              className="w-full"
+              size="lg"
+            >
+              {submitting ? "Entrando..." : "Entrar com e-mail"}
+            </Button>
+          </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                ou continue com
+              </span>
+            </div>
+          </div>
           
           <Button
-            onClick={handleSignIn}
-            disabled={isLoading}
+            onClick={handleGoogleSignIn}
+            disabled={isLoading || submitting}
             className="w-full"
             size="lg"
             variant="outline"
@@ -77,26 +140,8 @@ export default function SignInPage() {
             {isLoading ? "Conectando..." : "Entrar com Google"}
           </Button>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Acesso seguro
-              </span>
-            </div>
-          </div>
-
           <p className="text-center text-sm text-muted-foreground">
-            Ao fazer login, você concorda com nossos{" "}
-            <a href="#" className="underline underline-offset-4 hover:text-primary">
-              Termos de Uso
-            </a>{" "}
-            e{" "}
-            <a href="#" className="underline underline-offset-4 hover:text-primary">
-              Política de Privacidade
-            </a>
+            O cadastro é feito apenas por um administrador.
           </p>
         </CardContent>
       </Card>

@@ -29,4 +29,14 @@ export {
   getCurrentUser,
   requireAuth,
   isAuthenticated,
+  isAdmin,
 } from './auth-utils';
+
+export {
+  USER_ROLES,
+  ROLE_LABELS,
+  isAdminRole,
+  parseUserRole,
+  MIN_PASSWORD_LENGTH,
+} from './user-management';
+export type { UserRole } from './user-management';

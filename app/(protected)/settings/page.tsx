@@ -137,7 +137,7 @@ export default async function SettingsPage() {
                 <div>
                   <p className="font-medium">Provedor de Autenticação</p>
                   <p className="text-sm text-muted-foreground">
-                    Você está autenticado via Google OAuth
+                    Login disponível via e-mail e senha ou Google OAuth
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">

@@ -24,6 +24,7 @@ import {
   FileText as FileTextIcon,
   BookOpen,
   Receipt,
+  Users,
 } from 'lucide-react';
 
 const navigation = [
@@ -66,6 +67,10 @@ const helpOptions = [
   { name: 'Manual', href: '/manual', icon: BookOpen },
 ];
 
+const adminOptions = [
+  { name: 'Usuários', href: '/admin/users', icon: Users },
+];
+
 // ...existing code...
 
 export default function Navbar() {
@@ -75,6 +80,7 @@ export default function Navbar() {
   const session = useSession();
   const role = session.data?.user?.role as string | undefined;
   const canSeeReports = role === 'admin' || role === 'superuser';
+  const canManageUsers = canSeeReports;
 
   return (
     <nav className="bg-white shadow-sm border-b">
@@ -232,6 +238,35 @@ export default function Navbar() {
                         </Link>
                       );
                     })}
+
+                    {canManageUsers && (
+                      <>
+                        <Separator className="my-2" />
+                        <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Administração
+                        </div>
+                        {adminOptions.map((item) => {
+                          const Icon = item.icon;
+                          const isActive = pathname === item.href;
+
+                          return (
+                            <Link
+                              key={item.name}
+                              href={item.href}
+                              onClick={() => setIsDropdownOpen(false)}
+                              className={`flex items-center px-4 py-2 text-sm transition-colors ${
+                                isActive
+                                  ? 'text-blue-600 bg-blue-50'
+                                  : 'text-gray-700 hover:bg-gray-100'
+                              }`}
+                            >
+                              <Icon className="w-4 h-4 mr-2" />
+                              {item.name}
+                            </Link>
+                          );
+                        })}
+                      </>
+                    )}
 
                     <Separator className="my-2" />
 
@@ -472,6 +507,40 @@ export default function Navbar() {
                       </Link>
                     );
                   })}
+
+                  {canManageUsers && (
+                    <>
+                      <div className="px-8">
+                        <Separator className="my-2" />
+                      </div>
+                      <div className="pl-8 pr-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        Administração
+                      </div>
+                      {adminOptions.map((item) => {
+                        const Icon = item.icon;
+                        const isActive = pathname === item.href;
+
+                        return (
+                          <Link
+                            key={item.name}
+                            href={item.href}
+                            onClick={() => {
+                              setIsDropdownOpen(false);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            className={`flex items-center pl-8 pr-4 py-2 text-sm font-medium transition-colors ${
+                              isActive
+                                ? 'text-blue-600 bg-blue-50'
+                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                            }`}
+                          >
+                            <Icon className="w-4 h-4 mr-2" />
+                            {item.name}
+                          </Link>
+                        );
+                      })}
+                    </>
+                  )}
 
                   <div className="px-8">
                     <Separator className="my-2" />
