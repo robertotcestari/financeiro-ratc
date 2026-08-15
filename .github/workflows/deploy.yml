@@ -119,7 +119,7 @@ jobs:
           # Estes diretórios/arquivos não são estritamente necessários em runtime,
           # mas mantê-los não causa problemas e ajuda em eventuais scripts.
           for d in app src lib components hooks; do [ -d "$d" ] && cp -r "$d" "$DEPLOY_DIR/" || true; done
-          for f in next.config.* tsconfig.json proxy.ts; do [ -f "$f" ] && cp "$f" "$DEPLOY_DIR/" || true; done
+          for f in next.config.* tsconfig.json proxy.ts prisma.config.ts; do [ -f "$f" ] && cp "$f" "$DEPLOY_DIR/" || true; done
 
           tar -czf "deploy-${RELEASE_ID}.tar.gz" -C "$DEPLOY_DIR" .
           echo "Bundle criado: deploy-${RELEASE_ID}.tar.gz"
