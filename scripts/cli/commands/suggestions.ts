@@ -3,7 +3,7 @@
  * List and apply/dismiss categorization suggestions
  */
 
-import type { Prisma } from '@/app/generated/prisma';
+import type { Prisma } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/core/database/client';
 import {
   applySuggestions,

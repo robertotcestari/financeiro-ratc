@@ -1,7 +1,7 @@
 import type {
   PayablePaymentMethod,
   PayableRecurrenceFrequency,
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 import { prisma } from './client';
 import { createPayable } from './payables';
 import { PayableError } from '@/lib/core/payables/errors';

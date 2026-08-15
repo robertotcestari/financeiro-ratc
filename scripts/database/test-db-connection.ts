@@ -4,7 +4,8 @@
  * Uso: tsx scripts/database/test-db-connection.ts [local|remote]
  */
 
-import { PrismaClient } from '@/app/generated/prisma'
+import { createPrismaClient } from '@/lib/core/database/client'
+import type { PrismaClient } from '@/app/generated/prisma/client'
 
 const args = process.argv.slice(2)
 const env = args[0] || 'local'
@@ -46,14 +47,7 @@ async function testConnection() {
       console.log()
     }
 
-    // Criar cliente Prisma com a URL específica
-    prisma = new PrismaClient({
-      datasources: {
-        db: {
-          url: databaseUrl
-        }
-      }
-    })
+    prisma = createPrismaClient(databaseUrl)
 
     console.log('🔌 Conectando ao banco de dados...')
 

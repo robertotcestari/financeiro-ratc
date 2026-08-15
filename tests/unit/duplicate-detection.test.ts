@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import type { OFXTransaction } from '@/lib/features/ofx/types';
-import type { Transaction } from '@/app/generated/prisma';
+import type { Transaction } from '@/app/generated/prisma/client';
 
 // Mock Prisma client
 const mockTransaction = {

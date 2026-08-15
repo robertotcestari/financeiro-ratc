@@ -3,7 +3,7 @@
  * CRUD operations and suggestion generation for categorization rules
  */
 
-import type { Prisma } from '@/app/generated/prisma';
+import type { Prisma } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/core/database/client';
 import { ruleManagementService } from '@/lib/core/database/rule-management';
 import { ruleEngine } from '@/lib/core/database/rule-engine';

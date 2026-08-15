@@ -1,15 +1,15 @@
 'use client';
 'use no memo';
 
-import { useMemo, useCallback, useTransition, useRef } from 'react';
+import { useMemo, useCallback, useTransition, useRef, useEffect } from 'react';
+import { flexRender } from '@tanstack/react-table';
 import {
-  useReactTable,
+  useLegacyTable,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  flexRender,
-} from '@tanstack/react-table';
+} from '@tanstack/react-table/legacy';
 import { markReviewedAction } from '../../actions';
 import { useTransactionEditing } from './hooks/useTransactionEditing';
 import { useBulkOperations } from './hooks/useBulkOperations';
@@ -87,7 +87,7 @@ export default function TransactionTable({
   );
 
   // Table ref for selection handling
-  const tableRef = useRef<ReturnType<typeof useReactTable<Transaction>> | null>(
+  const tableRef = useRef<ReturnType<typeof useLegacyTable<Transaction>> | null>(
     null
   );
 
@@ -142,8 +142,7 @@ export default function TransactionTable({
   );
 
   // Table configuration
-  // eslint-disable-next-line react-hooks/incompatible-library
-  const table = useReactTable({
+  const table = useLegacyTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -163,10 +162,12 @@ export default function TransactionTable({
     pageCount: totalPages,
     manualPagination: true,
   });
-  // Expose table instance for selection handler
-  tableRef.current = table as unknown as ReturnType<
-    typeof useReactTable<Transaction>
-  >;
+
+  useEffect(() => {
+    tableRef.current = table as unknown as ReturnType<
+      typeof useLegacyTable<Transaction>
+    >;
+  }, [table]);
 
   // Handlers for suggestions
   const handleGenerateSuggestions = useCallback(async () => {

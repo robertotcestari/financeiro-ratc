@@ -3,7 +3,7 @@ import type {
   ProcessedTransaction,
   Transaction,
   CategorizationRule,
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 
 import {
   RuleCriteria,

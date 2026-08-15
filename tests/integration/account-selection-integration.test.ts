@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { AccountSelectionService } from '@/lib/features/ofx/account-selection';
-import { PrismaClient, AccountType } from '@/app/generated/prisma';
+import { PrismaClient, AccountType } from '@/app/generated/prisma/client';
+import { createPrismaClient } from '@/lib/core/database/client';
 
 const describeDb =
   process.env.VITEST_SKIP_DB_TESTS === 'true' ? describe.skip : describe;
@@ -12,7 +13,7 @@ describeDb('AccountSelectionService Integration Tests', () => {
   let testRunId: string;
 
   beforeEach(async () => {
-    prisma = new PrismaClient();
+    prisma = createPrismaClient();
     service = new AccountSelectionService(prisma);
     testRunId = `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 

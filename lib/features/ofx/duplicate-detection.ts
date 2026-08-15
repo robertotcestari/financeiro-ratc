@@ -14,7 +14,7 @@ import type {
   DuplicateMatch,
   DuplicatePreview,
 } from './types';
-import { Prisma, type Transaction } from '@/app/generated/prisma';
+import { Prisma, type Transaction } from '@/app/generated/prisma/client';
 import { logger } from '@/lib/core/logger/logger';
 import {
   matchIncomingToExisting,

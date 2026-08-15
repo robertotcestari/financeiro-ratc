@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Decimal } from '@prisma/client/runtime/library';
+import { Prisma } from '@/app/generated/prisma/client';
+const Decimal = Prisma.Decimal;
 
 // Mock prisma client before importing anything that uses it
 vi.mock('@/lib/core/database/client', () => ({

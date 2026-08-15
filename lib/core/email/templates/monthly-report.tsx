@@ -9,7 +9,7 @@ import {
   Heading,
   Hr,
   Link,
-} from '@react-email/components';
+} from 'react-email';
 
 interface Inadimplente {
   id: string;

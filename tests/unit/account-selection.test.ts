@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { AccountSelectionService } from '@/lib/features/ofx/account-selection';
-import { PrismaClient, AccountType } from '@/app/generated/prisma';
+import { PrismaClient, AccountType } from '@/app/generated/prisma/client';
 
 // Mock Prisma Client
-vi.mock('@/app/generated/prisma', () => ({
+vi.mock('@/app/generated/prisma/client', () => ({
   PrismaClient: vi.fn(),
   AccountType: {
     CHECKING: 'CHECKING',

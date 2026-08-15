@@ -19,7 +19,7 @@ import { formatCurrency } from '@/lib/formatters';
 import type {
   PayablePaymentMethod,
   PayableRecurrenceFrequency,
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/browser';
 
 type RecurrenceRow = {
   id: string;

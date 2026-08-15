@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import type { Table, RowSelectionState } from '@tanstack/react-table';
+import type { RowSelectionState } from '@tanstack/react-table';
+import type { LegacyTable } from '@tanstack/react-table/legacy';
 import type { Transaction } from '../types';
 
 interface UseKeyboardShortcutsProps {
-  table: Table<Transaction>;
+  table: LegacyTable<Transaction>;
   rowSelection: RowSelectionState;
   setRowSelection: (selection: RowSelectionState | ((prev: RowSelectionState) => RowSelectionState)) => void;
   clearSelection: () => void;

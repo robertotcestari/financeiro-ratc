@@ -1,5 +1,6 @@
 import { beforeAll, afterAll } from 'vitest';
-import { PrismaClient } from '@/app/generated/prisma';
+import { PrismaClient } from '@/app/generated/prisma/client';
+import { createPrismaClient } from '@/lib/core/database/client';
 
 // Mock ResizeObserver for all tests (needed by cmdk component)
 global.ResizeObserver = class ResizeObserver {
@@ -19,15 +20,21 @@ Element.prototype.scrollIntoView = () => {};
 let prisma: PrismaClient | null = null;
 
 async function canConnectToDatabase(): Promise<boolean> {
-  const client = new PrismaClient();
   try {
-    // minimal connectivity check
-    await client.$queryRaw`SELECT 1`;
-    return true;
+    const client = createPrismaClient();
+    try {
+      await Promise.race([
+        client.$queryRaw`SELECT 1`,
+        new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('database connectivity timeout')), 2000);
+        }),
+      ]);
+      return true;
+    } finally {
+      await client.$disconnect().catch(() => {});
+    }
   } catch {
     return false;
-  } finally {
-    await client.$disconnect().catch(() => {});
   }
 }
 
@@ -38,7 +45,7 @@ beforeAll(async () => {
     return;
   }
 
-  prisma = new PrismaClient();
+  prisma = createPrismaClient();
   // Best-effort cleanup for DB integration tests. This is safe even when
   // running only unit/component tests (tables may be empty).
   try {

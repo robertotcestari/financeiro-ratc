@@ -1,4 +1,4 @@
-import { render } from '@react-email/render';
+import { render } from 'react-email';
 import { MonthlyReportEmail } from './monthly-report';
 
 export * from './monthly-report';

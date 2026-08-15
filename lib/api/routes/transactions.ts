@@ -1,3 +1,4 @@
+import { Prisma } from '@/app/generated/prisma/client';
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
 import { z } from '@hono/zod-openapi'
 import {
@@ -18,8 +19,8 @@ import { ErrorSchema } from '../schemas/common'
 import { getProcessedTransactionsByPeriod } from '@/lib/core/database/transactions'
 import { categorizeTransaction, bulkCategorizeTransactions } from '@/lib/core/database/categorization'
 import { prisma } from '@/lib/core/database/client'
-import { Decimal } from '@prisma/client/runtime/library'
 
+const Decimal = Prisma.Decimal;
 const app = new OpenAPIHono()
 
 // GET /transactions

@@ -35,7 +35,7 @@ import {
 import { createPayableAction, createVendorAction } from '../actions';
 import { isoDate } from '@/lib/core/payables/dates';
 import { paymentMethodLabels } from '@/lib/core/payables/labels';
-import type { PayablePaymentMethod } from '@/app/generated/prisma';
+import type { PayablePaymentMethod } from '@/app/generated/prisma/browser';
 
 type Option = {
   id: string;

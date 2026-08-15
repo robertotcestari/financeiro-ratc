@@ -1,6 +1,6 @@
 'use client';
 
-import { Transaction } from '@/app/generated/prisma';
+import { Transaction } from '@/app/generated/prisma/browser';
 import { useState, useMemo, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -34,17 +34,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  useReactTable,
+  flexRender,
+  type ColumnFiltersState,
+  type RowSelectionState,
+  type SortingState,
+} from '@tanstack/react-table';
+import {
+  useLegacyTable,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  flexRender,
-  type ColumnDef,
-  type SortingState,
-  type ColumnFiltersState,
-  type RowSelectionState,
-} from '@tanstack/react-table';
+  type LegacyColumnDef,
+} from '@tanstack/react-table/legacy';
 
 const TransactionEditDialog = dynamic(() =>
   import('./TransactionEditDialog').then((mod) => mod.TransactionEditDialog)
@@ -114,7 +116,7 @@ export function TransactionList({
   };
 
   // Column definitions
-  const columns = useMemo<ColumnDef<SerializedTransaction>[]>(
+  const columns = useMemo<LegacyColumnDef<SerializedTransaction>[]>(
     () => [
       {
         id: 'select',
@@ -150,7 +152,7 @@ export function TransactionList({
         accessorKey: 'date',
         header: 'Data',
         cell: ({ getValue }) => formatDate(getValue() as Date),
-        sortingFn: 'datetime',
+        sortFn: 'datetime',
       },
       {
         accessorKey: 'description',
@@ -330,7 +332,7 @@ export function TransactionList({
   }, [transactions, filterType, searchParams, initialBalance, bankAccountId]);
 
   // Table instance
-  const table = useReactTable({
+  const table = useLegacyTable({
     data: filteredData,
     columns,
     state: {
@@ -352,6 +354,7 @@ export function TransactionList({
     getFilteredRowModel: getFilteredRowModel(),
     initialState: {
       pagination: {
+        pageIndex: 0,
         pageSize: 200,
       },
     },

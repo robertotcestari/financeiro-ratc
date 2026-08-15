@@ -1,4 +1,4 @@
-import type { Prisma, Vendor } from '@/app/generated/prisma';
+import type { Prisma, Vendor } from '@/app/generated/prisma/client';
 import { prisma } from './client';
 import { PayableError } from '@/lib/core/payables/errors';
 

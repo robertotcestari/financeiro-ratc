@@ -1,4 +1,4 @@
-import { BankAccount, Transaction, AccountType } from '@/app/generated/prisma';
+import { BankAccount, Transaction, AccountType } from '@/app/generated/prisma/client';
 import Link from 'next/link';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

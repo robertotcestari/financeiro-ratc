@@ -19,13 +19,13 @@ import {
   type RuleCriteria,
 } from '@/lib/core/database/rule-types';
 // Prisma types for strong typing of stubs
-import { Prisma } from '@/app/generated/prisma';
+import { Prisma } from '@/app/generated/prisma/client';
 import type {
   ProcessedTransaction as PTx,
   Transaction as Tx,
   CategorizationRule,
   Prisma as PrismaTypes,
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 
 import { prisma } from '@/lib/core/database/client';
 

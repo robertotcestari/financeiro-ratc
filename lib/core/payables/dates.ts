@@ -1,4 +1,4 @@
-import type { PayableRecurrenceFrequency } from '@/app/generated/prisma';
+import type { PayableRecurrenceFrequency } from '@/app/generated/prisma/client';
 
 export function competenceDateFor(year: number, month: number): Date {
   return new Date(Date.UTC(year, month - 1, 1));

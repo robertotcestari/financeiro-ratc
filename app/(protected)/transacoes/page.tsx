@@ -4,7 +4,7 @@ import TransactionFilters from './components/TransactionFilters';
 import TransactionTable from './components/transaction-table';
 import { isPendingTransaction } from '@/lib/core/database/transactions';
 import { getSettlementsByTransactionIds } from '@/lib/core/database/payable-settlements';
-import type { Prisma } from '@/app/generated/prisma';
+import type { Prisma } from '@/app/generated/prisma/client';
 import { redirect } from 'next/navigation';
 import {
   buildProcessedTransactionWhere,

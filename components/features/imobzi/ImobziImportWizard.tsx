@@ -35,8 +35,18 @@ export function ImobziImportWizard({
 
   // Step 1 - Account and date selection
   const [selectedAccountId, setSelectedAccountId] = React.useState<string>('');
-  const [startDate, setStartDate] = React.useState<string>('');
-  const [endDate, setEndDate] = React.useState<string>('');
+  const [startDate, setStartDate] = React.useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() - 1, 1)
+      .toISOString()
+      .split('T')[0];
+  });
+  const [endDate, setEndDate] = React.useState(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 0)
+      .toISOString()
+      .split('T')[0];
+  });
 
   // Types for preview data
   type PreviewTransaction = ImobziDataFormatted & { isDuplicate: boolean };
@@ -77,16 +87,6 @@ export function ImobziImportWizard({
 
   // Error handling
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-
-  // Initialize dates to last month
-  React.useEffect(() => {
-    const now = new Date();
-    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const lastDayOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-    
-    setStartDate(lastMonth.toISOString().split('T')[0]);
-    setEndDate(lastDayOfLastMonth.toISOString().split('T')[0]);
-  }, []);
 
   // Breadcrumb/steps metadata
   const steps: { id: Step; label: string }[] = [

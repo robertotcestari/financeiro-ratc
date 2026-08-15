@@ -28,7 +28,7 @@ import {
 import { generateRecurrenceForPeriod } from '@/lib/core/database/payable-recurrences'
 import { PayableError } from '@/lib/core/payables/errors'
 import { isoDate } from '@/lib/core/payables/dates'
-import type { PayableInstallmentStatus } from '@/app/generated/prisma'
+import type { PayableInstallmentStatus } from '@/app/generated/prisma/client'
 
 const app = new OpenAPIHono()
 const idParams = z.object({ id: z.string() })

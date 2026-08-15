@@ -1,7 +1,7 @@
 'use server';
 
 import { prisma } from '@/lib/core/database/client';
-import { Prisma } from '@/app/generated/prisma';
+import { Prisma } from '@/app/generated/prisma/client';
 import { getImobziPendingInvoices, markInvoiceAsPaid, type ImobziInvoiceFormatted } from '@/lib/features/imobzi/invoices';
 
 interface RentFilters {

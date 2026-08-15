@@ -1,3 +1,4 @@
+import { Prisma } from '@/app/generated/prisma/client';
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
 import { ErrorSchema } from '../schemas/common'
 import {
@@ -8,8 +9,9 @@ import {
 } from '../schemas/imobzi'
 import { getImobziTransactions } from '@/lib/features/imobzi/api'
 import { prisma } from '@/lib/core/database/client'
-import { Decimal } from '@prisma/client/runtime/library'
 
+type Decimal = Prisma.Decimal;
+const Decimal = Prisma.Decimal;
 const app = new OpenAPIHono()
 
 // POST /imobzi/preview

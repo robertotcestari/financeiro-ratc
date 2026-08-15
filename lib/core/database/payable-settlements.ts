@@ -1,5 +1,5 @@
-import { Prisma } from '@/app/generated/prisma';
-import type { PayablePaymentMethod } from '@/app/generated/prisma';
+import { Prisma } from '@/app/generated/prisma/client';
+import type { PayablePaymentMethod } from '@/app/generated/prisma/client';
 import { prisma } from './client';
 import { categorizeTransaction } from './categorization';
 import { getPayableById, recalculatePayableTotals } from './payables';

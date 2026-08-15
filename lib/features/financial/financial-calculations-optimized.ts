@@ -1,7 +1,9 @@
 import { prisma } from '@/lib/core/database/client';
-import { Decimal } from '@prisma/client/runtime/library';
 import { createOrUpdateSnapshot } from '@/lib/core/database/account-snapshots';
-import type { BankAccount } from '@/app/generated/prisma';
+import { Prisma, type BankAccount } from '@/app/generated/prisma/client';
+
+type Decimal = Prisma.Decimal;
+const Decimal = Prisma.Decimal;
 
 /**
  * Calcula o saldo atual usando snapshots como base para otimização

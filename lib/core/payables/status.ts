@@ -1,7 +1,7 @@
 import type {
   PayableInstallmentStatus,
   PayableStatus,
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 import { roundMoney } from './money';
 
 export function computeInstallmentStatus(params: {

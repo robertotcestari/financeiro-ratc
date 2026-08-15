@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AccountType } from '@/app/generated/prisma';
+import { AccountType } from '@/app/generated/prisma/browser';
 import { deleteBankAccount } from '../actions';
 import { Button } from '@/components/ui/button';
 

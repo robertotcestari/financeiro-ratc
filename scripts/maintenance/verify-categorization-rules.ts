@@ -1,6 +1,7 @@
-import { PrismaClient } from '@/app/generated/prisma';
+import { PrismaClient } from '@/app/generated/prisma/client';
+import { createPrismaClient } from '@/lib/core/database/client';
 
-const prisma = new PrismaClient();
+const prisma = createPrismaClient();
 
 async function verifyCategorizationRules() {
   console.log('🔍 Verifying categorization rules with property links...\n');

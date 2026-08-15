@@ -7,7 +7,7 @@ import type {
   OFXTransaction,
   OFXParseResult,
 } from './types';
-import type { Prisma } from '@/app/generated/prisma';
+import type { Prisma } from '@/app/generated/prisma/client';
 import type {
   ImportPreview,
   TransactionPreview,
@@ -18,7 +18,7 @@ import type {
 import type {
   Transaction,
   ImportBatch,
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 
 /**
  * Core import service that orchestrates the complete OFX import process

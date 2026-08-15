@@ -3,7 +3,13 @@ import type { NextConfig } from 'next';
 const skipBuildChecks = process.env.SKIP_BUILD_CHECKS === 'true';
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ['pino', 'pino-pretty'],
+  serverExternalPackages: [
+    'pino',
+    'pino-pretty',
+    '@prisma/client',
+    '@prisma/adapter-mariadb',
+    'mariadb',
+  ],
   images: {
     remotePatterns: [
       {

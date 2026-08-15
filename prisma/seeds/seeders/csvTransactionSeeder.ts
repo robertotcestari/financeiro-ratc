@@ -1,8 +1,9 @@
-import { PrismaClient } from '@/app/generated/prisma';
+import { PrismaClient } from '@/app/generated/prisma/client';
 import fs from 'fs';
 import path from 'path';
+import { createPrismaClient } from '@/lib/core/database/client';
 
-const prisma = new PrismaClient();
+const prisma = createPrismaClient();
 
 interface CSVTransaction {
   id: string;

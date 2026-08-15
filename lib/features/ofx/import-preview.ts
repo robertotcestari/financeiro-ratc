@@ -8,7 +8,7 @@ import type {
   DuplicateDetectionResult,
   DuplicateMatch,
 } from './types';
-import type { Category, Property, BankAccount } from '@/app/generated/prisma';
+import type { Category, Property, BankAccount } from '@/app/generated/prisma/client';
 
 /**
  * Import preview and validation service

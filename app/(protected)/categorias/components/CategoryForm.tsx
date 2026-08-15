@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Category, CategoryType } from '@/app/generated/prisma'
+import { Category, CategoryType } from '@/app/generated/prisma/browser'
 import { createCategory, editCategory } from '../actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

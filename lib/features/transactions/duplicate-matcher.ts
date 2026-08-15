@@ -1,4 +1,4 @@
-import type { Transaction } from '@/app/generated/prisma';
+import type { Transaction } from '@/app/generated/prisma/client';
 
 export interface DuplicateMatchInput {
   /**

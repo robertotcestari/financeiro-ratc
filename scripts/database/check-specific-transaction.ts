@@ -1,6 +1,7 @@
-import { PrismaClient } from '@/app/generated/prisma'
+import { createPrismaClient } from '@/lib/core/database/client';
+import { PrismaClient } from '@/app/generated/prisma/client'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 async function checkSpecificTransaction() {
   console.log('🔍 VERIFICANDO TRANSAÇÃO ESPECÍFICA: 1370.75 de 30/06/2025')

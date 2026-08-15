@@ -1,4 +1,4 @@
-import { PrismaClient, BankAccount, AccountType } from '@/app/generated/prisma';
+import { PrismaClient, BankAccount, AccountType } from '@/app/generated/prisma/client';
 import { prisma as defaultPrisma } from '@/lib/core/database/client';
 
 export interface CreateBankAccountData {

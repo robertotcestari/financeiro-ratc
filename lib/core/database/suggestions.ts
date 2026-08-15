@@ -2,7 +2,7 @@ import { prisma } from './client';
 import type {
   TransactionSuggestion,
   CategorizationRule,
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 
 /**
  * Return all suggestions for a given processed transaction, including related info.

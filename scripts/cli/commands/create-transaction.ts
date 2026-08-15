@@ -3,8 +3,8 @@
  * Creates manual transactions in the financial system
  */
 
+import { Prisma } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/core/database/client';
-import { Decimal } from '@prisma/client/runtime/library';
 import {
   printError,
   printSuccess,
@@ -14,6 +14,8 @@ import {
   formatCurrency,
   formatDate,
 } from '../utils/output';
+
+const Decimal = Prisma.Decimal;
 
 export interface CreateTransactionOptions {
   account: string;

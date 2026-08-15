@@ -1,6 +1,7 @@
-import { PrismaClient } from '@/app/generated/prisma'
+import { createPrismaClient } from '@/lib/core/database/client';
+import { PrismaClient } from '@/app/generated/prisma/client'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 async function debugTransactions() {
   const transactions = await prisma.transaction.findMany()

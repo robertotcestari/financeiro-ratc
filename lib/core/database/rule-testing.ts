@@ -7,7 +7,7 @@ import type {
   Property,
   BankAccount,
   Prisma
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 import { RuleCriteria, validateRuleCriteria } from './rule-types';
 import { RuleEngine } from './rule-engine';
 

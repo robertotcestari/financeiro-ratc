@@ -1,4 +1,3 @@
-import { PrismaClient } from '@/app/generated/prisma';
 import { seedBankAccounts } from './seeds/seeders/bankAccountSeeder';
 import { seedCategories } from './seeds/seeders/categorySeeder';
 import { seedCities } from './seeds/seeders/citySeeder';
@@ -8,8 +7,9 @@ import { seedCSVTransactions } from './seeds/seeders/csvTransactionSeeder';
 import { seedLinkedProcessedTransactions } from './seeds/seeders/linkedProcessedTransactionSeeder';
 import { seedAllProcessedTransactions } from './seeds/seeders/allProcessedTransactionSeeder';
 import { seedCategorizationRulesFromInstituto } from './seeds/seeders/categorizationRuleSeederFromInstituto';
+import { createPrismaClient } from '@/lib/core/database/client';
 
-const prisma = new PrismaClient();
+const prisma = createPrismaClient();
 
 async function main() {
   console.log('🌱 Starting seed...');

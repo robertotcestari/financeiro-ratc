@@ -1,7 +1,7 @@
 'use server'
 
 import { prisma } from '@/lib/core/database/client'
-import { City } from '@/app/generated/prisma'
+import { City } from '@/app/generated/prisma/client'
 import { revalidatePath } from 'next/cache'
 
 export async function getCities(): Promise<City[]> {
