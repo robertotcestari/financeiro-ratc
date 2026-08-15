@@ -15,7 +15,7 @@ import type {
   OFXParseResult,
   DuplicateDetectionResult,
 } from '@/lib/features/ofx/types';
-import type { BankAccount, Category, Property } from '@/app/generated/prisma';
+import type { BankAccount, Category, Property } from '@/app/generated/prisma/client';
 
 // Mock dependencies
 vi.mock('@/lib/core/database/client', () => ({

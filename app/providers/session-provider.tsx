@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useSession } from "@/lib/core/auth/auth-client";
 
 interface SessionProviderProps {

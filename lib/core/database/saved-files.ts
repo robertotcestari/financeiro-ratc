@@ -1,5 +1,5 @@
 import { prisma } from './client';
-import type { SavedFile, SavedFileType } from '@/app/generated/prisma';
+import type { SavedFile, SavedFileType } from '@/app/generated/prisma/client';
 
 export async function createSavedFile(params: {
   fileName: string;

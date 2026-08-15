@@ -52,7 +52,7 @@ export default function DRESummaryEmailTableMulti({ months }: DRESummaryEmailTab
     const header = ['Linha', ...months.map((m) => m.label)].join(' | ');
     const divider = ['---', ...months.map(() => '---')].join(' | ');
     const lines = rowsData.map((r) => [r.label, ...r.values].join(' | '));
-    return ['| ' + header + ' |', '| ' + divider + ' |', ...lines.map((l) => '| ' + l + ' |')].join('\n');
+    return [`| ${header} |`, `| ${divider} |`, ...lines.map((l) => `| ${l} |`)].join('\n');
   };
 
   const buildHTML = (): string => {

@@ -2,6 +2,7 @@
   "kiroAgent.configureMCP": "Enabled",
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "cSpell.words": ["nostream"]
-  // "yaml.customTags": ["!Ref", "!Sub", "!ImportValue", "!ENV", "env.RELEASE_ID"]
+  "cSpell.words": ["nostream"],
+  "biome.enabled": true,
+  "eslint.enable": false
 }

@@ -21,7 +21,7 @@ import {
 import { formatCurrency } from '@/lib/formatters';
 import { isoDate } from '@/lib/core/payables/dates';
 import { paymentMethodLabels } from '@/lib/core/payables/labels';
-import type { PayablePaymentMethod } from '@/app/generated/prisma';
+import type { PayablePaymentMethod } from '@/app/generated/prisma/browser';
 import type { InstallmentListItem } from '@/lib/core/database/payables';
 import { formatDateStringBR } from '@/lib/utils/date-helpers';
 

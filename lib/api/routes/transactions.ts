@@ -1,10 +1,10 @@
+import { Prisma } from '@/app/generated/prisma/client';
 import { OpenAPIHono, createRoute } from '@hono/zod-openapi'
 import { z } from '@hono/zod-openapi'
 import {
   TransactionListQuerySchema,
   TransactionListResponseSchema,
   TransactionDetailResponseSchema,
-  TransactionSchema,
   CategorizeInputSchema,
   BulkCategorizeInputSchema,
   ReviewInputSchema,
@@ -18,8 +18,8 @@ import { ErrorSchema } from '../schemas/common'
 import { getProcessedTransactionsByPeriod } from '@/lib/core/database/transactions'
 import { categorizeTransaction, bulkCategorizeTransactions } from '@/lib/core/database/categorization'
 import { prisma } from '@/lib/core/database/client'
-import { Decimal } from '@prisma/client/runtime/library'
 
+const Decimal = Prisma.Decimal;
 const app = new OpenAPIHono()
 
 // GET /transactions
@@ -101,7 +101,7 @@ app.openapi(createTxRoute, async (c) => {
 
   try {
     const txDate = new Date(date)
-    if (isNaN(txDate.getTime())) {
+    if (Number.isNaN(txDate.getTime())) {
       return c.json({ error: 'Data inválida. Use formato YYYY-MM-DD.', status: 400 }, 400)
     }
 

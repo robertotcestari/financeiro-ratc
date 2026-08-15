@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RefreshCw, FileText, CheckCircle, AlertTriangle, Info, ChevronDown, ChevronUp } from 'lucide-react';
-import { TransferDetail } from '../actions';
+import type { TransferDetail } from '../actions';
 import { useState } from 'react';
 
 interface TransferStats {

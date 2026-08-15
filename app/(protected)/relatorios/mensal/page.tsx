@@ -55,8 +55,8 @@ export default async function EmailRascunhoPage({
   const previousMonth = today.getMonth(); // getMonth() retorna 0-11, então já é o mês anterior
   const previousYear = previousMonth === 0 ? today.getFullYear() - 1 : today.getFullYear();
   
-  const mes = params.mes ? parseInt(params.mes) : (previousMonth === 0 ? 12 : previousMonth);
-  const ano = params.ano ? parseInt(params.ano) : previousYear;
+  const mes = params.mes ? parseInt(params.mes, 10) : (previousMonth === 0 ? 12 : previousMonth);
+  const ano = params.ano ? parseInt(params.ano, 10) : previousYear;
   const ultimoDiaMes = new Date(ano, mes, 0);
 
   // Helper to compute previous months with year handling

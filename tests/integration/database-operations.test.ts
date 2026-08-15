@@ -1,5 +1,6 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { Decimal } from '@prisma/client/runtime/library';
+import { Prisma } from '@/app/generated/prisma/client';
+const Decimal = Prisma.Decimal;
 
 // Mock Prisma client with proper structure
 const mockPrismaClient = {

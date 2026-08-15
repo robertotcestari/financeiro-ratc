@@ -3,7 +3,7 @@ import type {
   PayablePaymentMethod,
   PayableRecurrenceFrequency,
   PayableStatus,
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 
 export const payableStatusLabels: Record<PayableStatus, string> = {
   OPEN: 'Em aberto',

@@ -7,8 +7,8 @@ import type {
   Property,
   BankAccount,
   Prisma
-} from '@/app/generated/prisma';
-import { RuleCriteria, validateRuleCriteria } from './rule-types';
+} from '@/app/generated/prisma/client';
+import { type RuleCriteria, validateRuleCriteria } from './rule-types';
 import { RuleEngine } from './rule-engine';
 
 type ProcessedTransactionWithRelations = ProcessedTransaction & {
@@ -171,7 +171,7 @@ export class RuleTestingService {
 
       if (evaluationResult.length > 0) {
         const suggestion = evaluationResult[0];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // biome-ignore lint/suspicious/noExplicitAny: rule criteria evaluation is untyped
         const matchingCriteria = this.identifyMatchingCriteria(tx as any, criteria);
         
         matches.push({
@@ -306,7 +306,7 @@ export class RuleTestingService {
 
       if (evaluationResult.length > 0) {
         const suggestion = evaluationResult[0];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // biome-ignore lint/suspicious/noExplicitAny: rule criteria evaluation is untyped
         const matchingCriteria = this.identifyMatchingCriteria(tx as any, criteria);
         
         matches.push({
@@ -489,7 +489,7 @@ export class RuleTestingService {
    * Helper method to identify which criteria matched for a transaction
    */
   private identifyMatchingCriteria(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: rule criteria evaluation is untyped
     tx: any,
     criteria: RuleCriteria
   ): string[] {
@@ -525,7 +525,7 @@ export class RuleTestingService {
    * Helper method to update criteria statistics
    */
   private updateCriteriaStats(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: rule criteria evaluation is untyped
     tx: any,
     criteria: RuleCriteria,
     stats: Record<string, { tested: number; matched: number }>

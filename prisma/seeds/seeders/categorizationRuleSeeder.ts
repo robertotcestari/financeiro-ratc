@@ -1,4 +1,4 @@
-import { PrismaClient } from '@/app/generated/prisma';
+import { PrismaClient } from '@/app/generated/prisma/client';
 import { RuleCriteria } from '../../lib/database/rule-types';
 
 export async function seedCategorizationRules(prisma: PrismaClient) {

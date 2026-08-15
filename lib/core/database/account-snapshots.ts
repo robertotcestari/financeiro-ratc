@@ -1,6 +1,8 @@
 import { prisma } from './client';
-import { Decimal } from '@prisma/client/runtime/library';
-import type { AccountSnapshot } from '@/app/generated/prisma';
+import { Prisma, type AccountSnapshot } from '@/app/generated/prisma/client';
+
+type Decimal = Prisma.Decimal;
+const Decimal = Prisma.Decimal;
 
 /**
  * Interface para resultado de cálculo de snapshot

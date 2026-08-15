@@ -1,9 +1,10 @@
 import { useRef, useCallback } from 'react';
-import type { Row, RowSelectionState } from '@tanstack/react-table';
+import type { RowSelectionState } from '@tanstack/react-table';
+import type { LegacyReactTable, LegacyRow } from '@tanstack/react-table/legacy';
 import type { Transaction } from '../types';
 
 interface UseRowSelectionProps {
-  tableRef: React.MutableRefObject<ReturnType<typeof import('@tanstack/react-table').useReactTable<Transaction>> | null>;
+  tableRef: React.MutableRefObject<LegacyReactTable<Transaction> | null>;
   editing: {
     editingId: string | null;
     startEdit: (transaction: Transaction) => void;
@@ -27,8 +28,8 @@ export function useRowSelection({ tableRef, editing }: UseRowSelectionProps) {
   // Handle shift+click multi-selection
   const handleShiftSelection = useCallback((
     currentIndex: number,
-    row: Row<Transaction>,
-    rows: Row<Transaction>[]
+    row: LegacyRow<Transaction>,
+    rows: LegacyRow<Transaction>[]
   ) => {
     const tableInst = tableRef.current;
     if (!tableInst || lastSelectedIndexRef.current === null) return false;
@@ -55,7 +56,7 @@ export function useRowSelection({ tableRef, editing }: UseRowSelectionProps) {
 
   // Handle single row selection
   const handleSingleRowSelection = useCallback((
-    row: Row<Transaction>,
+    row: LegacyRow<Transaction>,
     fromCheckbox: boolean
   ) => {
     const tableInst = tableRef.current;
@@ -102,7 +103,7 @@ export function useRowSelection({ tableRef, editing }: UseRowSelectionProps) {
   const handleRowSelectClick = useCallback(
     (
       e: React.MouseEvent<HTMLElement>,
-      row: Row<Transaction>,
+      row: LegacyRow<Transaction>,
       fromCheckbox: boolean = false
     ) => {
       console.log('Entrou no handleRowSelect');
@@ -145,15 +146,14 @@ export function useRowSelection({ tableRef, editing }: UseRowSelectionProps) {
       lastSelectedIndexRef.current = currentIndex;
       clearTextSelection();
     },
-    [tableRef, handleShiftSelection, handleSingleRowSelection]
+    [tableRef, handleShiftSelection, handleSingleRowSelection, clearTextSelection]
   );
 
   // Prevent text selection on mousedown
   const handleRowMouseDown = useCallback((e: React.MouseEvent<HTMLElement>) => {
     const target = e.target as HTMLElement | null;
     if (
-      target &&
-      target.closest(
+      target?.closest(
         'button, a, input, select, textarea, [role="button"], [contenteditable="true"], .no-row-select'
       )
     ) {

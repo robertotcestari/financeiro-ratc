@@ -1,6 +1,6 @@
 'use server';
 
-import { createInadimplente, listInadimplentes, toggleInadimplenteSettled, deleteInadimplente, InadimplenteData } from '@/lib/core/database/inadimplentes';
+import { createInadimplente, listInadimplentes, toggleInadimplenteSettled, deleteInadimplente, type InadimplenteData } from '@/lib/core/database/inadimplentes';
 import { prisma } from '@/lib/core/database/client';
 import { revalidatePath } from 'next/cache';
 

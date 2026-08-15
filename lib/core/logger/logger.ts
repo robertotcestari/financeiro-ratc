@@ -1,5 +1,5 @@
 import pino from 'pino';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 /**
  * High-performance structured logger using Pino.

@@ -1,9 +1,9 @@
-import { Prisma } from '@/app/generated/prisma';
+import type { Prisma } from '@/app/generated/prisma/client';
 import type {
   PayableInstallmentStatus,
   PayablePaymentMethod,
   PayableStatus,
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 import { prisma } from './client';
 import { PayableError } from '@/lib/core/payables/errors';
 import { utcDateFromIso } from '@/lib/core/payables/dates';

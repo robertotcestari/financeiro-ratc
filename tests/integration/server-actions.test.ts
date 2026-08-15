@@ -41,7 +41,7 @@ const CategoryType = {
   CONTROLE: 'CONTROLE',
 } as const;
 
-vi.mock('@/app/generated/prisma', () => ({
+vi.mock('@/app/generated/prisma/client', () => ({
   CategoryType,
 }));
 

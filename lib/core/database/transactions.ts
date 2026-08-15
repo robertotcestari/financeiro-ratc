@@ -5,8 +5,8 @@ import type {
   Category,
   BankAccount,
   Property,
-} from '@/app/generated/prisma';
-import { CategoryType } from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
+import { CategoryType } from '@/app/generated/prisma/client';
 
 export interface AccountBalanceResult {
   bankAccountId: string;

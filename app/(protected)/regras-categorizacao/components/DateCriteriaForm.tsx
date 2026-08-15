@@ -1,7 +1,5 @@
 'use client';
 
-import React from 'react';
-
 import { useState } from 'react';
 import {
   FormControl,
@@ -33,14 +31,6 @@ export default function DateCriteriaForm({ form }: DateCriteriaFormProps) {
   // Initialize state from form values
   const [useDayRange, setUseDayRange] = useState(() => Boolean(dateCriteria.dayRange));
   const [useMonths, setUseMonths] = useState(() => Boolean(dateCriteria.months && dateCriteria.months.length > 0));
-
-  // Update state when form values change
-  React.useEffect(() => {
-    const newCriteria = form.getValues('criteria') || {};
-    const newDateCriteria = newCriteria.date || {};
-    setUseDayRange(Boolean(newDateCriteria.dayRange));
-    setUseMonths(Boolean(newDateCriteria.months && newDateCriteria.months.length > 0));
-  }, [form]);
 
   const handleDayRangeToggle = (enabled: boolean) => {
     setUseDayRange(enabled);
@@ -133,7 +123,7 @@ export default function DateCriteriaForm({ form }: DateCriteriaFormProps) {
                       min="1"
                       max="31"
                       value={dateCriteria.dayRange?.start || 1}
-                      onChange={(e) => handleDayRangeChange('start', parseInt(e.target.value) || 1)}
+                      onChange={(e) => handleDayRangeChange('start', parseInt(e.target.value, 10) || 1)}
                     />
                   </FormControl>
                 </FormItem>
@@ -146,7 +136,7 @@ export default function DateCriteriaForm({ form }: DateCriteriaFormProps) {
                       min="1"
                       max="31"
                       value={dateCriteria.dayRange?.end || 31}
-                      onChange={(e) => handleDayRangeChange('end', parseInt(e.target.value) || 31)}
+                      onChange={(e) => handleDayRangeChange('end', parseInt(e.target.value, 10) || 31)}
                     />
                   </FormControl>
                 </FormItem>

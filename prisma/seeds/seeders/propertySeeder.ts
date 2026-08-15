@@ -1,4 +1,4 @@
-import { PrismaClient } from '@/app/generated/prisma'
+import { PrismaClient } from '@/app/generated/prisma/client'
 import properties from '../data/properties.json'
 
 type PropertyData = {

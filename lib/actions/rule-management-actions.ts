@@ -17,6 +17,7 @@ import {
 import { ruleEngine } from '@/lib/core/database/rule-engine';
 import type { RuleCriteria } from '@/lib/core/database/rule-types';
 import { createActionLogger } from '@/lib/core/logger/logger';
+import type { CategorizationRule } from '@/app/generated/prisma/client';
 
 // =============== Rule CRUD Actions ===============
 
@@ -322,7 +323,7 @@ export async function applyRuleToTransactionsAction(
 
 export async function getActiveRulesAction(): Promise<{
   success: boolean;
-  data?: import('../../app/generated/prisma').CategorizationRule[];
+  data?: CategorizationRule[];
   error?: string;
 }> {
   try {

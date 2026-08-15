@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { prisma } from '@/lib/core/database/client'
-import { CategoryType } from '@/app/generated/prisma'
+import { CategoryType } from '@/app/generated/prisma/client'
 
 const createCategorySchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),

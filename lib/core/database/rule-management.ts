@@ -4,7 +4,7 @@ import type {
   Category,
   Property,
   Prisma
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 import { validateRuleCriteria } from './rule-types';
 import type { RuleCriteria } from './rule-types';
 

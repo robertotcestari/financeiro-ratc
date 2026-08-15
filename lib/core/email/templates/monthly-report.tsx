@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {
   Html,
   Head,
@@ -9,7 +9,7 @@ import {
   Heading,
   Hr,
   Link,
-} from '@react-email/components';
+} from 'react-email';
 
 interface Inadimplente {
   id: string;

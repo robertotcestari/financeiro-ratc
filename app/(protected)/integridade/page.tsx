@@ -33,8 +33,8 @@ export default async function IntegrityPage({ searchParams }: PageProps) {
     redirect(`/integridade?year=${defaultYear}&month=${defaultMonth}`);
   }
 
-  const year = params.year ? parseInt(params.year) : undefined;
-  const month = params.month ? parseInt(params.month) : undefined;
+  const year = params.year ? parseInt(params.year, 10) : undefined;
+  const month = params.month ? parseInt(params.month, 10) : undefined;
   
   // Create a unique key based on search params to reset Suspense boundary
   const suspenseKey = `${year || 'all'}-${month || 'all'}`;

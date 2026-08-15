@@ -52,7 +52,7 @@ export default function InadimplentesTable({
   };
 
   const fmt = (n: number) => {
-    if (isNaN(n) || n === null || n === undefined) return 'R$ 0,00';
+    if (Number.isNaN(n) || n === null || n === undefined) return 'R$ 0,00';
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
@@ -105,7 +105,7 @@ export default function InadimplentesTable({
             <tbody>
               {visibleItems.map((item, index) => {
                 // Defensive: skip if item or item.data is null/undefined
-                if (!item || !item.data) {
+                if (!item?.data) {
                   return (
                     <tr
                       key={item?.id ?? index}

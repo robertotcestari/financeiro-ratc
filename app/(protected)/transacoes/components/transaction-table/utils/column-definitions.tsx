@@ -1,4 +1,4 @@
-import { createColumnHelper, type ColumnDef } from '@tanstack/react-table';
+import { type LegacyColumnDef, type LegacyRow, legacyCreateColumnHelper } from '@tanstack/react-table/legacy';
 import { formatCurrency, formatDate } from '@/lib/formatters';
 import { Input } from '@/components/ui/input';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
@@ -14,11 +14,10 @@ import {
 import { categoryRequiresProperty } from './category-requires-property';
 import { AlertTriangle } from 'lucide-react';
 import type { Transaction } from '../types';
-import type { Row } from '@tanstack/react-table';
 
 import { useEffect, useRef, useState } from 'react';
 
-const columnHelper = createColumnHelper<Transaction>();
+const columnHelper = legacyCreateColumnHelper<Transaction>();
 
 interface ColumnDefinitionProps {
   categoryOptions: ComboboxOption[];
@@ -45,7 +44,7 @@ interface ColumnDefinitionProps {
   handleMarkReviewed: (id: string, reviewed: boolean) => Promise<void>;
   onSelectClick?: (
     e: React.MouseEvent<HTMLElement>,
-    row: Row<Transaction>,
+    row: LegacyRow<Transaction>,
     fromCheckbox?: boolean
   ) => void;
   ensureRowSelected?: (rowId: string) => void;
@@ -70,8 +69,8 @@ function InlineDetailsEditor({
   // Keep parent live ref updated without thrashing renders
   useEffect(() => {
     onChangeLive(value);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: column helpers are stable
+  }, [value, onChangeLive]);
 
   const commitLive = (next: string) => {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -132,7 +131,7 @@ export function createColumnDefinitions({
   handleMarkReviewed,
   onSelectClick,
   ensureRowSelected,
-}: ColumnDefinitionProps): ColumnDef<Transaction>[] {
+}: ColumnDefinitionProps): LegacyColumnDef<Transaction>[] {
   return [
     // Selection column
     columnHelper.display({
@@ -169,11 +168,11 @@ export function createColumnDefinitions({
           {formatDate(getValue() as Date)}
         </div>
       ),
-      sortingFn: 'datetime',
+      sortFn: 'datetime',
       size: 70,
       minSize: 70,
       maxSize: 70,
-    }) as ColumnDef<Transaction>,
+    }) as LegacyColumnDef<Transaction>,
 
     // Suggestion indicator column
     columnHelper.display({
@@ -204,7 +203,7 @@ export function createColumnDefinitions({
       size: 200,
       minSize: 200,
       maxSize: 200,
-    }) as ColumnDef<Transaction>,
+    }) as LegacyColumnDef<Transaction>,
 
     // Details column (editable user-provided details)
     columnHelper.accessor('details', {
@@ -254,7 +253,7 @@ export function createColumnDefinitions({
       size: 140,
       minSize: 140,
       maxSize: 140,
-    }) as ColumnDef<Transaction>,
+    }) as LegacyColumnDef<Transaction>,
 
     // Bank account column
     columnHelper.accessor('transaction.bankAccount.name', {
@@ -271,7 +270,7 @@ export function createColumnDefinitions({
       size: 110,
       minSize: 110,
       maxSize: 110,
-    }) as ColumnDef<Transaction>,
+    }) as LegacyColumnDef<Transaction>,
 
     // Type column
     columnHelper.accessor('category.type', {
@@ -306,7 +305,7 @@ export function createColumnDefinitions({
       size: 45,
       minSize: 45,
       maxSize: 45,
-    }) as ColumnDef<Transaction>,
+    }) as LegacyColumnDef<Transaction>,
 
     // Category column
     columnHelper.accessor('category', {
@@ -375,7 +374,7 @@ export function createColumnDefinitions({
       size: 165,
       minSize: 165,
       maxSize: 165,
-    }) as ColumnDef<Transaction>,
+    }) as LegacyColumnDef<Transaction>,
 
     // Property column
     columnHelper.accessor('property', {
@@ -457,7 +456,7 @@ export function createColumnDefinitions({
       size: 100,
       minSize: 100,
       maxSize: 100,
-    }) as ColumnDef<Transaction>,
+    }) as LegacyColumnDef<Transaction>,
 
     // Amount column
     columnHelper.accessor('transaction.amount', {
@@ -477,7 +476,7 @@ export function createColumnDefinitions({
       size: 85,
       minSize: 85,
       maxSize: 85,
-    }) as ColumnDef<Transaction>,
+    }) as LegacyColumnDef<Transaction>,
 
     // Status column
     columnHelper.accessor('isReviewed', {
@@ -499,7 +498,7 @@ export function createColumnDefinitions({
       size: 80,
       minSize: 80,
       maxSize: 80,
-    }) as ColumnDef<Transaction>,
+    }) as LegacyColumnDef<Transaction>,
 
     // Actions column
     columnHelper.display({

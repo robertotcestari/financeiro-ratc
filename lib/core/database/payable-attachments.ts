@@ -1,7 +1,7 @@
 import { prisma } from './client';
 import { PayableError } from '@/lib/core/payables/errors';
 import { uploadPdfToS3 } from '@/lib/core/storage/s3';
-import type { PayableAttachmentPurpose } from '@/app/generated/prisma';
+import type { PayableAttachmentPurpose } from '@/app/generated/prisma/client';
 
 export async function listPayableAttachments(payableId: string) {
   return prisma.payableAttachment.findMany({

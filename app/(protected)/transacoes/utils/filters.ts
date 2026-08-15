@@ -1,4 +1,4 @@
-import type { Prisma } from '@/app/generated/prisma';
+import type { Prisma } from '@/app/generated/prisma/client';
 import type { TransactionSearchParams } from '../types';
 
 export const TRANSACTION_ORDER_BY: Prisma.ProcessedTransactionOrderByWithRelationInput[] =

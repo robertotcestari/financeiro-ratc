@@ -1,6 +1,6 @@
 import { prisma } from './client';
-import { CategoryType } from '@/app/generated/prisma';
-import type { Category, BankAccount } from '@/app/generated/prisma';
+import { CategoryType } from '@/app/generated/prisma/client';
+import type { Category, BankAccount } from '@/app/generated/prisma/client';
 
 export interface DRELineData {
   id: string;
@@ -107,7 +107,7 @@ async function getAccountBalancesForDRE(
   const missingSnapshotIds = bankAccounts
     .filter((acc) => {
       const snap = snapshotMap.get(acc.id);
-      return !snap || !snap.closingBalance;
+      return !snap?.closingBalance;
     })
     .map((acc) => acc.id);
 

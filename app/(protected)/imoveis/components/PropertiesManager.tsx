@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Property, City } from '@/app/generated/prisma';
+import type { Property, City } from '@/app/generated/prisma/browser';
 import PropertyForm from './PropertyForm';
 import PropertyList from './PropertyList';
 import { createProperty, updateProperty, deleteProperty } from '../actions';

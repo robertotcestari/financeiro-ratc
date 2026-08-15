@@ -1,9 +1,10 @@
-import { PrismaClient } from '@/app/generated/prisma'
+import { createPrismaClient } from '@/lib/core/database/client';
+import { PrismaClient } from '@/app/generated/prisma/client'
 import * as fs from 'fs'
 import * as path from 'path'
 import { parse } from 'csv-parse/sync'
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 interface ProcessedCSVRow {
   year: string

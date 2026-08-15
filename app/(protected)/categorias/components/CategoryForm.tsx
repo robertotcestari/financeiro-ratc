@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Category, CategoryType } from '@/app/generated/prisma'
+import { type Category, CategoryType } from '@/app/generated/prisma/browser'
 import { createCategory, editCategory } from '../actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -168,7 +168,7 @@ export default function CategoryForm({ category, categories, onCancel }: Categor
             id="orderIndex"
             min="0"
             value={formData.orderIndex}
-            onChange={(e) => setFormData(prev => ({ ...prev, orderIndex: parseInt(e.target.value) || 0 }))}
+            onChange={(e) => setFormData(prev => ({ ...prev, orderIndex: parseInt(e.target.value, 10) || 0 }))}
           />
         </div>
       </div>

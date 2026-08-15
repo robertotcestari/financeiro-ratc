@@ -1,6 +1,6 @@
 'use client';
 
-import { Transaction } from '@/app/generated/prisma';
+import type { Transaction } from '@/app/generated/prisma/browser';
 import { useState, useMemo, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -34,17 +34,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  useReactTable,
+  flexRender,
+  type ColumnFiltersState,
+  type RowSelectionState,
+  type SortingState,
+} from '@tanstack/react-table';
+import {
+  useLegacyTable,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  flexRender,
-  type ColumnDef,
-  type SortingState,
-  type ColumnFiltersState,
-  type RowSelectionState,
-} from '@tanstack/react-table';
+  type LegacyColumnDef,
+} from '@tanstack/react-table/legacy';
 
 const TransactionEditDialog = dynamic(() =>
   import('./TransactionEditDialog').then((mod) => mod.TransactionEditDialog)
@@ -114,7 +116,7 @@ export function TransactionList({
   };
 
   // Column definitions
-  const columns = useMemo<ColumnDef<SerializedTransaction>[]>(
+  const columns = useMemo<LegacyColumnDef<SerializedTransaction>[]>(
     () => [
       {
         id: 'select',
@@ -150,7 +152,7 @@ export function TransactionList({
         accessorKey: 'date',
         header: 'Data',
         cell: ({ getValue }) => formatDate(getValue() as Date),
-        sortingFn: 'datetime',
+        sortFn: 'datetime',
       },
       {
         accessorKey: 'description',
@@ -251,7 +253,7 @@ export function TransactionList({
         },
       },
     ],
-    [openEditDialog]
+    [openEditDialog, formatDate, formatCurrency]
   );
 
   // Filter data based on type
@@ -273,9 +275,9 @@ export function TransactionList({
         id: 'initial-balance',
         date: new Date(
           searchParams.ano
-            ? parseInt(searchParams.ano)
+            ? parseInt(searchParams.ano, 10)
             : new Date().getFullYear(),
-          searchParams.mes ? parseInt(searchParams.mes) - 1 : 0,
+          searchParams.mes ? parseInt(searchParams.mes, 10) - 1 : 0,
           0,
           23,
           59,
@@ -302,9 +304,9 @@ export function TransactionList({
         id: 'final-balance',
         date: new Date(
           searchParams.ano
-            ? parseInt(searchParams.ano)
+            ? parseInt(searchParams.ano, 10)
             : new Date().getFullYear(),
-          searchParams.mes ? parseInt(searchParams.mes) : 0,
+          searchParams.mes ? parseInt(searchParams.mes, 10) : 0,
           0,
           23,
           59,
@@ -330,7 +332,7 @@ export function TransactionList({
   }, [transactions, filterType, searchParams, initialBalance, bankAccountId]);
 
   // Table instance
-  const table = useReactTable({
+  const table = useLegacyTable({
     data: filteredData,
     columns,
     state: {
@@ -352,6 +354,7 @@ export function TransactionList({
     getFilteredRowModel: getFilteredRowModel(),
     initialState: {
       pagination: {
+        pageIndex: 0,
         pageSize: 200,
       },
     },
@@ -449,10 +452,10 @@ export function TransactionList({
 
     const now = new Date();
     const currentMonth = searchParams?.mes
-      ? parseInt(searchParams.mes)
+      ? parseInt(searchParams.mes, 10)
       : now.getMonth() + 1;
     const currentYear = searchParams?.ano
-      ? parseInt(searchParams.ano)
+      ? parseInt(searchParams.ano, 10)
       : now.getFullYear();
 
     let newMonth = currentMonth;
@@ -483,7 +486,7 @@ export function TransactionList({
 
   // Get current month name
   const getCurrentMonthName = () => {
-    const monthNum = searchParams?.mes ? parseInt(searchParams.mes) : null;
+    const monthNum = searchParams?.mes ? parseInt(searchParams.mes, 10) : null;
     if (!monthNum) return 'Todos os meses';
 
     const monthNames = [

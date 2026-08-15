@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { UnprocessedTransaction, processTransactionToUnified } from '../actions';
+import { type UnprocessedTransaction, processTransactionToUnified } from '../actions';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CheckCircle, PartyPopper, AlertTriangle, Lightbulb } from 'lucide-react';

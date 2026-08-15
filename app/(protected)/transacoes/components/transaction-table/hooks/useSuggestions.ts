@@ -6,13 +6,14 @@ import {
   dismissSuggestionsAction,
 } from '../../../actions';
 import type { Transaction } from '../types';
-import type { RowSelectionState, Table } from '@tanstack/react-table';
+import type { RowSelectionState } from '@tanstack/react-table';
+import type { LegacyTable } from '@tanstack/react-table/legacy';
 
 export interface UseSuggestionsReturn {
   isPending: boolean;
   handleGenerateSuggestions: (selectedIds: string[]) => Promise<void>;
-  handleApplySuggestions: (table: Table<Transaction>) => Promise<void>;
-  handleDismissSuggestions: (table: Table<Transaction>) => Promise<void>;
+  handleApplySuggestions: (table: LegacyTable<Transaction>) => Promise<void>;
+  handleDismissSuggestions: (table: LegacyTable<Transaction>) => Promise<void>;
 }
 
 export function useSuggestions(
@@ -66,7 +67,7 @@ export function useSuggestions(
   );
 
   const handleApplySuggestions = useCallback(
-    async (table: Table<Transaction>) => {
+    async (table: LegacyTable<Transaction>) => {
       const selectedRows = table.getSelectedRowModel().rows;
       const suggestionIds = selectedRows
         .flatMap((row) => row.original.suggestions || [])
@@ -83,7 +84,7 @@ export function useSuggestions(
   );
 
   const handleDismissSuggestions = useCallback(
-    async (table: Table<Transaction>) => {
+    async (table: LegacyTable<Transaction>) => {
       const selectedRows = table.getSelectedRowModel().rows;
       const suggestionIds = selectedRows
         .flatMap((row) => row.original.suggestions || [])

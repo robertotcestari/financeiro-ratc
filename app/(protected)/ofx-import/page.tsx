@@ -1,9 +1,9 @@
-import React from 'react';
+
 import OfxImportWizard from '@/components/features/ofx/OfxImportWizard';
 import { getBankAccounts } from '@/app/(protected)/cadastros/contas/actions';
 import { getCategoriesHierarchy } from '@/app/(protected)/categorias/actions';
 import { getProperties } from '@/app/(protected)/imoveis/actions';
-import type { BankAccount, Category, Property } from '@/app/generated/prisma';
+import type { BankAccount, Category, Property } from '@/app/generated/prisma/client';
 
 export const dynamic = 'force-dynamic';
 

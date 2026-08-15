@@ -8,7 +8,7 @@ import type {
   DuplicateDetectionResult,
   DuplicateMatch,
 } from './types';
-import type { Category, Property, BankAccount } from '@/app/generated/prisma';
+import type { Category, Property, BankAccount } from '@/app/generated/prisma/client';
 
 /**
  * Import preview and validation service
@@ -401,7 +401,7 @@ export class ImportPreviewService {
     }
 
     // Data type validation
-    if (transaction.date && isNaN(transaction.date.getTime())) {
+    if (transaction.date && Number.isNaN(transaction.date.getTime())) {
       errors.push({
         type: 'VALIDATION',
         code: 'INVALID_DATE',
@@ -411,7 +411,7 @@ export class ImportPreviewService {
       });
     }
 
-    if (typeof transaction.amount === 'number' && isNaN(transaction.amount)) {
+    if (typeof transaction.amount === 'number' && Number.isNaN(transaction.amount)) {
       errors.push({
         type: 'VALIDATION',
         code: 'INVALID_AMOUNT',

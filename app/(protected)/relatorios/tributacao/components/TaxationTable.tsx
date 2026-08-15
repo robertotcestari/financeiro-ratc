@@ -8,17 +8,17 @@ import {
   useState,
   useTransition,
 } from 'react';
+import { flexRender } from '@tanstack/react-table';
 import {
   getCoreRowModel,
-  useReactTable,
-  flexRender,
-  type ColumnDef,
-  type Row,
-} from '@tanstack/react-table';
+  useLegacyTable,
+  type LegacyColumnDef,
+  type LegacyRow,
+} from '@tanstack/react-table/legacy';
 
 declare module '@tanstack/react-table' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface ColumnMeta<TData, TValue> {
+  // biome-ignore lint/correctness/noUnusedVariables: reserved for future table options
+  interface ColumnMeta<TFeatures, TData, TValue> {
     align?: 'left' | 'center' | 'right';
   }
 }
@@ -351,7 +351,7 @@ export function TaxationTable({ rows, defaults }: TaxationTableProps) {
         setPendingField(null);
       }
     });
-  }, [defaults, startTransition]);
+  }, [defaults]);
 
   const toggleZero = useCallback(
     (row: AggregatedRow, forceZero: boolean) => {
@@ -396,10 +396,10 @@ export function TaxationTable({ rows, defaults }: TaxationTableProps) {
         }
       });
     },
-    [defaults, startTransition]
+    [defaults]
   );
 
-  const columns = useMemo<ColumnDef<TableRowData>[]>(
+  const columns = useMemo<LegacyColumnDef<TableRowData>[]>(
     () => [
       {
         header: 'Imóvel',
@@ -428,7 +428,7 @@ export function TaxationTable({ rows, defaults }: TaxationTableProps) {
             : 'Valores não tributáveis',
         accessorKey: field,
         meta: { align: 'right' as const },
-        cell: ({ row }: { row: Row<TableRowData> }) => {
+        cell: ({ row }: { row: LegacyRow<TableRowData> }) => {
           const baseRow = rowById[row.original.id];
           if (!baseRow) return null;
           const key = makeMapKey(baseRow);
@@ -493,7 +493,7 @@ export function TaxationTable({ rows, defaults }: TaxationTableProps) {
     [isPending, pendingField, persistValue, rowById, toggleZero, updateLocalValue]
   );
 
-  const table = useReactTable({
+  const table = useLegacyTable({
     data: tableData,
     columns,
     getCoreRowModel: getCoreRowModel(),

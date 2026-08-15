@@ -8,7 +8,7 @@ import {
 } from './actions';
 import { formatCurrency } from '@/lib/formatters';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import type { PayableInstallmentStatus } from '@/app/generated/prisma';
+import type { PayableInstallmentStatus } from '@/app/generated/prisma/client';
 
 export const dynamic = 'force-dynamic';
 

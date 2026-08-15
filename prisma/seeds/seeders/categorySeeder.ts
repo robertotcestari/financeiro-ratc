@@ -1,4 +1,4 @@
-import { PrismaClient, CategoryType } from '@/app/generated/prisma'
+import { PrismaClient, CategoryType } from '@/app/generated/prisma/client'
 import categoriesData from '../data/categories.json'
 
 interface CategoryData {

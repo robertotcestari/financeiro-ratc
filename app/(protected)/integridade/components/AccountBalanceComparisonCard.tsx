@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AccountBalanceComparison } from '../actions';
+import type { AccountBalanceComparison } from '../actions';
 import { Scale, BarChart3, CheckCircle, AlertTriangle, Lightbulb, BookOpen } from 'lucide-react';
 
 interface Props {

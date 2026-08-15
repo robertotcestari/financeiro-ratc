@@ -1,5 +1,5 @@
 import { prisma } from './client';
-import type { Prisma, ProcessedTransaction } from '@/app/generated/prisma';
+import type { Prisma, ProcessedTransaction } from '@/app/generated/prisma/client';
 
 /**
  * Categoriza uma transação processada por ID

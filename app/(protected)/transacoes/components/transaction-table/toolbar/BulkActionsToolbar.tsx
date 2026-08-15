@@ -14,12 +14,13 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Trash2 } from 'lucide-react';
-import type { RowSelectionState, Table } from '@tanstack/react-table';
+import type { RowSelectionState } from '@tanstack/react-table';
+import type { LegacyTable } from '@tanstack/react-table/legacy';
 import type { Transaction } from '../types';
 
 interface BulkActionsToolbarProps {
   rowSelection: RowSelectionState;
-  table: Table<Transaction>;
+  table: LegacyTable<Transaction>;
   isPending: boolean;
   categoryOptions: ComboboxOption[];
   propertyOptions: ComboboxOption[];

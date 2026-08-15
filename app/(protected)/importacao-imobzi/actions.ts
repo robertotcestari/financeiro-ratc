@@ -1,14 +1,17 @@
 'use server';
 
+import { Prisma } from '@/app/generated/prisma/client';
 import { prisma } from '@/lib/core/database/client';
 import {
   getImobziTransactions,
   getImobziTransactionsSummary,
 } from '@/lib/features/imobzi/api';
-import { Decimal } from '@prisma/client/runtime/library';
 import { revalidatePath } from 'next/cache';
 import { logger } from '@/lib/core/logger/logger';
 import { matchIncomingToExisting } from '@/lib/features/transactions/duplicate-matcher';
+
+type Decimal = Prisma.Decimal;
+const Decimal = Prisma.Decimal;
 
 /**
  * Fetch and preview Imobzi transactions

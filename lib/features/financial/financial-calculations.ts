@@ -1,5 +1,8 @@
 import { prisma } from '@/lib/core/database/client'
-import { Decimal } from '@prisma/client/runtime/library'
+import { Prisma } from '@/app/generated/prisma/client'
+
+type Decimal = Prisma.Decimal
+const Decimal = Prisma.Decimal
 
 /**
  * Calculate running balance for transactions

@@ -12,7 +12,7 @@
 ## Build, Test, and Development Commands
 - `npm run dev`: Start Next.js with Turbopack at `http://localhost:3000`.
 - `npm run build` / `npm start`: Build and serve production bundle.
-- `npm run lint`: ESLint (Next + TS rules).
+- `npm run lint`: Biome lint (Next + React recommended rules).
 - `npm test` / `npm run test:run`: Run Vitest (jsdom by default).
 - `npm run test:coverage`: Vitest with coverage.
 - `npm run test:e2e` (`:ui`): Playwright E2E (UI runner optional).
@@ -24,7 +24,7 @@
 - **React components**: PascalCase files/exports (e.g., `TransactionsTable.tsx`).
 - **Tests**: `*.test.ts(x)` or `*.spec.ts`. Place under `tests/*` or `e2e/*` as appropriate.
 - **Imports**: Use `@/` alias for repo root (see `tsconfig.json`).
-- **Linting**: Keep code passing `npm run lint`. No Prettier config is enforced; match existing style.
+- **Linting**: Keep code passing `npm run lint` (Biome). Format with `npm run format` when needed.
 
 ## Testing Guidelines
 - **Frameworks**: Vitest (+ Testing Library) for unit/integration; Playwright for E2E.
@@ -43,3 +43,13 @@
 
 ## Fechamento Mensal
 - O workflow de relatório/fechamento mensal está na skill `relatorio-mensal` (`.agents/skills/relatorio-mensal/`, espelhada em `skills/`). Ela é a fonte de verdade do processo (importações OFX/Imobzi, categorização, investimentos, inadimplentes, checks e envio). Edições na skill devem ser replicadas nas duas cópias.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -4,7 +4,7 @@
  */
 
 import { prisma } from '@/lib/core/database/client';
-import { CategoryType } from '@/app/generated/prisma';
+import { CategoryType } from '@/app/generated/prisma/client';
 import {
   printHeader,
   printTable,

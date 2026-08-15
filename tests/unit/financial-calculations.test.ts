@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { Decimal } from '@prisma/client/runtime/library';
 import { calculateRunningBalance } from '@/lib/features/financial/financial-calculations';
+import { Prisma } from '@/app/generated/prisma/client';
+const Decimal = Prisma.Decimal;
 
 // Mock prisma client
 vi.mock('@/lib/core/database/client', () => ({

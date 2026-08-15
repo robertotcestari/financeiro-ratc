@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AccountType } from '@/app/generated/prisma';
+import { AccountType } from '@/app/generated/prisma/browser';
 import {
   createBankAccount,
   updateBankAccount,
-  BankAccountFormData,
+  type BankAccountFormData,
 } from '../actions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

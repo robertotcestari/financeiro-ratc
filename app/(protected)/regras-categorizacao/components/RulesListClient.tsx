@@ -35,7 +35,7 @@ export default function RulesListClient({ initialRules, total, formData }: Rules
     };
 
     activeRules.forEach(rule => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // biome-ignore lint/suspicious/noExplicitAny: server action payload is loosely typed
       const criteria = rule.criteria as Record<string, any>;
       
       if (criteria?.description?.keywords) {
@@ -201,7 +201,7 @@ export default function RulesListClient({ initialRules, total, formData }: Rules
       {rules.length > 0 ? (
         <div className="space-y-4">
           {rules.map((rule) => {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              // biome-ignore lint/suspicious/noExplicitAny: server action payload is loosely typed
               const criteria = rule.criteria as Record<string, any>;
               const getCriteriaDetails = () => {
                 const details = [];

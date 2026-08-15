@@ -1,9 +1,11 @@
 'use server';
 
 import { prisma } from '@/lib/core/database/client';
-import { Decimal } from '@/app/generated/prisma/runtime/library';
+import type { Prisma } from '@/app/generated/prisma/client';
 import { generateAllSnapshots } from '@/lib/core/database/account-snapshots';
 import { revalidatePath } from 'next/cache';
+
+type Decimal = Prisma.Decimal;
 
 export async function generateAllAccountSnapshots() {
   try {
@@ -153,7 +155,7 @@ export async function processAllUnprocessedTransactions(
 ): Promise<BulkProcessResult> {
   try {
     // Configurar filtro de data
-    let dateFilter: DateWhere = undefined;
+    let dateFilter: DateWhere ;
     if (year && month) {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0, 23, 59, 59);
@@ -254,7 +256,7 @@ export async function getFinancialIntegrityData(
 ): Promise<FinancialIntegrityData> {
   try {
     // Configurar filtro de data
-    let dateFilter: DateWhere = undefined;
+    let dateFilter: DateWhere ;
     if (year && month) {
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0, 23, 59, 59);
@@ -487,17 +489,18 @@ export async function getFinancialIntegrityData(
         },
       });
 
-      transferDetails = transferDetailsRaw
-        .filter((pt) => pt.transaction !== null && pt.transactionId !== null)
-        .map((pt) => ({
-          id: pt.transactionId!,
-          date: pt.transaction!.date,
-          description: pt.transaction!.description,
-          amount: Number(pt.transaction!.amount),
-          bankAccountName: pt.transaction!.bankAccount.name,
-          bankName: pt.transaction!.bankAccount.bankName,
+      transferDetails = transferDetailsRaw.flatMap((pt) => {
+        if (!pt.transaction || !pt.transactionId) return [];
+        return [{
+          id: pt.transactionId,
+          date: pt.transaction.date,
+          description: pt.transaction.description,
+          amount: Number(pt.transaction.amount),
+          bankAccountName: pt.transaction.bankAccount.name,
+          bankName: pt.transaction.bankAccount.bankName,
           categoryId: pt.categoryId,
-        }));
+        }];
+      });
     } else if (dateFilter && year) {
       const transferDetailsRaw = await prisma.processedTransaction.findMany({
         where: {
@@ -526,17 +529,18 @@ export async function getFinancialIntegrityData(
         },
       });
 
-      transferDetails = transferDetailsRaw
-        .filter((pt) => pt.transaction !== null && pt.transactionId !== null)
-        .map((pt) => ({
-          id: pt.transactionId!,
-          date: pt.transaction!.date,
-          description: pt.transaction!.description,
-          amount: Number(pt.transaction!.amount),
-          bankAccountName: pt.transaction!.bankAccount.name,
-          bankName: pt.transaction!.bankAccount.bankName,
+      transferDetails = transferDetailsRaw.flatMap((pt) => {
+        if (!pt.transaction || !pt.transactionId) return [];
+        return [{
+          id: pt.transactionId,
+          date: pt.transaction.date,
+          description: pt.transaction.description,
+          amount: Number(pt.transaction.amount),
+          bankAccountName: pt.transaction.bankAccount.name,
+          bankName: pt.transaction.bankAccount.bankName,
           categoryId: pt.categoryId,
-        }));
+        }];
+      });
     } else {
       const transferDetailsRaw = await prisma.processedTransaction.findMany({
         where: {
@@ -564,17 +568,18 @@ export async function getFinancialIntegrityData(
         },
       });
 
-      transferDetails = transferDetailsRaw
-        .filter((pt) => pt.transaction !== null && pt.transactionId !== null)
-        .map((pt) => ({
-          id: pt.transactionId!,
-          date: pt.transaction!.date,
-          description: pt.transaction!.description,
-          amount: Number(pt.transaction!.amount),
-          bankAccountName: pt.transaction!.bankAccount.name,
-          bankName: pt.transaction!.bankAccount.bankName,
+      transferDetails = transferDetailsRaw.flatMap((pt) => {
+        if (!pt.transaction || !pt.transactionId) return [];
+        return [{
+          id: pt.transactionId,
+          date: pt.transaction.date,
+          description: pt.transaction.description,
+          amount: Number(pt.transaction.amount),
+          bankAccountName: pt.transaction.bankAccount.name,
+          bankName: pt.transaction.bankAccount.bankName,
           categoryId: pt.categoryId,
-        }));
+        }];
+      });
     }
 
     // Usar o uncategorizedCount já calculado

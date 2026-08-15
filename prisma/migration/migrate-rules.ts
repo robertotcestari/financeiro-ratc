@@ -1,7 +1,8 @@
-import { PrismaClient } from '@/app/generated/prisma';
+import { PrismaClient } from '@/app/generated/prisma/client';
 import mysql from 'mysql2/promise';
+import { createPrismaClient } from '@/lib/core/database/client';
 
-const prisma = new PrismaClient();
+const prisma = createPrismaClient();
 
 interface OldRule {
   id: number;

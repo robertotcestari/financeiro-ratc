@@ -1,11 +1,11 @@
 'use server';
 
 import { createSavedFile } from '@/lib/core/database/saved-files';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { writeFile, mkdir } from 'node:fs/promises';
+import { join } from 'node:path';
 import { getS3Config, uploadPdfToS3 } from '@/lib/core/storage/s3';
 import { prisma } from '@/lib/core/database/client';
-import { Prisma } from '@/app/generated/prisma';
+import type { Prisma } from '@/app/generated/prisma/client';
 import { calculateFinancialIndicators } from '@/lib/core/database/dre';
 import { listInadimplentes } from '@/lib/core/database/inadimplentes';
 import { findSavedFileByDRE } from '@/lib/core/database/saved-files';

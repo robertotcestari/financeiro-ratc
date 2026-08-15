@@ -7,7 +7,7 @@ import type {
   OFXTransaction,
   OFXParseResult,
 } from './types';
-import type { Prisma } from '@/app/generated/prisma';
+import type { Prisma } from '@/app/generated/prisma/client';
 import type {
   ImportPreview,
   TransactionPreview,
@@ -18,7 +18,7 @@ import type {
 import type {
   Transaction,
   ImportBatch,
-} from '@/app/generated/prisma';
+} from '@/app/generated/prisma/client';
 
 /**
  * Core import service that orchestrates the complete OFX import process
@@ -449,11 +449,11 @@ export class ImportService {
           let userCategoryId: string | null = null;
           let userPropertyId: string | null = null;
           
-          if (options.transactionCategories && options.transactionCategories[transaction.transactionId]) {
+          if (options.transactionCategories?.[transaction.transactionId]) {
             userCategoryId = options.transactionCategories[transaction.transactionId];
           }
           
-          if (options.transactionProperties && options.transactionProperties[transaction.transactionId]) {
+          if (options.transactionProperties?.[transaction.transactionId]) {
             userPropertyId = options.transactionProperties[transaction.transactionId];
           }
 
@@ -503,18 +503,6 @@ export class ImportService {
     }
 
     return true;
-  }
-
-  /**
-   * Filter transactions for import based on options
-   */
-  private filterTransactionsForImport(
-    transactions: TransactionPreview[],
-    options: ImportOptions
-  ): TransactionPreview[] {
-    return transactions.filter((transaction) =>
-      this.shouldProcessTransaction(transaction, options)
-    );
   }
 
   /**

@@ -67,7 +67,7 @@ export function DREFilters({ year, selectedMonths }: DREFiltersProps) {
           <label className="font-medium">Ano:</label>
           <select
             value={currentYear}
-            onChange={(e) => handleYearChange(parseInt(e.target.value))}
+            onChange={(e) => handleYearChange(parseInt(e.target.value, 10))}
             className="border border-gray-300 rounded px-3 py-1"
           >
             {YEAR_OPTIONS.map(yearOption => (

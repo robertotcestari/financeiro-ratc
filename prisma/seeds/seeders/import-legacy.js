@@ -6,7 +6,7 @@
   - Importa e cria UnifiedTransaction com fallback de categoria padrão
 */
 
-/* eslint-disable */
+/* biome-ignore lint: legacy seeder */
 
 const fs = require('fs')
 const path = require('path')

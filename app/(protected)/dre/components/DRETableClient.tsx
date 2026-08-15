@@ -1,15 +1,14 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { flexRender, type ExpandedState } from '@tanstack/react-table';
 import {
-  useReactTable,
+  useLegacyTable,
   getCoreRowModel,
   getExpandedRowModel,
-  createColumnHelper,
-  flexRender,
-  type ExpandedState,
-  type ColumnDef,
-} from '@tanstack/react-table';
+  legacyCreateColumnHelper,
+  type LegacyColumnDef,
+} from '@tanstack/react-table/legacy';
 import { ChevronDownIcon, ChevronRightIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { Switch } from '@/components/ui/switch';
 import { exportDREToPDF } from '../utils/export-pdf';
@@ -298,14 +297,14 @@ export function DRETableClient({
   // Create a column helper for the DRERow type. Column value types will be
   // treated as unknown in the ColumnDef array below to allow different
   // accessor return types (string | number).
-  const columnHelper = createColumnHelper<DRERow>();
+  const columnHelper = legacyCreateColumnHelper<DRERow>();
   // Alias a column type that permits any value type. Using `any` here for
   // the TValue avoids the complex generic incompatibilities between
   // AccessorKeyColumnDef/AccessorFnColumnDef with different return types.
   // This is safe because cells ultimately render strings/numbers.
   // Use unknown for TValue to avoid `any` but allow casting from specific
   // accessor column defs (string | number) when necessary.
-  type TableColumn = ColumnDef<DRERow, unknown>;
+  type TableColumn = LegacyColumnDef<DRERow, unknown>;
 
   // Create columns dynamically based on selected months
   const columns = useMemo<TableColumn[]>(() => {
@@ -368,18 +367,19 @@ export function DRETableClient({
     });
 
     return cols;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedMonths, year]);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: table config is intentionally static
+  }, [selectedMonths, year, renderToggleButton, // Name column
+      columnHelper.accessor, getValueColor, formatCurrency]);
 
   // Filter rows based on visibility settings
   const filteredData = useMemo(() => {
     return getVisibleRows();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows, expandedSections, showZeroValues]);
+    // biome-ignore lint/correctness/useExhaustiveDependencies: table config is intentionally static
+  }, [getVisibleRows]);
 
   // Create table instance
   // Provide the row type generic so the table types align with the column helpers
-  const table = useReactTable<DRERow>({
+  const table = useLegacyTable<DRERow>({
     data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),

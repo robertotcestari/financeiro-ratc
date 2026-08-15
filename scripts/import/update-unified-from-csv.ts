@@ -1,10 +1,11 @@
-import { PrismaClient, CategoryType } from '@/app/generated/prisma';
+import { createPrismaClient } from '@/lib/core/database/client';
+import { PrismaClient, CategoryType } from '@/app/generated/prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
 import { parse } from 'csv-parse/sync';
 import { extractCityCode, parseMonetaryValue, parseDate } from './utils/csv';
 
-const prisma = new PrismaClient();
+const prisma = createPrismaClient();
 
 // Mapeamento de categorias para tipo
 const categoryTypeMap: Record<string, CategoryType> = {

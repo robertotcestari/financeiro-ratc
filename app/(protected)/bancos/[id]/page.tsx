@@ -37,8 +37,8 @@ export default async function BankPage({ params, searchParams }: BankPageProps) 
 
   // Parse month and year from search params
   const currentYear = new Date().getFullYear()
-  const month = resolvedSearchParams.mes ? parseInt(resolvedSearchParams.mes) : null
-  const year = resolvedSearchParams.ano ? parseInt(resolvedSearchParams.ano) : currentYear
+  const month = resolvedSearchParams.mes ? parseInt(resolvedSearchParams.mes, 10) : null
+  const year = resolvedSearchParams.ano ? parseInt(resolvedSearchParams.ano, 10) : currentYear
 
   // Build date filter for transactions
   let dateFilter = {}

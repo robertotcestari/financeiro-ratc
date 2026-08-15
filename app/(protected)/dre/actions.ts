@@ -1,6 +1,6 @@
 'use server';
 
-import { generateDRE, DRELineData } from '@/lib/core/database/dre';
+import { generateDRE, type DRELineData } from '@/lib/core/database/dre';
 import { prisma } from '@/lib/core/database/client';
 
 export interface DREMonthlyData {

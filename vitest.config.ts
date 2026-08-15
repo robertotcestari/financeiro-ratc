@@ -44,14 +44,9 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['tests/setup.ts', 'vitest.setup.ts'],
 
-    // Use 2 threads for moderate parallelism without race conditions
+    // Conservative parallel execution without race conditions
     pool: 'threads',
-    poolOptions: {
-      threads: {
-        minThreads: 3,
-        maxThreads: 3, // Conservative parallel execution
-      },
-    },
+    maxWorkers: 3,
 
     // Keep tests sequential within files for stability
     sequence: {
@@ -63,7 +58,7 @@ export default defineConfig({
     testTimeout: 10000, // 10 seconds (was 20s)
 
     // Prevent Vitest from picking up Playwright tests and other non-unit suites
-    exclude: ['e2e/**', '**/node_modules/**', '**/dist/**'],
+    exclude: ['e2e/**', '**/node_modules/**', '**/dist/**', '**/.claude/**'],
 
     // Suppress known noisy stderr logs that don't affect test outcomes
     // Keep this list tight to avoid hiding real issues
