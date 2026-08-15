@@ -1,0 +1,32 @@
+[
+  {
+    "status": "paid",
+    "due": "2025-12-10",
+    "paid_at": "2025-12-10",
+    "total": 21491.98,
+    "paid": null,
+    "tenant": "Sicoob Credimogiana",
+    "addr": "Avenida Independência, 1379",
+    "desc": "Aluguel ref. 01/11/2025 a 30/11/2025"
+  },
+  {
+    "status": "paid",
+    "due": "2025-12-15",
+    "paid_at": "2025-12-15",
+    "total": 3377.93,
+    "paid": null,
+    "tenant": "Silvia Cristina Campello Medeiros",
+    "addr": "Avenida Independência, 1591",
+    "desc": "Aluguel ref. 01/11/2025 a 30/11/2025"
+  },
+  {
+    "status": "pending",
+    "due": "2026-07-25",
+    "paid_at": null,
+    "total": 6068.63,
+    "paid": null,
+    "tenant": "Uniaudio",
+    "addr": "Avenida Independência, 1589",
+    "desc": "Aluguel ref. 25/06/2026 a 24/07/2026"
+  }
+]

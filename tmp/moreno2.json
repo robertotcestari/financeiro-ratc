@@ -1,0 +1,93 @@
+[
+  {
+    "status": "paid",
+    "due": "2025-08-14",
+    "paid_at": "2025-08-14",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/07/2025 a 13/08/2025"
+  },
+  {
+    "status": "paid",
+    "due": "2025-09-14",
+    "paid_at": "2025-09-15",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/08/2025 a 13/09/2025"
+  },
+  {
+    "status": "paid",
+    "due": "2025-10-14",
+    "paid_at": "2025-11-18",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/09/2025 a 13/10/2025"
+  },
+  {
+    "status": "paid",
+    "due": "2025-11-14",
+    "paid_at": "2025-11-10",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/10/2025 a 13/11/2025"
+  },
+  {
+    "status": "paid",
+    "due": "2025-12-14",
+    "paid_at": "2025-12-14",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/11/2025 a 13/12/2025"
+  },
+  {
+    "status": "paid",
+    "due": "2026-01-14",
+    "paid_at": "2026-01-14",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/12/2025 a 13/01/2026"
+  },
+  {
+    "status": "paid",
+    "due": "2026-02-14",
+    "paid_at": "2026-02-14",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/01/2026 a 13/02/2026"
+  },
+  {
+    "status": "paid",
+    "due": "2026-03-14",
+    "paid_at": "2026-03-14",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/02/2026 a 13/03/2026"
+  },
+  {
+    "status": "paid",
+    "due": "2026-04-14",
+    "paid_at": "2026-04-14",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/03/2026 a 13/04/2026"
+  },
+  {
+    "status": "paid",
+    "due": "2026-05-14",
+    "paid_at": "2026-05-14",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/04/2026 a 13/05/2026"
+  },
+  {
+    "status": "paid",
+    "due": "2026-06-14",
+    "paid_at": "2026-06-14",
+    "total": 7400,
+    "desc": "Aluguel ref. 14/05/2026 a 13/06/2026"
+  },
+  {
+    "status": "pending",
+    "due": "2026-07-14",
+    "paid_at": null,
+    "total": 7400,
+    "desc": "Aluguel ref. 14/06/2026 a 13/07/2026"
+  },
+  {
+    "status": "pending",
+    "due": "2026-08-14",
+    "paid_at": null,
+    "total": 7400,
+    "desc": "Aluguel ref. 14/07/2026 a 13/08/2026"
+  }
+]

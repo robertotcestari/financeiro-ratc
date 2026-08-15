@@ -1,0 +1,211 @@
+[
+  {
+    "id": "2e5118a2747711f1834542004e494300",
+    "tenantName": "Imobiliária Casa Verde",
+    "propertyName": "Rua Piauí, 317 - Catanduva",
+    "dueDate": "2026-07-10",
+    "value": 1125,
+    "status": "pending",
+    "daysOverdue": 36,
+    "description": "Aluguel ref. 10/06/2026 a 09/07/2026",
+    "propertyDetails": {
+      "address": "Rua Piauí, 317",
+      "city": "Catanduva",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Imobiliária Casa Verde",
+      "type": "organization"
+    }
+  },
+  {
+    "id": "2bfa5c1c747711f1920442004e494300",
+    "tenantName": "Herbicat Ltda",
+    "propertyName": "Avenida Said Tuma, 220 - Catanduva",
+    "dueDate": "2026-07-10",
+    "value": 3147.68,
+    "status": "pending",
+    "daysOverdue": 36,
+    "description": "Aluguel ref. 01/06/2026 a 30/06/2026",
+    "propertyDetails": {
+      "address": "Avenida Said Tuma, 220",
+      "city": "Catanduva",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Herbicat Ltda",
+      "type": "organization"
+    }
+  },
+  {
+    "id": "1fcceeaa747711f1a08842004e494300",
+    "tenantName": "Usina",
+    "propertyName": "Sítio Sales - Sales",
+    "dueDate": "2026-07-10",
+    "value": 6500,
+    "status": "pending",
+    "daysOverdue": 36,
+    "description": "Aluguel ref. 01/06/2026 a 30/06/2026",
+    "propertyDetails": {
+      "address": "Sítio Sales",
+      "city": "Sales",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Usina",
+      "type": "person"
+    }
+  },
+  {
+    "id": "290b9e66779811f1bf2e42004e494300",
+    "tenantName": "Agrícola Moreno de Nipoã",
+    "propertyName": "Rua Sebastião de Pierre, Cosmorama - SP Fazenda - Cosmorama",
+    "dueDate": "2026-07-14",
+    "value": 7400,
+    "status": "pending",
+    "daysOverdue": 32,
+    "description": "Aluguel ref. 14/06/2026 a 13/07/2026",
+    "propertyDetails": {
+      "address": "Rua Sebastião de Pierre, Cosmorama - SP",
+      "city": "Cosmorama",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Agrícola Moreno de Nipoã",
+      "type": "organization"
+    }
+  },
+  {
+    "id": "f7331bf6786111f19ba142004e494300",
+    "tenantName": "Imobiliária Pró Imóveis",
+    "propertyName": "Rua Monte Aprazível, 115 - Catanduva",
+    "dueDate": "2026-07-15",
+    "value": 1738,
+    "status": "pending",
+    "daysOverdue": 31,
+    "description": "Aluguel ref. 15/06/2026 a 14/07/2026",
+    "propertyDetails": {
+      "address": "Rua Monte Aprazível, 115",
+      "city": "Catanduva",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Imobiliária Pró Imóveis",
+      "type": "organization"
+    }
+  },
+  {
+    "id": "ba4a524e7c4f11f1adf442004e494300",
+    "tenantName": "Imobiliária Pró Imóveis",
+    "propertyName": "Rua Fortaleza, 504 - Catanduva",
+    "dueDate": "2026-07-20",
+    "value": 515.56,
+    "status": "pending",
+    "daysOverdue": 26,
+    "description": "Aluguel ref. 01/06/2026 a 30/06/2026",
+    "propertyDetails": {
+      "address": "Rua Fortaleza, 504",
+      "city": "Catanduva",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Imobiliária Pró Imóveis",
+      "type": "organization"
+    }
+  },
+  {
+    "id": "b74559687c4f11f19bfd42004e494300",
+    "tenantName": "Maria José Nadruz Empreendimentos Imobiliários Ltda",
+    "propertyName": "Avenida Brasilusa, 669 - ap 21 AP 21 - São José do Rio Preto",
+    "dueDate": "2026-07-20",
+    "value": 1378.64,
+    "status": "pending",
+    "daysOverdue": 26,
+    "description": "Aluguel ref. 20/06/2026 a 19/07/2026",
+    "propertyDetails": {
+      "address": "Avenida Brasilusa, 669 - ap 21",
+      "city": "São José do Rio Preto",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Maria José Nadruz Empreendimentos Imobiliários Ltda",
+      "type": "organization"
+    }
+  },
+  {
+    "id": "b2756b767c4f11f18d4942004e494300",
+    "tenantName": "Imobiliária Loren Imóveis",
+    "propertyName": "Rua Messia Assú, 490 - ap 802 AP 802 - São Vicente",
+    "dueDate": "2026-07-20",
+    "value": 1921.63,
+    "status": "pending",
+    "daysOverdue": 26,
+    "description": "Aluguel ref. 01/06/2026 a 30/06/2026",
+    "propertyDetails": {
+      "address": "Rua Messia Assú, 490 - ap 802",
+      "city": "São Vicente",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Imobiliária Loren Imóveis",
+      "type": "organization"
+    }
+  },
+  {
+    "id": "9de967367eaa11f1b75542004e494300",
+    "tenantName": "Thais Helena Morada Imobiliaria Ltda",
+    "propertyName": "Rua Belo Horizonte, 983 - Catanduva",
+    "dueDate": "2026-07-23",
+    "value": 1666,
+    "status": "pending",
+    "daysOverdue": 23,
+    "description": "Aluguel ref. 23/06/2026 a 22/07/2026",
+    "propertyDetails": {
+      "address": "Rua Belo Horizonte, 983",
+      "city": "Catanduva",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Thais Helena Morada Imobiliaria Ltda",
+      "type": "organization"
+    }
+  },
+  {
+    "id": "f81b6d42803c11f182b842004e494300",
+    "tenantName": "Uniaudio",
+    "propertyName": "Avenida Independência, 1589 - Ribeirão Preto",
+    "dueDate": "2026-07-25",
+    "value": 6068.63,
+    "status": "pending",
+    "daysOverdue": 21,
+    "description": "Aluguel ref. 25/06/2026 a 24/07/2026",
+    "propertyDetails": {
+      "address": "Avenida Independência, 1589",
+      "city": "Ribeirão Preto",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Uniaudio",
+      "type": "organization"
+    }
+  },
+  {
+    "id": "ee54adf4842a11f1b0a142004e494300",
+    "tenantName": "Imobiliária Pró Imóveis",
+    "propertyName": "Rua Elisiário, 30 - Catanduva",
+    "dueDate": "2026-07-30",
+    "value": 541.12,
+    "status": "pending",
+    "daysOverdue": 16,
+    "description": "Aluguel ref. 01/07/2026 a 31/07/2026",
+    "propertyDetails": {
+      "address": "Rua Elisiário, 30",
+      "city": "Catanduva",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Imobiliária Pró Imóveis",
+      "type": "organization"
+    }
+  }
+]

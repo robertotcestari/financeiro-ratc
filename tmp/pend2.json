@@ -1,0 +1,59 @@
+[
+  {
+    "id": "1fcceeaa747711f1a08842004e494300",
+    "tenantName": "Usina",
+    "propertyName": "Sítio Sales - Sales",
+    "dueDate": "2026-07-10",
+    "value": 6500,
+    "status": "pending",
+    "daysOverdue": 36,
+    "description": "Aluguel ref. 01/06/2026 a 30/06/2026",
+    "propertyDetails": {
+      "address": "Sítio Sales",
+      "city": "Sales",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Usina",
+      "type": "person"
+    }
+  },
+  {
+    "id": "290b9e66779811f1bf2e42004e494300",
+    "tenantName": "Agrícola Moreno de Nipoã",
+    "propertyName": "Rua Sebastião de Pierre, Cosmorama - SP Fazenda - Cosmorama",
+    "dueDate": "2026-07-14",
+    "value": 7400,
+    "status": "pending",
+    "daysOverdue": 32,
+    "description": "Aluguel ref. 14/06/2026 a 13/07/2026",
+    "propertyDetails": {
+      "address": "Rua Sebastião de Pierre, Cosmorama - SP",
+      "city": "Cosmorama",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Agrícola Moreno de Nipoã",
+      "type": "organization"
+    }
+  },
+  {
+    "id": "f81b6d42803c11f182b842004e494300",
+    "tenantName": "Uniaudio",
+    "propertyName": "Avenida Independência, 1589 - Ribeirão Preto",
+    "dueDate": "2026-07-25",
+    "value": 6068.63,
+    "status": "pending",
+    "daysOverdue": 21,
+    "description": "Aluguel ref. 25/06/2026 a 24/07/2026",
+    "propertyDetails": {
+      "address": "Avenida Independência, 1589",
+      "city": "Ribeirão Preto",
+      "state": "SP"
+    },
+    "contactDetails": {
+      "name": "Uniaudio",
+      "type": "organization"
+    }
+  }
+]
