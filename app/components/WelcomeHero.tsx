@@ -7,7 +7,7 @@ import { ArrowRight, Shield, TrendingUp, FileText } from "lucide-react";
 import Link from "next/link";
 
 export default function WelcomeHero() {
-  const { user, isAuthenticated, isLoading, signInWithGoogle } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const session = useSession();
   const role = session.data?.user?.role as string | undefined;
   const canSeeReports = role === 'admin' || role === 'superuser';
@@ -22,10 +22,12 @@ export default function WelcomeHero() {
           <p className="text-xl text-gray-600 mb-8">
             Gerencie suas finanças com segurança e eficiência
           </p>
-          <Button onClick={signInWithGoogle} size="lg" className="font-semibold" disabled={isLoading}>
-            <Shield className="mr-2 h-5 w-5" />
-            {isLoading ? "Conectando..." : "Fazer Login com Google"}
-            <ArrowRight className="ml-2 h-5 w-5" />
+          <Button asChild size="lg" className="font-semibold">
+            <Link href="/auth/signin">
+              <Shield className="mr-2 h-5 w-5" />
+              Fazer login
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
           </Button>
           
           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -42,7 +44,7 @@ export default function WelcomeHero() {
             <div className="text-center">
               <Shield className="h-12 w-12 text-blue-600 mx-auto mb-4" />
               <h3 className="font-semibold text-lg mb-2">Segurança Total</h3>
-              <p className="text-gray-600">Autenticação segura com Google OAuth</p>
+              <p className="text-gray-600">Autenticação segura com e-mail ou Google</p>
             </div>
           </div>
         </div>
