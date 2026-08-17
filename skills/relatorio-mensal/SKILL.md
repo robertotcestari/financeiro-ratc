@@ -70,6 +70,7 @@ Regras:
 - **Propriedades inativas/vendidas não aparecem em `GET /properties`** (ex.: `CAT - Terreno Dahma`, `GUA - Apartamento Guarujá`), mas ainda são usadas em categorizações. Pegue o `propertyId` delas a partir de transações históricas que já as usam.
 - **O patrimônio do print da corretora pode ser de qualquer conta CI** — confirme com o usuário QUAL conta (BTG, XP, etc.) antes de balancear. Em maio/2026 o print "Ratc" era o BTG, não a XP.
 - **Imobzi não exige SSH**: pendentes, quitação, preview e import podem ser feitos a partir do ambiente local pelo fluxo de auth já existente no projeto (`lib/features/imobzi/auth.ts`). Veja `references/pjbank-imobzi.md`.
+- **A API do Imobzi está documentada em `docs/imobzi/README.md`** (endpoints, parâmetros validados, schemas e erros). Consulte antes de montar qualquer chamada: `GET /invoices` aceita `period=paid_at`, que filtra por data de pagamento em vez de vencimento, e `/financial/transactions` praticamente não valida parâmetros — param errado é ignorado em silêncio.
 
 ## Guardrails Críticos
 
@@ -201,6 +202,7 @@ Referências:
 - `references/pjbank-imobzi.md`
 - `references/api-endpoints.md`
 - `references/checks-and-validation.md`
+- `docs/imobzi/README.md` (no repositório) — referência da API do Imobzi
 
 Quando cada subfluxo desta etapa estiver concluído e validado, marque a tarefa correspondente como `completed` na ferramenta de todo-list do agente.
 
@@ -298,6 +300,7 @@ Referência operacional:
 
 - `references/inadimplentes.md`
 - `references/api-endpoints.md`
+- `docs/imobzi/README.md` (no repositório) — referência da API do Imobzi
 
 Quando a etapa estiver concluída e validada, marque as tarefas correspondentes como `completed` na ferramenta de todo-list do agente.
 
