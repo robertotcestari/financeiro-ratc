@@ -2,29 +2,8 @@
 
 import { prisma } from '@/lib/core/database/client';
 import type { Prisma } from '@/app/generated/prisma/client';
-import { generateAllSnapshots } from '@/lib/core/database/account-snapshots';
-import { revalidatePath } from 'next/cache';
 
 type Decimal = Prisma.Decimal;
-
-export async function generateAllAccountSnapshots() {
-  try {
-    const snapshots = await generateAllSnapshots();
-    revalidatePath('/integridade');
-    return {
-      success: true,
-      snapshotCount: snapshots.length,
-      message: `${snapshots.length} snapshots gerados com sucesso`
-    };
-  } catch (error) {
-    console.error('Erro ao gerar snapshots:', error);
-    return {
-      success: false,
-      snapshotCount: 0,
-      error: error instanceof Error ? error.message : 'Erro ao gerar snapshots'
-    };
-  }
-}
 
 export interface AccountBalance {
   bankAccountId: string;

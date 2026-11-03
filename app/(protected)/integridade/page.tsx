@@ -1,7 +1,6 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { IntegrityFilters } from './components/IntegrityFilters';
-import { CalculateBalancesButton } from './components/CalculateBalancesButton';
 import { IntegrityData } from './components/IntegrityData';
 import { IntegrityDataSkeleton } from './components/IntegrityDataSkeleton';
 import { Search } from 'lucide-react';
@@ -52,10 +51,9 @@ export default async function IntegrityPage({ searchParams }: PageProps) {
           </p>
         </div>
 
-        {/* Filtros e Ações */}
+        {/* Filtros */}
         <div className="flex justify-between items-center mb-6">
           <IntegrityFilters />
-          <CalculateBalancesButton />
         </div>
 
         <Suspense key={suspenseKey} fallback={<IntegrityDataSkeleton />}>

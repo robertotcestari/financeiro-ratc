@@ -31,138 +31,28 @@ async function getAccountBalancesForDRE(
     orderBy: { name: 'asc' },
   });
 
-  // Prepara datas alvo para cada conta
-  const targetDate = month
-    ? new Date(year, month, 0, 23, 59, 59) // Último dia do mês
-    : new Date(year, 11, 31, 23, 59, 59); // Último dia do ano
-
-  // Busca todos os snapshots relevantes em lote
-  const accountIds = bankAccounts.map((acc) => acc.id);
-  let snapshots: {
-    bankAccountId: string;
-    closingBalance: number | null;
-    year: number;
-    month: number;
-  }[] = [];
-  if (month) {
-    // Para mês específico, busca todos snapshots do mês
-    const rawSnapshots = await prisma.accountSnapshot.findMany({
-      where: {
-        bankAccountId: { in: accountIds },
-        year,
-        month,
-      },
-    });
-    snapshots = rawSnapshots.map((snap) => ({
-      bankAccountId: snap.bankAccountId,
-      closingBalance:
-        snap.closingBalance != null ? Number(snap.closingBalance) : null,
-      year: snap.year,
-      month: snap.month,
-    }));
-  } else {
-    // Para o ano todo, busca o último snapshot do ano para cada conta
-    const rawSnapshots = await prisma.accountSnapshot.findMany({
-      where: {
-        bankAccountId: { in: accountIds },
-        year,
-      },
-      orderBy: [{ bankAccountId: 'asc' }, { month: 'desc' }],
-    });
-    snapshots = rawSnapshots.map((snap) => ({
-      bankAccountId: snap.bankAccountId,
-      closingBalance:
-        snap.closingBalance != null ? Number(snap.closingBalance) : null,
-      year: snap.year,
-      month: snap.month,
-    }));
-  }
-
-  // Indexa snapshots por conta
-  const snapshotMap = new Map<
-    string,
-    {
-      bankAccountId: string;
-      closingBalance: number | null;
-      year: number;
-      month: number;
-    }
-  >();
-  if (month) {
-    for (const snap of snapshots) {
-      snapshotMap.set(snap.bankAccountId, snap);
-    }
-  } else {
-    // Para o ano, pega o snapshot mais recente por conta
-    for (const accId of accountIds) {
-      const snaps = snapshots.filter((s) => s.bankAccountId === accId);
-      if (snaps.length > 0) {
-        // Snapshots já ordenados por mês desc
-        snapshotMap.set(accId, snaps[0]);
-      }
-    }
-  }
-
-  // Busca todas as transações relevantes em lote (para contas sem snapshot)
-  const missingSnapshotIds = bankAccounts
-    .filter((acc) => {
-      const snap = snapshotMap.get(acc.id);
-      return !snap?.closingBalance;
-    })
-    .map((acc) => acc.id);
-
-  let transactions: {
-    bankAccountId: string;
-    balance: number | null;
-    date: Date;
-    id: string;
-  }[] = [];
-  if (missingSnapshotIds.length > 0) {
-    const rawTransactions = await prisma.transaction.findMany({
-      where: {
-        bankAccountId: { in: missingSnapshotIds },
-        date: { lte: targetDate },
-        balance: { not: null },
-      },
-      orderBy: [{ bankAccountId: 'asc' }, { date: 'desc' }, { id: 'desc' }],
-    });
-    transactions = rawTransactions.map((tx) => ({
-      bankAccountId: tx.bankAccountId,
-      balance: tx.balance != null ? Number(tx.balance) : null,
-      date: tx.date,
-      id: tx.id,
-    }));
-  }
-
-  // Indexa transações por conta (pega a mais recente por conta)
-  const transactionMap = new Map<
-    string,
-    { bankAccountId: string; balance: number | null; date: Date; id: string }
-  >();
-  for (const accId of missingSnapshotIds) {
-    const txs = transactions.filter((t) => t.bankAccountId === accId);
-    if (txs.length > 0) {
-      transactionMap.set(accId, txs[0]);
-    }
-  }
-
-  // Monta resultado final
-  const balances: AccountBalanceForDRE[] = bankAccounts.map((account) => {
-    let balance = 0;
-    const snapshot = snapshotMap.get(account.id);
-    if (snapshot && snapshot.closingBalance != null) {
-      balance = Number(snapshot.closingBalance);
-    } else {
-      const tx = transactionMap.get(account.id);
-      balance = tx && tx.balance != null ? Number(tx.balance) : 0;
-    }
-    return {
-      bankAccount: account,
-      balance,
-    };
+  // Soma o histórico até o fim do período para incluir importações e correções
+  // retroativas, sem depender de snapshots recalculados manualmente.
+  const endDate = new Date(year, month ?? 12, 1);
+  const totals = await prisma.transaction.groupBy({
+    by: ['bankAccountId'],
+    where: {
+      bankAccountId: { in: bankAccounts.map((account) => account.id) },
+      date: { lt: endDate },
+    },
+    _sum: { amount: true },
   });
+  const balanceByAccount = new Map(
+    totals.map((total) => [
+      total.bankAccountId,
+      total._sum.amount?.toNumber() ?? 0,
+    ])
+  );
 
-  return balances;
+  return bankAccounts.map((bankAccount) => ({
+    bankAccount,
+    balance: balanceByAccount.get(bankAccount.id) ?? 0,
+  }));
 }
 
 /**
