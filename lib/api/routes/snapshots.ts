@@ -15,9 +15,8 @@ const generateSnapshotsRoute = createRoute({
   summary: 'Gerar saldos (snapshots) das contas',
   description:
     'Recalcula os snapshots mensais de saldo (`account_snapshots`) de todas as contas ativas, ' +
-    'mês a mês, em todo o período com transações. Equivale ao botão "Calcular Saldos" da tela ' +
-    '/integridade. O DRE lê esta tabela para montar o bloco "Saldos Bancários" — rode antes de ' +
-    'gerar os PDFs do fechamento, caso contrário os saldos saem desatualizados ou zerados.',
+    'mês a mês, em todo o período com transações. Disponível para manutenção dos snapshots. ' +
+    'O DRE calcula os saldos bancários automaticamente a partir das transações e não exige esta etapa.',
   security: [{ Bearer: [] }],
   request: {
     body: {
