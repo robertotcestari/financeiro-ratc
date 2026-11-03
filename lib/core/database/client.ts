@@ -7,7 +7,10 @@ function createAdapter(connectionString = process.env.DATABASE_URL) {
   }
 
   const url = new URL(connectionString);
-  const connectTimeout = process.env.VITEST === 'true' || process.env.NODE_ENV === 'test' ? 1000 : 10_000;
+  const connectTimeout =
+    process.env.VITEST === 'true' || process.env.NODE_ENV === 'test'
+      ? 1000
+      : 10_000;
 
   return new PrismaMariaDb({
     host: url.hostname,
@@ -15,6 +18,10 @@ function createAdapter(connectionString = process.env.DATABASE_URL) {
     user: decodeURIComponent(url.username),
     password: decodeURIComponent(url.password),
     database: url.pathname.replace(/^\//, '').replace(/\/$/, ''),
+    // Fetch the MySQL authentication key only over a local connection.
+    allowPublicKeyRetrieval: ['localhost', '127.0.0.1', '[::1]'].includes(
+      url.hostname
+    ),
     connectTimeout,
     acquireTimeout: connectTimeout,
   });
